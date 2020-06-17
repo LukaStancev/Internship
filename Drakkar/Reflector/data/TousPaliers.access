@@ -1,0 +1,68 @@
+#!/bin/bash
+accessname=$(basename $0 | cut -d"." -f1)
+if [ $# = 0 ]
+   then
+   echo "usage: "$accessname".access directory" 1>&2
+   exit 1
+fi
+
+#------------------------------------------- copy procedures from HEMERA/proc
+cp "$1"/../proc/*.c2m .
+
+NuclData=$(grep --color=none "STRING  NuclData :" mydata | cut -d"=" -f2 | cut -d";" -f1 | tr -d " " | tr -d '"')
+LibType=$(echo $NuclData | sed "s/^D[0-9]*//g")
+
+sed -i "s/#LIB/$LibType/g" mydata
+echo $LibType
+#----------------------------------------------------------
+# Modificaton de GetMolarMass.c2m pour commenter les isotopes absents
+#----------------------------------------------------------
+# Definition des isotopes a retirer selon les bibliotheques
+elif [ "$LibType" = "ENDFVI8" ] ; then
+	#Liste d'isotopes a exclure
+	isoAExclure=( "H2O" "Si28" "Si29" "Si30" "Ti46" "Ti47" "Ti48" "Ti49" "Ti50" \
+                      "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \
+                      "Cd106" "Cd108" "In115" "Sn112" "Sn114" "S33" "S34" "K39" "K40" \
+                            "K41" "In113")
+elif [ "$LibType" = "JEF22" ] ; then
+	#Liste d'isotopes a exclure
+	isoAExclure=( "H2O" "Si28" "Si29" "Si30" "Ti46" "Ti47" "Ti48" "Ti49" "Ti50" \
+                      "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \
+                      "Cd106" "Cd108" "InNat" "Sn112" "Sn114" "K39" "K40" "K41" "In113")
+elif [ "$LibType" = "JEFF31" ] || [ "$LibType" = "JEFF311" ] || [ "$LibType" = "JEFF312" ] || \
+     [ "$LibType" = "ENDFVII0" ] || [ "$LibType" = "ENDFVII1" ] ; then
+	#Liste d'isotopes a exclure
+	isoAExclure=( "H2O" "SiNat" "TiNat" "ZrNat" "InNat" "KNat" "In113")
+else
+	echo "La bibliotheque renseignee dans la variable NuclData du .x2m est inconnue au bataillon."
+	exit 1
+fi
+
+
+# Mise en commentaire des isotopes prealablement definis
+i=0
+echo "Nombre d'isotopes a exclure : ${#isoAExclure[@]}"
+while [ "$i" -lt "${#isoAExclure[@]}" ] ; do
+	echo " - ${isoAExclure[i]}"
+
+	# ----- Modification de GetMolarMass.c2m -----
+	# Exclusion de la ligne contenant l'isotope a exclure
+	sed -i '/ '"${isoAExclure[i]}"' /{s/^ /!/}' GetMolarMass.c2m
+
+	# ----- Modification de CreaMix.c2m -----
+	# Exclusion de la ligne contenant l'isotope a exclure
+	sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaMix.c2m
+
+	# ----- Modification de CreaDilut.c2m -----
+	# Exclusion de la ligne contenant l'isotope a exclure
+	sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaDilut.c2m
+
+	i=$(($i+1))
+done
+
+#------------------------------------------- list
+ls -ltr *.c2m
+
+touch DONOTDELETERUNDIR
+
+echo $accessname".access script terminated"
