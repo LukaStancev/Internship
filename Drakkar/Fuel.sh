@@ -31,18 +31,18 @@ sed -i 's/STRING Save := "TIH_UOX_.*/STRING Save := "TIH_UOX_310" ;/' EvoNominal
 sed -i 's/INTEGER Teneur_I.*/INTEGER Teneur_I := 310    ;/' EvoNominale.x2m
 sed -i 's/STRING  ConfigPyrex.*/STRING  ConfigPyrex := "Py12" ;/' EvoNominale.x2m
 srun dragon EvoNominale.x2m v5bev1487
-## MakeBib1BU
-#sed -i 's/EvoName=.*/EvoName="TIH_UOX_195"/' MakeBib1BU.access
-#srun dragon MakeBib1BU.x2m v5bev1487
-#sleep 10
-#sed -i 's/EvoName=.*/EvoName="TIH_UOX_255-Py8"/' MakeBib1BU.access
-#srun dragon MakeBib1BU.x2m v5bev1487 &
-#sleep 10
-#sed -i 's/EvoName=.*/EvoName="TIH_UOX_255-Py12"/' MakeBib1BU.access
-#srun dragon MakeBib1BU.x2m v5bev1487 &
-#sleep 10
-#sed -i 's/EvoName=.*/EvoName="TIH_UOX_310-Py12"/' MakeBib1BU.access
-#srun dragon MakeBib1BU.x2m v5bev1487 &
-#sleep 10
-#sed -i 's/EvoName=.*/EvoName="TIH_UOX_310"/' MakeBib1BU.access
-#srun dragon MakeBib1BU.x2m v5bev1487
+# MakeBib1BU
+sed -i 's/EvoName=.*/EvoName="TIH_UOX_195"/' MakeBib1BU.access
+srun dragon MakeBib1BU.x2m v5bev1487
+sleep 10
+sed -i 's/EvoName=.*/EvoName="TIH_UOX_255-Py8"/' MakeBib1BU.access
+srun dragon MakeBib1BU.x2m v5bev1487 &
+sleep 10
+sed -i 's/EvoName=.*/EvoName="TIH_UOX_255-Py12"/' MakeBib1BU.access
+srun dragon MakeBib1BU.x2m v5bev1487 &
+sleep 10
+sed -i 's/EvoName=.*/EvoName="TIH_UOX_310-Py12"/' MakeBib1BU.access
+srun dragon MakeBib1BU.x2m v5bev1487 &
+sleep 10
+sed -i 's/EvoName=.*/EvoName="TIH_UOX_310"/' MakeBib1BU.access
+srun dragon MakeBib1BU.x2m v5bev1487

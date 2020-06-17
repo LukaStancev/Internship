@@ -288,6 +288,8 @@ StepList := UTL: StepList ::
 *      ;
 *-----------------------------------------------------
 
+!REAL tcomb := 547.0 32.0 - 1.8 / ;
+REAL tcomb := 286.0 ;
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 *  N-MATRIX                                           *
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -312,6 +314,31 @@ IF TypeMatrix "N" = THEN
   StepList := UTL: StepList ::
     CREA 'TempComb' 5 =
      50.    286.    650.   1400.   2200.
+  ;
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*  T-MATRIX                                           *
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ELSEIF TypeMatrix "T" = THEN
+
+  ECHO "The choosen matrix is : T-MATRIX " ;
+
+  !*! DENSITY MODERATOR
+  StepList := UTL: StepList ::
+    CREA 'DensModo' 2 =
+       .74     .82
+  ;
+
+  !*! BORON CONCENTRATION
+  StepList := UTL: StepList ::
+    CREA 'ConcBore' 3 =
+       600.   1200.   1800.
+  ;
+
+  !*! FUEL TEMPERATURE
+  StepList := UTL: StepList ::
+    CREA 'TempComb' 1 =
+     <<tcomb>>
   ;
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

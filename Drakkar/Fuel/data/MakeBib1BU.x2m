@@ -1,5 +1,5 @@
 *---
-*  Execution command line : dragon MakeBib1BU.x2m v5bev2194
+*  Execution command line : dragon MakeBib1BU.x2m v5bev1487
 *---
 *======================================================================
 * Name:   MakeBib1BU.x2m
@@ -93,7 +93,7 @@ STRING  OptDet35 := "NONE" ;
 * By default an identical branch structure is defined for
 * nominal and off/nominal depletions.
 *---
-STRING TypeMatrix := "N" ;    ! [N/PAR-BEAV/TEST]
+STRING TypeMatrix := "T" ;    ! [N/T/PAR-BEAV/TEST]
 
 *---
 * Flag for historic global parameters
@@ -125,7 +125,7 @@ STRING ListIsoPart := "LNR" ; ! [LNR/EDF/ALL]
 * [Check .access]
 *---
 STRING  MkBibVers := "#VER" ; ! v4, v5, v5a ou v5b
-INTEGER MkBibEvol := #EVO   ; ! Numero d'evolution
+INTEGER MkBibEvol := 1487   ; ! Numero d'evolution
 STRING  MkBibSpec := "#SPC" ; ! Suffixe (ex: PARCS pr v5aev888_PARCS)
 STRING  Fixed     := "#FXD" ; ! version figee ou non (YES or NO)
 
@@ -139,7 +139,7 @@ STRING  BiblXS   := "SAPHYB"   ;
 * Selection de la bibliotheque de donnees nucleaires
 * a utiliser
 *---
-STRING  NuclData := "#NuclData" ;
+STRING  NuclData := "D172JEFF311" ;
 STRING  LibType  := "#LibType" ;
 
 *---
@@ -191,11 +191,9 @@ ENDIF ;
 
 *--- Calculation options employed in EvoNominale.x2m
 INTEGER ThermaExpans ;
-STRING  LEAKMODEL    ;
 STRING  TypeDil      ;
 
 GREP: Info :: GETVAL 'ThermaExpans' 1     >>ThermaExpans<< ;
-GREP: Info :: GETVAL 'LEAKMODEL'    1 4   >>LEAKMODEL<<    ;
 GREP: Info :: GETVAL 'TypeDil'      1 4   >>TypeDil<<      ;
 
 *=======================================================
@@ -207,13 +205,9 @@ GREP: Info :: GETVAL 'TypeDil'      1 4   >>TypeDil<<      ;
 
 *--- Modele de fuites
 STRING LEAKTYPE LEAKEQUATION CTRA ;
-IF LEAKMODEL "APOL" = THEN
-  EVALUATE LEAKTYPE LEAKEQUATION CTRA := "B" "B1"   "APOL" ;
-ELSEIF LEAKMODEL "CASM" = THEN
-  EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "P0TR" "OLDW" ;
-ELSEIF LEAKMODEL "NLKG" = THEN
-  EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "B1" "APOL" ;
-ENDIF ;
+EVALUATE LEAKTYPE LEAKEQUATION CTRA := "B" "B1"   "APOL" ;
+!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "P0TR" "OLDW" ;
+!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "B1" "APOL" ;
 *--- Genre de bibliotheque (DRAGON)
 STRING  LibGenre ;
 EVALUATE LibGenre := 'DRAGON' ;
@@ -240,7 +234,6 @@ ECHO "  - OptMatrixHis : " OptMatrixHis ;
 ECHO "  - ListIsoPart  : " ListIsoPart  ;
 ECHO "  - BiblXS       : " BiblXS       ;
 ECHO "  - NumHistCal   : " NumHistCal   ;
-ECHO "  - LEAKMODEL    : " LEAKMODEL    ;
 ECHO "  - TypeDil      : " TypeDil      ;
 ECHO "  - ThermaExpans : " ThermaExpans ;
 ECHO "  - Norm_MWT     : " Norm_MWT     ;
@@ -389,7 +382,7 @@ ENDIF ;
 *-------------------------------------------------
 * Get Value of BURN
 *-------------------------------------------------
-INTEGER bu_index := #REPL ; ! A REMPLACER PAR UN INTEGER !
+INTEGER bu_index := 1 ; ! A REMPLACER PAR UN INTEGER !
 GREP: StepList :: GETVAL 'Burnup' <<bu_index>> >>burn<<  ;
 GREP: StepList :: GETVAL 'BurnStep' <<bu_index>> >>bstep<< ;
 *-------------------------------------------------
@@ -402,23 +395,25 @@ WHILE m dm <= DO
   !-------------------------------------------------
   ! Geo17x17 et Geo15x15 : Geometrie
   !-------------------------------------------------
-  IF Gestion "TIH" = THEN
+!  IF Gestion "TIH" = THEN
      Assmb
      AssmbAu
      Discr
      DiscrAu := Geo15x15 ::
       <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
       <<BarType>> <<tcom_nom>> <<tmod_nom>> ;
-  ELSE
-    Assmb
-    AssmbAu
-    Discr
-    DiscrAu := Geo17x17 ::
-      <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-      <<BarType>> <<tcom_nom>> <<tmod_nom>> ;
+!  ELSE
+!    Assmb
+!    AssmbAu
+!    Discr
+!    DiscrAu := Geo17x17 ::
+!      <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+!      <<BarType>> <<tcom_nom>> <<tmod_nom>> ;
+!  ENDIF ;
+  IF BiblXS "MULTICOMPO" = THEN
+    GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := CreaGeoHom
+    :: <<Gestion>> <<tmod_nom>> ;
   ENDIF ;
-  GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := CreaGeoHom
-  :: <<Gestion>> <<tmod_nom>> ;
 
   WHILE j dj <= DO
     GREP: StepList :: GETVAL 'ConcBore' <<j>> >>cbor<< ;
@@ -1062,8 +1057,10 @@ WHILE m dm <= DO
   EVALUATE m := m 1 + ;
   Assmb AssmbAu Discr DiscrAu := DELETE:
   Assmb AssmbAu Discr DiscrAu ;
-  GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := DELETE:
-  GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie ;
+  IF BiblXS "MULTICOMPO" = THEN
+    GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := DELETE:
+    GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie ;
+  ENDIF ;
 ENDWHILE ;
 
 *--------------------------------

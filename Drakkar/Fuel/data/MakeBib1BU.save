@@ -38,12 +38,27 @@ echo -e "\nExecute ${savename}.access script\n"
 # USER-DEFINED PARAMETERS
 #----------------------------------------------------------
 
-#--- BibLoc
-BibLoc="#PATHTOLIB"
+#--- Additional calculation parameters
+# They are retrieved from the output file .result (only with NORMAL END status)
+#---
+Gestion=$(grep --color=none ">|Bib Gestion:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+AssType=$(grep --color=none ">|Bib AssType:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+Teneur=$(grep --color=none ">|Bib Teneur:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+Gado=$(grep --color=none ">|Bib InfoGado:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+ConfigPyrex=$(grep --color=none ">|Bib ConfigPyrex:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+NuclData=$(grep --color=none ">|Bib NuclData:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+NOML=$(grep --color=none ">|Bib NOML:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+#STEP=$(grep --color=none ">|Bib STEP:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+# IFS='_-' read -ra elem <<< "$savename" ; bu=${elem[${#elem[@]}-1]} # >>> Alternative : Recover BU step value from 'savename'
+NumHistCalc=$(grep --color=none ">|Bib HIST:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
+
 #--- JobInfo
 # A unique file is created for all the BU steps that are run
 # with the same call to the script.
-JobInfo=#JOBINFO
+JobInfo=${Gestion}_${AssType}_${Teneur}
+if [ ! -z "$ConfigPyrex" ]; then                      # No PYREX
+  JobInfo="${JobInfo}_${ConfigPyrex}"
+fi
 #--- STEP
 STEP=$(grep "INTEGER bu_index" mydata | awk '{print $4}')
 #--- mydata
@@ -125,20 +140,6 @@ if [ ! -z "$NormalEnd" ]; then
 echo "List of files in rundir : "
 ls -ltr
 
-#--- Additional calculation parameters
-# They are retrieved from the output file .result (only with NORMAL END status)
-#---
-Gestion=$(grep --color=none ">|Bib Gestion:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-AssType=$(grep --color=none ">|Bib AssType:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-Teneur=$(grep --color=none ">|Bib Teneur:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-Gado=$(grep --color=none ">|Bib InfoGado:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-ConfigPyrex=$(grep --color=none ">|Bib ConfigPyrex:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-NuclData=$(grep --color=none ">|Bib NuclData:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-NOML=$(grep --color=none ">|Bib NOML:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-#STEP=$(grep --color=none ">|Bib STEP:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-# IFS='_-' read -ra elem <<< "$savename" ; bu=${elem[${#elem[@]}-1]} # >>> Alternative : Recover BU step value from 'savename'
-NumHistCalc=$(grep --color=none ">|Bib HIST:" $savename.result | grep -v "ECHO" | cut -d"|" -f2 | cut -d":" -f2 | tr -d " ")
-
 #------------------------------------------------------
 # Define SAPHYB/MULTICOMPO
 #------------------------------------------------------
@@ -163,7 +164,7 @@ else
 fi
 libDir+="_${NuclData}"                                  # DIRECTORY NAME
 libNam="${NOML}_${dd_version}${HistSFX}${BurnSFX}"      # SAP/MCO NAME
-DirPath="$BibLoc"/"$libDir"                             # FULL PATH SAP/MCO
+DirPath="$1"/../Saphyb                                  # FULL PATH SAP/MCO
 BibPath="$DirPath"/"$libNam"
 
 #--- Create SAPHYB/MULTICOMPO DIRECTORY
