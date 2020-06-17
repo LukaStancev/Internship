@@ -70,7 +70,6 @@ cp "$1"/../proc/*.c2m .
 #--- link to lib: JEFF-3.1.1 (NJOY2016)
 rm -f D172JEFF311
 cp "$1"/../../../../draglibJeff3.1.1_PyNjoy2016 D172JEFF311
-#ln -s "$1"/../../../../draglibJeff3.1.1_PyNjoy2016 D172JEFF311
 
 #----------------------------------------------------------
 # OPTION-DEFINED PARAMETERS
