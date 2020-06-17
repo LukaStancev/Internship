@@ -1,5 +1,3 @@
-# UncertaintyPhD
-
 The datasets produced during my Ph.D. thesis are centralized on this project. They can be executed with [Version5](https://www.polymtl.ca/merlin/version5.htm), developped at École Polytechnique de Montréal. This principle of openness is intended to allow, in a pragmatic and effective way :
 * the complete and verifiable reproducibility of my research,
 * the transparency necessary for a rigorous peer-review,
