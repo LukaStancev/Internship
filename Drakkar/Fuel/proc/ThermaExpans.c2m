@@ -94,6 +94,8 @@ IF Model "TIH" = THEN
  ELSEIF Material "B4C" = THEN
    EVALUATE Alpha := 0. ;
    EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ ELSEIF Material "Hf" = THEN
+   EVALUATE Beta := 1.0 ;
  ELSE
    ECHO "ThermaExpans: material unknown." ;
    ABORT: ;

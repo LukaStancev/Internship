@@ -87,7 +87,7 @@ GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
 IF FlagLibAu NOT THEN
 !-------------------------------------------------------
   !!----------------------------------------------------
-  IF     LibType  "ENDFVI8" = + LibType    "JEF22" = + THEN
+  IF     LibType  "ENDFVI8" = LibType    "JEF22" = + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN
@@ -620,7 +620,7 @@ IF FlagLibAu NOT THEN
 ELSE
 !-------------------------------------------------------
   !!----------------------------------------------------
-  IF     LibType  "ENDFVI8" = + LibType    "JEF22" = + THEN
+  IF     LibType  "ENDFVI8" = LibType    "JEF22" = + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN

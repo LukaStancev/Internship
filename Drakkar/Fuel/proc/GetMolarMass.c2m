@@ -78,6 +78,7 @@ STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
 STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
 STRING NomS32 NomS33 NomS34 ;
 STRING NomHf174 NomHf176 NomHf177 NomHf178 NomHf179 NomHf180 ;
+STRING NomIn113 ;
 
 ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
                          >>LibId<< >>LibGenre<< ;

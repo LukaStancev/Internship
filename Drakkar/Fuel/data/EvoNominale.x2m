@@ -1,5 +1,5 @@
 *---
-*  Execution command line : dragon EvoNominale.x2m v5bev2194
+*  Execution command line : dragon EvoNominale.x2m v5bev1487
 *---
 *======================================================================
 * Name:   EvoNominale.x2m
@@ -95,15 +95,15 @@ STRING  Spec := "#SPC" ; ! Suffixe (ex: PARCS pour v5aev888_PARCS)
 * Informations sur le type d'assemblage modelise
 * [Check .access]
 *---
-STRING  AssType  := "#ASS"  ; ! 3 Char: UOX, MOX, ou UGd
-STRING  Gestion  := "#GES"  ; ! TIH ou BEAV
-INTEGER Teneur_I := #ENR    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
+STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
+STRING  Gestion  := "TIH"  ; ! TIH ou BEAV
+INTEGER Teneur_I := 310    ;
 STRING  InfoGado ;
 IF AssType "UGd" = AssType "UGd8" = + THEN
-  EVALUATE InfoGado := "#GAD" ;
+  EVALUATE InfoGado := "" ;
 ENDIF ;
-STRING Save := "#GES_#ASS_#ENR" ;
-STRING  ConfigPyrex := "#PYX" ; ! None, Py8 ou Py12
+STRING Save := "TIH_UOX_310" ;
+STRING  ConfigPyrex := "Py12" ;
 
 *---
 * Selection de la bibliotheque de donnees nucleaires
@@ -115,7 +115,7 @@ STRING  ConfigPyrex := "#PYX" ; ! None, Py8 ou Py12
 * LibType s'obtient a partir de NuclData directement dans le
 * fichier .access
 *---
-STRING  NuclData := "D172JEF22" ;
+STRING  NuclData := "D172JEFF311" ;
 STRING  LibType  := "#LIB"  ; ! Type de bibliotheque
 
 *---
@@ -221,7 +221,7 @@ HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
 ECHO "#PowMWT" PowMWT ;
 *---- 5) Geometry & Tracking ---------------------------
 EVALUATE BarType := barr R_TO_I ;
-IF Gestion "TIH" = THEN
+!IF Gestion "TIH" = THEN
   Assmb
   AssmbAu
   Discr
@@ -229,15 +229,15 @@ IF Gestion "TIH" = THEN
   := Geo15x15 ::
     <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
     <<BarType>> <<tcom>> <<tmod>> ;
-ELSE
-  Assmb
-  AssmbAu
-  Discr
-  DiscrAu
-  := Geo17x17 ::
-    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-    <<BarType>> <<tcom>> <<tmod>> ;
-ENDIF ;
+!ELSE
+!  Assmb
+!  AssmbAu
+!  Discr
+!  DiscrAu
+!  := Geo17x17 ::
+!    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+!    <<BarType>> <<tcom>> <<tmod>> ;
+!ENDIF ;
 
 *---- Summary ---------------------------
 ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tcom ;

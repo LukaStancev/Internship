@@ -50,6 +50,10 @@ cp "$1"/../proc/*.c2m .
 # The nuclear data libraries are linked to rundir through the script 'tdraglib.access'
 # (by default is launched by the script 'dragon')
 
+#--- link to lib: JEFF-3.1.1 (NJOY2016)
+rm -f D172JEFF311
+ln -s "$1"/../../../../draglibJeff3.1.1_PyNjoy2016 D172JEFF311
+
 #----------------------------------------------------------
 # OPTION-DEFINED PARAMETERS
 #----------------------------------------------------------
@@ -153,7 +157,7 @@ sed -i "s/#LIB/$LibType/g"     mydata
 #----------------------------------------------------------
 echo
 echo "Liste des fichiers dans le repertoire RUNDIR: "
-ls -ltr *.c2m
+ls -ltr
 
 #----------------------------------------------------------
 echo -e $accessname".access script terminated\n"

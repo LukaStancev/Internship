@@ -28,44 +28,42 @@ PARAMETER   ListeIsot ListeAutop ::
 MODULE      UTL: END: ;
 STRING      NuclData ;
 STRING      LibType ; ! Type de bibliotheque (ENDFBVII0...)
-INTEGER     NbBibli := 10 ;
+INTEGER     NbBibli := 7 ;
 EVALUATE    NbBibli := NbBibli 2 * ; ! Nom des isotopes ecrits sur deux variables
 *------------------------------------------------------
 :: >>NuclData<< >>LibType<< ;
-
 *------------------------------------------------------
 * Identifiant numerique des bibliotheques
 *------------------------------------------------------
 INTEGER LibId ;
-STRING  LibGenre ;   ! APLIB2, APXSM ou DRAGON
+STRING  LibGenre ;
 ! Identifiant de la bibliotheque pour ListeIsot
-SEIF LibType 'ENDFVI8'    = THEN
-  EVALUATE LibId := 8 2 * 1 + ;
+IF LibType 'ENDFVI8'    = THEN
+  EVALUATE LibId := 1 ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'ENDFVII0'   = THEN
-  EVALUATE LibId := 8 3 * 1 + ;
+  EVALUATE LibId := 8 2 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'ENDFVII1'   = THEN
-  EVALUATE LibId := 8 4 * 1 + ;
+  EVALUATE LibId := 8 3 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'JEF22'       = THEN
-  EVALUATE LibId := 8 5 * 1 + ;
+  EVALUATE LibId := 8 4 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'JEFF31'      = THEN
-  EVALUATE LibId := 8 6 * 1 + ;
+  EVALUATE LibId := 8 5 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'JEFF311'      = THEN
-  EVALUATE LibId := 8 7 * 1 + ;
+  EVALUATE LibId := 8 6 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF LibType 'JEFF312'      = THEN
-  EVALUATE LibId := 8 8 * 1 + ;
+  EVALUATE LibId := 8 7 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSE
   ECHO "Cette bibliotheque n'est pas repertoriee..." ;
 ENDIF ;
 
 :: <<LibId>> <<LibGenre>> ;
-
 *------------------------------------------------------
 * Rq: les listes UTL acceptent seulement les chaines de caracteres de
 *     4 caracteres. On ecrit donc les isotopes sur deux variables qui
@@ -76,7 +74,10 @@ ENDIF ;
 
 ! ENDFBVI8      ENDFBVII0     ENDFBVII1
 ! JEF2.2      JEFF3.1       JEFF3.1.1     JEFF3.1.2
-ListeIsot := UTL:           ::  CREA 'H1   ' <<NbBibli>> =
+ListeIsot := UTL:           ::  CREA 'H2O  ' <<NbBibli>> =
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   '
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'H1   ' <<NbBibli>> =
 'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  '
 'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  ' ;
 ListeIsot := UTL: ListeIsot ::  CREA 'B10  ' <<NbBibli>> =

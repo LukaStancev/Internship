@@ -353,6 +353,44 @@ ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
   GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
   GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
 
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+
+*------------------------------------------------------
+* Recuperation des noms des isotopes
+*------------------------------------------------------
+STRING NomH2O ;
+STRING NomH1 ;
+STRING NomO16 ;
+STRING NomAm241 ;
+STRING NomAl27 ;
+STRING NomB10 NomB11 ;
+STRING NomCo59 NomCr50 NomCr52 NomCr53 NomCr54 ;
+STRING NomFe54 NomFe56 NomFe57 NomFe58 ;
+STRING NomMn55 ;
+STRING NomMo95 ;
+STRING NomNb93 ;
+STRING NomNi58 NomNi60 NomNi61 NomNi62 NomNi64 ;
+STRING NomPu238 NomPu239 NomPu240 NomPu241 NomPu242 ;
+STRING NomSiNat NomSi28 NomSi29 NomSi30 ;
+STRING NomSn112 NomSn114 NomSn115 NomSn116 NomSn117 ;
+STRING NomSn118 NomSn119 NomSn120 NomSn122 NomSn124 ;
+STRING NomTiNat NomTi46 NomTi47 NomTi48 NomTi49 NomTi50 ;
+STRING NomU234 NomU235 NomU236 NomU238 ;
+STRING NomZrNat ;
+STRING NomZr90 NomZr91 NomZr92 NomZr93 NomZr94 NomZr95 NomZr96 ;
+STRING NomCNat ;
+STRING NomAg107 NomAg109 ;
+STRING NomCd106 NomCd108 NomCd110 NomCd111 NomCd112 NomCd113 NomCd114 ;
+STRING NomCd116 ;
+STRING NomIn115 NomInNat ;
+STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
+STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
+STRING NomS32 NomS33 NomS34 NomN14 ;
+STRING NomHf174 NomHf176 NomHf177 NomHf178 NomHf179 NomHf180 ;
+STRING NomIn113 ;
+
 ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
                          >>LibId<< >>LibGenre<< ;
 
