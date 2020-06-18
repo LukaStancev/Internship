@@ -4,7 +4,7 @@
 * Type      :  DONJON procedure
 * Use       :  Extract the value of gloabl parameters
 *              in multi-parameter library that match
-*              Input list 
+*              Input list
 * Author(s) :  L. Liponi (start 07/2018)
 *------------------------------------------------------
 * Input Required:
@@ -69,7 +69,7 @@ IF BiblXS "SAPH" = THEN
   GREP: MPLibrary ::
     GETVAL "DIMSAP" 8 8 >>nglob<< ;
 
-  ParaList := MPLibrary :: 
+  ParaList := MPLibrary ::
     STEP UP "paramvaleurs" ;
 
 
@@ -83,7 +83,7 @@ ELSEIF BiblXS "MULT" = THEN
     STEP UP <<namdir>>
     GETVAL "STATE-VECTOR" 5 5 >>nglob<< ;
 
-  ParaList := MPLibrary :: 
+  ParaList := MPLibrary ::
     STEP UP <<namdir>>
     STEP UP "GLOBAL" ;
 
@@ -104,14 +104,14 @@ WHILE iglob nglob <= DO
   IF BiblXS "SAPH" = THEN
     GREP: MPLibrary ::
       STEP UP "paramdescrip"
-      GETVAL "PARKEY" <<r>> <<dr>>  
+      GETVAL "PARKEY" <<r>> <<dr>>
         >>NameRec<< ;
 
   ELSEIF BiblXS "MULT" = THEN
     GREP: MPLibrary ::
       STEP UP <<namdir>>
-      STEP UP "GLOBAL" 
-      GETVAL "PARKEY" <<r>> <<dr>>  
+      STEP UP "GLOBAL"
+      GETVAL "PARKEY" <<r>> <<dr>>
         >>NameRec<< ;
 
   ENDIF ;
@@ -132,7 +132,7 @@ WHILE iglob nglob <= DO
     EVALUATE dp := ipkey 1 - 4 * 4 + ;
     ECHO "p/dp=" p "/" dp ;
 
-    GREP: PkeyList :: 
+    GREP: PkeyList ::
       GETVAL 'PARKEY' <<p>> <<dp>>
        >>NamePkey<< ;
     ECHO "NamePkey =" NamePkey ;

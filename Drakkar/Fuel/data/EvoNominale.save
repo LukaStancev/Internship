@@ -122,18 +122,18 @@ if [ ! -z "$NormalEnd" ]; then
     #--- Define location and name K-INF file
     Dirkinf="../kinf/EvoNominale"
     kinfPath="$1"/"$Dirkinf"/kinf_"${EvoName}_${NuclData}_${dd_version}${HistSFX}".txt
-    
+
     #--- Create a backup copy of the last K-INF file
     if [ -f "$kinfPath" ]; then
         cp "$kinfPath" "${kinfPath//.txt/.bak}"
     fi
-    
+
     #--- Prepare $Dirkinf directory
     if [ ! -d "$1"/"$Dirkinf" ]; then
         mkdir -p "$1"/"$Dirkinf"
     fi
-    
-    #--- Retrieve values from output file .result 
+
+    #--- Retrieve values from output file .result
     dmod=($(grep '>|#PARA' "$savename".result | awk '{print $3}'))
     cbor=($(grep '>|#PARA' "$savename".result | awk '{print $5}'))
     BarType=($(grep '>|#PARA' "$savename".result | awk '{print $7}'))

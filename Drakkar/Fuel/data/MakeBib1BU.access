@@ -43,7 +43,7 @@ echo -e "\nExecute ${accessname}.access script\n"
 #----------------------------------------------------------
 
 #--- EvoName
-EvoName="TIH_UOX_310-Py12"
+EvoName="TIH_UOX_310"
 #--- NuclData
 NuclData=$(grep --color=none "STRING  NuclData" mydata | cut -d"=" -f2 | cut -d";" -f1 | tr -d " " | tr -d '"')
 #--- NumHistCalc
