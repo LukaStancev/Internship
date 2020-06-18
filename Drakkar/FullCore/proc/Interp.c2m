@@ -289,7 +289,7 @@ ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyRecal" = + THEN
 * p.863
   EVALUATE SigmaRalenth := SigmaRalenth SigmaAbs1h 0.0119 - - ;
   EVALUATE SigmaRalentb := SigmaRalentb SigmaAbs1b 0.0157 - - ;
-  EVALUATE SigmaRalenth := SigmaRalenth SigmaAbs1h 0.0097 - - ;
+  EVALUATE SigmaRalentr := SigmaRalentr SigmaAbs1r 0.0097 - - ;
 
   EVALUATE Total1h := SigmaAbs1h SigmaRalenth + ;
   EVALUATE Total2h := SigmaAbs2h ;
