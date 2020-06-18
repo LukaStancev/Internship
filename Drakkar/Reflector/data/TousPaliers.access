@@ -6,7 +6,11 @@ if [ $# = 0 ]
    exit 1
 fi
 
-#------------------------------------------- copy procedures from HEMERA/proc
+#--- link to lib: JEFF-3.1.1 (NJOY2016)
+rm -f D172JEFF311
+cp "$1"/../../../../draglibJeff3.1.1_PyNjoy2016 D172JEFF311
+
+#-------------------------------------------
 cp "$1"/../proc/*.c2m .
 
 NuclData=$(grep --color=none "STRING  NuclData :" mydata | cut -d"=" -f2 | cut -d";" -f1 | tr -d " " | tr -d '"')
@@ -18,7 +22,7 @@ echo $LibType
 # Modificaton de GetMolarMass.c2m pour commenter les isotopes absents
 #----------------------------------------------------------
 # Definition des isotopes a retirer selon les bibliotheques
-elif [ "$LibType" = "ENDFVI8" ] ; then
+if [ "$LibType" = "ENDFVI8" ] ; then
 	#Liste d'isotopes a exclure
 	isoAExclure=( "H2O" "Si28" "Si29" "Si30" "Ti46" "Ti47" "Ti48" "Ti49" "Ti50" \
                       "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \

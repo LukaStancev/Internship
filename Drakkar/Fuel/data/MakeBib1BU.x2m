@@ -10,10 +10,6 @@
 *----------------------------------------------------------------------
 * Dragon: v5bev1058
 *----------------------------------------------------------------------
-* Procedures DRAGON contenues dans DRAGON/HEMERA/proc:
-*       - CreaStepList: Creation des listes de parametres et pas de burnup
-*       - Geo17x17 et Geo15x15: Modelisation de la geometrie + trackings associes
-*
 * ATTENTION! La variable "bu_index" est initialisee par un mot-cle "REPL" (script local)
 *            A remplacer par l'indice du pas de burnup voulu dans LINKED_LIST StepList 'Burnup' et 'BurnStep'
 *

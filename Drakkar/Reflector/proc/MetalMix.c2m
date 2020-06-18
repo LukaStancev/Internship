@@ -751,15 +751,12 @@ SNat := UTL: SNat :: CREA 'S34frIso' 1 = <<S34f>>  ;
 *  Reference : www.webelements.com/indium/isotopes.html
 *  Isotopic Composition : In115 0.9571
 *                         In113 0.0429
-# NB : In113 non disponible. On considere que
+* NB : In113 non disponible. On considere que
 * l'InNat correspond a 100% de In115
 *------------------------------------------------------
-REAL In113f := .0 ;
-REAL In115f := .0 ;
+REAL In113f := 0. ;
+REAL In115f := 1. ;
 REAL MInNat ; ! Average Weight Ratio
-
-EVALUATE In115f := 1. ;
-EVALUATE In113f := 0. ;
 
 *---- SNat Average Weight Ratio ----
 EVALUATE MInNat := In115f in115 * ;
@@ -1262,7 +1259,7 @@ EVALUATE Cd114AICf := CdAICf Cd114f * ;
 EVALUATE Cd116AICf := CdAICf Cd116f * ;
 
 EVALUATE In115AICf := InAICf In115f * ;
-  EVALUATE In113AICf := InAICf In113f * ;
+EVALUATE In113AICf := InAICf In113f * ;
 
 *---- AIC Table Creation ----
 AIC := UTL:     :: CREA 'AvgMolM     ' 1 = <<MAIC>>      ;

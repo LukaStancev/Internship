@@ -16,4 +16,9 @@ else
    MACH=`uname -sm | sed 's/ /_/g'`
 fi
 
+#--- Prepare save directory
+if [ ! -d "$1"/../save ]; then
+    mkdir "$1"/../save
+fi
+
 mv *Refl_* $1/../save/

@@ -1,23 +1,18 @@
 *---
-*  Execution command line : dragon TousPaliers.x2m v5bev862
+*  Execution command line : dragon TousPaliers.x2m v5bev1487
 *---
-PROCEDURE GetMolarMass MetalMix CreaMix CreaDilut Geo15x15 AdaptIso ;
+PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
+  Geo15x15 AdaptIso ;
 LINKED_LIST
   Library LibDilut CP CALC XS AUTO_LIB MACRO
   MACRO_FUEL_1 MACRO_FUEL_2
+  StepList
   MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
   BNat AgNat CdNat SNat GdNat Zirc4 Incon SS304 M5 KNat
   InNat AIC Gd2O3 BP
   ConcMode MacrRefl Edition Multicompo
   GEOM TRACK SYSTEM FLUX OUT TRKFIL
-  GeoEvo    GeoAuEvo
-  GeoAICN   GeoAuAICN
-  GeoAICG   GeoAuAICG
-  GeoB4C    GeoAuB4C
-  DiscrEvo  DiscrAuEvo
-  DiscrAICN DiscrAuAICN
-  DiscrAICG DiscrAuAICG
-  DiscrB4C  DiscrAuB4C
+  Assmb AssmbAu Discr DiscrAu
   nbZones FractionVol
   MlticompTous ;
 XSM_FILE TousPaliers :: FILE 'Multicompo_Refl_TousPaliers' ;
@@ -34,7 +29,7 @@ LINKED_LIST ListeIsot ListeAutop ;
 * LibType s'obtient a partir de NuclData directement dans le
 * fichier .access
 *------------------------------------------------------
-STRING  NuclData := "D172JEF22" ;
+STRING  NuclData := "D172JEFF311" ;
 STRING  LibType := "#LIB" ;
 STRING  LibGenre ;
 INTEGER LibId ;
@@ -42,30 +37,45 @@ STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
 STRING  Gestion  := "TIH" ; ! TIH ou BEAV
 STRING  InfoGado := "0Gd" ; ! Info sur le Gado
 STRING  ConfigPyrex := "None" ; ! None, Py8 ou Py12
-INTEGER Teneur_I := 495    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
+INTEGER Teneur_I := 310    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
 * Core boundary is mainly occupied by UOX assemblies, with
-* a 4.95% enrichement. Therefore, this is the one used in
+* a 3.10% enrichement. Therefore, this is the one used in
 * the reflector calculation.
+STRING LEAKEQUATION LEAKIMPOSED CTRA ;
+EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "B1"   "SIGS" "APOL" ;
+!EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "P0TR" "NLKH" "OLDW" ;
 STRING Grid := "Note" ;
 REAL TempMod := 559.2 ; ! K
 REAL PowMWT ;
 INTEGER ThermaExpans := 0 ;
 
-*--------------------------------------------------------------------
-* Appel aux procédures pour générer MIX, géométrie, etc.
-*--------------------------------------------------------------------
+*--- Depletion Conditions
+REAL    dmod tmod cbor tcom barr ;
+INTEGER BarType ;
 
-*---- 1) Molar Masses ----------------------------------
+*-------------------------------------------------------
+* Procedures: - Create every burnup & parameters lists (CreaStepList)
+*             - Retrieve molar masses (GetMolarMasses)
+*             - Create Metal Mixes (MetalMix)
+*             - Using all of the above, create a Library with LIB: (CreaMix)
+*             - Generate tracking objects (Geo15x15)
+*---- 1) Burnup & parameter lists ----------------------
+StepList := CreaStepList ::
+  <<Gestion>> <<AssType>> <<ConfigPyrex>> 0 'DUMMY' ;
+GREP: StepList :: GETVAL 'DeplParam' 1 5
+  >>dmod<< >>cbor<< >>barr<< >>tcom<< >>tmod<< ;
+
+*---- 2) Molar Masses ----------------------------------
 MolarMasses := GetMolarMass :: <<NuclData>> <<LibType>> ;
 
-*---- 2) Metal Mixes -----------------------------------
+*---- 3) Metal Mixes -----------------------------------
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
 CdNat SNat InNat
 Zirc4 Incon SS304 M5 AIC GdNat Gd2O3 BP := MetalMix
 MolarMasses ::
 <<LibType>> <<Gestion>> ;
 
-*---- 3) Library with all mixes ------------------------
+*---- 4) Library with all mixes ------------------------
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 InNat Zirc4 Incon SS304 M5 AIC GdNat Gd2O3 BP MolarMasses ::
@@ -73,29 +83,21 @@ InNat Zirc4 Incon SS304 M5 AIC GdNat Gd2O3 BP MolarMasses ::
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>> <<Grid>> >>PowMWT<< ;
 ECHO "#PowMWT" PowMWT ;
 
-*---- 4) Geometry & Tracking ---------------------------
-GeoEvo  GeoAuEvo
-GeoAICN GeoAuAICN
-GeoAICG GeoAuAICG GeoB4C  GeoAuB4C
-DiscrEvo  DiscrAuEvo
-DiscrAICN DiscrAuAICN
-DiscrAICG DiscrAuAICG
-DiscrB4C  DiscrAuB4C := Geo15x15 :: <<Gestion>> <<AssType>>
-<<ConfigPyrex>> <<ThermaExpans>> ;
-* La proc CreaGeo impose la creation de geometries barrees.
-* Pas de barres pour le calcul de réflecteur (même pas évoluant)
-DiscrAICN DiscrAuAICN DiscrAICG DiscrAuAICG DiscrB4C DiscrAuB4C
-:= DELETE:
-DiscrAICN DiscrAuAICN DiscrAICG DiscrAuAICG DiscrB4C DiscrAuB4C ;
+*---- 5) Geometry & Tracking ---------------------------
+EVALUATE BarType := barr R_TO_I ;
+Assmb AssmbAu Discr DiscrAu := Geo15x15 ::
+  <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+  <<BarType>> <<tcom>> <<tmod>> ;
+Assmb AssmbAu := DELETE: Assmb AssmbAu ;
 
 *----
 *  Self-Shielding calculation SYBIL
 *  Transport calculation      SYBIL
 *  Flux calculation for B1 homogeneous leakage
 *----
-!AUTO_LIB := USS: Library DiscrAuEvo :: EDIT 0 GRMIN 45 ;
-!CP := ASM: AUTO_LIB DiscrEvo :: EDIT 0 ARM ;
-!CALC := FLU: CP AUTO_LIB DiscrEvo :: TYPE B B1 SIGS ;
+!AUTO_LIB := USS: Library DiscrAu :: EDIT 0 GRMIN 45 ;
+!CP := ASM: AUTO_LIB Discr :: EDIT 0 ARM ;
+!CALC := FLU: CP AUTO_LIB Discr :: TYPE B B1 SIGS ;
 !END: ;
 !QUIT "LIST" .
 
@@ -171,12 +173,12 @@ Library := LIB: Library ::
     B11       = <<NomB11>> <<B11>> NOEV
 ;
 
-  AUTO_LIB := USS: Library DiscrAuEvo ::
+  AUTO_LIB := USS: Library DiscrAu ::
     EDIT 0 GRMIN 45 MAXST 200 ;
-  CP := ASM: AUTO_LIB DiscrEvo :: EDIT 0 ARM ;
-  CALC := FLU: CP AUTO_LIB DiscrEvo ::
+  CP := ASM: AUTO_LIB Discr :: EDIT 0 ARM ;
+  CALC := FLU: CP AUTO_LIB Discr ::
     TYPE B B1 SIGS ;
-  XS := EDI: AUTO_LIB DiscrEvo CALC ::
+  XS := EDI: AUTO_LIB Discr CALC ::
     EDIT 0 SAVE MERGE COMP ;
 * Recuperation des sections du combustible dans Mix 1
   IF CASE 1 = THEN
@@ -193,7 +195,7 @@ ENDWHILE ; ! Boucle sur les CASE
 ! END: ;
 ! QUIT "LIST" .
 
-Library DiscrEvo := DELETE: Library DiscrEvo ;
+Library Discr := DELETE: Library Discr ;
 
 ! Pour avoir un NMIX assez grand pour le reflecteur, je ne parviens
 ! pas à me passer des MIX 3, 4 et 5 de Library ...
@@ -905,6 +907,7 @@ WHILE IndexCB 5 <= DO
           ABORT: ;
         ENDIF ;
 
+        EVALUATE iMethodRefl := 1 ;
         WHILE iMethodRefl 7 <= DO
           IF iMethodRefl 1 = THEN
             EVALUATE MethodRefl := "Lefebvre-Leb" ;
@@ -974,7 +977,7 @@ WHILE IndexCB 5 <= DO
             ENDIF ;
             !Pour avoir des Multicompo structurees de la meme maniere
             EVALUATE f1 f2 := 1.0 1.0 ;
-          ELSEIF MethodRefl "Koebke-a" = +
+          ELSEIF MethodRefl "Koebke-a" =
                  MethodRefl "Koebke-aDF" = +
                  MethodRefl "Koebke-ab" = +
                  MethodRefl "Koebke-abDF" = +
@@ -1029,7 +1032,7 @@ WHILE IndexCB 5 <= DO
               EVALUATE f2 := f2a f2b + 2.0 / ;
             ENDIF ;
             EVALUATE D2 := f2 R22 / 2.0 ** SigmaAbs2 / ;
-            IF MethodRefl "Koebke-aDF" = + MethodRefl "Koebke-bDF" = +
+            IF MethodRefl "Koebke-aDF" = MethodRefl "Koebke-bDF" = +
                MethodRefl "Koebke-abDF" = + Localisation "Radial" = *
                THEN
               ECHO "En gardant à part facteurs de"

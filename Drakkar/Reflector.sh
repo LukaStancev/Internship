@@ -6,4 +6,4 @@
 rm -rf Reflector/Linux_x86_64 Reflector/save/*
 cd Reflector/data
 
-srun dragon TousPaliers.x2m v5bev862
+srun dragon TousPaliers.x2m v5bev1487
