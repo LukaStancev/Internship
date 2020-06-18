@@ -6,7 +6,7 @@ if [ $# = 0 ]
 fi
 cp "$1"/../proc/* .
 
-ln -s "$1"/../../REFL_1686/save/Multicompo_Refl_TousPaliers MultiRefl.XS
+ln -s "$1"/../../Reflector/save/Multicompo_Refl_TousPaliers MultiRefl.XS
 
 ln -s "$1"/../../Fuel/Saphyb/Sap_TIH_UOX195_v5bev1487_B01 UOX195
 ln -s "$1"/../../Fuel/Saphyb/Sap_TIH_UOX255_Py12_v5bev1487_B01 UOX255_Py12
