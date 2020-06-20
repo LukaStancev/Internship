@@ -1,6 +1,3 @@
-*---
-*  Execution command line : dragon MakeBib1BU.x2m v5bev1487
-*---
 *======================================================================
 * Name:   MakeBib1BU.x2m
 * Type:   DRAGON File
@@ -121,7 +118,7 @@ STRING ListIsoPart := "LNR" ; ! [LNR/EDF/ALL]
 * [Check .access]
 *---
 STRING  MkBibVers := "#VER" ; ! v4, v5, v5a ou v5b
-INTEGER MkBibEvol := 1487   ; ! Numero d'evolution
+INTEGER MkBibEvol := 0      ; ! Numero d'evolution (n'est plus utilise)
 STRING  MkBibSpec := "#SPC" ; ! Suffixe (ex: PARCS pr v5aev888_PARCS)
 STRING  Fixed     := "#FXD" ; ! version figee ou non (YES or NO)
 
