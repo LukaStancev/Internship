@@ -1,8 +1,4 @@
 *----
-*  Execution command line : donjon Tihange.x2m v5bev862
-*----
-
-*----
 *  Definition STRUCTURES, MODULES et PROCEDURES
 *----
 LINKED_LIST GeoRes Track System Flux Matex MacroTot Fmap MicroFuel
@@ -473,7 +469,7 @@ WHILE iTemp 3 <= DO
     Thermo Fmap := THM: Fmap ::
       EDIT 3
       !CRITFL 2.0E6 (* W/m^2 *)
-      ASSMB  <<sass>> 204 21
+      ASSMB  204 21
       CWSECT <<coresect>> <<FlowRate>>
       INLET  155.1E+05 <<Tinlet>>
       RADIUS <<R_Pel>> <<R_Pin_ID>> <<R_Pin_OD>> <<R_Tub_OD>> ;

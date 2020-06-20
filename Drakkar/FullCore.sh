@@ -6,7 +6,7 @@
 rm -rf FullCore/Linux_x86_64
 cd FullCore/data
 
-srun donjon Tihange.x2m v5bev862
+srun donjon Tihange.x2m v5bev1879
 
 grep "RELATIVE POWER" -A 16 ../Linux_x86_64/Tihange.result | grep "  1 " -A 14
 grep "EFFECTIVE M" ../Linux_x86_64/Tihange.result | cut -d"=" -f2
