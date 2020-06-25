@@ -16,12 +16,12 @@ PARAMETER Library :: ::: LINKED_LIST Library ; ;
 MODULE    LIB: GREP: ABORT: UTL: END: ;
 
 INTEGER  Nmix ;
-STRING NuclData LibType LibGenre CTRA Autop ;
-:: >>Nmix<< >>NuclData<< >>LibType<< >>LibGenre<<
+STRING FileNuclData Evaluation LibGenre CTRA Autop ;
+:: >>Nmix<< >>FileNuclData<< >>Evaluation<< >>LibGenre<<
    >>CTRA<< >>Autop<< ;
 
 Library := LIB: :: EDIT 10 ANIS 2 NMIX <<Nmix>> CTRA <<CTRA>>
   <<Autop>>
-  DEPL LIB: <<LibGenre>> FIL: <<NuclData>>
+  DEPL LIB: <<LibGenre>> FIL: <<FileNuclData>>
 ;
 

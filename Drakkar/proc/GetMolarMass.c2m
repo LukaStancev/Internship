@@ -34,15 +34,15 @@ PROCEDURE   AdaptIso ;
 PARAMETER   MolarMasses :: ::: LINKED_LIST MolarMasses ; ;
 MODULE      LIB: GREP: UTL: END: ABORT: ;
 LINKED_LIST Library ListeIsot ListeAutop Isot Awr ;
-STRING      NuclData ;
-STRING      LibType  ; ! ENDFVII1, JEF22...
+STRING      FileNuclData ;
+STRING      Evaluation  ; ! ENDFVII1, JEF22...
 STRING      LibGenre ; ! APLIB2 ou DRAGON
 INTEGER     LibId    ;
 INTEGER     N_iso ;
 REAL        mixtemp CNatRatio ;
 
 *------------------------------------------------------
-:: >>NuclData<< >>LibType<< ;
+:: >>FileNuclData<< >>Evaluation<< ;
 EVALUATE N_iso := 97 ;
 EVALUATE mixtemp := 293.16 ; (* in K *)
 
@@ -80,7 +80,7 @@ STRING NomS32 NomS33 NomS34 ;
 STRING NomHf174 NomHf176 NomHf177 NomHf178 NomHf179 NomHf180 ;
 STRING NomIn113 ;
 
-ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+ListeIsot ListeAutop := AdaptIso :: <<FileNuclData>> <<Evaluation>>
                          >>LibId<< >>LibGenre<< ;
 
 GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;
@@ -259,7 +259,7 @@ REAL hf174 hf176 hf177 hf178 hf179 hf180 ;
 Library := LIB: ::
   ANIS 2
   NMIX <<N_iso>>
-  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
   MIX 1 <<mixtemp>> 1.    H2O     = <<NomH2O>> 1.
   MIX 2 <<mixtemp>> 1.    H1_H2O  = <<NomH1>>  1.
   MIX 3 <<mixtemp>> 1.    B10     = <<NomB10>> 1.
@@ -366,7 +366,7 @@ INTEGER NbIsot IsotStep 2NbIsot OrdrIsot ;
 STRING ListIsot ;
 REAL Var ;
 
-IF LibType 'JEF22' = THEN
+IF Evaluation 'JEF22' = THEN
   EVALUATE NbIsot := 72 ;
   EVALUATE 2NbIsot := NbIsot 2 * ;
   Isot := UTL:      :: CREA ListIsot <<2NbIsot>> =
@@ -386,7 +386,8 @@ IF LibType 'JEF22' = THEN
   's34 ' '    ' 'hf17' '4   ' 'hf17' '6   ' 'hf17' '7   ' 'hf17' '8   '
   'hf17' '9   ' 'hf18' '0   ' ;
 
-ELSEIF LibType 'ENDFVII1' = LibType 'JEFF311' = LibType 'JEFF31' = + +
+ELSEIF Evaluation 'ENDFVII1' = Evaluation 'JEFF311' =
+       Evaluation 'JEFF31' = + +
   THEN
   EVALUATE NbIsot := 90 ;
   EVALUATE 2NbIsot := NbIsot 2 * ;
@@ -498,7 +499,7 @@ GREP: Awr :: GETVAL 'hf178' 1 >>hf178<< ;
 GREP: Awr :: GETVAL 'hf179' 1 >>hf179<< ;
 GREP: Awr :: GETVAL 'hf180' 1 >>hf180<< ;
 
-IF LibType 'JEF22'      = THEN
+IF Evaluation 'JEF22'      = THEN
   GREP: Awr :: GETVAL 'h1' 1 >>h1<< ;
   GREP: Awr :: GETVAL 'siNat' 1 >>siNat<< ;
   GREP: Awr :: GETVAL 'tiNat' 1 >>tiNat<< ;
@@ -509,9 +510,9 @@ IF LibType 'JEF22'      = THEN
   GREP: Awr :: GETVAL 's34' 1 >>s34<< ;
   GREP: Awr :: GETVAL 'knat' 1 >>knat<< ;
 
-ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-       LibType 'JEFF312'  = +
-       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+       Evaluation 'JEFF312'  = +
+       Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   GREP: Awr :: GETVAL 'h1' 1 >>h1<< ;
   GREP: Awr :: GETVAL 'si28' 1 >>si28<< ;
   GREP: Awr :: GETVAL 'si29' 1 >>si29<< ;
@@ -615,7 +616,7 @@ EVALUATE hf180 := CNatRatio hf180 * ;
 
 * Pour les isotopes conflictuels (absent de certaines bibli.)
 
-IF LibType 'ENDFVI8'    = THEN
+IF Evaluation 'ENDFVI8'    = THEN
   EVALUATE h1    := CNatRatio h1    * ;
   EVALUATE siNat := CNatRatio siNat * ;
   EVALUATE tiNat := CNatRatio tiNat * ;
@@ -624,7 +625,7 @@ IF LibType 'ENDFVI8'    = THEN
   EVALUATE s32   := CNatRatio s32   * ;
   EVALUATE knat  := CNatRatio knat  * ;
 
-ELSEIF LibType 'JEF22'       = THEN
+ELSEIF Evaluation 'JEF22'       = THEN
   EVALUATE h1    := CNatRatio h1    * ;
   EVALUATE siNat := CNatRatio siNat * ;
   EVALUATE tiNat := CNatRatio tiNat * ;
@@ -635,9 +636,9 @@ ELSEIF LibType 'JEF22'       = THEN
   EVALUATE s34   := CNatRatio s34   * ;
   EVALUATE knat  := CNatRatio knat  * ;
 
-ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-       LibType 'JEFF312'  = +
-       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+       Evaluation 'JEFF312'  = +
+       Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   EVALUATE h1    := CNatRatio h1    * ;
   EVALUATE si28  := CNatRatio si28  * ;
   EVALUATE si29  := CNatRatio si29  * ;
@@ -742,7 +743,7 @@ MolarMasses := UTL: MolarMasses :: CREA 'Hf180' 1 = <<hf180>> ;
 
 * Pour les isotopes conflictuels (absents de certaines bibli.)
 
-IF LibType 'ENDFVI8'    = THEN
+IF Evaluation 'ENDFVI8'    = THEN
   MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
   MolarMasses := UTL: MolarMasses :: CREA 'SiNat' 1 = <<siNat>> ;
   MolarMasses := UTL: MolarMasses :: CREA 'TiNat' 1 = <<tiNat>> ;
@@ -751,7 +752,7 @@ IF LibType 'ENDFVI8'    = THEN
   MolarMasses := UTL: MolarMasses :: CREA 'S32  ' 1 = <<s32>> ;
   MolarMasses := UTL: MolarMasses :: CREA 'Knat ' 1 = <<knat>> ;
 
-ELSEIF LibType 'JEF22'       = THEN
+ELSEIF Evaluation 'JEF22'       = THEN
 
   MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
   MolarMasses := UTL: MolarMasses :: CREA 'SiNat' 1 = <<siNat>> ;
@@ -763,9 +764,9 @@ ELSEIF LibType 'JEF22'       = THEN
   MolarMasses := UTL: MolarMasses :: CREA 'S34  ' 1 = <<s34>> ;
   MolarMasses := UTL: MolarMasses :: CREA 'Knat ' 1 = <<knat>> ;
 
-ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-       LibType 'JEFF312'  = +
-       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+       Evaluation 'JEFF312'  = +
+       Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
   MolarMasses := UTL: MolarMasses :: CREA 'Si28 ' 1 = <<si28>>  ;

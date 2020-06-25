@@ -26,41 +26,41 @@
 PARAMETER   ListeIsot ListeAutop ::
             ::: LINKED_LIST ListeIsot ListeAutop ; ;
 MODULE      UTL: END: ;
-STRING      NuclData ;
-STRING      LibType ; ! Type de bibliotheque (ENDFBVII0...)
+STRING      FileNuclData ;
+STRING      Evaluation ;
 INTEGER     NbBibli := 7 ;
 EVALUATE    NbBibli := NbBibli 2 * ; ! Nom des isotopes ecrits sur deux variables
 *------------------------------------------------------
-:: >>NuclData<< >>LibType<< ;
+:: >>FileNuclData<< >>Evaluation<< ;
 *------------------------------------------------------
 * Identifiant numerique des bibliotheques
 *------------------------------------------------------
 INTEGER LibId ;
 STRING  LibGenre ;
 ! Identifiant de la bibliotheque pour ListeIsot
-IF LibType 'ENDFVI8'    = THEN
+IF Evaluation 'ENDFVI8'    = THEN
   EVALUATE LibId := 1 ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'ENDFVII0'   = THEN
+ELSEIF Evaluation 'ENDFVII0'   = THEN
+  EVALUATE LibId := 8 1 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF Evaluation 'ENDFVII1'   = THEN
   EVALUATE LibId := 8 2 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'ENDFVII1'   = THEN
+ELSEIF Evaluation 'JEF22'       = THEN
   EVALUATE LibId := 8 3 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'JEF22'       = THEN
+ELSEIF Evaluation 'JEFF31'      = THEN
   EVALUATE LibId := 8 4 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'JEFF31'      = THEN
+ELSEIF Evaluation 'JEFF311'      = THEN
   EVALUATE LibId := 8 5 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'JEFF311'      = THEN
+ELSEIF Evaluation 'JEFF312'      = THEN
   EVALUATE LibId := 8 6 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF LibType 'JEFF312'      = THEN
-  EVALUATE LibId := 8 7 * 1 + ;
-  EVALUATE LibGenre := 'DRAGON' ;
 ELSE
-  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+  ECHO Evaluation " evaluation unknown (AdaptIso.c2M)." ;
 ENDIF ;
 
 :: <<LibId>> <<LibGenre>> ;

@@ -17,16 +17,13 @@
 *            - ConcMode   : Table des concentrations H2O, B10 et B11 pour chaque mix (calculs de CBOR et DMOD).
 *            - Info       : Table contenant differentes informations sur l'assemblage
 *                          (l'equivalence MWj/t-JEPP, le type d'assemblage, la gestion..;)
-*
-* AMELIORATIONS TEMPS CPU
-*    EDI: USS: et EQU: representent ~80% du temps cpu
-*    - Option MICR ALL supprimee en gardant que les isotopes particularises a inclure dans la SAPHYB (EDI:)
-*    - Autoprotection spatiale detaillee de l'U-238 et moyenne pour le reste (USS:)
-*    - ImpLibrary -> copie en LINKED_LIST (EQU:)
-*    A noter: iterations flux-courant (ARM) dans USS coute du temps cpu au lieu d'en gagner!
 *======================================================================
 * STRUCTURES et MODULES utilises
 *-------------------------------------------------
+PARAMETER   Bib_1BU
+            ExpLibrary ExpBurnup ExpConcMode ExpInfo ::
+ ::: XSM_FILE
+            ExpLibrary ExpBurnup ExpConcMode ExpInfo ; ;
 PROCEDURE   CreaStepList Geo15x15 CreaGeoHom ModDet35
             Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU: EDI: SAP: SPH:
@@ -42,20 +39,15 @@ XSM_FILE    ImpBurnup :: FILE 'ImpBurnup' ;
 XSM_FILE    ImpLibrary :: FILE 'ImpLibrary' ;
 XSM_FILE    ConcMode :: FILE 'ConcMode' ;
 XSM_FILE    Info :: FILE 'Info' ;
-XSM_FILE    Bib_1BU :: FILE 'Bib_1BU' ;
+ImpBurnup := ExpBurnup ;
+ImpLibrary := ExpLibrary ;
+ConcMode := ExpConcMode ;
+Info := ExpInfo ;
 
 *-------------------------------------------------------
 *  Local parameters
 *-------------------------------------------------------
 LOGICAL True False   := $True_L $False_L ;
-
-*=======================================================
-* USER-DEFINED CALCULATION OPTIONS
-*-------------------------------------------------------
-* These calculation option are defined directly by the user
-* in the input file
-* The committed version is pre-compiled with the default options
-*-------------------------------------------------------
 
 *---
 * Equivalence SPH
@@ -89,13 +81,6 @@ STRING  OptDet35 := "NONE" ;
 STRING TypeMatrix := "T" ;    ! [N/T/PAR-BEAV/TEST]
 
 *---
-* Flag for historic global parameters
-* Option to add the historic global parameters inside
-* the multi-parameter libary
-*---
-LOGICAL OptMatrixHis  := False ; ! True or False
-
-*---
 * Define the list of particularised isotopes to be stored
 * in the multi-parameter library.
 * Available choices :
@@ -113,34 +98,16 @@ STRING ListIsoPart := "LNR" ; ! [LNR/EDF/ALL]
 *-------------------------------------------------------
 
 *---
-* Informations sur la version et l'evolution de DRAGON utilisee
-* Version de DRAGON utilisee dans ce jdd
-* [Check .access]
-*---
-STRING  MkBibVers := "#VER" ; ! v4, v5, v5a ou v5b
-INTEGER MkBibEvol := 0      ; ! Numero d'evolution (n'est plus utilise)
-STRING  MkBibSpec := "#SPC" ; ! Suffixe (ex: PARCS pr v5aev888_PARCS)
-STRING  Fixed     := "#FXD" ; ! version figee ou non (YES or NO)
-
-*---
 * Format of the multi-parameter library
 * Choice between SAPHYB or MULTICOMPO
 *---
 STRING  BiblXS   := "SAPHYB"   ;
 
 *---
-* Selection de la bibliotheque de donnees nucleaires
-* a utiliser
+* File containing multigroup nuclear data
 *---
-STRING  NuclData := "D172JEFF311" ;
-STRING  LibType  := "#LibType" ;
-
-*---
-* Historical calculation
-* Define number Nominal/Off-Nominal depletion
-* Be aware that : NumHistCal=0 => base (nominal) depletion
-*---
-INTEGER NumHistCal := 0 ;
+STRING Evaluation := "JEFF311"  ;
+STRING FileNuclData := "D172" Evaluation + ;
 
 *=======================================================
 * INFO-DEFINED CALCULATION OPTIONS
@@ -168,20 +135,6 @@ IF AssType "UGd" = AssType "UGd8" = + THEN
   GREP: Info :: GETVAL 'INFOGADO' 1 4 >>InfoGado<< ;
 ENDIF ;
 
-*--- Version de DRAGON utilisee pour le calcul d'evolution nominale
-STRING  EvNomVers EvNomSpec ;
-INTEGER EvNomEvol ;
-
-IF Fixed "YES" = THEN
-  GREP: Info :: GETVAL 'VERSSPEC' 1 2 >>EvNomVers<< ;
-  GREP: Info :: GETVAL 'VERSSPEC' 5 5 >>EvNomSpec<< ;
-  GREP: Info :: GETVAL 'EVOLDRAG' 1   >>EvNomEvol<< ;
-ELSE
-  GREP: Info :: GETVAL 'VERSSPEC' 1 4 >>EvNomVers<< ;
-  GREP: Info :: GETVAL 'VERSSPEC' 5 8 >>EvNomSpec<< ;
-  GREP: Info :: GETVAL 'EVOLDRAG' 1   >>EvNomEvol<< ;
-ENDIF ;
-
 *--- Calculation options employed in EvoNominale.x2m
 INTEGER ThermaExpans ;
 STRING  TypeDil      ;
@@ -202,8 +155,7 @@ EVALUATE LEAKTYPE LEAKEQUATION CTRA := "B" "B1"   "APOL" ;
 !EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "P0TR" "OLDW" ;
 !EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "B1" "APOL" ;
 *--- Genre de bibliotheque (DRAGON)
-STRING  LibGenre ;
-EVALUATE LibGenre := 'DRAGON' ;
+STRING  LibGenre := 'DRAGON' ;
 
 *--- Thermal expansion for multi-parameter library
 STRING  ThermaExp_S := ThermaExpans I_TO_S ;
@@ -217,22 +169,17 @@ ECHO "  - AssType      : " AssType      ;
 ECHO "  - Teneur       : " Teneur       ;
 ECHO "  - InfoGado     : " InfoGado     ;
 ECHO "  - ConfigPyrex  : " ConfigPyrex  ;
-ECHO "  - NuclData     : " NuclData     ;
+ECHO "  - FileNuclData     : " FileNuclData     ;
 ECHO "$$$ Summary Calculation Options $$$" ;
 ECHO "  - SPH          : " SPH          ;
 ECHO "  - HF           : " HF           ;
 ECHO "  - OptDet35     : " OptDet35     ;
 ECHO "  - TypeMatrix   : " TypeMatrix   ;
-ECHO "  - OptMatrixHis : " OptMatrixHis ;
 ECHO "  - ListIsoPart  : " ListIsoPart  ;
 ECHO "  - BiblXS       : " BiblXS       ;
-ECHO "  - NumHistCal   : " NumHistCal   ;
 ECHO "  - TypeDil      : " TypeDil      ;
 ECHO "  - ThermaExpans : " ThermaExpans ;
 ECHO "  - Norm_MWT     : " Norm_MWT     ;
-ECHO "  - EvNomVers    : " EvNomVers    ;
-ECHO "  - EvNomSpec    : " EvNomSpec    ;
-ECHO "  - EvNomEvol    : " EvNomEvol    ;
 ECHO "$$$" ;
 
 *-------------------------------------------------
@@ -254,7 +201,6 @@ REAL    o_10   o_11   o_12   o_13   o_14   ;
 REAL    b10_10 b10_11 b10_12 b10_13 b10_14 ;
 REAL    b11_10 b11_11 b11_12 b11_13 b11_14 ;
 STRING  SaveDir ; ! Nom du DIR dans objet EDI (avec '_2G')
-STRING  EvNomComm MkBibComm ; ! Commentaires (COMM) de la Bibl
 STRING  Noml ; ! 'Nom' de la Bib (NOML)
 
 *--- nominal
@@ -306,35 +252,11 @@ IF ConfigPyrex "None" = NOT THEN
   EVALUATE Noml := Noml "_" + ConfigPyrex + ;
 ENDIF ;
 
-*--- Version figee (du type v{4|5}.X.Y)
-IF Fixed "YES" = THEN
-*--- EvNomComm -> Commentaire Bibl (info evo nominale)
-  EVALUATE EvNomComm := EvNomVers "." + EvNomEvol I_TO_S + "." +
-                        EvNomSpec + ;
-*--- MkSapComm -> Commentaire Bibl (info MakeSap1BU)
-  EVALUATE MkBibComm := MkBibVers "." + MkBibEvol I_TO_S + "." +
-                        MkBibSpec + ;
-*--- Version evol (du type v{4|5{a|b}}evXXX[_SPEC])
-ELSEIF Fixed "NO" = THEN
-*--- EvNomComm -> Commentaire Bibl (info evo nominale)
-  EVALUATE EvNomComm := EvNomVers "ev" + EvNomEvol I_TO_S + ;
-  IF EvNomSpec "NONE" <> THEN
-    EVALUATE EvNomComm := EvNomComm "_" + EvNomSpec + ;
-  ENDIF ;
-*--- MkBibComm -> Commentaire Bibl (info MakeSap1BU)
-  EVALUATE MkBibComm := MkBibVers "ev" + MkBibEvol I_TO_S + ;
-  IF MkBibSpec "NONE" <> THEN
-    EVALUATE MkBibComm := MkBibComm "_" + MkBibSpec + ;
-  ENDIF ;
-ELSE
-  ECHO "ERROR --- Fixed:" Fixed "not recognized." ;
-  ABORT: ;
-ENDIF ;
 *-------------------------------------------------
 * CreaStepList : Tables de parametres
 *-------------------------------------------------
 StepList := CreaStepList ::
-  <<Gestion>> <<AssType>> <<ConfigPyrex>> <<NumHistCal>> <<TypeMatrix>> ;
+  <<Gestion>> <<AssType>> <<ConfigPyrex>> <<TypeMatrix>> ;
 
 *-------------------------------------------------
 * Variables liees aux tables de parametres
@@ -556,7 +478,7 @@ WHILE m dm <= DO
 *------------------------------------------------------
         Library := LIB: Library :: EDIT 0
 ! Attention: correction de transport a rajouter a chaque appel au module LIB:
-          CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+          CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
 ! ATTENTION : supprimer H2O ou H1_H2O et O16 selon la bibli utilisee
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
@@ -624,7 +546,7 @@ WHILE m dm <= DO
           ;
         IF ConfigPyrex "None" = NOT THEN
           Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX 34 <<tmod_nom_K>>
             MIX 35 <<tmod_nom_K>>
             MIX 36 <<tmod_nom_K>>
@@ -641,7 +563,7 @@ WHILE m dm <= DO
         IF AssType "UOX" = THEN
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX 100 <<tcom_K>> (* COMB.1 *)
             MIX 101 <<tcom_K>> (* COMB.2 *)
             MIX 102 <<tcom_K>> (* COMB.3 *)
@@ -661,7 +583,7 @@ WHILE m dm <= DO
         ELSEIF AssType "MOX" = THEN
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX 110 <<tcom_K>> (* COMB1.1 [LOW PU] *)
             MIX 111 <<tcom_K>> (* COMB1.2 *)
             MIX 112 <<tcom_K>> (* COMB1.3 *)
@@ -697,7 +619,7 @@ WHILE m dm <= DO
         ELSEIF AssType "UGd" = AssType "UGd8" = + THEN
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX 100 <<tcom_K>> (* COMB1.1 [UOX std] *)
             MIX 101 <<tcom_K>> (* COMB1.2 *)
             MIX 102 <<tcom_K>> (* COMB1.3 *)
@@ -735,7 +657,8 @@ WHILE m dm <= DO
 *          EDIT 0 PASS 2 MAXST 200 GRMIN 28 GRMAX 150 ;
 *------------------------------------------------------
         LibraryAu := Autop Library DiscrAu ::
-          <<False>> <<NuclData>> <<LibType>> <<AssType>> <<BarType>> ;
+          <<False>> <<FileNuclData>> <<Evaluation>> <<AssType>>
+          <<BarType>> ;
 
 *------------------------------------------------------
 * Calcul des Pij et Calcul de flux
@@ -866,165 +789,73 @@ WHILE m dm <= DO
 * Initialisation de la Bibl
 *------------------------------------------------------
         IF BiblXS "SAPHYB" = THEN
-          IF OptMatrixHis NOT THEN
-            IF iter 1 = THEN
-            *---- Initialize Saphyb
-            SaphybStep := SAP: LibraryAu :: EDIT 0
-              COMM 'EvNom' <<EvNomComm>> 'MkBib' <<MkBibComm>> ENDC
-              COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
-              NOML <<Noml>>
-              PARA 'Concentration_Bore' 'CBOR' VALE FLOT
-              PARA 'Temp_Combustible'   'TCOM' TEMP LibraryAu <<iComb>>
-              PARA 'Densite_Moderateur' 'DMOD' VALE FLOT
-              PARA 'Barres_Controle'    'BARR' VALE FLOT
-              PARA 'Burnup'             'BURN' IRRA
+          IF iter 1 = THEN
+          *---- Initialize Saphyb
+          SaphybStep := SAP: LibraryAu :: EDIT 0
+            COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
+            NOML <<Noml>>
+            PARA 'Concentration_Bore' 'CBOR' VALE FLOT
+            PARA 'Temp_Combustible'   'TCOM' TEMP LibraryAu <<iComb>>
+            PARA 'Densite_Moderateur' 'DMOD' VALE FLOT
+            PARA 'Barres_Controle'    'BARR' VALE FLOT
+            PARA 'Burnup'             'BURN' IRRA
 !--- pb avec 'FLUB' dans LISAPH: seulement 'FLUE' est accepte ---
-!               PARA 'Fluence'            'FLUE' FLUE
+!           PARA 'Fluence'            'FLUE' FLUE
 !--- mais le module SAP: de DRAGON n'accepte que FLUB/FLUG ------
-              PARA 'Fluence'            'FLUE' FLUB
+            PARA 'Fluence'            'FLUE' FLUB
 !----------------------------------------------------------------
-              LOCA 'Equivalence'        'EQVS' EQUI
-              LOCA 'Equivalence_OP'     'EQVO' EQUI
-              LOCA 'Equivalence_Vierge' 'EQVI' EQUI
-              LOCA 'Dens_noyaux_lourds' 'MASL' MASL
-              ISOT #printSapIsot
-              MACR 'MACR' REST
-              REAC  TOTA ABSO SNNN FISS CHI NUFI ENER FUIT DIFF SELF
-                    PROF TRAN EGAM EFIS
-              ;
-            ENDIF ;
-            *------------------------------------------------------
-            * Enrichissement de la Saphyb
-            *------------------------------------------------------
-            SaphybStep := SAP: SaphybStep ImpBurnup LibraryAu Out :: EDIT 0
-              CRON CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
-              SET <<xtr>> DAY ;
-
-
-          ELSE
-
-            IF iter 1 = THEN
-            *------------------------------------------------------
-            * Initialize Saphyb
-            *------------------------------------------------------
-            SaphybStep := SAP: LibraryAu :: EDIT 0
-              COMM 'EvNom' <<EvNomComm>> 'MkBib' <<MkBibComm>> ENDC
-              COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
-              NOML <<Noml>>
-              PARA 'Concentration_Bore' 'CBOR' VALE FLOT
-              PARA 'Conc_Bore_Hist'     'CBOH' VALE FLOT
-              PARA 'Temp_Combustible'   'TCOM' TEMP LibraryAu <<iComb>>
-              PARA 'Temp_Comb_Hist'     'TCOH' VALE FLOT
-              PARA 'Densite_Moderateur' 'DMOD' VALE FLOT
-              PARA 'Densite_Mode_Hist'  'DMOH' VALE FLOT
-              PARA 'Barres_Controle'    'BARR' VALE FLOT
-              PARA 'Barres_Contr_Hist'  'BARH' VALE FLOT
-              PARA 'Burnup'             'BURN' IRRA
-!--- pb avec 'FLUB' dans LISAPH: seulement 'FLUE' est accepte ---
-!               PARA 'Fluence'            'FLUE' FLUE
-!--- mais le module SAP: de DRAGON n'accepte que FLUB/FLUG ------
-              PARA 'Fluence'            'FLUE' FLUB
-!----------------------------------------------------------------
-              LOCA 'Equivalence'        'EQVS' EQUI
-              LOCA 'Equivalence_OP'     'EQVO' EQUI
-              LOCA 'Equivalence_Vierge' 'EQVI' EQUI
-              LOCA 'Dens_noyaux_lourds' 'MASL' MASL
-              ISOT #printSapIsot
-              MACR 'MACR' REST
-              REAC  TOTA ABSO SNNN FISS CHI NUFI ENER FUIT DIFF SELF
-                    PROF TRAN EGAM EFIS
-              ;
-            ENDIF ;
-            *------------------------------------------------------
-            * Enrichissement de la Saphyb
-            *------------------------------------------------------
-            SaphybStep := SAP: SaphybStep ImpBurnup LibraryAu Out :: EDIT 0
-              CRON CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
-              CBOH <<cbor_nom>> DMOH <<dmod_nom>> BARH <<barr_nom>>
-              TCOH <<tcom_nom>>
-              SET <<xtr>> DAY ;
-
+            LOCA 'Equivalence'        'EQVS' EQUI
+            LOCA 'Equivalence_OP'     'EQVO' EQUI
+            LOCA 'Equivalence_Vierge' 'EQVI' EQUI
+            LOCA 'Dens_noyaux_lourds' 'MASL' MASL
+            ISOT #printSapIsot
+            MACR 'MACR' REST
+            REAC  TOTA ABSO SNNN FISS CHI NUFI ENER FUIT DIFF SELF
+                  PROF TRAN EGAM EFIS
+            ;
           ENDIF ;
+          *------------------------------------------------------
+          * Enrichissement de la Saphyb
+          *------------------------------------------------------
+          SaphybStep := SAP: SaphybStep ImpBurnup LibraryAu Out :: EDIT 0
+            CRON CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
+            SET <<xtr>> DAY ;
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
         ELSEIF BiblXS "MULTICOMPO" = THEN
-          IF OptMatrixHis NOT THEN
-            IF iter 1 = THEN
-            *------------------------------------------------------
-            * Initialize Multicompo
-            *------------------------------------------------------
-            CompoStep := COMPO: LibraryAu :: EDIT 0
-              STEP UP "Ass"                         ! Type d'homogénéisation
-              COMM 'Evolution Burnup Assembly' ENDC
-              COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
-              COMM <<Noml>> ENDC
-              PARA 'CBOR' VALU REAL                 ! Concentration_Bore
-              PARA 'TCOM' TEMP LibraryAu <<iComb>>  ! Temp_Combustible
-              PARA 'DMOD' VALU REAL                 ! Densite_Moderateur
-              PARA 'BARR' VALU REAL                 ! Barres_Controle
-              PARA 'BURN' IRRA                      ! Burnup
+          IF iter 1 = THEN
+          *------------------------------------------------------
+          * Initialize Multicompo
+          *------------------------------------------------------
+          CompoStep := COMPO: LibraryAu :: EDIT 0
+            STEP UP "Ass"                         ! Type d'homogénéisation
+            COMM 'Evolution Burnup Assembly' ENDC
+            COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
+            COMM <<Noml>> ENDC
+            PARA 'CBOR' VALU REAL                 ! Concentration_Bore
+            PARA 'TCOM' TEMP LibraryAu <<iComb>>  ! Temp_Combustible
+            PARA 'DMOD' VALU REAL                 ! Densite_Moderateur
+            PARA 'BARR' VALU REAL                 ! Barres_Controle
+            PARA 'BURN' IRRA                      ! Burnup
 !--- pb avec 'FLUB' dans LISAPH: seulement 'FLUE' est accepte ---
-!              PARA 'Fluence'            'FLUE' FLUE
+!           PARA 'Fluence'            'FLUE' FLUE
 !--- mais le module SAP: de DRAGON n'accepte que FLUB/FLUG ------
-              PARA 'FLUE' FLUB                      ! Fluence
-!--------  --------------------------------------------------------
-              LOCA 'MASL' MASL                      ! Dens_noyaux_lourds
-              ISOT #printMcoIsot
-              GFF                                   ! Generalized form factor info
-              INIT
-              ;
-            ENDIF ;
-            *------------------------------------------------------
-            * Enrichissement de la MultiCompo
-            *------------------------------------------------------
-            CompoStep := COMPO: CompoStep Out OutCPC ImpBurnup LibraryAu ::
-              EDIT 0
-              STEP UP "Ass"
-              CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
-              SET <<xtr>> DAY ;
-
-          ELSE
-            IF iter 1 = THEN
-            *------------------------------------------------------
-            * Initialize Multicompo
-            *------------------------------------------------------
-            CompoStep := COMPO: LibraryAu :: EDIT 0
-              STEP UP "Ass"                         ! Type d'homogénéisation
-              COMM 'Evolution Burnup Assembly' ENDC
-              COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
-              COMM <<Noml>> ENDC
-              PARA 'CBOR' VALU REAL                 ! Concentration_Bore
-              PARA 'CBOH' VALU REAL                 ! History Concentration_Bore
-              PARA 'TCOM' TEMP LibraryAu <<iComb>>  ! Temp_Combustible
-              PARA 'TCOH' VALU REAL                 ! History Temp_Combustible
-              PARA 'DMOD' VALU REAL                 ! Densite_Moderateur
-              PARA 'DMOH' VALU REAL                 ! History Densite_Moderateur
-              PARA 'BARR' VALU REAL                 ! Barres_Controle
-              PARA 'BARH' VALU REAL                 ! History Barres_Controle
-              PARA 'BURN' IRRA                      ! Burnup
-!--- pb avec 'FLUB' dans LISAPH: seulement 'FLUE' est accepte ---
-!              PARA 'Fluence'            'FLUE' FLUE
-!--- mais le module SAP: de DRAGON n'accepte que FLUB/FLUG ------
-              PARA 'FLUE' FLUB                      ! Fluence
-!--------  --------------------------------------------------------
-              LOCA 'MASL' MASL                      ! Dens_noyaux_lourds
-              ISOT #printMcoIsot
-              GFF                                   ! Generalized form factor info
-              INIT
-              ;
-            ENDIF ;
-            *------------------------------------------------------
-            * Enrichissement de la MultiCompo
-            *------------------------------------------------------
-            CompoStep := COMPO: CompoStep Out OutCPC ImpBurnup LibraryAu ::
-              EDIT 0
-              STEP UP "Ass"
-              CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
-              CBOH <<cbor_nom>> DMOH <<dmod_nom>> BARH <<barr_nom>>
-              TCOH <<tcom_nom>>
-              SET <<xtr>> DAY ;
-
+            PARA 'FLUE' FLUB                      ! Fluence
+!----------------------------------------------------------------
+            LOCA 'MASL' MASL                      ! Dens_noyaux_lourds
+            ISOT #printMcoIsot
+            GFF                                   ! Generalized form factor info
+            INIT
+            ;
           ENDIF ;
+          *------------------------------------------------------
+          * Enrichissement de la MultiCompo
+          *------------------------------------------------------
+          CompoStep := COMPO: CompoStep Out OutCPC ImpBurnup LibraryAu ::
+            EDIT 0
+            STEP UP "Ass"
+            CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
+            SET <<xtr>> DAY ;
 
         ELSE
             ECHO "BiblXS:" BiblXS "non disponible" ;
@@ -1070,7 +901,7 @@ ENDIF ;
 ECHO "Bib Gestion:" Gestion  ;
 ECHO "Bib AssType:" AssType  ;
 ECHO "Bib Teneur: " Teneur   ;
-ECHO "Bib NuclData:" NuclData ;
+ECHO "Bib FileNuclData:" FileNuclData ;
 IF AssType "UGd" = AssType "UGd8" = + THEN
   ECHO "Bib InfoGado:" InfoGado ;
 ENDIF ;
@@ -1079,10 +910,7 @@ IF ConfigPyrex "None" = NOT THEN
 ENDIF ;
 ECHO "Bib NOML:   " Noml     ;
 ECHO "Bib STEP:   " bu_index ;
-ECHO "Bib HIST:   " NumHistCal ;
 ECHO "Bib ISOT:   " ListIsoPart ;
-ECHO "EvNomComm" EvNomComm ;
-ECHO "MkBibComm" MkBibComm ;
 ECHO "MakeBib1BU completed" ;
 END: ;
 QUIT "LIST" .

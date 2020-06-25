@@ -1,0 +1,9 @@
+MODULE END: UTL: ;
+PROCEDURE EvoNominale MakeBib1BU ;
+XSM_FILE ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+XSM_FILE Bib_1BU ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
+  TIH UOX 310 Py12 1 ;
+Bib_1BU := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+END: ;
+QUIT "LIST" .

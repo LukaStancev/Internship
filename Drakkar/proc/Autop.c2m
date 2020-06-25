@@ -14,8 +14,8 @@
 *  > Library      : [LINKED_LIST] Microlib containing subgroups data
 *  > DiscrAu      : [LINKED_LIST] Tracking object
 *  > FlagLibAu    : [LOG] Flag to identify if 'LibraryAu' already exists
-*  > NuclData     : [STR]
-*  > LibType      : [STR]
+*  > FileNuclData : [STR]
+*  > Evaluation   : [STR]
 *  > AssType      : [STR]
 *  > BarType      : [INT]
 * Output Provided:
@@ -24,7 +24,7 @@
 *------------------------------------------------------
 * Procedure called as:
 * LibraryAu := Autop LibraryAu* Library DiscrAu ::
-*   <<FlagLibAu>> <<LibType>> <<AssType>> <<BarType>> ;
+*   <<FlagLibAu>> <<Evaluation>> <<AssType>> <<BarType>> ;
 *======================================================
 PARAMETER LibraryAu Library DiscrAu ::
       ::: LINKED_LIST
@@ -35,16 +35,16 @@ MODULE    USS:
 *-----------------------------------------------------
 * Input Parameters
 *-----------------------------------------------------
-LOGICAL FlagLibAu   ;
-  :: >>FlagLibAu<<  ;
-STRING NuclData     ;
-  :: >>NuclData<<   ;
-STRING LibType      ;
-  :: >>LibType<<    ;
-STRING AssType      ;
-  :: >>AssType<<    ;
-INTEGER BarType     ;
-  :: >>BarType<<    ;
+LOGICAL FlagLibAu     ;
+  :: >>FlagLibAu<<    ;
+STRING FileNuclData   ;
+  :: >>FileNuclData<< ;
+STRING Evaluation     ;
+  :: >>Evaluation<<   ;
+STRING AssType        ;
+  :: >>AssType<<      ;
+INTEGER BarType       ;
+  :: >>BarType<<      ;
 
 *-------------------------------------------------------
 *  Local parameters
@@ -65,7 +65,7 @@ INTEGER LibId ;  ! Type de bibliotheque de XS micro
 PROCEDURE AdaptIso ;
 LINKED_LIST ListeIsot ListeAutop ;
 STRING NomZrNat ;
-ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+ListeIsot ListeAutop := AdaptIso :: <<FileNuclData>> <<Evaluation>>
                          >>LibId<< >>LibGenre<< ;
 GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
 
@@ -87,7 +87,7 @@ GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
 IF FlagLibAu NOT THEN
 !-------------------------------------------------------
   !!----------------------------------------------------
-  IF     LibType  "ENDFVI8" = LibType    "JEF22" = + THEN
+  IF     Evaluation  "ENDFVI8" = Evaluation    "JEF22" = + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN
@@ -329,9 +329,9 @@ IF FlagLibAu NOT THEN
     ENDIF ;
     !!!-------------------------------------------------
   !!----------------------------------------------------
-  ELSEIF LibType   "JEFF31" = LibType  "JEFF311" =
-         LibType  "JEFF312" = LibType "ENDFVII0" =
-         LibType "ENDFVII1" =
+  ELSEIF Evaluation   "JEFF31" = Evaluation  "JEFF311" =
+         Evaluation  "JEFF312" = Evaluation "ENDFVII0" =
+         Evaluation "ENDFVII1" =
          + + + + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
@@ -620,7 +620,7 @@ IF FlagLibAu NOT THEN
 ELSE
 !-------------------------------------------------------
   !!----------------------------------------------------
-  IF     LibType  "ENDFVI8" = LibType    "JEF22" = + THEN
+  IF     Evaluation  "ENDFVI8" = Evaluation    "JEF22" = + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN
@@ -862,9 +862,9 @@ ELSE
     ENDIF ;
     !!!-------------------------------------------------
   !!----------------------------------------------------
-  ELSEIF LibType   "JEFF31" = LibType  "JEFF311" =
-         LibType  "JEFF312" = LibType "ENDFVII0" =
-         LibType "ENDFVII1" =
+  ELSEIF Evaluation   "JEFF31" = Evaluation  "JEFF311" =
+         Evaluation  "JEFF312" = Evaluation "ENDFVII0" =
+         Evaluation "ENDFVII1" =
          + + + + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------

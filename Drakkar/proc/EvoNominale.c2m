@@ -13,33 +13,25 @@
 *======================================================================
 * Structures et Modules
 *-------------------------------------------------------
+PARAMETER   ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
 PROCEDURE   CreaStepList GetMolarMass MetalMix CreaMix
             Geo15x15 Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU:
             EVO: UTL: GREP: ABORT: DELETE: END: ;
-LINKED_LIST Library LibraryAu StepList Burnup CP Calc
+LINKED_LIST LibraryAu StepList CP Calc
             MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
             BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5
             KNat InNat
-            AIC HfR Gd2O3 BP ConcMode Info
+            AIC HfR Gd2O3 BP
             Assmb AssmbAu Discr DiscrAu ;
-XSM_FILE    ExpLibrary :: FILE 'ExpLibrary' ;
-XSM_FILE    ExpBurnup :: FILE 'ExpBurnup' ;
-XSM_FILE    ExpConcMode :: FILE 'ExpConcMode' ;
-XSM_FILE    ExpInfo :: FILE 'ExpInfo' ;
-SEQ_ASCII   Save :: FILE 'Save' ;
-
-*-------------------------------------------------------
-*  Local parameters
-*-------------------------------------------------------
+LINKED_LIST Library Burnup ConcMode Info ;
 LOGICAL True False   := $True_L $False_L ;
-
-*=======================================================
-* USER-DEFINED CALCULATION OPTIONS
-*-------------------------------------------------------
-* These calculation option are defined directly by the user in the input file
-* The committed version is pre-compiled with the default options
-*-------------------------------------------------------
+*---
+*  Retrieve assembly specifications
+*---
+STRING Gestion AssType ConfigPyrex ;
+INTEGER Teneur_I maxstep ;
+:: >>Gestion<< >>AssType<< >>Teneur_I<< >>ConfigPyrex<< >>maxstep<< ;
 
 *---
 * Flag to activate thermal expansion
@@ -75,56 +67,23 @@ REAL    flups  := 1.E-5 ; ! FLU: EXTE THER UNKT criteria
 REAL    eps1   := 1.E-5 ; ! EVO: EPS1 criterion
 REAL    eps2   := 1.E-5 ; ! EVO: EPS2 criterion
 
-*=======================================================
-* SCRIPT-DEFINED CALCULATION OPTIONS
 *-------------------------------------------------------
-
-*---
-* Informations sur la version et l'evolution de DRAGON utilisee
-* Version de DRAGON utilisee dans ce jdd
-* [Check .access]
-*---
-STRING  Vers := "#VER" ; ! v4, v5a ou v5b
-INTEGER Evol := #EVO   ; ! Numero d'evolution
-STRING  Spec := "#SPC" ; ! Suffixe (ex: PARCS pour v5aev888_PARCS)
-
-*---
-* Informations sur le type d'assemblage modelise
-* [Check .access]
-*---
-STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
-STRING  Gestion  := "TIH"  ; ! TIH ou BEAV
-INTEGER Teneur_I := 310    ;
+!STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
+!STRING  Gestion  := "TIH"  ; ! TIH ou BEAV
+!INTEGER Teneur_I := 310    ;
 STRING  InfoGado ;
 IF AssType "UGd" = AssType "UGd8" = + THEN
   EVALUATE InfoGado := "" ;
 ENDIF ;
-STRING Save := "TIH_UOX_310" ;
-STRING  ConfigPyrex := "Py12" ;
+!STRING  ConfigPyrex := "Py12" ;
 
 *---
-* Selection de la bibliotheque de donnees nucleaires
-* a utiliser. Pour modifier, remplacer dans la def.
-* de NuclData par la bibliotheque souhaitee.
-* Bibliotheques de donnees nucleaires possibles :
-* D295JEF22,    D295JEFF31,  D295JEFF311,
-* D295JEFF312, D295ENDFVI8, D295ENDFVII0, D295ENDFVII1
-* LibType s'obtient a partir de NuclData directement dans le
-* fichier .access
+* File containing multigroup nuclear data
 *---
-STRING  NuclData := "D172JEFF311" ;
-STRING  LibType  := "#LIB"  ; ! Type de bibliotheque
-
-*---
-* Historical calculation
-* Define number Nominal/Off-Nominal depletion
-* Be aware that : NumHistCal=0 => base (nominal) depletion
-*---
-INTEGER NumHistCal := 0 ;
+STRING Evaluation := "JEFF311"  ;
+STRING FileNuclData := "D172" Evaluation + ;
 
 *=======================================================
-* OPTION-DEFINED PARAMETERS
-*-------------------------------------------------------
 * These parameters are parsed from the calculation options previously defined
 *-------------------------------------------------------
 
@@ -135,10 +94,10 @@ STRING  Teneur   := Teneur_I I_TO_S ;
 STRING  Title ;
 IF ConfigPyrex "None" = THEN
   EVALUATE Title := Gestion "_" + AssType + "_" + Teneur +
-                      "_" + NuclData +  ;
+                      "_" + FileNuclData +  ;
 ELSE
   EVALUATE Title := Gestion "_" + AssType + "_" + Teneur +
-                      "-" + ConfigPyrex + "_" + NuclData +  ;
+                      "-" + ConfigPyrex + "_" + FileNuclData +  ;
 ENDIF ;
 
 *--- Modele de fuites
@@ -155,15 +114,11 @@ ECHO "  - AssType      : " AssType      ;
 ECHO "  - Teneur       : " Teneur       ;
 ECHO "  - InfoGado     : " InfoGado     ;
 ECHO "  - ConfigPyrex  : " ConfigPyrex  ;
-ECHO "  - NuclData     : " NuclData     ;
-ECHO "  - NumHistCal   : " NumHistCal   ;
+ECHO "  - FileNuclData : " FileNuclData ;
 ECHO "$$$ Summary Calculation options $$$" ;
 ECHO "  - ThermaExpans : " ThermaExpans ;
 ECHO "  - HF           : " HF           ;
 ECHO "  - TypeDil      : " TypeDil      ;
-ECHO "  - Vers         : " Vers         ;
-ECHO "  - Spec         : " Spec         ;
-ECHO "  - Evol         : " Evol         ;
 ECHO "$$$ " ;
 
 *-------------------------------------------------------
@@ -194,24 +149,24 @@ EVALUATE evobeg evoend := 0. 0. ;
 *             - Generate tracking objects (Geo15x15)
 *---- 1) Burnup & parameter lists ----------------------
 StepList := CreaStepList ::
-  <<Gestion>> <<AssType>> <<ConfigPyrex>> <<NumHistCal>> 'DUMMY' ;
+  <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
 GREP: StepList :: GETVAL 'DeplParam' 1 5
   >>dmod<< >>cbor<< >>barr<< >>tcom<< >>tmod<< ;
 GREP: StepList :: LENGTH 'ListBU'     >>nstep<< ;
 GREP: StepList :: LENGTH 'ListAutop'  >>nauto<< ;
 *---- 2) Molar Masses ----------------------------------
-MolarMasses := GetMolarMass :: <<NuclData>> <<LibType>> ;
+MolarMasses := GetMolarMass :: <<FileNuclData>> <<Evaluation>> ;
 *---- 3) Metal Mixes -----------------------------------
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
 CdNat SNat HfNat InNat
 Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP := MetalMix
 MolarMasses ::
-<<LibType>> <<Gestion>> ;
+<<Evaluation>> <<Gestion>> ;
 *---- 4) Library with all mixes ------------------------
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
-<<NuclData>> <<LibType>> <<Gestion>> <<AssType>>
+<<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tcom>> <<tmod>> <<TypeDil>>
 >>PowMWT<< ;
@@ -243,7 +198,7 @@ ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tcom ;
 * Autoprotection + CP + calcul de flux a burnup 0
 *-------------------------------------------------------
 LibraryAu := Autop Library DiscrAu ::
-  <<False>> <<NuclData>> <<LibType>> <<AssType>> <<BarType>> ;
+  <<False>> <<FileNuclData>> <<Evaluation>> <<AssType>> <<BarType>> ;
 
 CP := ASM: LibraryAu Discr :: EDIT 0 ARM ;
 
@@ -256,7 +211,7 @@ GREP: Calc :: GETVAL 'K-INFINITY' 1 >>kinf<< ;
 ECHO "#Sortie de FLU: au Burnup:  0.000000E+00" ;
 ECHO "#KINF BURNUP= 0.000000E+00 K-INF=" kinf ;
 
-WHILE istep nstep <= DO
+WHILE istep nstep <= istep maxstep <= * DO
 
   GREP: StepList :: GETVAL 'ListBU' <<istep>> >>nextstep<< ;
   EVALUATE evobeg := evoend ;
@@ -288,7 +243,7 @@ WHILE istep nstep <= DO
     ECHO "Self-shielding calculation" iauto "at" evoend "DAY:" ;
 
     LibraryAu := Autop LibraryAu Library DiscrAu ::
-      <<True>> <<NuclData>> <<LibType>> <<AssType>> <<BarType>> ;
+      <<True>> <<FileNuclData>> <<Evaluation>> <<AssType>> <<BarType>> ;
 
     IF iauto nauto < THEN
       EVALUATE iauto := iauto 1 + ;
@@ -353,8 +308,6 @@ ELSE
 ENDIF ;
 Info := UTL: Info :: CREA 'GESTION ' 1 = <<Gestion>> ;
 Info := UTL: Info :: CREA 'TENEUR  ' 1 = <<Teneur>>  ;
-Info := UTL: Info :: CREA 'VERSSPEC' 2 = <<Vers>> <<Spec>> ;
-Info := UTL: Info :: CREA 'EVOLDRAG' 1 = <<Evol>> ;
 IF AssType "UGd" = AssType "UGd8" = + THEN
   Info := UTL: Info :: CREA 'INFOGADO' 1 = <<InfoGado>> ;
 ENDIF ;
@@ -364,13 +317,10 @@ Info := UTL: Info :: CREA 'ThermaExpans' 1 = <<ThermaExpans>> ;
 Info := UTL: Info :: CREA 'HF'           1 = <<HF>> ;
 Info := UTL: Info :: CREA 'TypeDil'      1 = <<TypeDil>> ;
 *-------------------------------------------------------
-* Export pour creation Saphyb
-*-------------------------------------------------------
+ECHO "Evolution completed:" Title ;
 ExpLibrary  := Library  ;
 ExpBurnup   := Burnup   ;
 ExpConcMode := ConcMode ;
 ExpInfo     := Info     ;
-*-------------------------------------------------------
-ECHO "Evolution completed:" Title ;
 END: ;
 QUIT "LIST" .

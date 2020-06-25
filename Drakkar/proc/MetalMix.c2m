@@ -31,13 +31,13 @@ PARAMETER   FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat
             BNat  AgNat CdNat SNat HfNat InNat Zirc4 Incon SS304
             M5 AIC HfR GdNat Gd2O3 BP MolarMasses ; ;
 MODULE      GREP: UTL: END: ABORT: ;
-STRING      LibType ; ! ENDFVII1 JEFF31 JEFF311 JEFF312...
+STRING      Evaluation ; ! ENDFVII1 JEFF31 JEFF311 JEFF312...
 STRING      Gestion ;
 REAL        avogadro := 6.022094E+23 ;
 REAL        avo_conc := avogadro 1.E-24 * ;
 REAL        ReNorm ; ! Renormalization Factor
 REAL        SumFr  ; ! Fraction Sum (needed when &IMPU)
-:: >>LibType<< >>Gestion<< ;
+:: >>Evaluation<< >>Gestion<< ;
 
 
 
@@ -198,7 +198,7 @@ GREP: MolarMasses :: GETVAL 'Hf180' 1 >>hf180<< ;
 
 * Pour les isotopes conflictuels (absent de certaines bibli.)
 
-IF LibType 'ENDFVI8'    = THEN
+IF Evaluation 'ENDFVI8'    = THEN
   GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
   GREP: MolarMasses :: GETVAL 'SiNat' 1 >>siNat<< ;
   GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tiNat<< ;
@@ -208,7 +208,7 @@ IF LibType 'ENDFVI8'    = THEN
   GREP: MolarMasses :: GETVAL 'Knat ' 1 >>kNat<< ;
   GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
 
-ELSEIF LibType 'JEF22'       = THEN
+ELSEIF Evaluation 'JEF22'       = THEN
   GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
   GREP: MolarMasses :: GETVAL 'SiNat' 1 >>siNat<< ;
   GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tiNat<< ;
@@ -219,9 +219,9 @@ ELSEIF LibType 'JEF22'       = THEN
   GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
   GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
 
-ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-       LibType 'JEFF312'  = +
-       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+       Evaluation 'JEFF312'  = +
+       Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
   GREP: MolarMasses :: GETVAL 'Si28 ' 1 >>si28<<  ;
   GREP: MolarMasses :: GETVAL 'Si29 ' 1 >>si29<<  ;
@@ -273,9 +273,9 @@ REAL Zr95f :=  .0 ;
 REAL Zr96f :=  .0 ;
 REAL MZrNat ; ! Average Weight Ratio
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Zr90f :=  .5145 ;
   EVALUATE Zr91f :=  .1122 ;
@@ -348,9 +348,9 @@ REAL Ti49f := .0 ;
 REAL Ti50f := .0 ;
 REAL MTiNat ; ! Average Weight Ratio
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Ti46f := .0825 ;
   EVALUATE Ti47f := .0744 ;
@@ -391,9 +391,9 @@ REAL Si30f := .0 ;
 REAL MSiNat ; ! Average Weight Ratio
 
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Si28f := .9222 ;
   EVALUATE Si29f := .0468 ;
@@ -469,9 +469,9 @@ REAL Sn122f := .0  ;
 REAL Sn124f := .0  ;
 REAL MSnNat ; ! Average Weight Ratio
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Sn112f := .010  ;
   EVALUATE Sn114f := .007  ;
@@ -628,9 +628,9 @@ REAL Cd116f := .0 ;
 REAL MCdNat ;
 
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Cd106f := .0125 ;
   EVALUATE Cd108f := .0089 ;
@@ -688,9 +688,9 @@ REAL K41f := .0 ;
 REAL MKNat ; ! Average Weight Ratio
 
 
-IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
-   LibType 'JEFF312'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
+   Evaluation 'JEFF312'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE K39f := .9326 ;
   EVALUATE K40f := .0001167 ;
@@ -731,10 +731,10 @@ REAL S33f := .0  ;
 REAL S34f := .0  ;
 
 REAL MSNat ; ! Average Weight Ratio
-ECHO "libtype:" LibType ;
-IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
-   LibType 'JEFF312'  = + LibType 'JEFF22'  = +
-   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+ECHO "libtype:" Evaluation ;
+IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF22'  = +
+   Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE S32f := .9502  ;
   EVALUATE S33f := .0076  ;

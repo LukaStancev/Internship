@@ -15,14 +15,13 @@
 *  > AssType      : [STR]
 *  > ConfigPyrex  : [STR]
 *  > TypeMatrix   : [STR] Type of matrix structure for multi-parameter library
-*  > NumHistCal   : [INT] Nb. nominal/off-Nominal depletion
 * Output Provided:
 *  <  StepList    : [LINKED_LIST] Matrix branch structure parameters
 *------------------------------------------------------
 * Procedure called as:
 * StepList := CreaStepList ::
 *   <<Gestion>> <<TypeInfo>> <<ConfigPyrex>>
-*   <<NumHistCal>> <<TypeMatrix>> ;
+*   <<TypeMatrix>> ;
 *======================================================
 PARAMETER StepList :: ::: LINKED_LIST StepList ; ;
 PROCEDURE   GetTechData ;
@@ -34,8 +33,6 @@ LINKED_LIST AvgList RodList ;
 *-----------------------------------------------------
 STRING Gestion AssType ConfigPyrex ;
   :: >>Gestion<< >>AssType<< >>ConfigPyrex<< ;
-INTEGER NumHistCal  ;
-  :: >>NumHistCal<< ;
 STRING TypeMatrix   ;
   :: >>TypeMatrix<< ;
 
@@ -428,85 +425,6 @@ ENDIF ;
 EVALUATE dmod     tmod     cbor     tcom     barr   :=
        dmod_avg tmod_avg cbor_avg tcom_avg barr_avg ;
 
-*======================================================*
-*                                                      *
-*                    BASE DEPLETION                    *
-*                                                      *
-*======================================================*
-IF NumHistCal 0 = THEN
-
-  ECHO "$ BASE DEPLETION selected (No. " NumHistCal ")" ;
-
-*======================================================*
-*                                                      *
-*               OFF-NOMINAL DEPLETIONS                 *
-*                     (HISTORIES)                      *
-*                                                      *
-*======================================================*
-
-ELSEIF NumHistCal 0 > THEN
-
-  ECHO "$ OFF-NOMINAL DEPLETION selected (No. " NumHistCal ")" ;
-
-  IF NumHistCal 1 = THEN
-  !======================================================*
-  !                HISTORY No. 1 (DMOD 1)                *
-  !------------------------------------------------------*
-  ! https://webbook.nist.gov/chemistry/fluid/
-  ! Isobar values (p= 2250 psi = 155.132 bar) :
-  ! DT=+20K -> Drho=-0.050 g/cm3
-  ! T=293K  -> rho=1.005 g/cm3
-  !------------------------------------------------------*
-  EVALUATE dmod := dmod_avg .05 - ;
-
-  ELSEIF NumHistCal 2 = THEN
-  !======================================================*
-  !                HISTORY No. 2 (DMOD 2)                *
-  !------------------------------------------------------*
-  ! https://webbook.nist.gov/chemistry/fluid/
-  ! Isobar values (p= 2250 psi = 155.132 bar) :
-  ! DT=-20K -> Drho=+0.040 g/cm3
-  !------------------------------------------------------*
-  EVALUATE dmod := dmod_avg .04 + ;
-
-  ELSEIF NumHistCal 3 = THEN
-  !======================================================*
-  !               HISTORY No. 3 (CBOR 1)                 *
-  !------------------------------------------------------*
-  EVALUATE cbor :=  cbor_avg 2. * ;
-
-  ELSEIF NumHistCal 4 = THEN
-  !======================================================*
-  !               HISTORY No. 4 (CBOR 2)                 *
-  !------------------------------------------------------*
-  EVALUATE cbor :=  150. ;
-
-  ELSEIF NumHistCal 5 = THEN
-  !======================================================*
-  !               HISTORY No. 5 (TCOM 1)                 *
-  !------------------------------------------------------*
-  EVALUATE tcom :=  tmod_avg 20. - ;
-
-  ELSEIF NumHistCal 6 = THEN
-  !======================================================*
-  !               HISTORY No. 6 (TCOM 2)                 *
-  !------------------------------------------------------*
-  EVALUATE tcom :=  1500. ;
-
-  ELSEIF NumHistCal NbHistWORod > THEN
-  !======================================================*
-  !               HISTORY No. 7+ (BARR 1+)               *
-  !------------------------------------------------------*
-
-    EVALUATE idxCR := NumHistCal NbHistWORod - 1 + ;   ! +1 -> avoid first index -> average
-    GREP: RodList :: GETVAL 'Rods' <<idxCR>> >>valCR<< ;
-    ECHO "$$$$ idxCR : " idxCR " valCR : " valCR ;
-    EVALUATE barr :=  valCR ;
-
-  ENDIF ;
-
-ENDIF ;
-
 *======================================================
 * DEPLETION CONDITIONS (EvoNominale.x2m)
 *------------------------------------------------------
@@ -515,7 +433,7 @@ StepList := UTL: StepList ::
   <<dmod>> <<cbor>> <<barr>> <<tcom>> <<tmod>>
  ;
 
-ECHO "$$$ Summary depletion conditions (No. " NumHistCal ")" ;
+ECHO "$$$ Summary depletion conditions" ;
 ECHO "  - dmod : " dmod ;
 ECHO "  - cbor : " cbor ;
 ECHO "  - barr : " barr ;
