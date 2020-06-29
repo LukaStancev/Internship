@@ -35,10 +35,10 @@ LINKED_LIST Assmb AssmbAu Discr DiscrAu
             GeoAssTriv GeoAssHom
             GeoCPCPlie GeoCPCDeplie
             TrackAss  ;
-XSM_FILE    ImpBurnup :: FILE 'ImpBurnup' ;
-XSM_FILE    ImpLibrary :: FILE 'ImpLibrary' ;
-XSM_FILE    ConcMode :: FILE 'ConcMode' ;
-XSM_FILE    Info :: FILE 'Info' ;
+XSM_FILE    ImpBurnup ;
+XSM_FILE    ImpLibrary ;
+XSM_FILE    ConcMode ;
+XSM_FILE    Info ;
 ImpBurnup := ExpBurnup ;
 ImpLibrary := ExpLibrary ;
 ConcMode := ExpConcMode ;
@@ -911,6 +911,8 @@ ENDIF ;
 ECHO "Bib NOML:   " Noml     ;
 ECHO "Bib STEP:   " bu_index ;
 ECHO "Bib ISOT:   " ListIsoPart ;
+ImpBurnup ImpLibrary ConcMode Info := DELETE:
+ImpBurnup ImpLibrary ConcMode Info ;
 ECHO "MakeBib1BU completed" ;
 END: ;
 QUIT "LIST" .

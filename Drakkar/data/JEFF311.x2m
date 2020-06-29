@@ -1,9 +1,39 @@
-MODULE END: UTL: ;
-PROCEDURE EvoNominale MakeBib1BU ;
+MODULE END: DELETE: ;
+PROCEDURE EvoNominale MakeBib1BU Tihange ;
 XSM_FILE ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
 XSM_FILE Bib_1BU ;
+XSM_FILE UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+*---
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
+  TIH UOX 195 None 1 ;
+UOX195 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
+ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+*---
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
+  TIH UOX 310 None 1 ;
+UOX310 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
+ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+*---
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
+  TIH UOX 255 Py8 1 ;
+UOX255_Py8 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
+ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+*---
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
+  TIH UOX 255 Py12 1 ;
+UOX255_Py12 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
+ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+*---
 ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
   TIH UOX 310 Py12 1 ;
-Bib_1BU := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+UOX310_Py12 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
+ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+*---
+Tihange UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
 END: ;
 QUIT "LIST" .

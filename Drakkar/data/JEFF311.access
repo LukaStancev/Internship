@@ -1,9 +1,13 @@
 #!/bin/bash
+accessname=$(basename $0 | cut -d"." -f1)
 if [ $# = 0 ]
    then
-   echo "usage: Test.access directory" 1>&2
+   echo "usage: "$accessname".access directory" 1>&2
    exit 1
 fi
+echo -e "\nExecute ${accessname}.access script\n"
+
+ln -s "$1"/../Reflector/save/Multicompo_Refl_TousPaliers MultiRefl.XS
 
 cp "$1"/../proc/* .
 
@@ -177,4 +181,4 @@ sed -i "s/#printSapIsot/$printSapIsot/g"   MakeBib1BU.c2m
 sed -i "s/#printMcoIsot/$printMcoIsot/g"   MakeBib1BU.c2m
 
 ls -l
-echo "Test access script terminated"
+echo -e $accessname".access script terminated\n"

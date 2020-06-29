@@ -1,6 +1,8 @@
 *----
 *  Definition STRUCTURES, MODULES et PROCEDURES
 *----
+PARAMETER   UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ::
+ ::: XSM_FILE  UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ; ;
 LINKED_LIST GeoRes Track System Flux Matex MacroTot Fmap MicroFuel
             Power GeoCoeur Thermo ;
 MODULE      TRIVAT: TRIVAA: FLUD: GREP: FIND0: MACINI: UTL: NCR: SCR:
@@ -445,7 +447,8 @@ WHILE iTemp 3 <= DO
                               SET-PARAM 'T-FUEL' SAME <<tcomb>> ;
     ENDIF ;
 
-    MicroFuel MacroTot Matex Fmap := Interp Matex Fmap ::
+    MicroFuel MacroTot Matex Fmap := Interp
+      Matex Fmap UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ::
       <<CB>> <<C>> <<D>> <<TypeRefl>> <<Palier>> <<MethodRefl>> ;
 
     Track := TRIVAT: GeoRes ::
