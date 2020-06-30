@@ -43,14 +43,14 @@ REAL dHe                ; ! Densité de l'hélium
 REAL dMod               ; ! Densité du modérateur
 REAL CB                 ; ! Concentration en bore
 REAL fvMod fvZr4 fvInc fvSS304 ; ! Fractions volumiques des différents milieux
-STRING NuclData LibGenre LibType ;
+STRING FileNuclData LibGenre Evaluation ;
 INTEGER LibId ;
 
 *--------------------------------------------------------------------
 * Fractions volumiques des différents milieux présents dans la zone
 *--------------------------------------------------------------------
 :: >>dMod<< >>TMil<< >>CB<< >>fvMod<< >>fvZr4<< >>fvInc<< >>fvSS304<<
-   >>NuclData<< >>LibType<< ;
+   >>FileNuclData<< >>Evaluation<< ;
 
 *------------------------------------------------------
 * Recuperation des noms des isotopes
@@ -84,7 +84,7 @@ STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
 STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
 STRING NomS32 NomS33 NomS34 NomN14 ;
 
-ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+ListeIsot ListeAutop := AdaptIso :: <<FileNuclData>> <<Evaluation>>
                          >>LibId<< >>LibGenre<< ;
 
 GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;
@@ -463,7 +463,7 @@ ECHO "Nb93   " Nb93 ;
 LibDilut := LIB: ::
   NMIX 32
 
-  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
 * Milieu générique issu de la dilution de tous les constituants
   MIX 1 <<TMil>>
     H2O      = <<NomH2O>>   <<faH2O>>

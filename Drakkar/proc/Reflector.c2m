@@ -1,3 +1,4 @@
+PARAMETER TousPaliers ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
   Geo15x15 AdaptIso ;
 LINKED_LIST
@@ -5,29 +6,24 @@ LINKED_LIST
   MACRO_FUEL_1 MACRO_FUEL_2
   StepList
   MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
-  BNat AgNat CdNat SNat GdNat Zirc4 Incon SS304 M5 KNat
-  InNat AIC Gd2O3 BP
+  BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat
+  InNat AIC HfR Gd2O3 BP
   ConcMode MacrRefl Edition Multicompo
   GEOM TRACK SYSTEM FLUX OUT TRKFIL
   Assmb AssmbAu Discr DiscrAu
   nbZones FractionVol
   MlticompTous ;
-XSM_FILE TousPaliers :: FILE 'Multicompo_Refl_TousPaliers' ;
 MODULE
   LIB: GEO: SYBILT: ASM: FLU: EDI: COMPO: DELETE:
   USS: UTL: END: ABORT: MAC: SNT: GREP: MSTR: ;
 LINKED_LIST ListeIsot ListeAutop ;
 
 *---- General informations    --------------------------
-*------------------------------------------------------
-* Selection de la bibliotheque de donnees nucleaires
-* a utiliser. Pour modifier, remplacer dans la def.
-* de NuclData par la bibliotheque souhaitee.
-* LibType s'obtient a partir de NuclData directement dans le
-* fichier .access
-*------------------------------------------------------
-STRING  NuclData := "D172JEFF311" ;
-STRING  LibType := "#LIB" ;
+*---
+* File containing multigroup nuclear data
+*---
+STRING Evaluation := "JEFF311"  ;
+STRING FileNuclData := "D172" Evaluation + ;
 STRING  LibGenre ;
 INTEGER LibId ;
 STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
@@ -41,7 +37,7 @@ INTEGER Teneur_I := 310    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
 STRING LEAKEQUATION LEAKIMPOSED CTRA ;
 EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "B1"   "SIGS" "APOL" ;
 !EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "P0TR" "NLKH" "OLDW" ;
-STRING Grid := "Note" ;
+STRING TypeDil := "TOT" ;
 REAL TempMod := 559.2 ; ! K
 REAL PowMWT ;
 INTEGER ThermaExpans := 0 ;
@@ -58,26 +54,28 @@ INTEGER BarType ;
 *             - Generate tracking objects (Geo15x15)
 *---- 1) Burnup & parameter lists ----------------------
 StepList := CreaStepList ::
-  <<Gestion>> <<AssType>> <<ConfigPyrex>> 0 'DUMMY' ;
+  <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
 GREP: StepList :: GETVAL 'DeplParam' 1 5
   >>dmod<< >>cbor<< >>barr<< >>tcom<< >>tmod<< ;
 
 *---- 2) Molar Masses ----------------------------------
-MolarMasses := GetMolarMass :: <<NuclData>> <<LibType>> ;
+MolarMasses := GetMolarMass :: <<FileNuclData>> <<Evaluation>> ;
 
 *---- 3) Metal Mixes -----------------------------------
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
-CdNat SNat InNat
-Zirc4 Incon SS304 M5 AIC GdNat Gd2O3 BP := MetalMix
+CdNat SNat HfNat InNat
+Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP := MetalMix
 MolarMasses ::
-<<LibType>> <<Gestion>> ;
+<<Evaluation>> <<Gestion>> ;
 
 *---- 4) Library with all mixes ------------------------
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
-InNat Zirc4 Incon SS304 M5 AIC GdNat Gd2O3 BP MolarMasses ::
-<<NuclData>> <<LibType>> <<Gestion>> <<AssType>>
-<<Teneur_I>> <<ThermaExpans>> <<CTRA>> <<Grid>> >>PowMWT<< ;
+HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
+<<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
+<<Teneur_I>> <<ThermaExpans>> <<CTRA>>
+<<dmod>> <<cbor>> <<tcom>> <<tmod>> <<TypeDil>>
+>>PowMWT<< ;
 ECHO "#PowMWT" PowMWT ;
 
 *---- 5) Geometry & Tracking ---------------------------
@@ -101,7 +99,7 @@ Assmb AssmbAu := DELETE: Assmb AssmbAu ;
 *--------------------------------------------------------------------
 * Loop over the 2 cases, in order to have two different spectrum ratios
 *--------------------------------------------------------------------
-ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+ListeIsot ListeAutop := AdaptIso :: <<FileNuclData>> <<Evaluation>>
                          >>LibId<< >>LibGenre<< ;
 
 STRING NomH2O ;
@@ -141,7 +139,7 @@ WHILE CASE 2 <= DO
 
 Library := LIB: Library ::
 * Borated water
-  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
 
   MIX 10 <<TempMod>>
     H1_H2O    = <<NomH1>>  <<H1>>  NOEV
@@ -198,7 +196,7 @@ Library Discr := DELETE: Library Discr ;
 ! pas à me passer des MIX 3, 4 et 5 de Library ...
 Library := LIB: ::
   NMIX 32
-  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
   MIX 3 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
   MIX 4 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
   MIX 5 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
@@ -565,7 +563,7 @@ WHILE IndexCB 5 <= DO
             LibDilut ConcMode MolarMasses
             BNat Zirc4 Incon SS304 := CreaDilut ::
             <<dMod>> <<TMil>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
-            <<fvSS304>> <<NuclData>> <<LibType>> ;
+            <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
 
             ! Les MIX des mélanges seront définis à partir de 6
             EVALUATE premierMIX := 5 iZone + ;

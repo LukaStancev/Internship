@@ -7,8 +7,6 @@ if [ $# = 0 ]
 fi
 echo -e "\nExecute ${accessname}.access script\n"
 
-ln -s "$1"/../Reflector/save/Multicompo_Refl_TousPaliers MultiRefl.XS
-
 cp "$1"/../proc/* .
 
 #--- link to nuclear data file: JEFF-3.1.1 (NJOY2016)
@@ -47,8 +45,9 @@ echo "Number of isotopes to be excluded : ${#isoAExclure[@]}"
 while [ "$i" -lt "${#isoAExclure[@]}" ] ; do
   echo " - ${isoAExclure[i]}"
   sed -i '/ '"${isoAExclure[i]}"' /{s/^ /!/}' GetMolarMass.c2m
-  sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaMix.c2m
   sed -i '/ '"${isoAExclure[i]}"' /{s/^ /!/}' MakeBib1BU.c2m
+  sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaMix.c2m
+  sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaDilut.c2m
   i=$(($i+1))
 done
 
