@@ -12,7 +12,7 @@
 *
 * ATTENTION! Bien verifier que les objets importes sont bien les bons (.access)
 *            Les objets necessaires a importer depuis le calcul d'evolution nominale sont:
-*            - ImpBurnup  : Objet L_BURNUP en sortie d'evolution nominale
+*            - Burnup  : Objet L_BURNUP en sortie d'evolution nominale
 *            - ImpLibrary : Objet L_LIBRARY cree lors du 1er appel LIB: dans la procedure CreaMix.c2m. Bib interne
 *            - ConcMode   : Table des concentrations H2O, B10 et B11 pour chaque mix (calculs de CBOR et DMOD).
 *            - Info       : Table contenant differentes informations sur l'assemblage
@@ -20,29 +20,19 @@
 *======================================================================
 * STRUCTURES et MODULES utilises
 *-------------------------------------------------
-PARAMETER   Bib_1BU
-            ExpLibrary ExpBurnup ExpConcMode ExpInfo ::
- ::: XSM_FILE
-            ExpLibrary ExpBurnup ExpConcMode ExpInfo ; ;
+PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info ::
+  ::: XSM_FILE      ImpLibrary Burnup ConcMode Info ; ;
 PROCEDURE   CreaStepList Geo15x15 CreaGeoHom ModDet35
             Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU: EDI: SAP: SPH:
             TRIVAT: COMPO: EVO: UTL: GREP: ABORT: DELETE: END: ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu
             Library CP Calc Out
-            OutCPC Burnup StepList LibraryAu
+            OutCPC StepList LibraryAu
             SaphybStep CompoStep
             GeoAssTriv GeoAssHom
             GeoCPCPlie GeoCPCDeplie
             TrackAss  ;
-XSM_FILE    ImpBurnup ;
-XSM_FILE    ImpLibrary ;
-XSM_FILE    ConcMode ;
-XSM_FILE    Info ;
-ImpBurnup := ExpBurnup ;
-ImpLibrary := ExpLibrary ;
-ConcMode := ExpConcMode ;
-Info := ExpInfo ;
 
 *-------------------------------------------------------
 *  Local parameters
@@ -528,7 +518,7 @@ WHILE m dm <= DO
 * Set Library at burnup
 * mixes communs a tous les assemblages
 *------------------------------------------------------
-        Library := LIB: Library ImpBurnup :: EDIT 0
+        Library := LIB: Library Burnup :: EDIT 0
           BURN <<bstep>>
           MIX 20 (* TUBE *)
           MIX 21 (* AIC *)
@@ -551,7 +541,7 @@ WHILE m dm <= DO
             MIX 35 <<tmod_nom_K>>
             MIX 36 <<tmod_nom_K>>
             MIX 65 <<tmod_nom_K>> ;
-          Library := LIB: Library ImpBurnup :: EDIT 0
+          Library := LIB: Library Burnup :: EDIT 0
             BURN <<bstep>>
             MIX 34
             MIX 35
@@ -572,7 +562,7 @@ WHILE m dm <= DO
 *------------------------------------------------------
 * Set Libraries at burnup
 *------------------------------------------------------
-          Library := LIB: Library ImpBurnup :: EDIT 0
+          Library := LIB: Library Burnup :: EDIT 0
             BURN <<bstep>>
             MIX 100 (* COMB.1 *)
             MIX 101 (* COMB.2 *)
@@ -600,7 +590,7 @@ WHILE m dm <= DO
 *------------------------------------------------------
 * Set Libraries at burnup
 *------------------------------------------------------
-          Library := LIB: Library ImpBurnup :: EDIT 0
+          Library := LIB: Library Burnup :: EDIT 0
             BURN <<bstep>>
             MIX 110 (* COMB1.1 [LOW PU] *)
             MIX 111 (* COMB1.2 *)
@@ -634,7 +624,7 @@ WHILE m dm <= DO
 *------------------------------------------------------
 * Set Libraries at burnup
 *------------------------------------------------------
-          Library := LIB: Library ImpBurnup :: EDIT 0
+          Library := LIB: Library Burnup :: EDIT 0
             BURN <<bstep>>
             MIX 100 (* COMB1.1 [UOX std] *)
             MIX 101 (* COMB1.2 *)
@@ -817,7 +807,7 @@ WHILE m dm <= DO
           *------------------------------------------------------
           * Enrichissement de la Saphyb
           *------------------------------------------------------
-          SaphybStep := SAP: SaphybStep ImpBurnup LibraryAu Out :: EDIT 0
+          SaphybStep := SAP: SaphybStep Burnup LibraryAu Out :: EDIT 0
             CRON CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
             SET <<xtr>> DAY ;
 
@@ -851,7 +841,7 @@ WHILE m dm <= DO
           *------------------------------------------------------
           * Enrichissement de la MultiCompo
           *------------------------------------------------------
-          CompoStep := COMPO: CompoStep Out OutCPC ImpBurnup LibraryAu ::
+          CompoStep := COMPO: CompoStep Out OutCPC Burnup LibraryAu ::
             EDIT 0
             STEP UP "Ass"
             CBOR <<cbor>> DMOD <<dmod>> BARR <<barr>>
@@ -911,8 +901,6 @@ ENDIF ;
 ECHO "Bib NOML:   " Noml     ;
 ECHO "Bib STEP:   " bu_index ;
 ECHO "Bib ISOT:   " ListIsoPart ;
-ImpBurnup ImpLibrary ConcMode Info := DELETE:
-ImpBurnup ImpLibrary ConcMode Info ;
 ECHO "MakeBib1BU completed" ;
 END: ;
 QUIT "LIST" .

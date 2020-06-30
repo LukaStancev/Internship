@@ -1,40 +1,34 @@
 MODULE END: DELETE: ;
 PROCEDURE EvoNominale MakeBib1BU Reflector Tihange ;
-XSM_FILE ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-XSM_FILE Bib_1BU ;
-XSM_FILE REFL ;
-XSM_FILE UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+XSM_FILE Library Burnup ConcMode Info
+  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+*---
 REFL := Reflector ;
 *---
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
-  TIH UOX 195 None 1 ;
-UOX195 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
-ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+Library Burnup ConcMode Info := EvoNominale :: TIH UOX 195 None 1 ;
+UOX195 := MakeBib1BU Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE:
+Library Burnup ConcMode Info ;
 *---
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
-  TIH UOX 310 None 1 ;
-UOX310 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
-ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+Library Burnup ConcMode Info := EvoNominale :: TIH UOX 310 None 1 ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE:
+Library Burnup ConcMode Info ;
 *---
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
-  TIH UOX 255 Py8 1 ;
-UOX255_Py8 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
-ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+Library Burnup ConcMode Info := EvoNominale :: TIH UOX 255 Py8 1 ;
+UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE:
+Library Burnup ConcMode Info ;
 *---
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
-  TIH UOX 255 Py12 1 ;
-UOX255_Py12 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
-ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+Library Burnup ConcMode Info := EvoNominale :: TIH UOX 255 Py12 1 ;
+UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE:
+Library Burnup ConcMode Info ;
 *---
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := EvoNominale ::
-  TIH UOX 310 Py12 1 ;
-UOX310_Py12 := MakeBib1BU ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
-ExpLibrary ExpBurnup ExpConcMode ExpInfo := DELETE:
-ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+Library Burnup ConcMode Info := EvoNominale :: TIH UOX 310 Py12 1 ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE:
+Library Burnup ConcMode Info ;
 *---
 Tihange REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
 END: ;

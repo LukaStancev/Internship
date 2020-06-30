@@ -1,4 +1,4 @@
-PARAMETER TousPaliers ;
+PARAMETER Multicompo ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
   Geo15x15 AdaptIso ;
 LINKED_LIST
@@ -8,11 +8,10 @@ LINKED_LIST
   MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
   BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat
   InNat AIC HfR Gd2O3 BP
-  ConcMode MacrRefl Edition Multicompo
+  ConcMode MacrRefl Edition
   GEOM TRACK SYSTEM FLUX OUT TRKFIL
   Assmb AssmbAu Discr DiscrAu
-  nbZones FractionVol
-  MlticompTous ;
+  nbZones FractionVol ;
 MODULE
   LIB: GEO: SYBILT: ASM: FLU: EDI: COMPO: DELETE:
   USS: UTL: END: ABORT: MAC: SNT: GREP: MSTR: ;
@@ -206,7 +205,7 @@ Library := LIB: ::
 *-------------------Début des calculs de réflecteur------------------
 *--------------------------------------------------------------------
 
-MlticompTous := COMPO: ::
+Multicompo := COMPO: ::
   EDIT 1
   STEP UP 'Radial'
     COMM 'Radial reflector XS, from IRSN/LNR.' ENDC
@@ -1083,7 +1082,7 @@ WHILE IndexCB 5 <= DO
           *  directement dans DONJON.
           *----------------------------------------------------------
           IF Localisation 'Radial' = THEN
-            MlticompTous := COMPO: MlticompTous Edition :: EDIT 1
+            Multicompo := COMPO: Multicompo Edition :: EDIT 1
               STEP UP <<Localisation>>
               C-BORE <<CB>>
               Method <<MethodRefl>>
@@ -1091,7 +1090,7 @@ WHILE IndexCB 5 <= DO
               Palier <<Palier>>
               MACRO ;
           ELSE
-            MlticompTous := COMPO: MlticompTous Edition :: EDIT 1
+            Multicompo := COMPO: Multicompo Edition :: EDIT 1
               STEP UP <<Localisation>>
               C-BORE <<CB>>
               Method <<MethodRefl>>
@@ -1113,8 +1112,6 @@ WHILE IndexCB 5 <= DO
 
   EVALUATE IndexCB := IndexCB 1 + ;
 ENDWHILE ; ! Boucle sur les IndexCB
-
-TousPaliers := MlticompTous ;
 
 END: ;
 QUIT "LIST" .

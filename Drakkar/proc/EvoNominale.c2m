@@ -13,18 +13,17 @@
 *======================================================================
 * Structures et Modules
 *-------------------------------------------------------
-PARAMETER   ExpLibrary ExpBurnup ExpConcMode ExpInfo ;
+PARAMETER   ExpLibrary Burnup ConcMode Info ;
 PROCEDURE   CreaStepList GetMolarMass MetalMix CreaMix
             Geo15x15 Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU:
             EVO: UTL: GREP: ABORT: DELETE: END: ;
-LINKED_LIST LibraryAu StepList CP Calc
+LINKED_LIST Library LibraryAu StepList CP Calc
             MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
             BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5
             KNat InNat
             AIC HfR Gd2O3 BP
             Assmb AssmbAu Discr DiscrAu ;
-LINKED_LIST Library Burnup ConcMode Info ;
 LOGICAL True False   := $True_L $False_L ;
 *---
 *  Retrieve assembly specifications
@@ -318,9 +317,6 @@ Info := UTL: Info :: CREA 'HF'           1 = <<HF>> ;
 Info := UTL: Info :: CREA 'TypeDil'      1 = <<TypeDil>> ;
 *-------------------------------------------------------
 ECHO "Evolution completed:" Title ;
-ExpLibrary  := Library  ;
-ExpBurnup   := Burnup   ;
-ExpConcMode := ConcMode ;
-ExpInfo     := Info     ;
+ExpLibrary := Library ;
 END: ;
 QUIT "LIST" .
