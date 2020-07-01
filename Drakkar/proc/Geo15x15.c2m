@@ -25,7 +25,7 @@ LINKED_LIST Cellules Huitieme
 ! ---------------------------------------------------------------------
 STRING  Gestion AssType ConfigPyrex ;
 INTEGER ThermExp BarType ;
-REAL tcom tmod tclad ;
+REAL tfuel tmod tclad ;
 
 INTEGER DUMMY_I0 := 0 ;
 INTEGER DUMMY_I310 := 310 ;
@@ -49,8 +49,8 @@ REAL    rRodAICn1 rRodAICn2 rRodAICn3 ;
 * Pyrex configuration provided : None Py8 Py12
 *-------------------------------------------------------
 :: >>Gestion<< >>AssType<< >>ConfigPyrex<< >>ThermExp<<
-   >>BarType<< >>tcom<< >>tmod<< ;
-EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ;
+   >>BarType<< >>tfuel<< >>tmod<< ;
+EVALUATE tclad := 0.12 tfuel * 0.88 tmod * + ;
 
 ! /////////////////////////////////////////////////////////////////////
 ! /// GET DATA LISTS ///
@@ -122,7 +122,7 @@ IF ThermExp 1 = THEN
 ! ---------------------------------------------------------------------
 ! --- Fuel Pin ---
 ! ---------------------------------------------------------------------
-  ThermaExpans :: <<rFuel>> "UO2" <<tcom>> "Distance" <<Model>>
+  ThermaExpans :: <<rFuel>> "UO2" <<tfuel>> "Distance" <<Model>>
                   <<DUMMY_R0>> <<DUMMY_R0>>
                   >>rFuel<< ;
   ThermaExpans :: <<rCladFuel>> "Zr4" <<tclad>> "Distance" <<Model>>
@@ -171,7 +171,7 @@ EVALUATE pPinWaterGap := pPin hWaterGap + ;
 ECHO "@@@@@@@@@@@ DISTANCES AFTER (THERMAL EXPANSION) @@@@@@@@@@@" ;
 ECHO " pAss      = " pAss      " at " tmod  "C." ;
 ECHO " pPin      = " pPin      " at " tmod  "C." ;
-ECHO " rFuel     = " rFuel     " at " tcom  "C." ;
+ECHO " rFuel     = " rFuel     " at " tfuel "C." ;
 ECHO " rRodAICn  = " rRodAICn  " at " tmod  "C." ;
 ECHO " rRodBPIn  = " rRodBPIn  " at " tmod  "C." ;
 ECHO " rRodBPEx  = " rRodBPEx  " at " tmod  "C." ;

@@ -58,7 +58,7 @@
 *======================================================
 PROCEDURE ThermaExpans ;
 PARAMETER TechData :: ::: LINKED_LIST TechData ; ;
-MODULE UTL: ABORT: END: ADD: GREP: BACKUP: ;
+MODULE UTL: INFO: ABORT: END: ;
 
 ! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ! $$$ INPUT DECLARATION $$$
@@ -105,9 +105,7 @@ INTEGER Teneur_I ;
   REAL eCladRod ;
   REAL eCladBPIn ;
   REAL eCladBPEx ;
-  REAL hWaterGap  ;
   REAL pPin  ;
-  REAL pPinWaterGap  ; ! à enlever ? deja presente dans Geo17*17: pPin + hWaterGap$
   REAL hActiv  ;
   REAL CoefPoro ;
   REAL CoefVoid ;
@@ -170,8 +168,8 @@ INTEGER Teneur_I ;
   REAL H2OCntrPre ;
   REAL H2OSidePre ;
   REAL H2OCornPre ;
-  REAL U5FC ; !Vérifier ce que c'est
-  REAL Main_enri := 0.0 ; !Initialisation : var util si Teneur_I has Value
+  REAL U5FC ;
+  REAL Main_enri := 0.0 ;
   REAL U4enri ;
   REAL U6enri ;
   REAL U5enri  ;
@@ -206,8 +204,7 @@ INTEGER Teneur_I ;
   REAL f_sidePin  ;
   REAL f_cntrPin  ;
   REAL tmod ;
-  REAL tcom ;
-  REAL TempC Beta ;
+  REAL tfuel ;
 
 ! /////////////////////////////////////////////////////////////////////
 ! /// LOCAL LINKED LIST AND VAR DECLARATION ///
@@ -284,12 +281,24 @@ ENDIF ;
 ! /////////////////////////////////////////////////////////////////////
 IF Gestion "BEAV" = THEN
 ! ---------------------------------------------------------------------
+! --- GENERAL INFORMATION ---
+! ---------------------------------------------------------------------
+  EVALUATE NbAss      :=  193.       ; ! [1100MWe]
+  EVALUATE NbFuelPin  :=  264.       ;
+  EVALUATE PowMWth    := 3411.       ; ! [MW] (1100MWe)
+  EVALUATE NbPinAssXY :=   17.       ;
+  EVALUATE CoreFlowRate := 61.5E+9   ;
+  EVALUATE CoreFlowByp  := 0.05      ;
+  EVALUATE OpePressure := 1.55132E+7 ;
+  EVALUATE CoreHML     :=   81.8     ;
+  EVALUATE AssStruct := "BEAV_ASS"   ;
+! ---------------------------------------------------------------------
 ! --- DEPLETION PARAMETERS AVG ---
 ! ---------------------------------------------------------------------
-  EVALUATE tmod := 306.85   ; ! [degC] (= 580 K)
-  EVALUATE tcom := 650.     ; ! [degC]
-  EVALUATE dmod := .7118974 ; ! [g.cm-3] (density at 2250 psia and 580 K)
-  EVALUATE cbor := 500.     ; ! [ppm]
+  EVALUATE tmod  := 306.85   ; ! [degC] (= 580 K)
+  EVALUATE tfuel := 650.     ; ! [degC]
+  EVALUATE dmod  := .7118974 ; ! [g.cm-3] (density at 2250 psia and 580 K)
+  EVALUATE cbor  := 500.     ; ! [ppm]
 ! ---------------------------------------------------------------------
 ! --- ROD LIST ---
 ! ---------------------------------------------------------------------
@@ -300,18 +309,6 @@ IF Gestion "BEAV" = THEN
   RodListTmp := UTL: RodListTmp :: CREA 'Rods' 4 =
                 4. 1. 2. 3. ; ! <<< mod 04/05/2018 ajout de "3."
   ENDIF ;
-! ---------------------------------------------------------------------
-! --- GENERAL INFORMATION ---
-! ---------------------------------------------------------------------
-  EVALUATE NbAss      :=  193.       ; ! [1100MWe]   a verifier
-  EVALUATE NbFuelPin  :=  264.       ;
-  EVALUATE PowMWth    := 3411.       ; ! [MW] (SLB 1100MWe)
-  EVALUATE NbPinAssXY :=   17.       ;
-  EVALUATE CoreFlowRate := 61.5E+9   ;
-  EVALUATE CoreFlowByp  := 0.05      ;
-  EVALUATE OpePressure := 1.55132E+7 ;
-  EVALUATE CoreHML     :=   81.8     ;
-  EVALUATE AssStruct := "BEAV_ASS"   ;
 ! ---------------------------------------------------------------------
 ! --- DISTANCES ---
 ! ---------------------------------------------------------------------
@@ -429,12 +426,12 @@ IF Gestion "BEAV" = THEN
     ENDIF ;
     EVALUATE U5enri  := Main_enri 100. / ; ! X.XX % => 0.0XXX
     EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
-    EVALUATE Pu8enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu9enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu0enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu1enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu2enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Am1enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu8enri := 1.E-15 ;
+    EVALUATE Pu9enri := 1.E-15 ;
+    EVALUATE Pu0enri := 1.E-15 ;
+    EVALUATE Pu1enri := 1.E-15 ;
+    EVALUATE Pu2enri := 1.E-15 ;
+    EVALUATE Am1enri := 1.E-15 ;
   ! SI AUCUN des types d'assemblage --------------------------------------------------------
   ELSE
    ECHO "Error --- AssType:" AssType "not recognized." ;
@@ -446,31 +443,46 @@ IF Gestion "BEAV" = THEN
 ! /// TIHANGE ///
 ! /////////////////////////////////////////////////////////////////////
 ELSEIF Gestion "TIH" = THEN
-! La majorite des informations sont extraites de la note CEA-N-2092.
-! Certaines informations, plus precises, proviennent d'autres sources
-! plus precises, afin d'etre en accord avec les dimensions des pages
-! 155 a 159 de CEA-N-2092.
-! Lien : https://inis.iaea.org/
-! collection/NCLCollectionStore/_Public/11/511/11511367.pdf
+* Most of the information is taken from CEA-N-2092. Some of the
+* information (where indicated) is taken from other, more precise
+* sources, in order to be consistent with the dimensions of pages 155
+* to 159 of CEA-N-2092 *after thermal expansion*.
+* Link : https://inis.iaea.org/
+* collection/NCLCollectionStore/_Public/11/511/11511367.pdf
+! ---------------------------------------------------------------------
+! --- GENERAL INFORMATION ---
+! ---------------------------------------------------------------------
+  EVALUATE NbAss        := 157.       ; ! [900MWe]
+  EVALUATE NbFuelPin    := 204.       ;
+  EVALUATE PowMWth      := 2652.      ; ! [MW] (CEA-N-2092)
+  EVALUATE NbPinAssXY   := 15.        ;
+  EVALUATE CoreFlowRate := 61.5E+9    ;
+  EVALUATE CoreFlowByp  := 0.05       ;
+* NIST Special Publication 811 – Guide for the Use of the International
+* System of Units (SI). National Institute of Standards and Technology.
+* 2008. p. 66. https://nvlpubs.nist.gov/nistpubs/Legacy/SP/
+* nistspecialpublication811e2008.pdf
+  EVALUATE OpePressure  := 2250. (* psi *) 6.894757E+3 (* Pa/psi *) * ;
+  EVALUATE CoreHML      := DUMMY_R1   ;
+  EVALUATE AssStruct    := "TIH_ASS"  ;
 ! ---------------------------------------------------------------------
 ! --- DEPLETION PARAMETERS AVG ---
 ! ---------------------------------------------------------------------
-! Les essais de demarrage de Tihange sont effectues a 547F. Les
-! temperatures qui suivent sont fixes a 547F, car, en l'etat actuel,
-! elles sont utilisees pour l'expansion thermique des dimensions et
-! densites de MakeBib (il n'y a pas encore de recalcul dynamique de
-! l'expansion thermique dans MakeBib). Cette temperature de 547F, plus
-! precise que la temperature de 286C mentionnee dans CEA-N-2092, est
-! retrouvee dans de multiples references de Westinghouse et permet
-! d'etre en meilleur accord avec les dimensions des pages 155 a 159 de
-! CEA-N-2092, en particulier pour les materiaux a forte dilatation
-! (AIC, SS304, ...). Exemple d'une source Westinghouse (p.104) :
-! 'Westinghouse Technology Advanced Manual', Chapter 4.
-! Lien : https://www.nrc.gov/docs/ML0230/ML023030318.pdf
-  EVALUATE tmod := 547.0 32.0 - 1.8 / ; ! [degC]
-  EVALUATE tcom := tmod ;
-  EVALUATE dmod := .716403 ; ! [g.cm-3] !NOMINAL VALUE
-  EVALUATE cbor := 600.    ; ! [ppm] !NOMINAL VALUE
+* Tihange start up tests are carried out at 547F. The following
+* temperatures are fixed at 547F, because in the current state, they are
+* used for thermal expansion of MakeBib dimensions and densities (there
+* is no dynamic recalculation of thermal expansion in MakeBib yet). This
+* temperature of 547F, more precise than the 286C temperature mentioned
+* in CEA-N-2092, is found in multiple Westinghouse references and is in
+* better agreement with the dimensions on pages 155 to 159 of CEA-N-2092,
+* especially for high expansion materials (AIC, SS304).
+* Ref. : 'Westinghouse Technology Advanced Manual', Chapter 4, p.104
+* Link : https://www.nrc.gov/docs/ML0230/ML023030318.pdf
+  EVALUATE tmod  := 547.0 32.0 - 1.8 / ; ! [degC]
+  EVALUATE tfuel := tmod ;
+  EVALUATE cbor  := 600.    ; ! [ppm]
+  INFO: :: TMP: <<tmod>> C PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
+    CALC DENS PWATER >>dmod<< ; ! [g.cm-3]
 ! ---------------------------------------------------------------------
 ! --- ROD LIST ---
 ! ---------------------------------------------------------------------
@@ -482,32 +494,19 @@ ELSEIF Gestion "TIH" = THEN
                   4. ;
   ENDIF ;
 ! ---------------------------------------------------------------------
-! --- GENERAL INFORMATION ---
-! ---------------------------------------------------------------------
-  EVALUATE NbAss        := 157.       ; ! [900MWe]
-  EVALUATE NbFuelPin    := 204.       ;
-  EVALUATE PowMWth      := 2652.      ; ! [MW] (CEA-N-2092)
-  EVALUATE NbPinAssXY   := 15.        ;
-  EVALUATE CoreFlowRate := 61.5E+9    ;
-  EVALUATE CoreFlowByp  := 0.05       ;
-  EVALUATE OpePressure  := 1.55132E+7 ;
-  EVALUATE CoreHML      := DUMMY_R1   ;
-  EVALUATE AssStruct    := "TIH_ASS"  ;
-! ---------------------------------------------------------------------
 ! --- DISTANCES ---
 ! ---------------------------------------------------------------------
-! ***gen***
-! La valeur qui suit, plus precise que celle de CEA-N-2092, est
-! extraite de la ref. 'LWR nuclear fuel bundle data for use in fuel
-! bundle handling', PNL-2575 UC-85, Weihermiller et Allison, 1979. p26.
-! Lien : https://inis.iaea.org/
-! collection/NCLCollectionStore/_Public/11/522/11522856.pdf
+* The following value, which is more precise than that of CEA-N-2092, is
+* taken from the ref. LWR nuclear fuel bundle data for use in fuel
+* bundle handling', PNL-2575 UC-85, Weihermiller et Allison, 1979. p26.
+* Link : https://inis.iaea.org/
+* collection/NCLCollectionStore/_Public/11/522/11522856.pdf
   EVALUATE pPin      := 0.563 2.54 * ; ! [cm] [VF]
-! Les deux valeurs qui suivent, plus precises que celles de CEA-N-2092,
-! sont extraites de la ref. 'In-core fuel management code package
-! validation for PWRs', IAEA-TECDOC-815, 1995. Resp. pages 17 et 18.
-! Lien : https://inis.iaea.org/
-! collection/NCLCollectionStore/_Public/26/077/26077395.pdf
+* The two following values, which are more precise than those of
+* CEA-N-2092, are taken from ref. 'In-core fuel management code package
+* validation for PWRs', IAEA-TECDOC-815, 1995. Resp. pages 17 et 18.
+* Lien : https://inis.iaea.org/
+* collection/NCLCollectionStore/_Public/26/077/26077395.pdf
   EVALUATE pAss      := 8.466 2.54 * ; ! [cm] [VF]
   EVALUATE hActiv    := 144.0 2.54 * ; ! [cm] [VF]
 ! ***radius pin content***
@@ -590,12 +589,12 @@ ELSEIF Gestion "TIH" = THEN
     ENDIF ;
     EVALUATE U5enri  := Main_enri 100. / ; ! X.XX % => 0.0XXX
     EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
-    EVALUATE Pu8enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu9enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu0enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu1enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Pu2enri := 1.E-15 ; ! pourquoi pas 0 ?
-    EVALUATE Am1enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu8enri := 1.E-15 ;
+    EVALUATE Pu9enri := 1.E-15 ;
+    EVALUATE Pu0enri := 1.E-15 ;
+    EVALUATE Pu1enri := 1.E-15 ;
+    EVALUATE Pu2enri := 1.E-15 ;
+    EVALUATE Am1enri := 1.E-15 ;
   ! SI AUCUN des types d'assemblage --------------------------------------------------------
   ELSE
    ECHO "Error --- AssType:" AssType "not recognized." ;
@@ -717,11 +716,10 @@ IF DataType "RODLIST" = THEN
   !ATTENTION : dans RodListTmp, le premier item du block rods doit etre
   !la configuration NOMINALE AVERAGE : cf CreaStepList
 ELSEIF DataType "DEPLPARAMAVG" = THEN
-!les valeurs de DEPLPARAM sont aussi dans les autres LINKED_LIST
-  TechData := UTL: TechData :: CREA 'cbor' 1 = <<cbor>> ;
-  TechData := UTL: TechData :: CREA 'tcom' 1 = <<tcom>> ;
-  TechData := UTL: TechData :: CREA 'tmod' 1 = <<tmod>> ;
-  TechData := UTL: TechData :: CREA 'dmod' 1 = <<dmod>> ;
+  TechData := UTL: TechData :: CREA 'cbor'  1 = <<cbor>> ;
+  TechData := UTL: TechData :: CREA 'tfuel' 1 = <<tfuel>> ;
+  TechData := UTL: TechData :: CREA 'tmod'  1 = <<tmod>> ;
+  TechData := UTL: TechData :: CREA 'dmod'  1 = <<dmod>> ;
 
 ELSEIF DataType "GENERAL" = THEN
   TechData := UTL: TechData :: CREA 'NbAss' 1 = <<NbAss>> ;

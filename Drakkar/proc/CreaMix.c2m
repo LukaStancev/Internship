@@ -48,7 +48,7 @@ REAL avo_conc := avogadro 1.E-24 * ;
 *--------------------------------------------------------------------
 * General assembly parameters
 *--------------------------------------------------------------------
-REAL cbor dmod tmod tclad tcom ;
+REAL cbor dmod tmod tclad tfuel ;
 STRING Gestion AssType ;
 STRING FileNuclData ;
 STRING Evaluation  ;
@@ -204,7 +204,7 @@ REAL DUMMY_R0 := 0.0 ;
 EVALUATE Main_enri := Teneur_I I_TO_R 100. / ;
 
 ! Depletion Conditions
-:: >>dmod<< >>cbor<< >>tcom<< >>tmod<< >>TypeDil<< ;
+:: >>dmod<< >>cbor<< >>tfuel<< >>tmod<< >>TypeDil<< ;
 
 *------------------------------------------------------
 * Molar masses (from LINKED_LIST MolarMasses)
@@ -615,7 +615,7 @@ GREP: Densities :: GETVAL 'dTube' 1 >>dTube<< ;
 GREP: General :: GETVAL 'PowMWth' 1 >>PowMWth<< ;
 GREP: General :: GETVAL 'NbAss' 1 >>NbAss<< ;
 GREP: Distances :: GETVAL 'hActiv' 1 >>hActiv<< ;
-EVALUATE tclad := 0.88 tmod * 0.12 tcom * + ;
+EVALUATE tclad := 0.88 tmod * 0.12 tfuel * + ;
 
 ! //////////////////////////////////////////////////////////////////////
 ! /// THEMAL EXPANSION  ///
@@ -651,13 +651,13 @@ IF ThermExp 1 = THEN
 ! ----------------------------------------------------------------------
 EVALUATE Model := "TIH" ;
 ! *** fuel ***
- ThermaExpans ::  <<dUO2>> "UO2" <<tcom>> "Density"
+ ThermaExpans ::  <<dUO2>> "UO2" <<tfuel>> "Density"
                   <<Model>> <<DUMMY_R0>> <<DUMMY_R0>>
                   >>dUO2<< ;
- ThermaExpans ::  <<dUGd>> "UO2" <<tcom>> "Density"
+ ThermaExpans ::  <<dUGd>> "UO2" <<tfuel>> "Density"
                   <<Model>> <<DUMMY_R0>> <<DUMMY_R0>>
                   >>dUGd<< ;
- ThermaExpans ::  <<dMOX>> "UO2" <<tcom>> "Density"
+ ThermaExpans ::  <<dMOX>> "UO2" <<tfuel>> "Density"
                   <<Model>> <<DUMMY_R0>> <<DUMMY_R0>>
                   >>dMOX<< ;
 ! *** rods ***
@@ -723,7 +723,7 @@ EVALUATE Model := "TIH" ;
 ELSE
 EVALUATE Model := "PIN" ;
 ENDIF ;
-  ThermaExpans :: <<rFuel>> "UO2" <<tcom>> "Distance"
+  ThermaExpans :: <<rFuel>> "UO2" <<tfuel>> "Distance"
                   <<Model>> <<DUMMY_R0>> <<DUMMY_R0>>
                   >>rFuel<< ;
 IF Gestion "TIH" = THEN
@@ -731,15 +731,15 @@ EVALUATE Model := "TIH" ;
 ELSE
 EVALUATE Model := "SLAB" ;
 ENDIF ;
-  ThermaExpans :: <<hActiv>> "UO2" <<tcom>> "Distance"
+  ThermaExpans :: <<hActiv>> "UO2" <<tfuel>> "Distance"
                   <<Model>>  <<DUMMY_R0>> <<DUMMY_R0>>
                   >>hActiv<< ;
                    !GD for the calculation of PowMWT
 ENDIF ;
  ECHO "@@@@@@@@@@ DENSITIES AFTER (THERMAL EXPANSION) @@@@@@@@@@" ;
- ECHO "dUO2      = " dUO2       " at " tcom  "C." ;
- ECHO "dUGd      = " dUGd       " at " tcom  "C." ;
- ECHO "dMOX      = " dMOX       " at " tcom  "C." ;
+ ECHO "dUO2      = " dUO2       " at " tfuel "C." ;
+ ECHO "dUGd      = " dUGd       " at " tfuel "C." ;
+ ECHO "dMOX      = " dMOX       " at " tfuel "C." ;
  ECHO "dRodB4C   = " dRodB4C    " at " tmod  "C." ;
  ECHO "dRodSS    = " dRodSS     " at " tmod  "C." ;
  ECHO "dRodAIC   = " dRodAIC    " at " tmod  "C." ;
@@ -758,45 +758,45 @@ ENDIF ;
  ECHO "dGrid     = " dGrid      " at " tmod  "C." ;
  ECHO "dTube     = " dTube      " at " tmod  "C." ;
  ECHO "@@@@@@@@@@ DISTANCES AFTER (THERMAL EXPANSION) @@@@@@@@@@" ;
- ECHO " rFuel  =  " rFuel       " at " tcom  "C." ;
- ECHO " hActiv =  " hActiv      " at " tcom  "C." ;
+ ECHO " rFuel  =  " rFuel       " at " tfuel  "C." ;
+ ECHO " hActiv =  " hActiv      " at " tfuel  "C." ;
 
 ! //////////////////////////////////////////////////////////////////////
 ! /// GAPS DILUTIIONS  ///
 ! //////////////////////////////////////////////////////////////////////
 
   GapDil :: <<dCladFuel>> <<Gestion>> "FUEL" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladFuel<< ;
 
   GapDil :: <<dCladAICn>> <<Gestion>> "AICN" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladAICn<< ;
 
   GapDil :: <<dCladAICg>> <<Gestion>> "AICG" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladAICg<< ;
 
   GapDil :: <<dCladSS>> <<Gestion>> "SS" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladSS<< ;
 
   GapDil :: <<dCladB4C>> <<Gestion>> "B4C" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladB4C<< ;
 
   GapDil :: <<dCladBPIn>> <<Gestion>> "BPIN" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladBPIn<< ;
 
   GapDil :: <<dCladBPEx>> <<Gestion>> "BPEX" <<ThermExp>>
-            <<tcom>> <<tmod>>
+            <<tfuel>> <<tmod>>
                   >>dCladBPEx<< ;
 
 ECHO "@@@@@@@@@@ DENSITIES AFTER (GAPDIL) @@@@@@@@@@" ;
- ECHO "dUO2      = " dUO2       " at " tcom  "C." ;
- ECHO "dUGd      = " dUGd       " at " tcom  "C." ;
- ECHO "dMOX      = " dMOX       " at " tcom  "C." ;
+ ECHO "dUO2      = " dUO2       " at " tfuel "C." ;
+ ECHO "dUGd      = " dUGd       " at " tfuel "C." ;
+ ECHO "dMOX      = " dMOX       " at " tfuel "C." ;
  ECHO "dRodB4C   = " dRodB4C    " at " tmod  "C." ;
  ECHO "dRodSS    = " dRodSS     " at " tmod  "C." ;
  ECHO "dRodAIC   = " dRodAIC    " at " tmod  "C." ;
@@ -815,8 +815,8 @@ ECHO "@@@@@@@@@@ DENSITIES AFTER (GAPDIL) @@@@@@@@@@" ;
  ECHO "dGrid     = " dGrid      " at " tmod  "C." ;
  ECHO "dTube     = " dTube      " at " tmod  "C." ;
  ECHO "@@@@@@@@@@ DISTANCES AFTER (GAPDIL) @@@@@@@@@@" ;
- ECHO " rFuel  =  " rFuel       " at " tcom  "C." ;
- ECHO " hActiv =  " hActiv      " at " tcom  "C." ;
+ ECHO " rFuel  =  " rFuel       " at " tfuel "C." ;
+ ECHO " hActiv =  " hActiv      " at " tfuel "C." ;
 
 *------ GRILLE -------------------
 *---------------------------------
@@ -847,7 +847,7 @@ ENDIF ;
  LINKED_LIST GridDilData ;
 
  GridDilData := GridDil :: <<Gestion>> <<TypeDil>> <<ThermExp>>
-               <<tcom>> <<tmod>> ;
+               <<tfuel>> <<tmod>> ;
 !
  GREP: GridDilData :: GETVAL 'H2O' 1 >>H2OCntr<< ;
  GREP: GridDilData :: GETVAL 'H2O' 2 >>H2OSide<< ;
@@ -912,7 +912,7 @@ ECHO "GrPreCorn := "  GrPreCorn ;
 * Convert values (degC -> K ; ppm -> value)
 *------------------------------------------------------
 EVALUATE tmod  := tmod  273.15 + ; ! user temp in degC, LIB in K
-EVALUATE tcom  := tcom  273.15 + ; ! user temp in degC, LIB in K
+EVALUATE tfuel := tfuel 273.15 + ; ! user temp in degC, LIB in K
 EVALUATE tclad := tclad 273.15 + ; ! user temp in degC, LIB in K
 EVALUATE cbor  := cbor  1.E-06 * ; !
 
@@ -3086,7 +3086,7 @@ CTRA <<CTRA>>
     Na23     = <<NomNa23>>  <<Na23BP>>
 
 *--- COMB UOX -----------------------------------------
-  MIX 100 <<tcom>> (* COMB *)
+  MIX 100 <<tfuel>> (* COMB *)
     U234     = <<NomU234>>   <<U4fuel>>
     U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
     U236     = <<NomU236>>   <<U6fuel>>
@@ -3103,7 +3103,7 @@ CTRA <<CTRA>>
   MIX 103 COMB 100 1.
 
 *--- COMB MOX -----------------------------------------
-  MIX 110 <<tcom>> (* COMB_P [LOW PU] *)
+  MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
     U234     = <<NomU234>>   <<U4cornfuel>>
     U235     = <<NomU235>>   <<U5cornfuel>>  <<iU5>> SHIB <<NomSSU235>>
     U236     = <<NomU236>>   <<U6cornfuel>>
@@ -3119,7 +3119,7 @@ CTRA <<CTRA>>
   MIX 112 COMB 110 1.
   MIX 113 COMB 110 1.
 
-  MIX 120 <<tcom>> (* COMB_I [AVG PU] *)
+  MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
     U234     = <<NomU234>>   <<U4sidefuel>>
     U235     = <<NomU235>>   <<U5sidefuel>>  <<iU5>> SHIB <<NomSSU235>>
     U236     = <<NomU236>>   <<U6sidefuel>>
@@ -3135,7 +3135,7 @@ CTRA <<CTRA>>
   MIX 122 COMB 120 1.
   MIX 123 COMB 120 1.
 
-  MIX 130 <<tcom>> (* COMB_C [HIGH PU] *)
+  MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
     U234     = <<NomU234>>   <<U4cntrfuel>>
     U235     = <<NomU235>>   <<U5cntrfuel>>  <<iU5>> SHIB <<NomSSU235>>
     U236     = <<NomU236>>   <<U6cntrfuel>>
@@ -3152,7 +3152,7 @@ CTRA <<CTRA>>
   MIX 133 COMB 130 1.
 
 *--- COMB UGd -----------------------------------------
-  MIX 140 <<tcom>> (* COMB with Gd *)
+  MIX 140 <<tfuel>> (* COMB with Gd *)
     Gd154    = <<NomGd154>>  <<Gd154_fuel>> <<iGd4>> SHIB <<NomSSGd4>>
     Gd155    = <<NomGd155>>  <<Gd155_fuel>> <<iGd5>> SHIB <<NomSSGd5>>
     Gd156    = <<NomGd156>>  <<Gd156_fuel>> <<iGd6>> SHIB <<NomSSGd6>>
@@ -3340,7 +3340,7 @@ ECHO "+R+ CreaMix NbAss     : " NbAss     ;
 ECHO "+R+ CreaMix cbor      : " cbor      ;
 ECHO "+R+ CreaMix dmod      : " dmod      ;
 ECHO "+R+ CreaMix tmod      : " tmod      ;
-ECHO "+R+ CreaMix tcom      : " tcom      ;
+ECHO "+R+ CreaMix tfuel     : " tfuel     ;
 ECHO "+R+ CreaMix tclad     : " tclad     ;
 ECHO "+R+ CreaMix dCladAICn : " dCladAICn ;
 ECHO "+R+ CreaMix dCladSS   : " dCladSS   ;

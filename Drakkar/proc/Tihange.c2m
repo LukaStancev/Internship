@@ -5,11 +5,11 @@ PARAMETER REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ::
   ::: XSM_FILE
           REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ; ;
 LINKED_LIST GeoRes Track System Flux Matex MacroTot Fmap MicroFuel
-            Power GeoCoeur Thermo ;
+            Power GeoCoeur Thermo List ;
 MODULE      TRIVAT: TRIVAA: FLUD: GREP: FIND0: MACINI: UTL: NCR: SCR:
             DELETE: ABORT: END: FLPOW: GEO: USPLIT: RESINI: MAC: THM:
             SIM: ;
-PROCEDURE   Interp ;
+PROCEDURE   Interp GetTechData ;
 
 LOGICAL True False := $True_L $False_L ;
 
@@ -17,7 +17,7 @@ LOGICAL True False := $True_L $False_L ;
 *  Choix de modélisation réflecteur :
 *  - TousPaliers
 *  - MargCpy
-*  - MargCpyRecal
+*  - MargCpyAdjus
 *----
 STRING TypeRefl := "TousPaliers" ;
 STRING CondLimite ;
@@ -334,7 +334,7 @@ SIM 15 15
                              J15 H15 G15
 NCOMB ALL
   ADD-PARAM PNAME 'C-BORE' PARKEY 'CBOR' GLOBAL
-  ADD-PARAM PNAME 'T-FUEL' PARKEY 'TCOM' GLOBAL
+  ADD-PARAM PNAME 'T-FUEL' PARKEY 'TFUE' GLOBAL
   ADD-PARAM PNAME 'D-COOL' PARKEY 'DMOD' GLOBAL
 *  ADD-PARAM PNAME 'T-COOL' PARKEY 'TCA' GLOBAL
 ;
@@ -369,21 +369,14 @@ Fmap := RESINI: Fmap :: EDIT 2
  0.0 0.0 0.0 0.0 0.0 0.0
  0.0 0.0 0.0 0.0 0.0 0.0
  0.0 0.0 0.0 0.0 0.0 0.0
- 0.0
-
-* Initialization values needed for THM:
-*  SET-PARAM 'D-COOL' 0.75361
-*  SET-PARAM 'T-FUEL' 559.15
-*  SET-PARAM 'T-COOL' 300.0
-  ;
-
+ 0.0 ;
 
 *----
-*  Variables pour la thermohydraulique
+*  Variables for thermalhydraulics
 *----
 
 REAL FlowRate := 21800. (* m3/h *) 3.0 * ;
-REAL Tinlet ;
+REAL Tinlet OpePressure dmod tfuel ;
 REAL Prel Ptot ;
 REAL Pnom := 2652.0 (* MWth *) ;
 
@@ -399,90 +392,78 @@ REAL sass     := dx 100.0 / 2.0 ** ;               ! m2
 REAL asssect  := sass Tot_tub - Tot_pin - ;        ! m2
 REAL coresect := NbAss asssect * ;                 ! m2
 
+List := GetTechData :: 'TIH' 'UOX' 0 'None' 'DEPLPARAMAVG' ;
+GREP: List :: GETVAL 'dmod'  1 >>dmod<< ;
+GREP: List :: GETVAL 'tmod'  1 >>Tinlet<< ;
+GREP: List :: GETVAL 'tfuel' 1 >>tfuel<< ;
+EVALUATE tfuel := tfuel 273.15 + ;
+List := DELETE: List ;
+List := GetTechData :: 'TIH' 'UOX' 0 'None' 'GENERAL' ;
+GREP: List :: GETVAL 'OpePressure' 1 >>OpePressure<< ;
+List := DELETE: List ;
+
 *----
-*  Variables pour les essais physiques à puissance nulle
-*  (keff, Pdistr, alpha_iso) avec les 3 états de grappes
+*  Variables used for hot zero power physics testing
+*  for 3 different rod insertions
 *----
 LOGICAL Init := $True_L ;
-INTEGER iGrappe iTemp ;
-REAL DeltaT := 3.0 ;
-REAL CB ;
-* Indice pour les grappes C et D :
-* - 1.0 pour non-grappé
-* - 2.0 pour grappé avec 24 AIC
-REAL C D ;
-REAL dmod tcomb ;
+INTEGER iGrappe ;
+REAL CB C D ;
+* Index for control rod banks C and D
+* - 1.0 for totally unroded
+* - 2.0 for insertion of 24 AIC control rods
 
-EVALUATE iTemp := 3 ;
-WHILE iTemp 3 <= DO
-* Densites determinees avec XSteam 2.6 (IAPWS-IF97)
-!  IF iTemp 1 = THEN
-!    EVALUATE tcomb := 273.15 286.0 + DeltaT + ;
-!    EVALUATE dmod := 0.7480916 ; ! 289
-!  ELSEIF iTemp 2 = THEN
-!    EVALUATE tcomb := 273.15 286.0 + DeltaT - ;
-!    EVALUATE dmod := 0.7590219 ; ! 283
-!  ELSEIF iTemp 3 = THEN
-    EVALUATE tcomb := 273.15 286.0 + ;
-    EVALUATE dmod := 0.7536224 ; ! 286
-!  ENDIF ;
+EVALUATE iGrappe := 1 ;
+WHILE iGrappe 3 <= DO
+  IF iGrappe 1 = THEN ! C and D banks inserted
+    EVALUATE CB C D := 960.0 2.0 2.0 ;
+  ELSEIF iGrappe 2 = THEN ! D bank inserted
+    EVALUATE CB C D := 1084.0 1.0 2.0 ;
+  ELSEIF iGrappe 3 = THEN ! ARO
+    EVALUATE CB C D := 1206.0 1.0 1.0 ;
+  ENDIF ;
 
-  EVALUATE iGrappe := 1 ;
-  WHILE iGrappe 3 <= DO
-    IF iGrappe 1 = THEN ! Groupe C et D inseres
-      EVALUATE CB C D := 960.0 2.0 2.0 ;
-    ELSEIF iGrappe 2 = THEN ! Groupe D insere
-      EVALUATE CB C D := 1084.0 1.0 2.0 ;
-    ELSEIF iGrappe 3 = THEN ! TGE
-      EVALUATE CB C D := 1206.0 1.0 1.0 ;
-    ENDIF ;
+  IF Init THEN
+    Fmap := RESINI: Fmap :: SET-PARAM 'C-BORE' <<CB>>
+                            SET-PARAM 'D-COOL' <<dmod>>
+                            SET-PARAM 'T-FUEL' <<tfuel>> ;
+    EVALUATE Init := $False_L ;
+  ELSE
+    Fmap := RESINI: Fmap :: SET-PARAM 'C-BORE' <<CB>>
+                            SET-PARAM 'D-COOL' SAME <<dmod>>
+                            SET-PARAM 'T-FUEL' SAME <<tfuel>> ;
+  ENDIF ;
 
-    IF Init THEN
-      Fmap := RESINI: Fmap :: SET-PARAM 'C-BORE' <<CB>>
-                              SET-PARAM 'D-COOL' <<dmod>>
-                              SET-PARAM 'T-FUEL' <<tcomb>> ;
-      EVALUATE Init := $False_L ;
-    ELSE
-      Fmap := RESINI: Fmap :: SET-PARAM 'C-BORE' <<CB>>
-                              SET-PARAM 'D-COOL' SAME <<dmod>>
-                              SET-PARAM 'T-FUEL' SAME <<tcomb>> ;
-    ENDIF ;
+  MicroFuel MacroTot Matex Fmap := Interp Matex Fmap
+    REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ::
+    <<CB>> <<C>> <<D>> <<TypeRefl>> <<Palier>> <<MethodRefl>> ;
 
-    MicroFuel MacroTot Matex Fmap := Interp Matex Fmap
-      REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ::
-      <<CB>> <<C>> <<D>> <<TypeRefl>> <<Palier>> <<MethodRefl>> ;
+  Track := TRIVAT: GeoRes ::
+     MAXR 1000000 DUAL 2 3 ;
 
-    Track := TRIVAT: GeoRes ::
-       MAXR 1000000 DUAL 2 3 ;
+  System := TRIVAA: MacroTot Track ;
 
-    System := TRIVAA: MacroTot Track ;
+  Flux := FLUD: System Track ::
+    EDIT 1 ADI 4 EXTE 1.0E-6 ACCE 5 3 ;
 
-    Flux := FLUD: System Track ::
-      EDIT 1 ADI 4 EXTE 1.0E-6 ACCE 5 3 ;
+  EVALUATE Prel := 1.0E-9 ; ! 0% PN
+  EVALUATE Ptot := Pnom Prel * ;
 
-    EVALUATE Prel := 1.0E-9 ; ! 0% PN
-    EVALUATE Ptot := Pnom Prel * ;
+  Power Fmap := FLPOW: Fmap Flux Track Matex ::
+   EDIT 2
+   PTOT <<Ptot>>
+   PRINT DISTR POWER ;
 
-    Power Fmap := FLPOW: Fmap Flux Track Matex ::
-     EDIT 2
-     PTOT <<Ptot>>
-     PRINT DISTR POWER ;
+  Thermo Fmap := THM: Fmap ::
+    EDIT 3
+    ASSMB  204 21
+    CWSECT <<coresect>> <<FlowRate>>
+    INLET  <<OpePressure>> <<Tinlet>>
+    RADIUS <<R_Pel>> <<R_Pin_ID>> <<R_Pin_OD>> <<R_Tub_OD>> ;
 
-    EVALUATE Tinlet := 286.0 ;
-    EVALUATE Tinlet := Tinlet 273.15 + ;
-    Thermo Fmap := THM: Fmap ::
-      EDIT 3
-      !CRITFL 2.0E6 (* W/m^2 *)
-      ASSMB  204 21
-      CWSECT <<coresect>> <<FlowRate>>
-      INLET  155.1E+05 <<Tinlet>>
-      RADIUS <<R_Pel>> <<R_Pin_ID>> <<R_Pin_OD>> <<R_Tub_OD>> ;
-
-    MicroFuel MacroTot Track System Flux Power Thermo := DELETE:
-    MicroFuel MacroTot Track System Flux Power Thermo ;
-    EVALUATE iGrappe := iGrappe 1 + ;
-  ENDWHILE ;
-  EVALUATE iTemp := iTemp 1 + ;
+  MicroFuel MacroTot Track System Flux Power Thermo := DELETE:
+  MicroFuel MacroTot Track System Flux Power Thermo ;
+  EVALUATE iGrappe := iGrappe 1 + ;
 ENDWHILE ;
 
 END: ;

@@ -133,7 +133,7 @@ REAL    nextstep stepauto kinf ;
 INTEGER valstep valauto ;
 
 *--- Depletion Conditions
-REAL    dmod tmod cbor tcom barr ;
+REAL    dmod tmod cbor tfuel barr ;
 INTEGER BarType ;
 
 *--- Depletion Loop Variables (Initialized)
@@ -150,7 +150,7 @@ EVALUATE evobeg evoend := 0. 0. ;
 StepList := CreaStepList ::
   <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
 GREP: StepList :: GETVAL 'DeplParam' 1 5
-  >>dmod<< >>cbor<< >>barr<< >>tcom<< >>tmod<< ;
+  >>dmod<< >>cbor<< >>barr<< >>tfuel<< >>tmod<< ;
 GREP: StepList :: LENGTH 'ListBU'     >>nstep<< ;
 GREP: StepList :: LENGTH 'ListAutop'  >>nauto<< ;
 *---- 2) Molar Masses ----------------------------------
@@ -167,7 +167,7 @@ FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
 <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
-<<dmod>> <<cbor>> <<tcom>> <<tmod>> <<TypeDil>>
+<<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
 >>PowMWT<< ;
 ECHO "#PowMWT" PowMWT ;
 *---- 5) Geometry & Tracking ---------------------------
@@ -179,7 +179,7 @@ EVALUATE BarType := barr R_TO_I ;
   DiscrAu
   := Geo15x15 ::
     <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-    <<BarType>> <<tcom>> <<tmod>> ;
+    <<BarType>> <<tfuel>> <<tmod>> ;
 !ELSE
 !  Assmb
 !  AssmbAu
@@ -187,11 +187,11 @@ EVALUATE BarType := barr R_TO_I ;
 !  DiscrAu
 !  := Geo17x17 ::
 !    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-!    <<BarType>> <<tcom>> <<tmod>> ;
+!    <<BarType>> <<tfuel>> <<tmod>> ;
 !ENDIF ;
 
 *---- Summary ---------------------------
-ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tcom ;
+ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tfuel ;
 
 *-------------------------------------------------------
 * Autoprotection + CP + calcul de flux a burnup 0
@@ -311,7 +311,7 @@ IF AssType "UGd" = AssType "UGd8" = + THEN
   Info := UTL: Info :: CREA 'INFOGADO' 1 = <<InfoGado>> ;
 ENDIF ;
 Info := UTL: Info :: CREA 'DeplParam' 5 =
-  <<dmod>> <<cbor>> <<barr>> <<tcom>> <<tmod>> ;
+  <<dmod>> <<cbor>> <<barr>> <<tfuel>> <<tmod>> ;
 Info := UTL: Info :: CREA 'ThermaExpans' 1 = <<ThermaExpans>> ;
 Info := UTL: Info :: CREA 'HF'           1 = <<HF>> ;
 Info := UTL: Info :: CREA 'TypeDil'      1 = <<TypeDil>> ;

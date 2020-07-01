@@ -11,7 +11,7 @@
 *   -of the fuel and the temperatue of moderator
 *----------------------------------------------------------------------
 * Structure of Procedure Appeal :
-* GapDil :: <<UnDilValue>> <<Gestion>> <<GapType>> <<tcom>> <<tmod>>
+* GapDil :: <<UnDilValue>> <<Gestion>> <<GapType>> <<tfuel>> <<tmod>>
 *           >>DilValue<<   ;
 * INPUT Required:
 *  > <<UnDilValue>> [REAL] :
@@ -29,7 +29,7 @@
 *  > <<ThermExp>> [INTEGER] :
 *       ThermExp=0 => Thermal Expansion Desactiviated
 *       ThermExp=1 => Thermal Expansion Activiated
-*  > <<tcom>> [REAL] :
+*  > <<tfuel>> [REAL] :
 *       Fuel Temperature in C
 *  > <<tmod>> [REAL] :
 *       Moderator Temperature in C
@@ -50,7 +50,7 @@ PROCEDURE GetTechData ThermaExpans ;
 STRING GapType ;
 STRING Gestion ;
 REAL UnDilValue ;
-REAL tcom ;
+REAL tfuel ;
 REAL tmod ;
 REAL DilValue ;
 INTEGER ThermExp ;
@@ -80,7 +80,7 @@ LINKED_LIST Distances ;
 ! --- Inputs ---
 ! ---------------------------------------------------------------------
 :: >>UnDilValue<< >>Gestion<< >>GapType<< >>ThermExp<<
->>tcom<< >>tmod<< ;
+>>tfuel<< >>tmod<< ;
 
 IF Gestion "TIH" = THEN
 EVALUATE Model := "TIH" ;
@@ -93,7 +93,7 @@ ENDIF ;
 Distances := GetTechData :: <<Gestion>> <<DUMMY_S>>
  <<DUMMY_I0>> 'None' 'DISTANCES' ;
 
-EVALUATE tclad := .88 tmod * 0.12 tcom * + ;
+EVALUATE tclad := .88 tmod * 0.12 tfuel * + ;
 ! /////////////////////////////////////////////////////////////////////
 ! /// TREATMENTS AND CALCULATION ///
 ! /////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ IF GapType "FUEL" = THEN
 GREP: Distances :: GETVAL 'rFuel' 1 >>rContent<< ;
 GREP: Distances :: GETVAL 'rCladFuel' 1 >>rClad<< ;
 GREP: Distances :: GETVAL 'eCladFuel' 1 >>eClad<< ;
-EVALUATE TempContent := tcom  ;
+EVALUATE TempContent := tfuel  ;
 EVALUATE TempClad    := tclad ;
 EVALUATE MatContent := "UO2"  ;
 EVALUATE MatClad    := "Zr4" ;

@@ -12,7 +12,7 @@
 *------------------------------------------------------
 * Structure of Procedure Appeal :
 * GridDilData := GridDil :: <<Gestion>> <<TypeDil>> <<Model>>
-*  <<tcom>> <<tmod>> ;
+*  <<tfuel>> <<tmod>> ;
 *
 * INPUT Required:
 *  > <<Gestion>> [STR] :
@@ -27,7 +27,7 @@
 *  > <<ThermExp>> [INTEGER] :
 *       ThermExp=0 => Thermal Expansion Desactiviated
 *       ThermExp=1 => Thermal Expansion Activiated
-*  > <<tcom>> [REAL] :
+*  > <<tfuel>> [REAL] :
 *       Fuel Temperature in C
 *  > <<tmod>> [REAL] :
 *       Moderator Temperature in C
@@ -43,11 +43,11 @@ PROCEDURE GetTechData ThermaExpans ;
 STRING Gestion ;
 STRING TypeDil ;
 STRING Model ;
-REAL tcom ;
+REAL tfuel ;
 REAL tmod ;
 INTEGER ThermExp ;
 
-:: >>Gestion<< >>TypeDil<< >>ThermExp<< >>tcom<< >>tmod<< ;
+:: >>Gestion<< >>TypeDil<< >>ThermExp<< >>tfuel<< >>tmod<< ;
 
 ! NOTE : SUFFIXES MEANING :
 ! _x_y -> _x : grid type (bound our inter), _y : grid part (sleeve or crate)
@@ -309,7 +309,7 @@ EVALUATE w_SS_Cr  := w_SS_Ext_Cr  NbGridExt *
  w_SS_Int_Cr  NbGridInt *  + ;
 EVALUATE hGrid := hActiv ;
 EVALUATE hGridExpMat := 'UO2' ;
-EVALUATE hGridExpTemp := tcom ;
+EVALUATE hGridExpTemp := tfuel ;
 
 ELSEIF TypeDil 'NULL' = THEN
 EVALUATE w_Inc_Sl := 1.E-20 ;
@@ -320,7 +320,7 @@ EVALUATE w_SS_Sl  := 1.E-20 ;
 EVALUATE w_SS_Cr  := 1.E-20 ;
 EVALUATE hGrid := hActiv ;
 EVALUATE hGridExpMat := 'UO2' ;
-EVALUATE hGridExpTemp := tcom ;
+EVALUATE hGridExpTemp := tfuel ;
 
 ELSEIF TypeDil 'SEMI' = THEN
 GREP: GridData :: GETVAL 'wIncGr_In_Sl' 1 >>w_Inc_Sl<< ;
@@ -371,7 +371,7 @@ ENDIF ;
 IF TypeDil "TOT" = TypeDil "SEMI" = TypeDil "SEMB" =
  + +  THEN
 !\\\\\\\\\\\\ THERMAL EXPANSION \\\\\\\\\\\\\\\\\\\\\\\\
-EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ;
+EVALUATE tclad := 0.12 tfuel * 0.88 tmod * + ;
   IF ThermExp  0 <> THEN
   ! ----------- densities expansion ----------------------
    ThermaExpans ::  <<dZr4>> "Zr4" <<tmod>> "Density"

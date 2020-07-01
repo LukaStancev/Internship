@@ -176,10 +176,10 @@ ECHO "$$$" ;
 * Variables
 *-------------------------------------------------
 *--- divers
-REAL    xtr ; ! TCOM      Mil. Combustible
+REAL    xtr ;
 INTEGER iter := 0 ;
 INTEGER maxiter ;
-INTEGER iComb ; ! 1er combustible (COMB1.1) pour temperature SAPHYB
+INTEGER iComb ; ! 1st fuel (COMB1.1) for SAPHYB temperature
 INTEGER bstep ; ! Burnup Step dans L_BURNUP
 INTEGER    i    j    k    l    m := 1 1 1 1 1 ;
 INTEGER   di   dj   dk   dl   dm ;
@@ -194,22 +194,22 @@ STRING  SaveDir ; ! Nom du DIR dans objet EDI (avec '_2G')
 STRING  Noml ; ! 'Nom' de la Bib (NOML)
 
 *--- nominal
-REAL    tmod_nom_K tclad_nom_K tcom_nom_K ;
-REAL    dmod_nom cbor_nom barr_nom tcom_nom tmod_nom tclad_nom ;
+REAL    tmod_nom_K tclad_nom_K tfuel_nom_K ;
+REAL    dmod_nom cbor_nom barr_nom tfuel_nom tmod_nom tclad_nom ;
 !NB: tclad_nom & tmod_nom are not real depletion parameters
 !They are completely determined by the true depletion parameters
 !tmod_nom imposed by pressure (isobar cond at 155 bar) and dmod_nom
-!tclad_nom imposed by tmod_nom and tcom_nom
+!tclad_nom imposed by tmod_nom and tfuel_nom
 
 *--- Branches
 REAL    burn ;
 INTEGER BarType ;
-REAL    tmod_K tclad_K tcom_K ;
-REAL    cbor tcom dmod barr tmod tclad ;
+REAL    tmod_K tclad_K tfuel_K ;
+REAL    cbor tfuel dmod barr tmod tclad ;
 !NB: tclad & tmod are not real depletion parameters
 !They are completely determined by the true depletion parameters
 !tmod imposed by pressure (isobar cond at 155 bar) and dmod
-!tclad imposed by tmod and tcom
+!tclad imposed by tmod and tfuel
 
 
 *-------------------------------------------------
@@ -254,9 +254,9 @@ StepList := CreaStepList ::
 *-------------------------------------------------
 GREP: StepList :: GETVAL 'DeplParam' 1 5
   >>dmod_nom<< >>cbor_nom<< >>barr_nom<<
-  >>tcom_nom<< >>tmod_nom<< ;
+  >>tfuel_nom<< >>tmod_nom<< ;
 
-ECHO "#NOM" dmod_nom cbor_nom barr_nom tcom_nom ;
+ECHO "#NOM" dmod_nom cbor_nom barr_nom tfuel_nom ;
 
 *--- Nb. Branches
 GREP: StepList :: LENGTH 'Burnup'   >>di<< ;
@@ -267,9 +267,9 @@ GREP: StepList :: LENGTH 'Rods'     >>dm<< ;
 
 EVALUATE maxiter := dk dl * dj * dm * ;
 
-EVALUATE tclad_nom    := 0.12 tcom_nom *
+EVALUATE tclad_nom    := 0.12 tfuel_nom *
                          0.88 tmod_nom * + ;
-EVALUATE tcom_nom_K   := tcom_nom 273.15 + ;
+EVALUATE tfuel_nom_K  := tfuel_nom 273.15 + ;
 EVALUATE tmod_nom_K   := tmod_nom 273.15 + ;
 EVALUATE tclad_nom_K  := tclad_nom 273.15 + ;
 
@@ -306,14 +306,14 @@ WHILE m dm <= DO
      Discr
      DiscrAu := Geo15x15 ::
       <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-      <<BarType>> <<tcom_nom>> <<tmod_nom>> ;
+      <<BarType>> <<tfuel_nom>> <<tmod_nom>> ;
 !  ELSE
 !    Assmb
 !    AssmbAu
 !    Discr
 !    DiscrAu := Geo17x17 ::
 !      <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-!      <<BarType>> <<tcom_nom>> <<tmod_nom>> ;
+!      <<BarType>> <<tfuel_nom>> <<tmod_nom>> ;
 !  ENDIF ;
   IF BiblXS "MULTICOMPO" = THEN
     GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := CreaGeoHom
@@ -324,8 +324,8 @@ WHILE m dm <= DO
     GREP: StepList :: GETVAL 'ConcBore' <<j>> >>cbor<< ;
 
     WHILE k dk <= DO
-      GREP: StepList :: GETVAL 'TempComb' <<k>> >>tcom<< ;
-      EVALUATE tcom_K := tcom 273.15 + ;
+      GREP: StepList :: GETVAL 'TempComb' <<k>> >>tfuel<< ;
+      EVALUATE tfuel_K := tfuel 273.15 + ;
 
       WHILE l dl <= DO
         EVALUATE iter := iter 1 + ;
@@ -334,19 +334,19 @@ WHILE m dm <= DO
         GREP: StepList :: GETVAL 'DensModo' <<l>> >>dmod<< ;
 
         !EVALUATE tmod := tmod_K 273.15 - ;
-        EVALUATE tclad := 0.88 tmod_nom * 0.12 tcom * + ;
+        EVALUATE tclad := 0.88 tmod_nom * 0.12 tfuel * + ;
         EVALUATE tclad_K := tclad 273.15 + ;
         !ECHO "@@@@@@@@@@@@@@ TEMPERATURES BRANCHING @@@@@@@@@@@@@@" ;
         !ECHO "tmod  : " tmod  ;
         !ECHO "tclad : " tclad ;
-        !ECHO "tcom  : " tcom  ;
+        !ECHO "tfuel : " tfuel ;
         !ECHO "tmod_K  : " tmod_K  ;
         !ECHO "tclad_K : " tclad_K ;
-        !ECHO "tcom_K  : " tcom_K  ;
+        !ECHO "tfuel_K : " tfuel_K ;
         !!<<<<
 
         ECHO "# iter" iter "BURN" burn "DMOD" dmod ;
-        ECHO "# TCOM" tcom_K "CBOR" cbor "BARR" barr ;
+        ECHO "# TFUEL" tfuel_K "CBOR" cbor "BARR" barr ;
 
         Library := ImpLibrary ;
 
@@ -554,10 +554,10 @@ WHILE m dm <= DO
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-            MIX 100 <<tcom_K>> (* COMB.1 *)
-            MIX 101 <<tcom_K>> (* COMB.2 *)
-            MIX 102 <<tcom_K>> (* COMB.3 *)
-            MIX 103 <<tcom_K>> (* COMB.4 *)
+            MIX 100 <<tfuel_K>> (* COMB.1 *)
+            MIX 101 <<tfuel_K>> (* COMB.2 *)
+            MIX 102 <<tfuel_K>> (* COMB.3 *)
+            MIX 103 <<tfuel_K>> (* COMB.4 *)
             ;
 *------------------------------------------------------
 * Set Libraries at burnup
@@ -574,18 +574,18 @@ WHILE m dm <= DO
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-            MIX 110 <<tcom_K>> (* COMB1.1 [LOW PU] *)
-            MIX 111 <<tcom_K>> (* COMB1.2 *)
-            MIX 112 <<tcom_K>> (* COMB1.3 *)
-            MIX 113 <<tcom_K>> (* COMB1.4 *)
-            MIX 120 <<tcom_K>> (* COMB2.1 [AVG PU] *)
-            MIX 121 <<tcom_K>> (* COMB2.2 *)
-            MIX 122 <<tcom_K>> (* COMB2.3 *)
-            MIX 123 <<tcom_K>> (* COMB2.4 *)
-            MIX 130 <<tcom_K>> (* COMB3.1 [HIGH PU] *)
-            MIX 131 <<tcom_K>> (* COMB3.2 *)
-            MIX 132 <<tcom_K>> (* COMB3.3 *)
-            MIX 133 <<tcom_K>> (* COMB3.4 *)
+            MIX 110 <<tfuel_K>> (* COMB1.1 [LOW PU] *)
+            MIX 111 <<tfuel_K>> (* COMB1.2 *)
+            MIX 112 <<tfuel_K>> (* COMB1.3 *)
+            MIX 113 <<tfuel_K>> (* COMB1.4 *)
+            MIX 120 <<tfuel_K>> (* COMB2.1 [AVG PU] *)
+            MIX 121 <<tfuel_K>> (* COMB2.2 *)
+            MIX 122 <<tfuel_K>> (* COMB2.3 *)
+            MIX 123 <<tfuel_K>> (* COMB2.4 *)
+            MIX 130 <<tfuel_K>> (* COMB3.1 [HIGH PU] *)
+            MIX 131 <<tfuel_K>> (* COMB3.2 *)
+            MIX 132 <<tfuel_K>> (* COMB3.3 *)
+            MIX 133 <<tfuel_K>> (* COMB3.4 *)
             ;
 *------------------------------------------------------
 * Set Libraries at burnup
@@ -610,16 +610,16 @@ WHILE m dm <= DO
 *------------------------------------------------------
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-            MIX 100 <<tcom_K>> (* COMB1.1 [UOX std] *)
-            MIX 101 <<tcom_K>> (* COMB1.2 *)
-            MIX 102 <<tcom_K>> (* COMB1.3 *)
-            MIX 103 <<tcom_K>> (* COMB1.4 *)
-            MIX 140 <<tcom_K>> (* COMB2.1 [UOX+Gd] *)
-            MIX 141 <<tcom_K>> (* COMB2.2 *)
-            MIX 142 <<tcom_K>> (* COMB2.3 *)
-            MIX 143 <<tcom_K>> (* COMB2.4 *)
-            MIX 144 <<tcom_K>> (* COMB2.5 *)
-            MIX 145 <<tcom_K>> (* COMB2.6 *)
+            MIX 100 <<tfuel_K>> (* COMB1.1 [UOX std] *)
+            MIX 101 <<tfuel_K>> (* COMB1.2 *)
+            MIX 102 <<tfuel_K>> (* COMB1.3 *)
+            MIX 103 <<tfuel_K>> (* COMB1.4 *)
+            MIX 140 <<tfuel_K>> (* COMB2.1 [UOX+Gd] *)
+            MIX 141 <<tfuel_K>> (* COMB2.2 *)
+            MIX 142 <<tfuel_K>> (* COMB2.3 *)
+            MIX 143 <<tfuel_K>> (* COMB2.4 *)
+            MIX 144 <<tfuel_K>> (* COMB2.5 *)
+            MIX 145 <<tfuel_K>> (* COMB2.6 *)
             ;
 *------------------------------------------------------
 * Set Libraries at burnup
@@ -653,7 +653,7 @@ WHILE m dm <= DO
 *------------------------------------------------------
 * Calcul des Pij et Calcul de flux
 *------------------------------------------------------
-        ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tcom ;
+        ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TF=" tfuel ;
 
         CP := ASM: LibraryAu Discr :: EDIT 0 ARM ;
         Calc := FLU: CP LibraryAu Discr :: EDIT 0
@@ -785,7 +785,7 @@ WHILE m dm <= DO
             COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
             NOML <<Noml>>
             PARA 'Concentration_Bore' 'CBOR' VALE FLOT
-            PARA 'Temp_Combustible'   'TCOM' TEMP LibraryAu <<iComb>>
+            PARA 'Temp_fuel'          'TFUE' TEMP LibraryAu <<iComb>>
             PARA 'Densite_Moderateur' 'DMOD' VALE FLOT
             PARA 'Barres_Controle'    'BARR' VALE FLOT
             PARA 'Burnup'             'BURN' IRRA
@@ -823,7 +823,7 @@ WHILE m dm <= DO
             COMM 'Therm' <<ThermaExp_S>> 'TypeD' <<TypeDil>> ENDC
             COMM <<Noml>> ENDC
             PARA 'CBOR' VALU REAL                 ! Concentration_Bore
-            PARA 'TCOM' TEMP LibraryAu <<iComb>>  ! Temp_Combustible
+            PARA 'TFUE' TEMP LibraryAu <<iComb>>  ! Temp_Fuel
             PARA 'DMOD' VALU REAL                 ! Densite_Moderateur
             PARA 'BARR' VALU REAL                 ! Barres_Controle
             PARA 'BURN' IRRA                      ! Burnup

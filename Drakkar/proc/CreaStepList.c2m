@@ -36,13 +36,6 @@ STRING Gestion AssType ConfigPyrex ;
 STRING TypeMatrix   ;
   :: >>TypeMatrix<< ;
 
-*--- Max Number of histories (except Control Rod ones)
-* Since the CR configurations are variable and recover by GetTechData.c2m,
-* the user needs to fix the number of history calculations (dmod, tcom,
-* cbor, etc.) that are defined before the CR ones.
-*--
-INTEGER NbHistWORod := 6 ;
-
 *-----------------------------------------------------
 * Variables
 *-----------------------------------------------------
@@ -50,27 +43,12 @@ INTEGER NbHistWORod := 6 ;
 * Dummy value
 INTEGER DUMMY := 0 ;
 
-* Average Operative (Nominal) conditions
-REAL dmod_avg  ; ! [g.cm-3]
-REAL tmod_avg  ; ! [degC]
-REAL cbor_avg  ; ! [ppm]
-REAL tcom_avg  ; ! [degC]
-REAL barr_avg  ; ! [REAL]
-
 * Depletion Conditions
 REAL dmod      ; ! [g.cm-3]
 REAL tmod      ; ! [degC]
 REAL cbor      ; ! [ppm]
-REAL tcom      ; ! [degC]
+REAL tfuel     ; ! [degC]
 REAL barr      ; ! [REAL]
-
-* Branch conditions
-REAL dmod_low dmod_hgh cbor_hgh tcom_low ;
-
-* Control Rod Histories/Branches
-INTEGER NbConfRod ;         ! Number of control rod configurations
-INTEGER idxCR     ;
-REAL    valCR     ;
 
 *======================================================
 * AVERAGE OPERATIVE CONDITIONS
@@ -81,10 +59,10 @@ REAL    valCR     ;
 *--- T/H operative parameters
 AvgList := GetTechData ::
   <<Gestion>> <<AssType>> <<DUMMY>> <<ConfigPyrex>> 'DEPLPARAMAVG' ;
-GREP: AvgList :: GETVAL 'dmod' 1 >>dmod_avg<< ;
-GREP: AvgList :: GETVAL 'cbor' 1 >>cbor_avg<< ;
-GREP: AvgList :: GETVAL 'tcom' 1 >>tcom_avg<< ;
-GREP: AvgList :: GETVAL 'tmod' 1 >>tmod_avg<< ;
+GREP: AvgList :: GETVAL 'dmod'  1 >>dmod<< ;
+GREP: AvgList :: GETVAL 'cbor'  1 >>cbor<< ;
+GREP: AvgList :: GETVAL 'tfuel' 1 >>tfuel<< ;
+GREP: AvgList :: GETVAL 'tmod'  1 >>tmod<< ;
 
 *--- Absorbers configuration
 * The first value in the 'Rods' array corresponds to the rod
@@ -94,7 +72,7 @@ GREP: AvgList :: GETVAL 'tmod' 1 >>tmod_avg<< ;
 *---
 RodList := GetTechData ::
   <<Gestion>> <<AssType>> <<DUMMY>> <<ConfigPyrex>> 'RODLIST' ;
-GREP: RodList :: GETVAL 'Rods' 1 >>barr_avg<< ;
+GREP: RodList :: GETVAL 'Rods' 1 >>barr<< ;
 
 *======================================================
 * INITIALISE StepList WITH RodList
@@ -264,29 +242,6 @@ StepList := UTL: StepList ::
 36000.   48000.   60000.   72000.
 ;
 
-*======================================================
-* BRANCH STRUCTURE
-*------------------------------------------------------
-* By default an identical branch structure is defined for
-* nominal and off/nominal depletions.
-* As an example, this is explained by the fact that with
-* regards of the concatenation of single history PMAX files
-* in a multi-history PMAX, it works only with single histories
-* having identical branch structures.
-* However, different branch structures can be defined for each
-* nominal/off-nominal depletion : it is sufficient to delete
-* the block in StepList using UTL:, and to define a new
-* block with an identical name, for the case of interest.
-* Example :
-*      StepList := UTL: StepList ::
-*        DEL  'Rods'
-*        CREA 'Rods' 2 =
-*          <<valCR>> <<barr_avg>>
-*      ;
-*-----------------------------------------------------
-
-!REAL tcomb := 547.0 32.0 - 1.8 / ;
-REAL tcomb := 286.0 ;
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 *  N-MATRIX                                           *
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -322,20 +277,17 @@ ELSEIF TypeMatrix "T" = THEN
 
   !*! DENSITY MODERATOR
   StepList := UTL: StepList ::
-    CREA 'DensModo' 2 =
-       .74     .82
+    CREA 'DensModo' 1 = <<dmod>>
   ;
 
   !*! BORON CONCENTRATION
   StepList := UTL: StepList ::
-    CREA 'ConcBore' 3 =
-       600.   1200.   1800.
+    CREA 'ConcBore' 3 = 600. 1200. 1800.
   ;
 
   !*! FUEL TEMPERATURE
   StepList := UTL: StepList ::
-    CREA 'TempComb' 1 =
-     <<tcomb>>
+    CREA 'TempComb' 1 = <<tfuel>>
   ;
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -348,16 +300,16 @@ ELSEIF TypeMatrix "PAR-BEAV" = THEN
   ECHO "The choosen matrix is : PARCS (BEAVRS AND WATTS BAR) MATRIX " ;
 
   !*! DEPLETION PARAMETERS
-  EVALUATE dmod_avg :=    0.71690 ;
-  EVALUATE cbor_avg :=  500.0     ;
-  EVALUATE barr_avg :=    1.0     ;
-  EVALUATE tcom_avg :=  526.85    ;
+  EVALUATE dmod  :=   0.71690 ;
+  EVALUATE cbor  := 500.0     ;
+  EVALUATE barr  :=   1.0     ;
+  EVALUATE tfuel := 526.85    ;
 
   !*! DENSITY MODERATOR
   StepList := UTL: StepList ::
     CREA 'DensModo' 3 =
       0.64470
-      <<dmod_avg>>
+      <<dmod>>
       0.76981
   ;
 
@@ -365,7 +317,7 @@ ELSEIF TypeMatrix "PAR-BEAV" = THEN
   StepList := UTL: StepList ::
     CREA 'ConcBore' 3 =
       0.0
-      <<cbor_avg>>
+      <<cbor>>
       1500.0
   ;
 
@@ -373,44 +325,8 @@ ELSEIF TypeMatrix "PAR-BEAV" = THEN
   StepList := UTL: StepList ::
     CREA 'TempComb' 3 =
     281.85
-    <<tcom_avg>>
+    <<tfuel>>
     1326.15
-  ;
-
-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-*  TEST-MATRIX                                        *
-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-ELSEIF TypeMatrix "TEST" = THEN
-
-  ECHO "The choosen matrix is : TEST MATRIX " ;
-
-  !*! DENSITY MODERATOR
-  EVALUATE dmod_low :=  dmod_avg .05 - ;
-  EVALUATE dmod_hgh :=  dmod_avg .04 + ;
-  StepList := UTL: StepList ::
-    CREA 'DensModo' 3 =
-      <<dmod_low>> <<dmod_avg>> <<dmod_hgh>>
-  ;
-
-  !*! BORON CONCENTRATION
-  EVALUATE cbor_hgh :=  cbor_avg 2. * ;
-  StepList := UTL: StepList ::
-    CREA 'ConcBore' 2 =
-      <<cbor_avg>> <<cbor_hgh>>
-  ;
-
-  !*! FUEL TEMPERATURE
-  EVALUATE tcom_low :=  tmod_avg 20. - ;
-  StepList := UTL: StepList ::
-    CREA 'TempComb' 2 =
-    <<tcom_low>> <<tcom_avg>>
-  ;
-
-  !*! CONTROL ROD COMPOSITION
-  StepList := UTL: StepList ::
-    DEL  'Rods'
-    CREA 'Rods' 1 =
-      1.
   ;
 
 ELSEIF TypeMatrix "DUMMY" = THEN
@@ -421,23 +337,19 @@ ELSE
   ABORT: ;
 ENDIF ;
 
-*--- INITIALISE DEPLETION PARAMETERS
-EVALUATE dmod     tmod     cbor     tcom     barr   :=
-       dmod_avg tmod_avg cbor_avg tcom_avg barr_avg ;
-
 *======================================================
 * DEPLETION CONDITIONS (EvoNominale.x2m)
 *------------------------------------------------------
 StepList := UTL: StepList ::
   CREA 'DeplParam' 5 =
-  <<dmod>> <<cbor>> <<barr>> <<tcom>> <<tmod>>
+  <<dmod>> <<cbor>> <<barr>> <<tfuel>> <<tmod>>
  ;
 
 ECHO "$$$ Summary depletion conditions" ;
-ECHO "  - dmod : " dmod ;
-ECHO "  - cbor : " cbor ;
-ECHO "  - barr : " barr ;
-ECHO "  - tcom : " tcom ;
+ECHO "  - dmod  : " dmod ;
+ECHO "  - cbor  : " cbor ;
+ECHO "  - barr  : " barr ;
+ECHO "  - tfuel : " tfuel ;
 
 *======================================================
 * Print StepList

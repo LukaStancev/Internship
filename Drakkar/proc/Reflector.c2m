@@ -42,7 +42,7 @@ REAL PowMWT ;
 INTEGER ThermaExpans := 0 ;
 
 *--- Depletion Conditions
-REAL    dmod tmod cbor tcom barr ;
+REAL    dmod tmod cbor tfuel barr ;
 INTEGER BarType ;
 
 *-------------------------------------------------------
@@ -55,7 +55,7 @@ INTEGER BarType ;
 StepList := CreaStepList ::
   <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
 GREP: StepList :: GETVAL 'DeplParam' 1 5
-  >>dmod<< >>cbor<< >>barr<< >>tcom<< >>tmod<< ;
+  >>dmod<< >>cbor<< >>barr<< >>tfuel<< >>tmod<< ;
 
 *---- 2) Molar Masses ----------------------------------
 MolarMasses := GetMolarMass :: <<FileNuclData>> <<Evaluation>> ;
@@ -73,7 +73,7 @@ FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
 <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
-<<dmod>> <<cbor>> <<tcom>> <<tmod>> <<TypeDil>>
+<<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
 >>PowMWT<< ;
 ECHO "#PowMWT" PowMWT ;
 
@@ -81,7 +81,7 @@ ECHO "#PowMWT" PowMWT ;
 EVALUATE BarType := barr R_TO_I ;
 Assmb AssmbAu Discr DiscrAu := Geo15x15 ::
   <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-  <<BarType>> <<tcom>> <<tmod>> ;
+  <<BarType>> <<tfuel>> <<tmod>> ;
 Assmb AssmbAu := DELETE: Assmb AssmbAu ;
 
 *----

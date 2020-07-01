@@ -9,7 +9,7 @@
 * CALL      :                                                   *
 *   MicroFuel  MacroTot Matex Fmap := Steady                    *
 *  [MicroFuel] MacroTot Matex Fmap ::                           *
-*        <<CB>> <<creaInter>> ;                                 *
+*        <<CB>> ;                                               *
 *                                                               *
 * Parameters: input                                             *
 *  Fmap      carte de combustible (fuel map)                    *
@@ -19,8 +19,6 @@
 *  XeMicroF  objet contenant les sections efficaces interpolees *
 *  LibType   type de bibliotheque combustible (SAPHYB ou        *
 *            MULTICOMPO)                                        *
-*  creaInter $True_L  : creation de l'objet                     *
-*            $False_L : modification de l'objet                 *
 *                                                               *
 *****************************************************************
 PARAMETER MicroFuel MacroTot Matex Fmap
@@ -36,11 +34,10 @@ LINKED_LIST MacroFuel MacroRefl ;
 
 REAL CB C D ;
 STRING TypeRefl Palier MethodRefl ;
-LOGICAL creaInter ;
 :: >>CB<< >>C<< >>D<< >>TypeRefl<< >>Palier<< >>MethodRefl<< ;
 
 *----
-* Variables pour les sections reflecteur Marguet
+* Variables for Marguet reflector
 *----
 REAL b10 b11 MBNat B10f B11f BTot ;
 REAL avogadro := 6.022094E+23 ;
@@ -54,7 +51,7 @@ REAL SigmaAbs2h SigmaAbs2b SigmaAbs2r ;
 REAL Total1h Total2h Total1b Total2b Total1r Total2r ;
 
 *----
-*  Sections combustible
+*  Fuel cross sections
 *----
 MicroFuel := SCR:
   UOX195 UOX255_Py8 UOX255_Py12 UOX310 UOX310_Py12 Fmap ::
@@ -64,7 +61,7 @@ MicroFuel := SCR:
      MIX 4
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' 1.
         MICRO ALL
             'B10'      *
@@ -84,7 +81,7 @@ MicroFuel := SCR:
      MIX 5
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' 4.
         MICRO ALL
             'B10'      *
@@ -104,7 +101,7 @@ MicroFuel := SCR:
      MIX 6
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' 4.
         MICRO ALL
             'B10'      *
@@ -124,7 +121,7 @@ MicroFuel := SCR:
      MIX 7
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' 1.
         MICRO ALL
             'B10'      *
@@ -144,7 +141,7 @@ MicroFuel := SCR:
      MIX 8
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' 4.
         MICRO ALL
             'B10'      *
@@ -164,7 +161,7 @@ MicroFuel := SCR:
      MIX 9
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' <<C>>
         MICRO ALL
             'B10'      *
@@ -184,7 +181,7 @@ MicroFuel := SCR:
      MIX 10
         INST-BURN
         SET 'DMOD' MAP
-        SET 'TCOM' MAP
+        SET 'TFUE' MAP
         SET 'BARR' <<D>>
         MICRO ALL
             'B10'      *
@@ -204,7 +201,7 @@ MicroFuel := SCR:
 MacroFuel := MicroFuel :: STEP UP MACROLIB ;
 
 *----
-*  Reflecteur
+*  Reflector
 *----
 
 REAL dCloisEnvel ;
@@ -233,11 +230,11 @@ IF TypeRefl "TousPaliers" = THEN
     ENDMIX
     ;
 
-ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyRecal" = + THEN
+ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyAdjus" = + THEN
 * Source : "La physique des réacteurs nucléaires",
 *          S. Marguet, 2nd édition, p.864.
   EVALUATE D1h D1b D2h D2b := 1.30 1.30 0.40 0.40 ;
-  IF TypeRefl "MargCpyRecal" = THEN
+  IF TypeRefl "MargCpyAdjus" = THEN
     EVALUATE D1r := 1.78 ;
   ELSE
     EVALUATE D1r := 1.30 ;
@@ -246,7 +243,7 @@ ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyRecal" = + THEN
   EVALUATE SigmaRalenth SigmaRalentb SigmaRalentr :=
            0.0218       0.0210       0.00474 ;
 
-  * Dependance en CB
+  * Boron dependency
   EVALUATE densh densb densr := 0.667 0.754 0.714 ;
   EVALUATE Voliqh Voliqb Voliqr := 0.61796 0.66922 0.74273 ;
 
@@ -258,19 +255,13 @@ ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyRecal" = + THEN
   EVALUATE SigmaBoAbs2b := 344.97 ;
   EVALUATE SigmaBoAbs2r :=  63.30 ;
 
-  * Dois-je utiliser N_B10 ou N_B ? Je dirais le second, car la
-  * CB permet de déterminer N_B.
-
   EVALUATE b10 := 10.01294 ;
   EVALUATE b11 := 11.00928 ;
   EVALUATE B10f := .2 ;
   EVALUATE B11f := .8 ;
   EVALUATE MBNat := b10 B10f * b11 B11f * + ;
 
-  * Variable dmod commentee et remise dans SigmaAbs
-  EVALUATE BTot  := (* dmod *) CB 1.0E-6 * avo_conc * MBNat / ;
-  * EVALUATE B10 := BTot B10f * ;
-  * EVALUATE B11 := BTot B11f * ;
+  EVALUATE BTot  := CB 1.0E-6 * avo_conc * MBNat / ;
 
   EVALUATE SigmaAbs1h := 0.0119 SigmaBoAbs1h BTot * densh * Voliqh * + ;
   EVALUATE SigmaAbs1b := 0.0157 SigmaBoAbs1b BTot * densb * Voliqb * + ;
@@ -315,7 +306,7 @@ ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyRecal" = + THEN
            2 2 (*2->2*) 0.0 (*1->2*) <<SigmaRalenth>>
             ;
 ELSE
-  ECHO "Modelisation reflecteur inconnue" ;
+  ECHO "Unknown reflector modelling" ;
   ABORT: ;
 ENDIF ;
 MacroTot Matex := MACINI: Matex MacroRefl MacroFuel ;
