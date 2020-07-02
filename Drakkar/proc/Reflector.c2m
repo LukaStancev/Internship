@@ -1,21 +1,14 @@
-PARAMETER Multicompo ;
+PARAMETER Multicompo ReflSpecs :: ::: LINKED_LIST ReflSpecs ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
-  Geo15x15 AdaptIso ;
-LINKED_LIST
-  Library LibDilut CP CALC XS AUTO_LIB MACRO
-  MACRO_FUEL_1 MACRO_FUEL_2
-  StepList
-  MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
+  Geo15x15 AdaptIso LefebvreLeb Koebke ;
+LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop
+  Library LibDilut CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2
+  StepList MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
   BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat
-  InNat AIC HfR Gd2O3 BP
-  ConcMode MacrRefl Edition
-  GEOM TRACK SYSTEM FLUX OUT TRKFIL
-  Assmb AssmbAu Discr DiscrAu
-  nbZones FractionVol ;
-MODULE
-  LIB: GEO: SYBILT: ASM: FLU: EDI: COMPO: DELETE:
-  USS: UTL: END: ABORT: MAC: SNT: GREP: MSTR: ;
-LINKED_LIST ListeIsot ListeAutop ;
+  InNat AIC HfR Gd2O3 BP ConcMode MacrRefl Edition nbZones FractionVol
+  GEOM TRACK SYSTEM FLUX OUT ;
+MODULE LIB: GEO: ASM: FLU: EDI: COMPO: DELETE: USS: UTL: END: ABORT:
+  MAC: SNT: GREP: MSTR: ;
 
 *---- General informations    --------------------------
 *---
@@ -83,17 +76,6 @@ Assmb AssmbAu Discr DiscrAu := Geo15x15 ::
   <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
   <<BarType>> <<tfuel>> <<tmod>> ;
 Assmb AssmbAu := DELETE: Assmb AssmbAu ;
-
-*----
-*  Self-Shielding calculation SYBIL
-*  Transport calculation      SYBIL
-*  Flux calculation for B1 homogeneous leakage
-*----
-!AUTO_LIB := USS: Library DiscrAu :: EDIT 0 GRMIN 45 ;
-!CP := ASM: AUTO_LIB Discr :: EDIT 0 ARM ;
-!CALC := FLU: CP AUTO_LIB Discr :: TYPE B B1 SIGS ;
-!END: ;
-!QUIT "LIST" .
 
 *--------------------------------------------------------------------
 * Loop over the 2 cases, in order to have two different spectrum ratios
@@ -174,7 +156,7 @@ Library := LIB: Library ::
     TYPE B B1 SIGS ;
   XS := EDI: AUTO_LIB Discr CALC ::
     EDIT 0 SAVE MERGE COMP ;
-* Recuperation des sections du combustible dans Mix 1
+* Recovery of fuel cross sections in Mix 1
   IF CASE 1 = THEN
     MACRO_FUEL_1 := XS :: STEP UP 'REF-CASE0001' STEP UP MACROLIB ;
   ELSEIF CASE 2 = THEN
@@ -183,11 +165,6 @@ Library := LIB: Library ::
   AUTO_LIB CP CALC XS := DELETE: AUTO_LIB CP CALC XS ;
 EVALUATE CASE := CASE 1 + ;
 ENDWHILE ; ! Boucle sur les CASE
-
-!XS := UTL: XS :: DUMP ;
-
-! END: ;
-! QUIT "LIST" .
 
 Library Discr := DELETE: Library Discr ;
 
@@ -202,76 +179,85 @@ Library := LIB: ::
 ;
 
 *--------------------------------------------------------------------
-*-------------------Début des calculs de réflecteur------------------
+*-------------------Beginning of reflector computations--------------
 *--------------------------------------------------------------------
-
-Multicompo := COMPO: ::
-  EDIT 1
+Multicompo := COMPO: :: EDIT 1
   STEP UP 'Radial'
-    COMM 'Radial reflector XS, from IRSN/LNR.' ENDC
+    COMM 'Radial reflector XS, from IRSN/LN.' ENDC
     PARA 'C-BORE'      VALU REAL
     PARA 'Method'      VALU CHAR
     PARA 'dCloisEnvel' VALU REAL
     PARA 'Palier'      VALU CHAR
     INIT
-  STEP UP 'Bas'
-    COMM 'Lower reflector XS, from IRSN/LNR.' ENDC
+  STEP UP 'Bottom'
+    COMM 'Bottom reflector XS, from IRSN/LN.' ENDC
     PARA 'C-BORE'      VALU REAL
     PARA 'Method'      VALU CHAR
     INIT
-  STEP UP 'Haut'
-    COMM 'Higher reflector XS, from IRSN/LNR.' ENDC
+  STEP UP 'Top'
+    COMM 'Top reflector XS, from IRSN/LN.' ENDC
     PARA 'C-BORE'      VALU REAL
     PARA 'Method'      VALU CHAR
     INIT
   ;
 
-*--------------------------------------------------------------------
-* Variables pour le réflecteur
-*--------------------------------------------------------------------
+* Gap where the flux is retrieved at the interface
+REAL FluxGap := 0.005 ; ! [cm]
 
-REAL HalfGapWat RestGap ;
-REAL FluxGap := 0.005 ;  ! Gap ou le flux a l'interface est recupere
-
-* Refined Zone, en cm, ou le flux est plus discretise
-REAL RefZn := 6.0 ;
+* Refined Zone, i.e. with a finer discretization
+REAL RefZn := 6.0 ; ! [cm]
 REAL RefZnR ;
 INTEGER MeshClsEnvel ;
 
-* Pression de He dans les gaines de combustible
-REAL PHe := 20. ;        ! En bar
+* Variables used to retrieve fluxes and currents at the interface
+REAL Current1 Current2 Scat1to2 Scat2to1 FuelVolume BoundVolume
+  FuelFlx1 FuelFlx2 BoundaryFlx1 BoundaryFlx2 Keff NuSigf1 NuSigf2
+  SectionTot1 SectionTot2 Scat1to1 Scat2to2 Scat1toAll Scat2toAll
+  Current1_A Current2_A BndaryFlx1_A BndaryFlx2_A
+  Current1_B Current2_B BndaryFlx1_B BndaryFlx2_B ;
 
-INTEGER iLocalistion ;
+* Variables for Koebke method
+REAL SigmaAbs1_A SigmaAbs2_A SigmaRal_A
+     SigmaAbs1_B SigmaAbs2_B SigmaRal_B ;
 
-! Données à fournir à CreaDilut, fonction de dilution, pour chaque zone
+* Equivalent reflector cross sections and diffusion coefficients
+REAL D1 D2 SigmaAbs1 SigmaAbs2 SigmaRalent Total1 Total2 f1 f2 ;
+
+* Reflector parametrization variables
+STRING Palier Method ;
+REAL CB ; ! ppm
+INTEGER iLocation iCB iMethod iPalier idxPalier nPalier iCloisEnvel
+        nCloisEnvel ;
+
+* CreaDilut variables
 REAL dMod TMil fvMod fvZr4 fvInc fvSS304 fvHe ;
 INTEGER iZone premierMIX ;
-STRING Localisation ;
+STRING Location ;
 
 FractionVol := MSTR: :: CD 'Radial' ;
-FractionVol := MSTR: FractionVol :: CD 'Bas' ;
-FractionVol := MSTR: FractionVol :: CD 'Haut' ;
+FractionVol := MSTR: FractionVol :: CD 'Bottom' ;
+FractionVol := MSTR: FractionVol :: CD 'Top' ;
 
 *---
-*  Réflecteur radial : dimensions, compositions et propriétés
+*  Radial reflector
 *---
 
-* Dimensions du réflecteur radial
+* Dimensions
 REAL dClois dCloisEnvel dEnvel dEnvelEcran dEcran ;
 REAL FinClois DebutEnvel FinEnvel DebutEcran FinEcran DebutCuve ;
 
 INTEGER nbZones := 4 ;
 nbZones := UTL: :: CREA 'Radial' 1 = <<nbZones>> ;
 
-* Fraction volumique d'acier dans l'eau entre le cloisonnement et le
-* baffle (plaques de renfort horizontales en acier, réparties
-* verticalement). Environ 5-6%.
+* Steel volume fraction in the water between the baffle and the barrel,
+* due to the horizontal steel reinforcement plates that are vertically
+* distributed. Approximately 5-6%.
 REAL fvacier := 0.05 ;
 REAL fveau := 1.0 fvacier - ;
 
 *---
-*  Réflecteur bas : dimensions, compositions et propriétés
-*  issues de BEAVRS
+*  Bottom reflector : dimensions, compositions and properties
+*  From BEAVRS
 *---
 REAL BZone1 BZone2 BZone3 BZone4
      := 0.    0.      0.    0.  ;
@@ -280,9 +266,9 @@ EVALUATE BZone1 := 0.847 ; !1ère tranche (la plus proche du coeur)
 EVALUATE BZone2 := 15.16 ; !2nde tranche
 EVALUATE BZone3 := 20.00 ; !3e tranche
 
-nbZones := UTL: nbZones :: CREA 'Bas' 1 = <<nbZones>> ;
+nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
 
-FractionVol := UTL: FractionVol :: STEP UP 'Bas'
+FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
   CREA 'Eau' <<nbZones>> = 0.618 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.371 0.088 0.000
   CREA 'Inc' <<nbZones>> = 0.000 0.000 0.000
@@ -293,14 +279,14 @@ REAL dModBas := 0.753 ; ! Densité du modérateur en entrée du coeur
 REAL TMilBas := 286.4 ; ! Temp du réflecteur bas (soit Tmod,entrée)
 EVALUATE TMilBas := TMilBas 273.15 + ; ! Conversion en Kelvin
 
-! Utilisation d'abscisses, donc les largeurs sont additives
+* DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
 EVALUATE BZone3 := BZone3 BZone2 + ;
 EVALUATE BZone4 := BZone4 BZone3 + ;
 
 *---
-*  Réflecteur haut : dimensions, compositions et propriétés
-*  issues de BEAVRS
+*  Top reflector : dimensions, compositions and properties
+*  From BEAVRS
 *---
 
 * Dimensions du réflecteur haut (largeur de chaque tranche)
@@ -308,18 +294,18 @@ REAL HZone1 HZone2 HZone3 HZone4 HZone5 HZone6 HZone7 :=
          0.     0.     0.     0.     0.     0.     0. ;
 
 EVALUATE HZone1 := 10.76 ; !1ère tranche (la plus proche du coeur)
-EVALUATE HZone2 :=  4.19   ; !2nde tranche
-EVALUATE HZone3 :=  4.50  ; !3e tranche
-EVALUATE HZone4 :=  2.05   ; !4e tranche
-EVALUATE HZone5 :=  3.35   ; !5e tranche
-EVALUATE HZone6 :=  8.83   ; !6e tranche
-EVALUATE HZone7 := 20.00     ; !7e tranche (la plus basse et éloignée du coeur)
+EVALUATE HZone2 :=  4.19 ; !2nde tranche
+EVALUATE HZone3 :=  4.50 ; !3e tranche
+EVALUATE HZone4 :=  2.05 ; !4e tranche
+EVALUATE HZone5 :=  3.35 ; !5e tranche
+EVALUATE HZone6 :=  8.83 ; !6e tranche
+EVALUATE HZone7 := 20.00 ; !7e tranche (la plus basse et éloignée du coeur)
 
 EVALUATE nbZones := 7 ;
-nbZones := UTL: nbZones :: CREA 'Haut' 1 = <<nbZones>> ;
+nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
 
 ! Fraction volumique pour la zone1, zone2, zone3, etc.
-FractionVol := UTL: FractionVol :: STEP UP 'Haut'
+FractionVol := UTL: FractionVol :: STEP UP 'Top'
   CREA 'Eau' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.096 0.096 0.096 0.372 0.008 0.088 0.000
   CREA 'Inc' <<nbZones>> = 0.007 0.032 0.007 0.000 0.000 0.000 0.000
@@ -330,7 +316,7 @@ REAL dModHaut  := 0.677 ; ! Densité du modérateur en entrée du coeur
 REAL TMilHaut  := 320.1 ; ! Temp du réflecteur bas (soit Tmod,entrée)
 EVALUATE TMilHaut := TMilHaut 273.15 + ; ! Conversion en Kelvin
 
-! Utilisation d'abscisses, donc les largeurs sont additives
+* DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE HZone2 := HZone2 HZone1 + ;
 EVALUATE HZone3 := HZone3 HZone2 + ;
 EVALUATE HZone4 := HZone4 HZone3 + ;
@@ -338,132 +324,85 @@ EVALUATE HZone5 := HZone5 HZone4 + ;
 EVALUATE HZone6 := HZone6 HZone5 + ;
 EVALUATE HZone7 := HZone7 HZone6 + ;
 
-
-! Variables utilisées pour récupérer le flux et le courant
-! à l'interface
-REAL Current1 Current2 ;
-REAL Scat1to2 Scat2to1 ;
-REAL FuelVolume BoundVolume ;
-REAL FuelFlx1 FuelFlx2 BoundaryFlx1 BoundaryFlx2 ;
-REAL Keff NuSigf1 NuSigf2 SectionTot1 SectionTot2
-Scat1to1 Scat2to2 Scat1toAll Scat2toAll ;
-
-! Variables de la méthode Lefebvre-Lebigot
-REAL Bf1Bf2 Cur1Bf1 Cur2Bf1 ;
-REAL Bf1Bf2_CasA Cur1Bf1_CasA Cur2Bf1_CasA
-     Bf1Bf2_CasB Cur1Bf1_CasB Cur2Bf1_CasB ;
-REAL Pente OrdonnOrigin ;
-REAL R1 R2 R3 ;
-REAL Minus1 := -1.0 ;
-
-! Variables de la méthode Koebke
-REAL Current1_A Current2_A BndaryFlx1_A BndaryFlx2_A
-     Current1_B Current2_B BndaryFlx1_B BndaryFlx2_B
-     R11 R21 R22 f1 f2
-     SigmaAbs1_A SigmaAbs2_A SigmaRal_A
-     SigmaAbs1_B SigmaAbs2_B SigmaRal_B ;
-
-! Variables supplementaires pour la méthode Koekbe (equations de Müller)
-REAL a b c d f2a f2b ;
-
-! Sections réflecteurs à proprement parler
-REAL D1 D2 SigmaAbs1 SigmaAbs2 SigmaRalent Total1 Total2 ;
-
-! Variables de paramétrisation des sections réflecteurs
-STRING Palier MethodRefl ;
-REAL CB ; ! ppm
-INTEGER IndexCB iMethodRefl iPalier iPalierMax iCloisEvl iCloisEvlMax ;
-
-* Ajouter ici les eventuelles boucles de parametrisation souhaitees.
-* Par exemple, en DMOD du réflecteur.
+* Any additionnal parameterization loop can be added here. Example(s):
+* - reflector moderator density,
+* - ...
 
 *--------------------------------------------------------------------
-* Boucle sur la CB de l'eau du réflecteur
+* Loop over boron concentration in reflector water
 *--------------------------------------------------------------------
-EVALUATE IndexCB := 1 ;
-WHILE IndexCB 5 <= DO
-  IF IndexCB 1 = THEN
+EVALUATE iCB := 1 ;
+WHILE iCB 5 <= DO
+  IF iCB 1 = THEN
     EVALUATE CB := 0.0 ; ! ppm
-  ELSEIF IndexCB 2 = THEN
+  ELSEIF iCB 2 = THEN
     EVALUATE CB := 200.0 ; ! ppm
-  ELSEIF IndexCB 3 = THEN
+  ELSEIF iCB 3 = THEN
     EVALUATE CB := 500.0 ; ! ppm
-  ELSEIF IndexCB 4 = THEN
+  ELSEIF iCB 4 = THEN
     EVALUATE CB := 1000.0 ; ! ppm
-  ELSEIF IndexCB 5 = THEN
+  ELSEIF iCB 5 = THEN
     EVALUATE CB := 2000.0 ; ! ppm
   ELSE
-    ECHO "ERROR, INDEXCB NOT RECOGNIZED" ;
+    ECHO "ERROR, iCB NOT RECOGNIZED" ;
     ABORT: ;
   ENDIF ;
 
   *--------------------------------------------------------------------
-  * Boucle sur la localisation des réflecteurs
+  * Loop over reflector locations
   *--------------------------------------------------------------------
-  EVALUATE iLocalistion := 1 ;
-  WHILE iLocalistion 3 <= DO
-    IF iLocalistion 1 = THEN
-      EVALUATE Localisation := 'Radial' ;
-    ELSEIF iLocalistion 2 = THEN
-      EVALUATE Localisation := 'Bas' ;
-    ELSEIF iLocalistion 3 = THEN
-      EVALUATE Localisation := 'Haut' ;
+  EVALUATE iLocation := 1 ;
+  WHILE iLocation 3 <= DO
+    IF iLocation 1 = THEN
+      EVALUATE Location := 'Radial' ;
+    ELSEIF iLocation 2 = THEN
+      EVALUATE Location := 'Bottom' ;
+    ELSEIF iLocation 3 = THEN
+      EVALUATE Location := 'Top' ;
     ELSE
       ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
       ABORT: ;
     ENDIF ;
 
-    ! Pour les reflecteurs non-radiaux (donc haut et bas), il n'y a
-    ! entre autres pas de parametrisation de palier, par exemple. Il
-    ! n'est donc pas necessaire de realiser ces calculs pour chaque
-    ! palier.
-    IF Localisation 'Radial' = NOT THEN
-      EVALUATE iPalierMax := 1 ;
-      EVALUATE iCloisEvlMax := 1 ;
+    IF Location 'Radial' = NOT THEN
+      * For non-radial (i.e. top and bottom) reflectors, there is no
+      * 'Palier' parameterization. It is therefore not necessary to
+      * perform these calculations for each 'Palier'.
+      EVALUATE nCloisEnvel := 1 ;
+      EVALUATE nPalier := 1 ;
     ELSE
-      EVALUATE iPalierMax := 4 ;
-      EVALUATE iCloisEvlMax := 4 ;
+      GREP: ReflSpecs :: LENGTH 'dCloisEnvel' >>nCloisEnvel<< ;
+      GREP: ReflSpecs :: LENGTH 'Paliers' >>nPalier<< ;
+      * Each Palier is stored in two variables, so we must divide by
+      * two in order to have the number of Paliers.
+      EVALUATE nPalier := nPalier 2 / ;
     ENDIF ;
 
-    ! Distance entre le cloisonnement et l'enveloppe (fonction
-    ! de la position)
-    EVALUATE iCloisEvl := 1 ;
-    WHILE iCloisEvl iCloisEvlMax <= DO
-      IF iCloisEvl 1 = THEN
-        EVALUATE dCloisEnvel := 1.76 ; ! cm
-      ELSEIF iCloisEvl 2 = THEN
-        EVALUATE dCloisEnvel := 5.0 ; ! cm
-      ELSEIF iCloisEvl 3 = THEN
-        EVALUATE dCloisEnvel := 10.0 ; ! cm
-      ELSEIF iCloisEvl 4 = THEN
-        EVALUATE dCloisEnvel := 25.0 ; ! cm
-      ELSE
-        ECHO "ERROR, iCloisEvl NOT RECOGNIZED" ;
-        ABORT: ;
-      ENDIF ;
+    * Distance between baffle and barrel (can be a function of
+    * distance and therefore of the angle)
+    EVALUATE iCloisEnvel := 1 ;
+    WHILE iCloisEnvel nCloisEnvel <= DO
+      GREP: ReflSpecs :: GETVAL 'dCloisEnvel' <<iCloisEnvel>> NVAL 1
+        >>dCloisEnvel<< ;
 
-      ! Données dépendants du palier
+      * Palier-dependant data
       EVALUATE iPalier := 1 ;
-      WHILE iPalier iPalierMax <= DO
-        IF iPalier 1 = THEN
-          EVALUATE Palier := 'CP0_900' ;
-        ELSEIF iPalier 2 = THEN
-          EVALUATE Palier := 'BEAVRS' ;
-        ELSEIF iPalier 3 = THEN
-          EVALUATE Palier := 'CASMO5_MxN_2' ;
-        ELSEIF iPalier 4 = THEN
-          EVALUATE Palier := 'CASMO5_MxN_3' ;
-        ENDIF ;
+      WHILE iPalier nPalier <= DO
+        EVALUATE idxPalier := iPalier 1 - 8 * 1 + ; ! 8 char per Palier
+        GREP: ReflSpecs :: GETVAL 'Paliers' <<idxPalier>> NVAL 8
+          >>Palier<< ;
         ECHO "Palier =" Palier ;
 
 *----------------------------------------------------------------------
-* La géométrie pourrait être simplifiable au-delà du cloisonnement sans
-* dommage. Vérifiable en transport coeur complet (CASMO en MXN).
+*       The geometry could be simplified beyond the baffle without
+*       consequences. Can be verified in full core transport (CASMO in
+*       MXN mode).
 *----------------------------------------------------------------------
         IF Palier 'CP0_900' = THEN
 * --------------------------------
-*         Géométrie en cm, à froid, issue de "In-core fuel management
-*         code package validation for PWRs", IAEA-TECDOC-815, 1995.
+*         Geometry in cm, at cold temperatures (without thermal
+*         expansion), from "In-core fuel management code package
+*         validation for PWRs", IAEA-TECDOC-815, 1995.
 *         http://www.iaea.org/inis/
 *         collection/NCLCollectionStore/_Public/26/077/26077395.pdf
 * --------------------------------
@@ -487,7 +426,8 @@ WHILE IndexCB 5 <= DO
           ABORT: ;
         ENDIF ;
 
-        ! Utilisation d'abscisses, donc les largeurs sont additives
+        * DRAGON uses the abscissae, so the thicknesses must be
+        * cumulated.
         EVALUATE FinClois := dClois ;
         EVALUATE DebutEnvel := FinClois dCloisEnvel + ;
         EVALUATE FinEnvel := DebutEnvel dEnvel + ;
@@ -496,7 +436,7 @@ WHILE IndexCB 5 <= DO
         EVALUATE DebutCuve := FinEcran 20.0 + ;
 
         EVALUATE nbZones := 4 ;
-        ! Fraction volumique pour la zone1, zone2, zone3, etc.
+        ! Volume fraction for zone1, zone2, zone3, etc.
         FractionVol := UTL: FractionVol :: STEP UP 'Radial'
                             ! MIX  6  7           8  9
           CREA 'Eau' <<nbZones>> = 0. <<fveau>>   1. 0.
@@ -505,8 +445,8 @@ WHILE IndexCB 5 <= DO
           CREA 'SS ' <<nbZones>> = 1. <<fvacier>> 0. 1.
           CREA 'He ' <<nbZones>> = 0. 0.          0. 0. ;
         *------------------------------------------------------------
-        *  Boucle sur les 2 cas (pour avoir 2 rapports de spectre
-        *  différents)
+        *  Loop on the two cases, to have two different spectrum
+        *  ratios
         *------------------------------------------------------------
         EVALUATE CASE := 1 ;
         WHILE CASE 2 <= DO
@@ -526,13 +466,13 @@ WHILE IndexCB 5 <= DO
           ! MACRO := UTL: MACRO :: DUMP ;
 
           *----------------------------------------------------------
-          *  Géométrie du réflecteur
+          *  Reflector geometry
           *----------------------------------------------------------
 
-          IF Localisation "Bas" = Localisation "Radial" = + THEN
+          IF Location "Bottom" = Location "Radial" = + THEN
             EVALUATE dMod := dModBas ;
             EVALUATE TMil := TMilBas ;
-          ELSEIF Localisation "Haut" = THEN
+          ELSEIF Location "Top" = THEN
             EVALUATE dMod := dModBas ;
             EVALUATE TMil := TMilBas ;
           ELSE
@@ -540,49 +480,50 @@ WHILE IndexCB 5 <= DO
             ABORT: ;
           ENDIF ;
 
-          GREP: nbZones :: GETVAL <<Localisation>> 1 >>nbZones<< ;
+          GREP: nbZones :: GETVAL <<Location>> 1 >>nbZones<< ;
           EVALUATE iZone := 1 ;
           WHILE iZone nbZones <= DO
-            ! On récupère la composition des zones
-            GREP: FractionVol :: STEP UP <<Localisation>>
+            * Recovery of zone composition
+            GREP: FractionVol :: STEP UP <<Location>>
                                  GETVAL 'Eau' <<iZone>> >>fvMod<<
                                  GETVAL 'Zr4' <<iZone>> >>fvZr4<<
                                  GETVAL 'Inc' <<iZone>> >>fvInc<<
                                  GETVAL 'SS ' <<iZone>> >>fvSS304<<
                                  GETVAL 'He ' <<iZone>> >>fvHe<<    ;
-            ! On affiche la composition des zones
-            ECHO "[Refl" Localisation
-                 "] Composition de la zone : " iZone ;
+            * Display zone composition
+            ECHO "[Refl" Location
+                 "] Zone composition : " iZone ;
             ECHO "- eau   : " fvMod ' ;' ;
             ECHO "- Zr4   : " fvZr4 ' ;' ;
             ECHO "- Inc   : " fvInc ' ;' ;
             ECHO "- SS304 : " fvSS304 ' ;' ;
             ECHO "- He    : " fvHe '.' ;
-            ! Définition des librairies réflecteur
+            * Definition of reflector libraries
             LibDilut ConcMode MolarMasses
             BNat Zirc4 Incon SS304 := CreaDilut ::
             <<dMod>> <<TMil>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
-
-            ! Les MIX des mélanges seront définis à partir de 6
+            * The MIX numbers are defined starting from 6
             EVALUATE premierMIX := 5 iZone + ;
             ECHO 'Premier MIX : ' premierMIX ;
-            ! Recupération du MIX constitutif de la zone
+            * Recovery of zone's constitutive media
             MACRO := MAC: MACRO LibDilut ::
               MIX <<premierMIX>> 1 OLDL ;
             ! Si c'est la première zone, on définit le MIX de
             ! flux moyen
+            * If this is the first layer, we define the MIX in which
+            * the flux will be retrieved
             IF iZone 1 = THEN
               MACRO := MAC: MACRO LibDilut ::
-                MIX 2 1 OLDL ; ! Recup du flux moyen ici
+                MIX 2 1 OLDL ; ! Retrieve flux in this MIX
             ENDIF ;
             LibDilut := DELETE: LibDilut ;
             EVALUATE iZone := iZone 1 + ;
           ENDWHILE ;
-          IF Localisation "Radial" = THEN
-            ! Beta-Generalise de Mondot :
-            ! * 4000 mailles !
-            ! * En SN, avec N=16 (S16)
+          IF Location "Radial" = THEN
+            ! Mondot's advices based on generalized beta experience :
+            ! * 4000 meshes
+            ! * S16 (SN with N=16)
             EVALUATE MeshClsEnvel := dCloisEnvel 0.4 / R_TO_I ;
             ECHO "MeshClsEnvel (troncature)=" MeshClsEnvel ;
 
@@ -598,7 +539,7 @@ WHILE IndexCB 5 <= DO
               SPLITX       30   1           25    20 <<MeshClsEnvel>>
                            10           5              6            4
               ;
-          ELSEIF Localisation "Bas" = THEN
+          ELSEIF Location "Bottom" = THEN
             GEOM := GEO: :: CAR1D 6
              X- ALBE 1.0 X+ VOID
              MESHX  -21.5 0.0 <<FluxGap>> <<BZone1>> <<RefZn>>
@@ -608,7 +549,7 @@ WHILE IndexCB 5 <= DO
              SPLITX      40  1           60         60         50
                              50
              ;
-          ELSEIF Localisation "Haut" = THEN
+          ELSEIF Location "Top" = THEN
             GEOM := GEO: :: CAR1D 10
               X- ALBE 1.0 X+ VOID
               MESHX  -21.5 0.0 <<FluxGap>> <<RefZn>> <<HZone1>>
@@ -627,7 +568,7 @@ WHILE IndexCB 5 <= DO
           ENDIF ;
 
           *----------------------------------------------------------
-          *  Résolution du flux
+          *  Solve flux
           *----------------------------------------------------------
           TRACK := SNT: GEOM ::
             EDIT 1
@@ -637,42 +578,42 @@ WHILE IndexCB 5 <= DO
           FLUX := FLU: SYSTEM MACRO TRACK :: EDIT 0 TYPE K ;
 
           *----------------------------------------------------------
-          *  Pour tracer le flux 1D
+          *  Uncomment to plot 2-groups 1D fluxes
           *----------------------------------------------------------
           ! OUT := EDI: MACRO TRACK FLUX GEOM ::
           !   EDIT 3 UPS COND 0.625 SAVE ;
           ! OUT := UTL: OUT :: DUMP ;
           ! OUT := DELETE: OUT ;
 
-          * Courant sortant du coeur = peut être obtenu en mergant
-          * le combustible, et avec les taux de réaction calcul du
-          * courant. Quant au flux, le mieux est de prendre une
-          * maille fine et proche du réflecteur.
-          * NB : Alternativement, on peut prendre les deux mailles
-          *      de chaque côté de l'interface, et de faire la
-          *      moyenne des deux. Nous pourrions le faire aussi.
+          * The current at the interface can be obtained from the
+          * reaction rates in the fuel. As for the flux at the
+          * interface, two approaches are possible :
+          * (1) We can evaluate the flux in a very fine mesh next to
+          *     the interface
+          * (2) We can take the average of two meshes on each side of
+          *     the interface.
+          * We chose the first option for simplicity's sake.
 
-          IF Localisation "Radial" = THEN
+          IF Location "Radial" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-            EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0
-            COND 0.625 SAVE ;
-          ELSEIF Localisation "Bas" = THEN
+              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0
+              COND 0.625 SAVE ;
+          ELSEIF Location "Bottom" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
               EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0
               COND 0.625 SAVE ;
-          ELSEIF Localisation "Haut" = THEN
-           OUT := EDI: MACRO TRACK FLUX GEOM ::
+          ELSEIF Location "Top" = THEN
+            OUT := EDI: MACRO TRACK FLUX GEOM ::
               EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0 0 0 0
               COND 0.625 SAVE ;
           ELSE
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
           ENDIF ;
-          ! OUT := UTL: OUT ::
-          ! STEP UP 'REF-CASE0001' STEP UP MACROLIB DUMP ;
 
-          * Attention ! Ce calcul de courant n'est valable que pour
-          * un albedo a gauche de 1.0 ! (ni plus, ni moins)
+          *----------------------------------------------------------
+          * Warning ! This computation of the current is only valid for
+          * an albedo on the left of 1.0 (no more, no less).
           *----------------------------------------------------------
           *  Début d'une procédure InterfacCond ici : en entrées, les
           *  deux fichiers d'edition (OUT_1 et OUT_2)
@@ -771,62 +712,6 @@ WHILE IndexCB 5 <= DO
           EVALUATE Current2 := Scat1to2 FuelFlx1 *
           SectionTot2 Scat2to2 - FuelFlx2 * - ;
 
-          *----------------------------------------------------------
-          *  Sorties
-          *----------------------------------------------------------
-
-          * Positif = Plus de neutrons sortant du combustible que de
-          * neutrons entrant dans le combustible
-          ECHO "Current1 = " Current1 ;
-          ECHO "Current2 = " Current2 ;
-
-          ECHO "BoundaryFlx1 = " BoundaryFlx1 ;
-          ECHO "BoundaryFlx2 = " BoundaryFlx2 ;
-
-          EVALUATE Bf1Bf2 := BoundaryFlx2 BoundaryFlx1 / ;
-          EVALUATE Cur1Bf1 := Current1 BoundaryFlx1 / ;
-          EVALUATE Cur2Bf1 := Current2 BoundaryFlx1 / ;
-
-          ECHO " " ;
-
-          IF Localisation "Radial" = THEN
-            ECHO "Reflecteur radial :" ;
-          ELSEIF Localisation "Bas" = THEN
-            ECHO "Reflecteur inferieur :" ;
-          ELSEIF Localisation "Haut" = THEN
-            ECHO "Reflecteur superieur :" ;
-          ELSE
-            ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
-            ABORT: ;
-          ENDIF ;
-
-          ECHO "BoundaryFlx2/BoundaryFlx1 = " Bf1Bf2 ;
-          ECHO "Current1/BoundaryFlx1 = " Cur1Bf1 ;
-          ECHO "Current2/BoundaryFlx1 = " Cur2Bf1 ;
-
-          ECHO " " ;
-
-          IF CASE 1 = THEN
-            EVALUATE Bf1Bf2_CasA := Bf1Bf2 ;
-            EVALUATE Cur1Bf1_CasA := Cur1Bf1 ;
-            EVALUATE Cur2Bf1_CasA := Cur2Bf1 ;
-          ELSEIF CASE 2 = THEN
-            EVALUATE Bf1Bf2_CasB := Bf1Bf2 ;
-            EVALUATE Cur1Bf1_CasB := Cur1Bf1 ;
-            EVALUATE Cur2Bf1_CasB := Cur2Bf1 ;
-          ENDIF ;
-
-          *---
-          *  Fin d'une procédure InterfacCond ici.
-          *  En sortie, les conditions aux interfaces :
-          *  Phi2/Phi1, J1/Phi1, J2/Phi1 pour chacun des 2 cas,
-          *  soit six valeurs, sous forme de six REAL.
-          *---
-
-          *---
-          *  Variables additionnelles pour les méthodes
-          *  Koebke
-          *---
           IF CASE 1 = THEN
             EVALUATE Current1_A := Current1 ;
             EVALUATE Current2_A := Current2 ;
@@ -839,15 +724,18 @@ WHILE IndexCB 5 <= DO
             EVALUATE BndaryFlx2_B := BoundaryFlx2 ;
           ENDIF ;
 
-          IF Localisation "Radial" = THEN
+          *---
+          *  Additionnal output for Koebke method
+          *---
+          IF Location "Radial" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
             EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1 1
             COND 0.625 SAVE ;
-          ELSEIF Localisation "Bas" = THEN
+          ELSEIF Location "Bottom" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
               EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1
               COND 0.625 SAVE ;
-          ELSEIF Localisation "Haut" = THEN
+          ELSEIF Location "Top" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
               EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1 1 1 1 1
               COND 0.625 SAVE ;
@@ -892,7 +780,8 @@ WHILE IndexCB 5 <= DO
           EVALUATE CASE := CASE 1 + ;
         ENDWHILE ; ! Boucle sur les CASE
 
-        IF Bf1Bf2_CasA Bf1Bf2_CasB = THEN
+        IF BndaryFlx2_A BndaryFlx1_A /
+           BndaryFlx2_B BndaryFlx1_B / / 1.0 - ABS 0.01 < THEN
           ECHO "The two calculations (for different 2 spectrum " ;
           ECHO "ratios) are much too close, as they have the same " ;
           ECHO "spectrum ratios. Check that the calculations are " ;
@@ -901,168 +790,50 @@ WHILE IndexCB 5 <= DO
           ABORT: ;
         ENDIF ;
 
-        EVALUATE iMethodRefl := 1 ;
-        WHILE iMethodRefl 7 <= DO
-          IF iMethodRefl 1 = THEN
-            EVALUATE MethodRefl := "Lefebvre-Leb" ;
-          ELSEIF iMethodRefl 2 = THEN
-            EVALUATE MethodRefl := "Koebke-a" ;
-          ELSEIF iMethodRefl 3 = THEN
-            EVALUATE MethodRefl := "Koebke-aDF" ;
-          ELSEIF iMethodRefl 4 = THEN
-            EVALUATE MethodRefl := "Koebke-ab" ;
-          ELSEIF iMethodRefl 5 = THEN
-            EVALUATE MethodRefl := "Koebke-abDF" ;
-          ELSEIF iMethodRefl 6 = THEN
-            EVALUATE MethodRefl := "Koebke-b" ;
-          ELSEIF iMethodRefl 7 = THEN
-            EVALUATE MethodRefl := "Koebke-bDF" ;
+        EVALUATE iMethod := 1 ;
+        WHILE iMethod 7 <= DO
+          IF     iMethod 1 = THEN EVALUATE Method := "Lefebvre-Leb" ;
+          ELSEIF iMethod 2 = THEN EVALUATE Method := "Koebke-a" ;
+          ELSEIF iMethod 3 = THEN EVALUATE Method := "Koebke-aDF" ;
+          ELSEIF iMethod 4 = THEN EVALUATE Method := "Koebke-ab" ;
+          ELSEIF iMethod 5 = THEN EVALUATE Method := "Koebke-abDF" ;
+          ELSEIF iMethod 6 = THEN EVALUATE Method := "Koebke-b" ;
+          ELSEIF iMethod 7 = THEN EVALUATE Method := "Koebke-bDF" ;
           ELSE
             ECHO "Reflector method not recognized." ;
             ABORT: ;
           ENDIF ;
 
-          IF MethodRefl "Lefebvre-Leb" = THEN
-            *--------------------------------------------------------
-            *  Début de la procédure Lefebvre-Lebigot. En entrée :
-            *  conditions à l'interface, ainsi que D1 et D2
-            *--------------------------------------------------------
-            EVALUATE D1 := 1.3 ;
-            EVALUATE D2 := 0.4 ;
-
-            *----------------------------------------------------------
-            *  Calcul des XS réflecteurs, à l'aide des formules de
-            *  Lefebvre-Lebigot
-            *  Ref. : 'Calculs de coeur REP en transport 3D', PhD,
-            *  Edwige Richebois, Universite Aix-Marseille, 1999 (p.193)
-            *----------------------------------------------------------
-            EVALUATE Pente := Cur2Bf1_CasA Cur2Bf1_CasB -
-                              Bf1Bf2_CasA  Bf1Bf2_CasB  - / ;
-
-            EVALUATE OrdonnOrigin :=
-                     Cur2Bf1_CasA Pente Bf1Bf2_CasA * - ;
-
-            EVALUATE R1 := Cur1Bf1_CasA ;
-            EVALUATE R2 := Pente ;
-            EVALUATE R3 := OrdonnOrigin Minus1 * ;
-
-            EVALUATE SigmaAbs2 := R2 R2 * D2 / ;
-            EVALUATE SigmaRalent :=
-              D2 D1 / SQRT R1 *
-              D1 SigmaAbs2 * SQRT
-              +
-              R3 *
-              D1 D2 * SQRT / ;
-
-            EVALUATE SigmaAbs1 := R1 R1 * D1 / SigmaRalent - ;
-
-            ECHO "SigmaRalent = " SigmaRalent ;
-            ECHO "SigmaAbs1 = " SigmaAbs1 ;
-
-            IF SigmaRalent 0.0 < THEN
-              ECHO "Lefebvre-Lebigot method failed." ;
-              ECHO "Negative fast SIGS00 XS." ;
-              ABORT: ;
-            ENDIF ;
-            IF SigmaAbs1 0.0 < THEN
-              ECHO "Lefebvre-Lebigot method failed." ;
-              ECHO "Negative fast absorption XS." ;
-              ABORT: ;
-            ENDIF ;
-            !Pour avoir des Multicompo structurees de la meme maniere
-            EVALUATE f1 f2 := 1.0 1.0 ;
-          ELSEIF MethodRefl "Koebke-a" =
-                 MethodRefl "Koebke-aDF" = +
-                 MethodRefl "Koebke-ab" = +
-                 MethodRefl "Koebke-abDF" = +
-                 MethodRefl "Koebke-b" = +
-                 MethodRefl "Koebke-bDF" = + THEN
-            EVALUATE f1 := 1.0 ; !
-            EVALUATE SigmaAbs1 := SigmaAbs1_A SigmaAbs1_B + 2.0 / ;
-            EVALUATE SigmaAbs2 := SigmaAbs2_A SigmaAbs2_B + 2.0 / ;
-            EVALUATE SigmaRalent := SigmaRal_A SigmaRal_B + 2.0 / ;
-            *----------------------------------------------------------
-            * Calcul des termes de la matrice Rij
-            *----------------------------------------------------------
-            EVALUATE R11 := BndaryFlx1_A Current1_A /
-              BndaryFlx1_B Current1_B / + 2.0 / ;
-            EVALUATE R21 :=
-              BndaryFlx2_A Current2_B * BndaryFlx2_B Current2_A * -
-              Current1_A Current2_B * Current1_B Current2_A * - / ;
-            EVALUATE R22 :=
-              Current1_A BndaryFlx2_B * Current1_B BndaryFlx2_A * -
-              Current1_A Current2_B * Current1_B Current2_A * - / ;
-            EVALUATE D1 := f1 R11 / 2.0 ** SigmaAbs1 SigmaRalent + / ;
-            *--------------------------------------------------------
-            * Calcul des sections reflecteurs selon les equations de
-            * Koebke, tel que citees dans la reference 'EQUIVA-2 :
-            * A Code For Generating Environment-Insensitive
-            * Equivalent Nodal Parameters For PWR Reflector
-            * Regions', E.Z. Müller (p.8 et 9)
-            *--------------------------------------------------------
-            EVALUATE a :=
-              R21 SigmaAbs1 SigmaRalent + * SigmaRalent R22 * -
-              R22 2.0 ** /
-              SigmaAbs1 SigmaRalent + SigmaAbs2 / SQRT * ;
-            EVALUATE b := SigmaRalent D1 SigmaAbs2 * SQRT * ;
-            EVALUATE c := -1.0 D1 * R21 * SigmaAbs2 *
-              SigmaAbs1 SigmaRalent + SigmaAbs2 * SQRT * ;
-            EVALUATE d := b 2.0 ** 4.0 a c * * - ;
-            IF d 0.0 < THEN
-              ECHO "Koebke method failed." ;
-              ECHO "Negative discriminant." ;
-              ABORT: ;
-            ENDIF ;
-            EVALUATE f2a := -1.0 b * d SQRT + 2.0 a * / ;
-            EVALUATE f2b := -1.0 b * d SQRT - 2.0 a * / ;
-            IF MethodRefl "Koebke-a" =
-               MethodRefl "Koebke-aDF" = + THEN
-               EVALUATE f2 := f2a ;
-            ELSEIF MethodRefl "Koebke-b" =
-               MethodRefl "Koebke-bDF" = + THEN
-               EVALUATE f2 := f2b ;
-            ELSEIF MethodRefl "Koebke-ab" =
-               MethodRefl "Koebke-abDF" = + THEN
-              EVALUATE f2 := f2a f2b + 2.0 / ;
-            ENDIF ;
-            EVALUATE D2 := f2 R22 / 2.0 ** SigmaAbs2 / ;
-            IF MethodRefl "Koebke-aDF" = MethodRefl "Koebke-bDF" = +
-               MethodRefl "Koebke-abDF" = + Localisation "Radial" = *
-               THEN
-              ECHO "En gardant à part facteurs de"
-                   " discontinuités et sections :" ;
-              ECHO "SigmaAbs1 =" SigmaAbs1 ;
-              ECHO "SigmaAbs2 =" SigmaAbs2 ;
-              ECHO "SigmaRalent =" SigmaRalent ;
-              ECHO "D1 =" D1 ;
-              ECHO "D2 =" D2 ;
-              ECHO "f1 =" f1 ;
-              ECHO "f2 =" f2 ;
-            ELSE
-              EVALUATE SigmaAbs1 := SigmaAbs1 f1 / ;
-              EVALUATE SigmaAbs2 := SigmaAbs2 f2 / ;
-              EVALUATE SigmaRalent := SigmaRalent f1 / ;
-              EVALUATE D1 := D1 f1 / ;
-              EVALUATE D2 := D2 f2 / ;
-              EVALUATE f1 := 1.0 ;
-              EVALUATE f2 := 1.0 ;
-
-              ECHO " En intégrant les facteurs"
-                   " de discontinuités dans les sections :" ;
-
-              ECHO "SigmaAbs1 =" SigmaAbs1 ;
-              ECHO "SigmaAbs2 =" SigmaAbs2 ;
-              ECHO "SigmaRalent =" SigmaRalent ;
-              ECHO "D1 =" D1 ;
-              ECHO "D2 =" D2 ;
-            ENDIF ;
+          IF Method "Lefebvre-Leb" = THEN
+            LefebvreLeb :: <<Current1_A>> <<BndaryFlx1_A>>
+                           <<Current1_B>> <<BndaryFlx1_B>>
+                           <<Current2_A>> <<BndaryFlx2_A>>
+                           <<Current2_B>> <<BndaryFlx2_B>>
+                           >>D1<< >>D2<< >>SigmaAbs1<< >>SigmaAbs2<<
+                           >>SigmaRalent<< >>f1<< >>f2<< ;
+          ELSEIF Method "Koebke-a" =
+                 Method "Koebke-aDF" = +
+                 Method "Koebke-ab" = +
+                 Method "Koebke-abDF" = +
+                 Method "Koebke-b" = +
+                 Method "Koebke-bDF" = + THEN
+            Koebke :: <<Current1_A>> <<BndaryFlx1_A>>
+                      <<Current1_B>> <<BndaryFlx1_B>>
+                      <<Current2_A>> <<BndaryFlx2_A>>
+                      <<Current2_B>> <<BndaryFlx2_B>>
+                      <<SigmaAbs1_A>> <<SigmaAbs2_A>>
+                      <<SigmaAbs1_B>> <<SigmaAbs2_B>>
+                      <<SigmaRal_A>>  <<SigmaRal_B>>
+                      <<Method>> <<Location>>
+                      >>D1<< >>D2<< >>SigmaAbs1<< >>SigmaAbs2<<
+                      >>SigmaRalent<< >>f1<< >>f2<< ;
           ELSE
-            ECHO "Reflector method not recognized." ;
+            ECHO Method " reflector method is unknown." ;
             ABORT: ;
           ENDIF ;
           *--------------------------------------------------------
-          *  Creation d'une Macrolib, avec le module MAC:, avec les
-          *  XS réflecteurs calculées à l'étape précédente
+          *  Creating a Macrolib with the XS reflectors calculated
+          *  in the previous step
           *--------------------------------------------------------
           EVALUATE Total1 := SigmaAbs1 SigmaRalent + ;
           EVALUATE Total2 := SigmaAbs2 ;
@@ -1076,42 +847,37 @@ WHILE IndexCB 5 <= DO
                    2 2 (*2->2*) 0.0 (*1->2*) <<SigmaRalent>>
               ADF 'FD_B' <<f1>> <<f2>> ;
           Edition := EDI: MacrRefl :: EDIT 1 ADFM SAVE ;
-          *----------------------------------------------------------
-          *  Fin de la procédure Lefebvre-Lebigot. En sortie : une
-          *  Macrolib des XS réflecteurs, que l'on peut utiliser
-          *  directement dans DONJON.
-          *----------------------------------------------------------
-          IF Localisation 'Radial' = THEN
+          IF Location 'Radial' = THEN
             Multicompo := COMPO: Multicompo Edition :: EDIT 1
-              STEP UP <<Localisation>>
+              STEP UP <<Location>>
               C-BORE <<CB>>
-              Method <<MethodRefl>>
+              Method <<Method>>
               dCloisEnvel <<dCloisEnvel>>
               Palier <<Palier>>
               MACRO ;
           ELSE
             Multicompo := COMPO: Multicompo Edition :: EDIT 1
-              STEP UP <<Localisation>>
+              STEP UP <<Location>>
               C-BORE <<CB>>
-              Method <<MethodRefl>>
+              Method <<Method>>
               MACRO ;
           ENDIF ;
           MacrRefl Edition := DELETE: MacrRefl Edition ;
 
-          EVALUATE iMethodRefl := iMethodRefl 1 + ;
-        ENDWHILE ; ! Boucle sur les MethodRefl
+          EVALUATE iMethod := iMethod 1 + ;
+        ENDWHILE ; ! Loop over Method
 
         EVALUATE iPalier := iPalier 1 + ;
-      ENDWHILE ; ! Boucle sur les iPalier
+      ENDWHILE ; ! Loop over iPalier
 
-      EVALUATE iCloisEvl := iCloisEvl 1 + ;
-    ENDWHILE ; ! Boucle sur les iCloisEvl
+      EVALUATE iCloisEnvel := iCloisEnvel 1 + ;
+    ENDWHILE ; ! Loop over iCloisEnvel
 
-    EVALUATE iLocalistion := iLocalistion 1 + ;
-  ENDWHILE ; ! Boucle sur les iLocalistion
+    EVALUATE iLocation := iLocation 1 + ;
+  ENDWHILE ; ! Loop over iLocation
 
-  EVALUATE IndexCB := IndexCB 1 + ;
-ENDWHILE ; ! Boucle sur les IndexCB
+  EVALUATE iCB := iCB 1 + ;
+ENDWHILE ; ! Loop over iCB
 
 END: ;
 QUIT "LIST" .

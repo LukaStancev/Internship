@@ -1,9 +1,12 @@
-MODULE END: DELETE: ;
+MODULE UTL: DELETE: END: ;
 PROCEDURE EvoNominale MakeBib1BU Reflector Tihange ;
+LINKED_LIST ReflSpecs ;
 XSM_FILE Library Burnup ConcMode Info
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
 *---
-REFL := Reflector ;
+ReflSpecs := UTL: :: CREA 'Paliers'     2 = 'CP0_' '900'
+                     CREA 'dCloisEnvel' 1 = 14.4 ; ! [cm]
+REFL := Reflector ReflSpecs ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 195 None 1 ;
 UOX195 := MakeBib1BU Library Burnup ConcMode Info ;

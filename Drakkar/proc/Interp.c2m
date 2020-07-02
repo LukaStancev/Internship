@@ -204,9 +204,7 @@ MacroFuel := MicroFuel :: STEP UP MACROLIB ;
 *  Reflector
 *----
 
-REAL dCloisEnvel ;
 IF TypeRefl "TousPaliers" = THEN
-  EVALUATE dCloisEnvel := 14.4 ;
   MacroRefl := NCR: REFL ::
     EDIT 1
     MACRO LINEAR
@@ -216,14 +214,14 @@ IF TypeRefl "TousPaliers" = THEN
         SET 'C-BORE' <<CB>>
         SET 'Method' <<MethodRefl>>
         SET 'Palier' <<Palier>>
-        SET 'dCloisEnvel' <<dCloisEnvel>>
+        SET 'dCloisEnvel' 14.4
     ENDMIX
-    COMPO REFL 'Bas'
+    COMPO REFL 'Bottom'
     MIX 2 FROM 1
         SET 'C-BORE' <<CB>>
         SET 'Method' <<MethodRefl>>
     ENDMIX
-    COMPO REFL 'Haut'
+    COMPO REFL 'Top'
     MIX 3 FROM 1
         SET 'C-BORE' <<CB>>
         SET 'Method' <<MethodRefl>>
@@ -292,13 +290,13 @@ ELSEIF TypeRefl "MargCpy" = TypeRefl "MargCpyAdjus" = + THEN
       DIFF  <<D1r>> <<D2r>>
       SCAT 2 2 (*2->1*) 0.0 (*1->1*) 0.0
            2 2 (*2->2*) 0.0 (*1->2*) <<SigmaRalentr>>
-    MIX 2 ! Bas
+    MIX 2 ! Bottom
       FLUX-INTG 1.0 1.0
       TOTAL <<Total1b>> <<Total2b>>
       DIFF  <<D1b>> <<D2b>>
       SCAT 2 2 (*2->1*) 0.0 (*1->1*) 0.0
            2 2 (*2->2*) 0.0 (*1->2*) <<SigmaRalentb>>
-    MIX 3 ! Haut
+    MIX 3 ! Top
       FLUX-INTG 1.0 1.0
       TOTAL <<Total1h>> <<Total2h>>
       DIFF  <<D1h>> <<D2h>>

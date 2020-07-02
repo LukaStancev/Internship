@@ -1,0 +1,59 @@
+*----------------------------------------------------------
+*  Compute reflector cross sections with Lefebvre-Lebigot
+*  method.
+*  Ref. : 'Calculs de coeur REP en transport 3D', PhD,
+*  Edwige Richebois, Universite Aix-Marseille, 1999 (p.193)
+*  Author : V. Salino, IRSN, 2020.
+*----------------------------------------------------------
+MODULE ABORT: END: ;
+REAL Current1_A BndaryFlx1_A
+     Current1_B BndaryFlx1_B
+     Current2_A BndaryFlx2_A
+     Current2_B BndaryFlx2_B ;
+:: >>Current1_A<< >>BndaryFlx1_A<<
+   >>Current1_B<< >>BndaryFlx1_B<<
+   >>Current2_A<< >>BndaryFlx2_A<<
+   >>Current2_B<< >>BndaryFlx2_B<< ;
+*---
+REAL Cur1Bf1_CasA := Current1_A BndaryFlx1_A / ;
+REAL Cur2Bf1_CasA := Current2_A BndaryFlx1_A / ;
+REAL Cur2Bf1_CasB := Current2_B BndaryFlx1_B / ;
+REAL Bf2Bf1_CasA  := BndaryFlx2_A BndaryFlx1_A / ;
+REAL Bf2Bf1_CasB  := BndaryFlx2_B BndaryFlx1_B / ;
+*---
+REAL D1 := 1.3 ;
+REAL D2 := 0.4 ;
+*---
+REAL Slope := Cur2Bf1_CasA Cur2Bf1_CasB -
+              Bf2Bf1_CasA  Bf2Bf1_CasB  - / ;
+REAL Ordinate := Cur2Bf1_CasA Slope Bf2Bf1_CasA * - ;
+*---
+REAL R1 := Cur1Bf1_CasA ;
+REAL R2 := Slope ;
+REAL R3 := -1.0 Ordinate * ;
+*---
+REAL SigmaAbs2 := R2 R2 * D2 / ;
+REAL SigmaRalent :=
+  D2 D1 / SQRT R1 *
+  D1 SigmaAbs2 * SQRT
+  +
+  R3 *
+  D1 D2 * SQRT / ;
+REAL SigmaAbs1 := R1 R1 * D1 / SigmaRalent - ;
+*---
+IF SigmaRalent 0.0 < THEN
+  ECHO "Lefebvre-Lebigot method failed." ;
+  ECHO "Negative fast SIGS00 XS." ;
+  ABORT: ;
+ENDIF ;
+IF SigmaAbs1 0.0 < THEN
+  ECHO "Lefebvre-Lebigot method failed." ;
+  ECHO "Negative fast absorption XS." ;
+  ABORT: ;
+ENDIF ;
+* Adding discontinuity factors to have similarly constructed Multicompos
+REAL f1 f2 := 1.0 1.0 ;
+:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaRalent>>
+   <<f1>> <<f2>> ;
+END: ;
+QUIT "LIST" .

@@ -1,0 +1,98 @@
+*----------------------------------------------------------
+*  Compute reflector cross sections with Koebke method.
+*  Ref. : 'EQUIVA-2 : A Code For Generating Environment-
+*  Insensitive Equivalent Nodal Parameters For PWR Reflector
+*  Regions', E.Z. Müller (p.8 and 9)
+*  Author : V. Salino, IRSN, 2020.
+*----------------------------------------------------------
+MODULE ABORT: END: ;
+REAL Current1_A BndaryFlx1_A
+     Current1_B BndaryFlx1_B
+     Current2_A BndaryFlx2_A
+     Current2_B BndaryFlx2_B
+     SigmaAbs1_A SigmaAbs2_A
+     SigmaAbs1_B SigmaAbs2_B
+     SigmaRal_A SigmaRal_B ;
+STRING Method Location ;
+:: >>Current1_A<< >>BndaryFlx1_A<<
+   >>Current1_B<< >>BndaryFlx1_B<<
+   >>Current2_A<< >>BndaryFlx2_A<<
+   >>Current2_B<< >>BndaryFlx2_B<<
+   >>SigmaAbs1_A<< >>SigmaAbs2_A<<
+   >>SigmaAbs1_B<< >>SigmaAbs2_B<<
+   >>SigmaRal_A<<  >>SigmaRal_B<<
+   >>Method<< >>Location<< ;
+REAL f1 := 1.0 ;
+REAL SigmaAbs1 := SigmaAbs1_A SigmaAbs1_B + 2.0 / ;
+REAL SigmaAbs2 := SigmaAbs2_A SigmaAbs2_B + 2.0 / ;
+REAL SigmaRalent := SigmaRal_A SigmaRal_B + 2.0 / ;
+*----------------------------------------------------------
+* Compute the Rij matrix elements
+*----------------------------------------------------------
+REAL R11 := BndaryFlx1_A Current1_A /
+  BndaryFlx1_B Current1_B / + 2.0 / ;
+REAL R21 :=
+  BndaryFlx2_A Current2_B * BndaryFlx2_B Current2_A * -
+  Current1_A Current2_B * Current1_B Current2_A * - / ;
+REAL R22 :=
+  Current1_A BndaryFlx2_B * Current1_B BndaryFlx2_A * -
+  Current1_A Current2_B * Current1_B Current2_A * - / ;
+REAL D1 := f1 R11 / 2.0 ** SigmaAbs1 SigmaRalent + / ;
+*---
+REAL a :=
+  R21 SigmaAbs1 SigmaRalent + * SigmaRalent R22 * -
+  R22 2.0 ** /
+  SigmaAbs1 SigmaRalent + SigmaAbs2 / SQRT * ;
+REAL b := SigmaRalent D1 SigmaAbs2 * SQRT * ;
+REAL c := -1.0 D1 * R21 * SigmaAbs2 *
+  SigmaAbs1 SigmaRalent + SigmaAbs2 * SQRT * ;
+REAL d := b 2.0 ** 4.0 a c * * - ;
+IF d 0.0 < THEN
+  ECHO "Koebke method failed." ;
+  ECHO "Negative discriminant." ;
+  ABORT: ;
+ENDIF ;
+REAL f2a := -1.0 b * d SQRT + 2.0 a * / ;
+REAL f2b := -1.0 b * d SQRT - 2.0 a * / ;
+REAL f2 ;
+IF Method "Koebke-a" =
+   Method "Koebke-aDF" = + THEN
+   EVALUATE f2 := f2a ;
+ELSEIF Method "Koebke-b" =
+   Method "Koebke-bDF" = + THEN
+   EVALUATE f2 := f2b ;
+ELSEIF Method "Koebke-ab" =
+   Method "Koebke-abDF" = + THEN
+  EVALUATE f2 := f2a f2b + 2.0 / ;
+ENDIF ;
+REAL D2 := f2 R22 / 2.0 ** SigmaAbs2 / ;
+IF Method "Koebke-aDF" = Method "Koebke-bDF" = +
+   Method "Koebke-abDF" = + Location "Radial" = *
+   THEN
+  ECHO "Keeping separate discontinuity factors and sections :" ;
+  ECHO "SigmaAbs1 =" SigmaAbs1 ;
+  ECHO "SigmaAbs2 =" SigmaAbs2 ;
+  ECHO "SigmaRalent =" SigmaRalent ;
+  ECHO "D1 =" D1 ;
+  ECHO "D2 =" D2 ;
+  ECHO "f1 =" f1 ;
+  ECHO "f2 =" f2 ;
+ELSE
+  ECHO "Incorporating discontinuity factors into the sections :" ;
+  EVALUATE SigmaAbs1 := SigmaAbs1 f1 / ;
+  EVALUATE SigmaAbs2 := SigmaAbs2 f2 / ;
+  EVALUATE SigmaRalent := SigmaRalent f1 / ;
+  EVALUATE D1 := D1 f1 / ;
+  EVALUATE D2 := D2 f2 / ;
+  EVALUATE f1 := 1.0 ;
+  EVALUATE f2 := 1.0 ;
+  ECHO "SigmaAbs1 =" SigmaAbs1 ;
+  ECHO "SigmaAbs2 =" SigmaAbs2 ;
+  ECHO "SigmaRalent =" SigmaRalent ;
+  ECHO "D1 =" D1 ;
+  ECHO "D2 =" D2 ;
+ENDIF ;
+:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaRalent>>
+   <<f1>> <<f2>> ;
+END: ;
+QUIT "LIST" .
