@@ -1,12 +1,12 @@
 PARAMETER Multicompo ReflSpecs :: ::: LINKED_LIST ReflSpecs ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
   Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf ;
-LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop
-  Library LibDilut CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2
-  StepList MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
-  BNat AgNat CdNat SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat
-  InNat AIC HfR Gd2O3 BP ConcMode MacrRefl Edition nbZones FractionVol
-  GEOM TRACK SYSTEM FLUX OUT ;
+LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop Library
+  LibDilut CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2 StepList
+  MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat BNat AgNat CdNat
+  SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat InNat AIC HfR Gd2O3 BP
+  ConcMode MacrRefl Edition nbZones FractionVol Boron GEOM TRACK SYSTEM
+  FLUX OUT ;
 MODULE LIB: GEO: ASM: FLU: EDI: COMPO: DELETE: USS: UTL: END: ABORT:
   MAC: SNT: GREP: MSTR: ;
 
@@ -25,6 +25,7 @@ INTEGER Teneur_I := 310    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
 * Core boundary is mainly occupied by UOX assemblies, with
 * a 3.10% enrichement. Therefore, this is the one used in
 * the reflector calculation.
+STRING CTRA := "APOL" ;
 STRING TypeDil := "TOT" ;
 REAL TempMod := 559.2 ; ! K
 REAL PowMWT ;
@@ -214,12 +215,15 @@ REAL D1 D2 SigmaAbs1 SigmaAbs2 SigmaRalent Total1 Total2 f1 f2 ;
 * Reflector parametrization variables
 STRING Palier Method ;
 REAL CB ; ! ppm
-INTEGER iLocation iCB iMethod iPalier idxPalier nPalier iCloisEnvel
-        nCloisEnvel ;
+INTEGER iCB nCB iLocation iCloisEnvel nCloisEnvel iPalier idxPalier
+        nPalier iMethod ;
+
+* Boron parametrization
+Boron := UTL: :: CREA 'CB' 5 = 0.0 200.0 500.0 1000.0 2000.0 ; ! ppm
 
 * CreaDilut variables
 REAL dMod TMil fvMod fvZr4 fvInc fvSS304 fvHe ;
-INTEGER iZone premierMIX ;
+INTEGER iZone firstMIX ;
 STRING Location ;
 
 FractionVol := MSTR: :: CD 'Radial' ;
@@ -247,12 +251,11 @@ REAL fveau := 1.0 fvacier - ;
 *  Bottom reflector : dimensions, compositions and properties
 *  From BEAVRS
 *---
-REAL BZone1 BZone2 BZone3 BZone4 ;
-EVALUATE nbZones := 3 ;
-EVALUATE BZone1 := 0.847 ; !1st layer (the closest to the core)
-EVALUATE BZone2 := 15.16 ; !2nd layer
-EVALUATE BZone3 := 20.00 ; !3rd layer (the farthest from the core)
+REAL BZone1 := 0.847 ; !1st layer (the closest to the core)
+REAL BZone2 := 15.16 ; !2nd layer
+REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
 
+EVALUATE nbZones := 3 ;
 nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
 
 FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
@@ -269,23 +272,18 @@ EVALUATE TMilBas := TMilBas 273.15 + ; ! Conversion en Kelvin
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
 EVALUATE BZone3 := BZone3 BZone2 + ;
-EVALUATE BZone4 := BZone4 BZone3 + ;
 
 *---
 *  Top reflector : dimensions, compositions and properties
 *  From BEAVRS
 *---
-
-* Dimensions du réflecteur haut (largeur de chaque tranche)
-REAL HZone1 HZone2 HZone3 HZone4 HZone5 HZone6 HZone7 ;
-
-EVALUATE HZone1 := 10.76 ; !1st layer (the closest to the core)
-EVALUATE HZone2 :=  4.19 ; !2nd layer
-EVALUATE HZone3 :=  4.50 ; !3rd layer
-EVALUATE HZone4 :=  2.05 ; !4th layer
-EVALUATE HZone5 :=  3.35 ; !5th layer
-EVALUATE HZone6 :=  8.83 ; !6th layer
-EVALUATE HZone7 := 20.00 ; !7th layer (the farthest from the core)
+REAL HZone1 := 10.76 ; !1st layer (the closest to the core)
+REAL HZone2 :=  4.19 ; !2nd layer
+REAL HZone3 :=  4.50 ; !3rd layer
+REAL HZone4 :=  2.05 ; !4th layer
+REAL HZone5 :=  3.35 ; !5th layer
+REAL HZone6 :=  8.83 ; !6th layer
+REAL HZone7 := 20.00 ; !7th layer (the farthest from the core)
 
 EVALUATE nbZones := 7 ;
 nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
@@ -317,22 +315,10 @@ EVALUATE HZone7 := HZone7 HZone6 + ;
 *--------------------------------------------------------------------
 * Loop over boron concentration in reflector water
 *--------------------------------------------------------------------
+GREP: Boron :: LENGTH 'CB' >>nCB<< ;
 EVALUATE iCB := 1 ;
-WHILE iCB 5 <= DO
-  IF iCB 1 = THEN
-    EVALUATE CB := 0.0 ; ! ppm
-  ELSEIF iCB 2 = THEN
-    EVALUATE CB := 200.0 ; ! ppm
-  ELSEIF iCB 3 = THEN
-    EVALUATE CB := 500.0 ; ! ppm
-  ELSEIF iCB 4 = THEN
-    EVALUATE CB := 1000.0 ; ! ppm
-  ELSEIF iCB 5 = THEN
-    EVALUATE CB := 2000.0 ; ! ppm
-  ELSE
-    ECHO "ERROR, iCB NOT RECOGNIZED" ;
-    ABORT: ;
-  ENDIF ;
+WHILE iCB nCB <= DO
+  GREP: Boron :: GETVAL 'CB' <<iCB>> NVAL 1 >>CB<< ;
 
   *--------------------------------------------------------------------
   * Loop over reflector locations
@@ -490,11 +476,11 @@ WHILE iCB 5 <= DO
             <<dMod>> <<TMil>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
             * The MIX numbers are defined starting from 6
-            EVALUATE premierMIX := 5 iZone + ;
-            ECHO 'Premier MIX : ' premierMIX ;
+            EVALUATE firstMIX := 5 iZone + ;
+            ECHO 'First MIX : ' firstMIX ;
             * Recovery of zone's constitutive media
             MACRO := MAC: MACRO LibDilut ::
-              MIX <<premierMIX>> 1 OLDL ;
+              MIX <<firstMIX>> 1 OLDL ;
             * If this is the first layer, we define the MIX in which
             * the flux will be retrieved
             IF iZone 1 = THEN
