@@ -1,6 +1,6 @@
 PARAMETER Multicompo ReflSpecs :: ::: LINKED_LIST ReflSpecs ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
-  Geo15x15 AdaptIso LefebvreLeb Koebke ;
+  Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop
   Library LibDilut CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2
   StepList MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat
@@ -20,15 +20,11 @@ STRING  LibGenre ;
 INTEGER LibId ;
 STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
 STRING  Gestion  := "TIH" ; ! TIH ou BEAV
-STRING  InfoGado := "0Gd" ; ! Info sur le Gado
 STRING  ConfigPyrex := "None" ; ! None, Py8 ou Py12
 INTEGER Teneur_I := 310    ; ! X.YY % -> XYY [ex. 3.70 % -> 370]
 * Core boundary is mainly occupied by UOX assemblies, with
 * a 3.10% enrichement. Therefore, this is the one used in
 * the reflector calculation.
-STRING LEAKEQUATION LEAKIMPOSED CTRA ;
-EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "B1"   "SIGS" "APOL" ;
-!EVALUATE LEAKEQUATION LEAKIMPOSED CTRA := "P0TR" "NLKH" "OLDW" ;
 STRING TypeDil := "TOT" ;
 REAL TempMod := 559.2 ; ! K
 REAL PowMWT ;
@@ -82,13 +78,7 @@ Assmb AssmbAu := DELETE: Assmb AssmbAu ;
 *--------------------------------------------------------------------
 ListeIsot ListeAutop := AdaptIso :: <<FileNuclData>> <<Evaluation>>
                          >>LibId<< >>LibGenre<< ;
-
-STRING NomH2O ;
-STRING NomH1 ;
-STRING NomO16 ;
-STRING NomB10 NomB11 ;
-STRING NomFe54 ;
-
+STRING NomH2O NomH1 NomO16 NomB10 NomB11 NomFe54 ;
 GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<<   ;
 GREP: ListeIsot :: GETVAL 'H1   ' <<LibId>> NVAL 8 >>NomH1<<    ;
 GREP: ListeIsot :: GETVAL 'O16  ' <<LibId>> NVAL 8 >>NomO16<<   ;
@@ -210,9 +200,7 @@ REAL RefZnR ;
 INTEGER MeshClsEnvel ;
 
 * Variables used to retrieve fluxes and currents at the interface
-REAL Current1 Current2 Scat1to2 Scat2to1 FuelVolume BoundVolume
-  FuelFlx1 FuelFlx2 BoundaryFlx1 BoundaryFlx2 Keff NuSigf1 NuSigf2
-  SectionTot1 SectionTot2 Scat1to1 Scat2to2 Scat1toAll Scat2toAll
+REAL SectionTot1 SectionTot2 Scat1to1 Scat1toAll Scat2toAll
   Current1_A Current2_A BndaryFlx1_A BndaryFlx2_A
   Current1_B Current2_B BndaryFlx1_B BndaryFlx2_B ;
 
@@ -259,12 +247,11 @@ REAL fveau := 1.0 fvacier - ;
 *  Bottom reflector : dimensions, compositions and properties
 *  From BEAVRS
 *---
-REAL BZone1 BZone2 BZone3 BZone4
-     := 0.    0.      0.    0.  ;
+REAL BZone1 BZone2 BZone3 BZone4 ;
 EVALUATE nbZones := 3 ;
-EVALUATE BZone1 := 0.847 ; !1ère tranche (la plus proche du coeur)
-EVALUATE BZone2 := 15.16 ; !2nde tranche
-EVALUATE BZone3 := 20.00 ; !3e tranche
+EVALUATE BZone1 := 0.847 ; !1st layer (the closest to the core)
+EVALUATE BZone2 := 15.16 ; !2nd layer
+EVALUATE BZone3 := 20.00 ; !3rd layer (the farthest from the core)
 
 nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
 
@@ -290,16 +277,15 @@ EVALUATE BZone4 := BZone4 BZone3 + ;
 *---
 
 * Dimensions du réflecteur haut (largeur de chaque tranche)
-REAL HZone1 HZone2 HZone3 HZone4 HZone5 HZone6 HZone7 :=
-         0.     0.     0.     0.     0.     0.     0. ;
+REAL HZone1 HZone2 HZone3 HZone4 HZone5 HZone6 HZone7 ;
 
-EVALUATE HZone1 := 10.76 ; !1ère tranche (la plus proche du coeur)
-EVALUATE HZone2 :=  4.19 ; !2nde tranche
-EVALUATE HZone3 :=  4.50 ; !3e tranche
-EVALUATE HZone4 :=  2.05 ; !4e tranche
-EVALUATE HZone5 :=  3.35 ; !5e tranche
-EVALUATE HZone6 :=  8.83 ; !6e tranche
-EVALUATE HZone7 := 20.00 ; !7e tranche (la plus basse et éloignée du coeur)
+EVALUATE HZone1 := 10.76 ; !1st layer (the closest to the core)
+EVALUATE HZone2 :=  4.19 ; !2nd layer
+EVALUATE HZone3 :=  4.50 ; !3rd layer
+EVALUATE HZone4 :=  2.05 ; !4th layer
+EVALUATE HZone5 :=  3.35 ; !5th layer
+EVALUATE HZone6 :=  8.83 ; !6th layer
+EVALUATE HZone7 := 20.00 ; !7th layer (the farthest from the core)
 
 EVALUATE nbZones := 7 ;
 nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
@@ -509,8 +495,6 @@ WHILE iCB 5 <= DO
             * Recovery of zone's constitutive media
             MACRO := MAC: MACRO LibDilut ::
               MIX <<premierMIX>> 1 OLDL ;
-            ! Si c'est la première zone, on définit le MIX de
-            ! flux moyen
             * If this is the first layer, we define the MIX in which
             * the flux will be retrieved
             IF iZone 1 = THEN
@@ -610,120 +594,17 @@ WHILE iCB 5 <= DO
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
           ENDIF ;
-
-          *----------------------------------------------------------
-          * Warning ! This computation of the current is only valid for
-          * an albedo on the left of 1.0 (no more, no less).
-          *----------------------------------------------------------
-          *  Début d'une procédure InterfacCond ici : en entrées, les
-          *  deux fichiers d'edition (OUT_1 et OUT_2)
-          *----------------------------------------------------------
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-          'FLUX-INTG' 1 2 >>FuelFlx1<< >>BoundaryFlx1<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-          'FLUX-INTG' 1 2 >>FuelFlx2<< >>BoundaryFlx2<< ;
-
-          ECHO "FuelFlx1 = " FuelFlx1 ;
-          ECHO "FuelFlx2 = " FuelFlx2 ;
-          !ECHO "BoundaryFlx1 = " BoundaryFlx1 ;
-          !ECHO "BoundaryFlx2 = " BoundaryFlx2 ;
-
           *---
-          *  Boundary Flux = from Integrated Flux to Average Flux
+          *  Compute currents and fluxes at the boundary
           *---
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB GETVAL
-          'VOLUME' 1 2 >>FuelVolume<< >>BoundVolume<< ;
-
-          ECHO "FuelVolume = " FuelVolume ;
-          ECHO "BoundVolume = " BoundVolume ;
-
-          EVALUATE BoundaryFlx1 := BoundaryFlx1 BoundVolume / ;
-          EVALUATE BoundaryFlx2 := BoundaryFlx2 BoundVolume / ;
-
-          *----------------------------------------------------------
-          *  Cross section data
-          *----------------------------------------------------------
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB GETVAL
-          'K-EFFECTIVE' 1 >>Keff<< ;
-
-          ECHO "Keff =" Keff ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-                       'NUSIGF' 1 >>NuSigf1<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-                       'NUSIGF' 1 >>NuSigf2<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-                       'NTOT0' 1 >>SectionTot1<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-                       'NTOT0' 1 >>SectionTot2<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-                       'SIGW00' 1 >>Scat1to1<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-                       'SIGW00' 1 >>Scat2to2<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-                       'SIGS00' 1 >>Scat1toAll<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-                       STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-                       'SIGS00' 1 >>Scat2toAll<< ;
-
-          !ECHO "NuSigf1 = " NuSigf1 ;
-          !ECHO "NuSigf2 = " NuSigf2 ;
-          !ECHO "SectionTot1 = " SectionTot1 ;
-          !ECHO "SectionTot2 = " SectionTot2 ;
-          !ECHO "Scat1to1 = " Scat1to1 ;
-          !ECHO "Scat2to2 = " Scat2to2 ;
-          !ECHO "Scat1toAll = " Scat1toAll ;
-          !ECHO "Scat2toAll = " Scat2toAll ;
-
-          OUT := DELETE: OUT ;
-
-          *----------------------------------------------------------
-          *  Current calculation
-          *----------------------------------------------------------
-
-          EVALUATE Scat1to2 := Scat1toAll Scat1to1 - ;
-          EVALUATE Scat2to1 := Scat2toAll Scat2to2 - ;
-
-          EVALUATE Current1 :=
-          NuSigf1 FuelFlx1 * NuSigf2 FuelFlx2 * + Keff /
-          Scat2to1 FuelFlx2 * +
-          SectionTot1 Scat1to1 - FuelFlx1 * - ;
-
-          EVALUATE Current2 := Scat1to2 FuelFlx1 *
-          SectionTot2 Scat2to2 - FuelFlx2 * - ;
-
           IF CASE 1 = THEN
-            EVALUATE Current1_A := Current1 ;
-            EVALUATE Current2_A := Current2 ;
-            EVALUATE BndaryFlx1_A := BoundaryFlx1 ;
-            EVALUATE BndaryFlx2_A := BoundaryFlx2 ;
+            CurrFluxIntf OUT :: >>BndaryFlx1_A<< >>BndaryFlx2_A<<
+              >>Current1_A<< >>Current2_A<< ;
           ELSEIF CASE 2 = THEN
-            EVALUATE Current1_B := Current1 ;
-            EVALUATE Current2_B := Current2 ;
-            EVALUATE BndaryFlx1_B := BoundaryFlx1 ;
-            EVALUATE BndaryFlx2_B := BoundaryFlx2 ;
+            CurrFluxIntf OUT :: >>BndaryFlx1_B<< >>BndaryFlx2_B<<
+              >>Current1_B<< >>Current2_B<< ;
           ENDIF ;
-
+          OUT := DELETE: OUT ;
           *---
           *  Additionnal output for Koebke method
           *---
@@ -745,24 +626,24 @@ WHILE iCB 5 <= DO
           ENDIF ;
 
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-          'NTOT0' 1 >>SectionTot1<< ;
+            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
+            'NTOT0' 1 >>SectionTot1<< ;
 
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-          'NTOT0' 1 >>SectionTot2<< ;
+            STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
+            'NTOT0' 1 >>SectionTot2<< ;
 
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-          'SIGW00' 1 >>Scat1to1<< ;
+            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
+            'SIGW00' 1 >>Scat1to1<< ;
 
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-          'SIGS00' 1 >>Scat1toAll<< ;
+            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
+            'SIGS00' 1 >>Scat1toAll<< ;
 
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-          STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-          'SIGS00' 1 >>Scat2toAll<< ;
+            STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
+            'SIGS00' 1 >>Scat2toAll<< ;
 
           IF CASE 1 = THEN
             EVALUATE SigmaAbs1_A := SectionTot1 Scat1toAll - ;

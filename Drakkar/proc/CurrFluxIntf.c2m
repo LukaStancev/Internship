@@ -1,0 +1,83 @@
+*----------------------------------------------------------
+*  Compute 2-groups currents and fluxes at an interface
+*  boundary
+*  Author : V. Salino, IRSN, 2020.
+*----------------------------------------------------------
+*  Warning ! This computation of the current is only valid for
+*  an albedo on the left of 1.0 (no more, no less).
+*----------------------------------------------------------
+PARAMETER OUT :: ::: LINKED_LIST OUT ; ;
+MODULE GREP: END: ;
+*---
+*  Retrieve fluxes
+*---
+REAL FuelFlx1 BoundaryFlx1 FuelFlx2 BoundaryFlx2 ;
+*
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 1 GETVAL 'FLUX-INTG' 1 2
+  >>FuelFlx1<< >>BoundaryFlx1<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 2 GETVAL 'FLUX-INTG' 1 2
+  >>FuelFlx2<< >>BoundaryFlx2<< ;
+ECHO "FuelFlx1 = " FuelFlx1 ;
+ECHO "FuelFlx2 = " FuelFlx2 ;
+*---
+*  From integrated flux to average flux
+*---
+REAL FuelVolume BoundVolume ;
+*
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB GETVAL
+'VOLUME' 1 2 >>FuelVolume<< >>BoundVolume<< ;
+*
+ECHO "FuelVolume = " FuelVolume ;
+ECHO "BoundVolume = " BoundVolume ;
+*
+EVALUATE BoundaryFlx1 := BoundaryFlx1 BoundVolume / ;
+EVALUATE BoundaryFlx2 := BoundaryFlx2 BoundVolume / ;
+*---
+*  Cross section data
+*---
+REAL Keff NuSigf1 NuSigf2 SectionTot1 SectionTot2 Scat1to1 Scat2to2
+  Scat1toAll Scat2toAll ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB GETVAL
+  'K-EFFECTIVE' 1 >>Keff<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 1 GETVAL 'NUSIGF' 1 >>NuSigf1<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 2 GETVAL 'NUSIGF' 1 >>NuSigf2<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 1 GETVAL 'NTOT0' 1 >>SectionTot1<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 2 GETVAL 'NTOT0' 1 >>SectionTot2<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 1 GETVAL 'SIGW00' 1 >>Scat1to1<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 2 GETVAL 'SIGW00' 1 >>Scat2to2<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 1 GETVAL 'SIGS00' 1 >>Scat1toAll<< ;
+GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB STEP UP 'GROUP'
+  STEP AT (*GROUP*) 2 GETVAL 'SIGS00' 1 >>Scat2toAll<< ;
+ECHO "Keff =" Keff ;
+ECHO "NuSigf1 = " NuSigf1 ;
+ECHO "NuSigf2 = " NuSigf2 ;
+ECHO "SectionTot1 = " SectionTot1 ;
+ECHO "SectionTot2 = " SectionTot2 ;
+ECHO "Scat1to1 = " Scat1to1 ;
+ECHO "Scat2to2 = " Scat2to2 ;
+ECHO "Scat1toAll = " Scat1toAll ;
+ECHO "Scat2toAll = " Scat2toAll ;
+*---
+*  Current calculation
+*---
+REAL Scat1to2 := Scat1toAll Scat1to1 - ;
+REAL Scat2to1 := Scat2toAll Scat2to2 - ;
+REAL Current1 := NuSigf1 FuelFlx1 * NuSigf2 FuelFlx2 * + Keff /
+Scat2to1 FuelFlx2 * + SectionTot1 Scat1to1 - FuelFlx1 * - ;
+REAL Current2 := Scat1to2 FuelFlx1 *
+SectionTot2 Scat2to2 - FuelFlx2 * - ;
+*---
+*  Output boundary fluxes and currents
+*---
+:: <<BoundaryFlx1>> <<BoundaryFlx2>> <<Current1>> <<Current2>> ;
+END: ;
+QUIT "LIST" .
