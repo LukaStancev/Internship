@@ -159,16 +159,6 @@ ENDWHILE ; ! Boucle sur les CASE
 
 Library Discr := DELETE: Library Discr ;
 
-! Pour avoir un NMIX assez grand pour le reflecteur, je ne parviens
-! pas à me passer des MIX 3, 4 et 5 de Library ...
-Library := LIB: ::
-  NMIX 32
-  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-  MIX 3 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
-  MIX 4 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
-  MIX 5 560.0 Fe54 = <<NomFe54>> 0.0 ! Dummy mix
-;
-
 *--------------------------------------------------------------------
 *-------------------Beginning of reflector computations--------------
 *--------------------------------------------------------------------
@@ -191,62 +181,50 @@ Multicompo := COMPO: :: EDIT 1
     PARA 'Method'      VALU CHAR
     INIT
   ;
-
 * Gap where the flux is retrieved at the interface
 REAL FluxGap := 0.005 ; ! [cm]
-
 * Refined Zone, i.e. with a finer discretization
 REAL RefZn := 6.0 ; ! [cm]
 REAL RefZnR ;
 INTEGER MeshClsEnvel ;
-
 * Variables used to retrieve fluxes and currents at the interface
 REAL SectionTot1 SectionTot2 Scat1to1 Scat1toAll Scat2toAll
   Current1_A Current2_A BndaryFlx1_A BndaryFlx2_A
   Current1_B Current2_B BndaryFlx1_B BndaryFlx2_B ;
-
 * Variables for Koebke method
 REAL SigmaAbs1_A SigmaAbs2_A SigmaRal_A
      SigmaAbs1_B SigmaAbs2_B SigmaRal_B ;
-
 * Equivalent reflector cross sections and diffusion coefficients
 REAL D1 D2 SigmaAbs1 SigmaAbs2 SigmaRalent Total1 Total2 f1 f2 ;
-
 * Reflector parametrization variables
 STRING Palier Method ;
 REAL CB ; ! ppm
 INTEGER iCB nCB iLocation iCloisEnvel nCloisEnvel iPalier idxPalier
         nPalier iMethod ;
-
 * Boron parametrization
 Boron := UTL: :: CREA 'CB' 5 = 0.0 200.0 500.0 1000.0 2000.0 ; ! ppm
-
 * CreaDilut variables
 REAL dMod TMil fvMod fvZr4 fvInc fvSS304 fvHe ;
 INTEGER iZone firstMIX ;
 STRING Location ;
-
+*
 FractionVol := MSTR: :: CD 'Radial' ;
 FractionVol := MSTR: FractionVol :: CD 'Bottom' ;
 FractionVol := MSTR: FractionVol :: CD 'Top' ;
-
 *---
 *  Radial reflector
 *---
-
 * Dimensions
 REAL dClois dCloisEnvel dEnvel dEnvelEcran dEcran ;
 REAL FinClois DebutEnvel FinEnvel DebutEcran FinEcran DebutCuve ;
-
+*
 INTEGER nbZones := 4 ;
 nbZones := UTL: :: CREA 'Radial' 1 = <<nbZones>> ;
-
 * Steel volume fraction in the water between the baffle and the barrel,
 * due to the horizontal steel reinforcement plates that are vertically
 * distributed. Approximately 5-6%.
-REAL fvacier := 0.05 ;
-REAL fveau := 1.0 fvacier - ;
-
+REAL fvsteel := 0.05 ;
+REAL fvwater := 1.0 fvsteel - ;
 *---
 *  Bottom reflector : dimensions, compositions and properties
 *  From BEAVRS
@@ -254,25 +232,24 @@ REAL fveau := 1.0 fvacier - ;
 REAL BZone1 := 0.847 ; !1st layer (the closest to the core)
 REAL BZone2 := 15.16 ; !2nd layer
 REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
-
+*
 EVALUATE nbZones := 3 ;
 nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
-
+*
 FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
-  CREA 'Eau' <<nbZones>> = 0.618 0.625 1.000
+  CREA 'Wat' <<nbZones>> = 0.618 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.371 0.088 0.000
   CREA 'Inc' <<nbZones>> = 0.000 0.000 0.000
   CREA 'SS ' <<nbZones>> = 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.000 0.000 0.000   ;
-
+*
 REAL dModBas := 0.753 ; ! Densité du modérateur en entrée du coeur
 REAL TMilBas := 286.4 ; ! Temp du réflecteur bas (soit Tmod,entrée)
 EVALUATE TMilBas := TMilBas 273.15 + ; ! Conversion en Kelvin
-
+*
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
 EVALUATE BZone3 := BZone3 BZone2 + ;
-
 *---
 *  Top reflector : dimensions, compositions and properties
 *  From BEAVRS
@@ -284,22 +261,22 @@ REAL HZone4 :=  2.05 ; !4th layer
 REAL HZone5 :=  3.35 ; !5th layer
 REAL HZone6 :=  8.83 ; !6th layer
 REAL HZone7 := 20.00 ; !7th layer (the farthest from the core)
-
+*
 EVALUATE nbZones := 7 ;
 nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
-
+*
 ! Fraction volumique pour la zone1, zone2, zone3, etc.
 FractionVol := UTL: FractionVol :: STEP UP 'Top'
-  CREA 'Eau' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
+  CREA 'Wat' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.096 0.096 0.096 0.372 0.008 0.088 0.000
   CREA 'Inc' <<nbZones>> = 0.007 0.032 0.007 0.000 0.000 0.000 0.000
   CREA 'SS ' <<nbZones>> = 0.000 0.005 0.000 0.000 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.280 0.280 0.280 0.011 0.000 0.011 0.000 ;
-
+*
 REAL dModHaut  := 0.677 ; ! Densité du modérateur en entrée du coeur
 REAL TMilHaut  := 320.1 ; ! Temp du réflecteur bas (soit Tmod,entrée)
 EVALUATE TMilHaut := TMilHaut 273.15 + ; ! Conversion en Kelvin
-
+*
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE HZone2 := HZone2 HZone1 + ;
 EVALUATE HZone3 := HZone3 HZone2 + ;
@@ -307,11 +284,9 @@ EVALUATE HZone4 := HZone4 HZone3 + ;
 EVALUATE HZone5 := HZone5 HZone4 + ;
 EVALUATE HZone6 := HZone6 HZone5 + ;
 EVALUATE HZone7 := HZone7 HZone6 + ;
-
 * Any additionnal parameterization loop can be added here. Example(s):
 * - reflector moderator density,
 * - ...
-
 *--------------------------------------------------------------------
 * Loop over boron concentration in reflector water
 *--------------------------------------------------------------------
@@ -319,7 +294,6 @@ GREP: Boron :: LENGTH 'CB' >>nCB<< ;
 EVALUATE iCB := 1 ;
 WHILE iCB nCB <= DO
   GREP: Boron :: GETVAL 'CB' <<iCB>> NVAL 1 >>CB<< ;
-
   *--------------------------------------------------------------------
   * Loop over reflector locations
   *--------------------------------------------------------------------
@@ -335,7 +309,6 @@ WHILE iCB nCB <= DO
       ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
       ABORT: ;
     ENDIF ;
-
     IF Location 'Radial' = NOT THEN
       * For non-radial (i.e. top and bottom) reflectors, there is no
       * 'Palier' parameterization. It is therefore not necessary to
@@ -349,14 +322,12 @@ WHILE iCB nCB <= DO
       * two in order to have the number of Paliers.
       EVALUATE nPalier := nPalier 2 / ;
     ENDIF ;
-
     * Distance between baffle and barrel (can be a function of
     * distance and therefore of the angle)
     EVALUATE iCloisEnvel := 1 ;
     WHILE iCloisEnvel nCloisEnvel <= DO
       GREP: ReflSpecs :: GETVAL 'dCloisEnvel' <<iCloisEnvel>> NVAL 1
         >>dCloisEnvel<< ;
-
       * Palier-dependant data
       EVALUATE iPalier := 1 ;
       WHILE iPalier nPalier <= DO
@@ -364,7 +335,6 @@ WHILE iCB nCB <= DO
         GREP: ReflSpecs :: GETVAL 'Paliers' <<idxPalier>> NVAL 8
           >>Palier<< ;
         ECHO "Palier =" Palier ;
-
 *----------------------------------------------------------------------
 *       The geometry could be simplified beyond the baffle without
 *       consequences. Can be verified in full core transport (CASMO in
@@ -397,7 +367,6 @@ WHILE iCB nCB <= DO
           ECHO "Palier non-reconnu" ;
           ABORT: ;
         ENDIF ;
-
         * DRAGON uses the abscissae, so the thicknesses must be
         * cumulated.
         EVALUATE FinClois := dClois ;
@@ -406,15 +375,15 @@ WHILE iCB nCB <= DO
         EVALUATE DebutEcran := FinEnvel dEnvelEcran + ;
         EVALUATE FinEcran := DebutEcran dEcran + ;
         EVALUATE DebutCuve := FinEcran 20.0 + ;
-
+        *
         EVALUATE nbZones := 4 ;
         ! Volume fraction for zone1, zone2, zone3, etc.
         FractionVol := UTL: FractionVol :: STEP UP 'Radial'
                             ! MIX  6  7           8  9
-          CREA 'Eau' <<nbZones>> = 0. <<fveau>>   1. 0.
+          CREA 'Wat' <<nbZones>> = 0. <<fvwater>> 1. 0.
           CREA 'Zr4' <<nbZones>> = 0. 0.          0. 0.
           CREA 'Inc' <<nbZones>> = 0. 0.          0. 0.
-          CREA 'SS ' <<nbZones>> = 1. <<fvacier>> 0. 1.
+          CREA 'SS ' <<nbZones>> = 1. <<fvsteel>> 0. 1.
           CREA 'He ' <<nbZones>> = 0. 0.          0. 0. ;
         *------------------------------------------------------------
         *  Loop on the two cases, to have two different spectrum
@@ -422,25 +391,14 @@ WHILE iCB nCB <= DO
         *------------------------------------------------------------
         EVALUATE CASE := 1 ;
         WHILE CASE 2 <= DO
-
           IF CASE 1 = THEN
             MACRO := MACRO_FUEL_1 ;
           ELSEIF CASE 2 = THEN
             MACRO := MACRO_FUEL_2 ;
           ENDIF ;
-
-          MACRO := MAC: MACRO Library ::
-            NMIX 15
-            MIX 3 3 OLDL ! Dummy mix
-            MIX 4 4 OLDL ! Dummy mix
-            MIX 5 5 OLDL ! Dummy mix
-          ;
-          ! MACRO := UTL: MACRO :: DUMP ;
-
           *----------------------------------------------------------
           *  Reflector geometry
           *----------------------------------------------------------
-
           IF Location "Bottom" = Location "Radial" = + THEN
             EVALUATE dMod := dModBas ;
             EVALUATE TMil := TMilBas ;
@@ -451,13 +409,12 @@ WHILE iCB nCB <= DO
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
           ENDIF ;
-
           GREP: nbZones :: GETVAL <<Location>> 1 >>nbZones<< ;
           EVALUATE iZone := 1 ;
           WHILE iZone nbZones <= DO
             * Recovery of zone composition
             GREP: FractionVol :: STEP UP <<Location>>
-                                 GETVAL 'Eau' <<iZone>> >>fvMod<<
+                                 GETVAL 'Wat' <<iZone>> >>fvMod<<
                                  GETVAL 'Zr4' <<iZone>> >>fvZr4<<
                                  GETVAL 'Inc' <<iZone>> >>fvInc<<
                                  GETVAL 'SS ' <<iZone>> >>fvSS304<<
@@ -465,7 +422,7 @@ WHILE iCB nCB <= DO
             * Display zone composition
             ECHO "[Refl" Location
                  "] Zone composition : " iZone ;
-            ECHO "- eau   : " fvMod ' ;' ;
+            ECHO "- Water : " fvMod ' ;' ;
             ECHO "- Zr4   : " fvZr4 ' ;' ;
             ECHO "- Inc   : " fvInc ' ;' ;
             ECHO "- SS304 : " fvSS304 ' ;' ;
@@ -476,11 +433,11 @@ WHILE iCB nCB <= DO
             <<dMod>> <<TMil>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
             * The MIX numbers are defined starting from 6
-            EVALUATE firstMIX := 5 iZone + ;
+            EVALUATE firstMIX := 2 iZone + ;
             ECHO 'First MIX : ' firstMIX ;
             * Recovery of zone's constitutive media
             MACRO := MAC: MACRO LibDilut ::
-              MIX <<firstMIX>> 1 OLDL ;
+              NMIX 9 MIX <<firstMIX>> 1 OLDL ;
             * If this is the first layer, we define the MIX in which
             * the flux will be retrieved
             IF iZone 1 = THEN
@@ -496,16 +453,16 @@ WHILE iCB nCB <= DO
             ! * S16 (SN with N=16)
             EVALUATE MeshClsEnvel := dCloisEnvel 0.4 / R_TO_I ;
             ECHO "MeshClsEnvel (troncature)=" MeshClsEnvel ;
-
+            *
             GEOM := GEO: :: CAR1D 9
               X- ALBE 1.0 X+ VOID
               MESHX    -21.5 0.0 <<FluxGap>> <<FinClois>> <<RefZnR>>
               <<DebutEnvel>> <<FinEnvel>> <<DebutEcran>> <<FinEcran>>
               <<DebutCuve>>
-              MIX           1   2           6            7          7
-                      ! comb flux-acier   acier     eau+ac     eau+ac
-                            6            8              9           8
-                      ! acier         eau        acier(si ecran)  eau
+              MIX           1   2           3            4          4
+                      ! fuel flux+steel   steel water+steel water+steel
+                            3            5              6           5
+                      ! steel         water      steel(if screen) water
               SPLITX       30   1           25    20 <<MeshClsEnvel>>
                            10           5              6            4
               ;
@@ -514,8 +471,8 @@ WHILE iCB nCB <= DO
              X- ALBE 1.0 X+ VOID
              MESHX  -21.5 0.0 <<FluxGap>> <<BZone1>> <<RefZn>>
                     <<BZone2>> <<BZone3>>
-             MIX         1   2           6          7          7
-                             8
+             MIX         1   2           3          4          4
+                             5
              SPLITX      40  1           60         60         50
                              50
              ;
@@ -525,9 +482,9 @@ WHILE iCB nCB <= DO
               MESHX  -21.5 0.0 <<FluxGap>> <<RefZn>> <<HZone1>>
                       <<HZone2>> <<HZone3>> <<HZone4>> <<HZone5>>
                       <<HZone6>> <<HZone7>>
-              MIX         1   2          6          6          7
-                                8          9          10         11
-                          12
+              MIX         1   2          3          3          4
+                                5          6           7         8
+                          9
               SPLITX     40   1          60         50         50
                                 50         50         50         50
                           50
@@ -536,7 +493,6 @@ WHILE iCB nCB <= DO
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
           ENDIF ;
-
           *----------------------------------------------------------
           *  Solve flux
           *----------------------------------------------------------
@@ -546,7 +502,6 @@ WHILE iCB nCB <= DO
             SN 16 SCAT 2 QUAD 10 ;
           SYSTEM := ASM: MACRO TRACK :: ARM ;
           FLUX := FLU: SYSTEM MACRO TRACK :: EDIT 0 TYPE K ;
-
           *----------------------------------------------------------
           *  Uncomment to plot 2-groups 1D fluxes
           *----------------------------------------------------------
@@ -554,7 +509,6 @@ WHILE iCB nCB <= DO
           !   EDIT 3 UPS COND 0.625 SAVE ;
           ! OUT := UTL: OUT :: DUMP ;
           ! OUT := DELETE: OUT ;
-
           * The current at the interface can be obtained from the
           * reaction rates in the fuel. As for the flux at the
           * interface, two approaches are possible :
@@ -563,18 +517,17 @@ WHILE iCB nCB <= DO
           * (2) We can take the average of two meshes on each side of
           *     the interface.
           * We chose the first option for simplicity's sake.
-
           IF Location "Radial" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0
+              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0
               COND 0.625 SAVE ;
           ELSEIF Location "Bottom" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0
+              EDIT 3 UPS MERGE MIX 1 2 0 0 0
               COND 0.625 SAVE ;
           ELSEIF Location "Top" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0 0 0 0
+              EDIT 3 UPS MERGE MIX 1 2 0 0 0 0 0 0 0
               COND 0.625 SAVE ;
           ELSE
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
@@ -596,15 +549,15 @@ WHILE iCB nCB <= DO
           *---
           IF Location "Radial" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-            EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1 1
+            EDIT 5 UPS MERGE MIX 0 1 1 1 1 1
             COND 0.625 SAVE ;
           ELSEIF Location "Bottom" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-              EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1
+              EDIT 5 UPS MERGE MIX 0 1 1 1 1
               COND 0.625 SAVE ;
           ELSEIF Location "Top" = THEN
             OUT := EDI: MACRO TRACK FLUX GEOM ::
-              EDIT 5 UPS MERGE MIX 0 1 0 0 0 1 1 1 1 1 1 1
+              EDIT 5 UPS MERGE MIX 0 1 1 1 1 1 1 1 1
               COND 0.625 SAVE ;
           ELSE
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
@@ -640,13 +593,10 @@ WHILE iCB nCB <= DO
             EVALUATE SigmaAbs2_B := SectionTot2 Scat2toAll - ;
             EVALUATE SigmaRal_B := Scat1toAll Scat1to1 - ;
           ENDIF ;
-
           GEOM TRACK SYSTEM FLUX MACRO OUT := DELETE:
           GEOM TRACK SYSTEM FLUX MACRO OUT ;
-
           EVALUATE CASE := CASE 1 + ;
         ENDWHILE ; ! Boucle sur les CASE
-
         IF BndaryFlx2_A BndaryFlx1_A /
            BndaryFlx2_B BndaryFlx1_B / / 1.0 - ABS 0.01 < THEN
           ECHO "The two calculations (for different 2 spectrum " ;
@@ -656,7 +606,6 @@ WHILE iCB nCB <= DO
           ECHO "separate them more." ;
           ABORT: ;
         ENDIF ;
-
         EVALUATE iMethod := 1 ;
         WHILE iMethod 7 <= DO
           IF     iMethod 1 = THEN EVALUATE Method := "Lefebvre-Leb" ;
@@ -670,7 +619,6 @@ WHILE iCB nCB <= DO
             ECHO "Reflector method not recognized." ;
             ABORT: ;
           ENDIF ;
-
           IF Method "Lefebvre-Leb" = THEN
             LefebvreLeb :: <<Current1_A>> <<BndaryFlx1_A>>
                            <<Current1_B>> <<BndaryFlx1_B>>
@@ -730,21 +678,21 @@ WHILE iCB nCB <= DO
               MACRO ;
           ENDIF ;
           MacrRefl Edition := DELETE: MacrRefl Edition ;
-
+          *
           EVALUATE iMethod := iMethod 1 + ;
         ENDWHILE ; ! Loop over Method
-
+        *
         EVALUATE iPalier := iPalier 1 + ;
       ENDWHILE ; ! Loop over iPalier
-
+      *
       EVALUATE iCloisEnvel := iCloisEnvel 1 + ;
     ENDWHILE ; ! Loop over iCloisEnvel
-
+    *
     EVALUATE iLocation := iLocation 1 + ;
   ENDWHILE ; ! Loop over iLocation
-
+  *
   EVALUATE iCB := iCB 1 + ;
 ENDWHILE ; ! Loop over iCB
-
+*
 END: ;
 QUIT "LIST" .
