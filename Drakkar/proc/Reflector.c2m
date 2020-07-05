@@ -204,7 +204,7 @@ INTEGER iCB nCB iLocation iCloisEnvel nCloisEnvel iPalier idxPalier
 * Boron parametrization
 Boron := UTL: :: CREA 'CB' 5 = 0.0 200.0 500.0 1000.0 2000.0 ; ! ppm
 * CreaDilut variables
-REAL dMod TMil fvMod fvZr4 fvInc fvSS304 fvHe ;
+REAL dMod Temp fvMod fvZr4 fvInc fvSS304 fvHe ;
 INTEGER iZone firstMIX ;
 STRING Location ;
 *
@@ -236,6 +236,7 @@ REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
 EVALUATE nbZones := 3 ;
 nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
 *
+! Volume fraction for zone1, zone2 and zone3.
 FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
   CREA 'Wat' <<nbZones>> = 0.618 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.371 0.088 0.000
@@ -243,9 +244,8 @@ FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
   CREA 'SS ' <<nbZones>> = 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.000 0.000 0.000   ;
 *
-REAL dModBas := 0.753 ; ! Densité du modérateur en entrée du coeur
-REAL TMilBas := 286.4 ; ! Temp du réflecteur bas (soit Tmod,entrée)
-EVALUATE TMilBas := TMilBas 273.15 + ; ! Conversion en Kelvin
+REAL dModBottom := 0.753 ; ! Core inlet moderator density
+REAL TempBottom := 286.4 273.15 + ; ! Core inlet moderator temperature
 *
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
@@ -265,7 +265,7 @@ REAL HZone7 := 20.00 ; !7th layer (the farthest from the core)
 EVALUATE nbZones := 7 ;
 nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
 *
-! Fraction volumique pour la zone1, zone2, zone3, etc.
+! Volume fraction for zone1, zone2, zone3, etc.
 FractionVol := UTL: FractionVol :: STEP UP 'Top'
   CREA 'Wat' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.096 0.096 0.096 0.372 0.008 0.088 0.000
@@ -273,9 +273,8 @@ FractionVol := UTL: FractionVol :: STEP UP 'Top'
   CREA 'SS ' <<nbZones>> = 0.000 0.005 0.000 0.000 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.280 0.280 0.280 0.011 0.000 0.011 0.000 ;
 *
-REAL dModHaut  := 0.677 ; ! Densité du modérateur en entrée du coeur
-REAL TMilHaut  := 320.1 ; ! Temp du réflecteur bas (soit Tmod,entrée)
-EVALUATE TMilHaut := TMilHaut 273.15 + ; ! Conversion en Kelvin
+REAL dModTop  := 0.677 ; ! Core outlet moderator density
+REAL TempTop  := 320.1 273.15 + ; ! Core outlet moderator temperature
 *
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE HZone2 := HZone2 HZone1 + ;
@@ -379,7 +378,7 @@ WHILE iCB nCB <= DO
         EVALUATE nbZones := 4 ;
         ! Volume fraction for zone1, zone2, zone3, etc.
         FractionVol := UTL: FractionVol :: STEP UP 'Radial'
-                            ! MIX  6  7           8  9
+                            ! MIX  3  4           5  6
           CREA 'Wat' <<nbZones>> = 0. <<fvwater>> 1. 0.
           CREA 'Zr4' <<nbZones>> = 0. 0.          0. 0.
           CREA 'Inc' <<nbZones>> = 0. 0.          0. 0.
@@ -400,11 +399,11 @@ WHILE iCB nCB <= DO
           *  Reflector geometry
           *----------------------------------------------------------
           IF Location "Bottom" = Location "Radial" = + THEN
-            EVALUATE dMod := dModBas ;
-            EVALUATE TMil := TMilBas ;
+            EVALUATE dMod := dModBottom ;
+            EVALUATE Temp := TempBottom ;
           ELSEIF Location "Top" = THEN
-            EVALUATE dMod := dModBas ;
-            EVALUATE TMil := TMilBas ;
+            EVALUATE dMod := dModTop ;
+            EVALUATE Temp := TempTop ;
           ELSE
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
@@ -430,9 +429,9 @@ WHILE iCB nCB <= DO
             * Definition of reflector libraries
             LibDilut ConcMode MolarMasses
             BNat Zirc4 Incon SS304 := CreaDilut ::
-            <<dMod>> <<TMil>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
+            <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
-            * The MIX numbers are defined starting from 6
+            * The MIX numbers are defined starting from 3
             EVALUATE firstMIX := 2 iZone + ;
             ECHO 'First MIX : ' firstMIX ;
             * Recovery of zone's constitutive media
