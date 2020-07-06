@@ -1,14 +1,14 @@
 PARAMETER Multicompo ReflSpecs :: ::: LINKED_LIST ReflSpecs ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
-  Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf ;
+  Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf GetTechData ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop Library
   LibDilut CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2 StepList
   MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat BNat AgNat CdNat
   SNat HfNat GdNat Zirc4 Incon SS304 M5 KNat InNat AIC HfR Gd2O3 BP
   ConcMode MacrRefl Edition nbZones FractionVol Boron GEOM TRACK SYSTEM
-  FLUX OUT ;
+  FLUX OUT List ;
 MODULE LIB: GEO: ASM: FLU: EDI: COMPO: DELETE: USS: UTL: END: ABORT:
-  MAC: SNT: GREP: MSTR: ;
+  MAC: SNT: GREP: MSTR: INFO: ;
 
 *---- General informations    --------------------------
 *---
@@ -204,9 +204,13 @@ INTEGER iCB nCB iLocation iCloisEnvel nCloisEnvel iPalier idxPalier
 * Boron parametrization
 Boron := UTL: :: CREA 'CB' 5 = 0.0 200.0 500.0 1000.0 2000.0 ; ! ppm
 * CreaDilut variables
-REAL dMod Temp fvMod fvZr4 fvInc fvSS304 fvHe ;
+REAL OpePressure Temp dMod dModTop dModBottom
+  fvMod fvZr4 fvInc fvSS304 fvHe ;
 INTEGER iZone firstMIX ;
 STRING Location ;
+List := GetTechData :: 'TIH' 'UOX' 0 'None' 'GENERAL' ;
+GREP: List :: GETVAL 'OpePressure' 1 >>OpePressure<< ;
+List := DELETE: List ;
 *
 FractionVol := MSTR: :: CD 'Radial' ;
 FractionVol := MSTR: FractionVol :: CD 'Bottom' ;
@@ -244,8 +248,9 @@ FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
   CREA 'SS ' <<nbZones>> = 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.000 0.000 0.000   ;
 *
-REAL dModBottom := 0.753 ; ! Core inlet moderator density
 REAL TempBottom := 286.4 273.15 + ; ! Core inlet moderator temperature
+INFO: :: TMP: <<TempBottom>> K PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
+  CALC DENS PWATER >>dModBottom<< ; ! [g.cm-3]
 *
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
@@ -273,8 +278,9 @@ FractionVol := UTL: FractionVol :: STEP UP 'Top'
   CREA 'SS ' <<nbZones>> = 0.000 0.005 0.000 0.000 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.280 0.280 0.280 0.011 0.000 0.011 0.000 ;
 *
-REAL dModTop  := 0.677 ; ! Core outlet moderator density
 REAL TempTop  := 320.1 273.15 + ; ! Core outlet moderator temperature
+INFO: :: TMP: <<TempTop>> K PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
+  CALC DENS PWATER >>dModTop<< ; ! [g.cm-3]
 *
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE HZone2 := HZone2 HZone1 + ;
@@ -512,7 +518,7 @@ WHILE iCB nCB <= DO
           * reaction rates in the fuel. As for the flux at the
           * interface, two approaches are possible :
           * (1) We can evaluate the flux in a very fine mesh next to
-          *     the interface
+          *     the interface.
           * (2) We can take the average of two meshes on each side of
           *     the interface.
           * We chose the first option for simplicity's sake.
@@ -562,27 +568,15 @@ WHILE iCB nCB <= DO
             ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
             ABORT: ;
           ENDIF ;
-
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-            'NTOT0' 1 >>SectionTot1<< ;
-
+            STEP UP 'GROUP' STEP AT (*GROUP*) 1
+            GETVAL 'NTOT0'  1 >>SectionTot1<<
+            GETVAL 'SIGW00' 1 >>Scat1to1<<
+            GETVAL 'SIGS00' 1 >>Scat1toAll<< ;
           GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-            STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-            'NTOT0' 1 >>SectionTot2<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-            'SIGW00' 1 >>Scat1to1<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-            STEP UP 'GROUP' STEP AT (*GROUP*) 1 GETVAL
-            'SIGS00' 1 >>Scat1toAll<< ;
-
-          GREP: OUT :: STEP UP 'REF-CASE0001' STEP UP MACROLIB
-            STEP UP 'GROUP' STEP AT (*GROUP*) 2 GETVAL
-            'SIGS00' 1 >>Scat2toAll<< ;
-
+            STEP UP 'GROUP' STEP AT (*GROUP*) 2
+            GETVAL 'NTOT0'  1 >>SectionTot2<<
+            GETVAL 'SIGS00' 1 >>Scat2toAll<< ;
           IF CASE 1 = THEN
             EVALUATE SigmaAbs1_A := SectionTot1 Scat1toAll - ;
             EVALUATE SigmaAbs2_A := SectionTot2 Scat2toAll - ;
