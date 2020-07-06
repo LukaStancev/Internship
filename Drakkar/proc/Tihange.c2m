@@ -30,7 +30,7 @@ STRING CondLimite ;
 * - Koebke-a
 *----
 STRING Palier := "CP0_900" ;
-STRING MethodRefl := "Koebke-a" ;
+STRING MethodRefl := "Lefebvre-Leb" ;
 
 ECHO "TypeRefl =" TypeRefl ;
 ECHO "Palier =" Palier ;

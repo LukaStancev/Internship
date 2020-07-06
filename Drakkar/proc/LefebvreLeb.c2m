@@ -33,12 +33,7 @@ REAL R2 := Slope ;
 REAL R3 := -1.0 Ordinate * ;
 *---
 REAL SigmaAbs2 := R2 R2 * D2 / ;
-REAL SigmaRalent :=
-  D2 D1 / SQRT R1 *
-  D1 SigmaAbs2 * SQRT
-  +
-  R3 *
-  D1 D2 * SQRT / ;
+REAL SigmaRalent := R1 D1 / SigmaAbs2 D2 / SQRT + R3 * ;
 REAL SigmaAbs1 := R1 R1 * D1 / SigmaRalent - ;
 *---
 IF SigmaRalent 0.0 < THEN
