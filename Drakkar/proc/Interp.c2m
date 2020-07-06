@@ -214,7 +214,7 @@ IF TypeRefl "TousPaliers" = THEN
         SET 'C-BORE' <<CB>>
         SET 'Method' <<MethodRefl>>
         SET 'Palier' <<Palier>>
-        SET 'dCloisEnvel' 14.4
+        SET 'dBaffleBarrl' 14.4
     ENDMIX
     COMPO REFL 'Bottom'
     MIX 2 FROM 1

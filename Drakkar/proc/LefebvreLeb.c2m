@@ -33,10 +33,10 @@ REAL R2 := Slope ;
 REAL R3 := -1.0 Ordinate * ;
 *---
 REAL SigmaAbs2 := R2 R2 * D2 / ;
-REAL SigmaRalent := R1 D1 / SigmaAbs2 D2 / SQRT + R3 * ;
-REAL SigmaAbs1 := R1 R1 * D1 / SigmaRalent - ;
+REAL SigmaSlowd := R1 D1 / SigmaAbs2 D2 / SQRT + R3 * ;
+REAL SigmaAbs1 := R1 R1 * D1 / SigmaSlowd - ;
 *---
-IF SigmaRalent 0.0 < THEN
+IF SigmaSlowd 0.0 < THEN
   ECHO "Lefebvre-Lebigot method failed." ;
   ECHO "Negative fast SIGS00 XS." ;
   ABORT: ;
@@ -48,7 +48,7 @@ IF SigmaAbs1 0.0 < THEN
 ENDIF ;
 * Adding discontinuity factors to have similarly constructed Multicompos
 REAL f1 f2 := 1.0 1.0 ;
-:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaRalent>>
+:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaSlowd>>
    <<f1>> <<f2>> ;
 END: ;
 QUIT "LIST" .

@@ -12,7 +12,7 @@ REAL Current1_A BndaryFlx1_A
      Current2_B BndaryFlx2_B
      SigmaAbs1_A SigmaAbs2_A
      SigmaAbs1_B SigmaAbs2_B
-     SigmaRal_A SigmaRal_B ;
+     SigmaSlowd_A SigmaSlowd_B ;
 STRING Method Location ;
 :: >>Current1_A<< >>BndaryFlx1_A<<
    >>Current1_B<< >>BndaryFlx1_B<<
@@ -20,12 +20,12 @@ STRING Method Location ;
    >>Current2_B<< >>BndaryFlx2_B<<
    >>SigmaAbs1_A<< >>SigmaAbs2_A<<
    >>SigmaAbs1_B<< >>SigmaAbs2_B<<
-   >>SigmaRal_A<<  >>SigmaRal_B<<
+   >>SigmaSlowd_A<<  >>SigmaSlowd_B<<
    >>Method<< >>Location<< ;
 REAL f1 := 1.0 ;
 REAL SigmaAbs1 := SigmaAbs1_A SigmaAbs1_B + 2.0 / ;
 REAL SigmaAbs2 := SigmaAbs2_A SigmaAbs2_B + 2.0 / ;
-REAL SigmaRalent := SigmaRal_A SigmaRal_B + 2.0 / ;
+REAL SigmaSlowd := SigmaSlowd_A SigmaSlowd_B + 2.0 / ;
 *----------------------------------------------------------
 * Compute the Rij matrix elements
 *----------------------------------------------------------
@@ -37,15 +37,15 @@ REAL R21 :=
 REAL R22 :=
   Current1_A BndaryFlx2_B * Current1_B BndaryFlx2_A * -
   Current1_A Current2_B * Current1_B Current2_A * - / ;
-REAL D1 := f1 R11 / 2.0 ** SigmaAbs1 SigmaRalent + / ;
+REAL D1 := f1 R11 / 2.0 ** SigmaAbs1 SigmaSlowd + / ;
 *---
 REAL a :=
-  R21 SigmaAbs1 SigmaRalent + * SigmaRalent R22 * -
+  R21 SigmaAbs1 SigmaSlowd + * SigmaSlowd R22 * -
   R22 2.0 ** /
-  SigmaAbs1 SigmaRalent + SigmaAbs2 / SQRT * ;
-REAL b := SigmaRalent D1 SigmaAbs2 * SQRT * ;
+  SigmaAbs1 SigmaSlowd + SigmaAbs2 / SQRT * ;
+REAL b := SigmaSlowd D1 SigmaAbs2 * SQRT * ;
 REAL c := -1.0 D1 * R21 * SigmaAbs2 *
-  SigmaAbs1 SigmaRalent + SigmaAbs2 * SQRT * ;
+  SigmaAbs1 SigmaSlowd + SigmaAbs2 * SQRT * ;
 REAL d := b 2.0 ** 4.0 a c * * - ;
 IF d 0.0 < THEN
   ECHO "Koebke method failed." ;
@@ -72,7 +72,7 @@ IF Method "Koebke-aDF" = Method "Koebke-bDF" = +
   ECHO "Keeping separate discontinuity factors and sections :" ;
   ECHO "SigmaAbs1 =" SigmaAbs1 ;
   ECHO "SigmaAbs2 =" SigmaAbs2 ;
-  ECHO "SigmaRalent =" SigmaRalent ;
+  ECHO "SigmaSlowd =" SigmaSlowd ;
   ECHO "D1 =" D1 ;
   ECHO "D2 =" D2 ;
   ECHO "f1 =" f1 ;
@@ -81,18 +81,18 @@ ELSE
   ECHO "Incorporating discontinuity factors into the sections :" ;
   EVALUATE SigmaAbs1 := SigmaAbs1 f1 / ;
   EVALUATE SigmaAbs2 := SigmaAbs2 f2 / ;
-  EVALUATE SigmaRalent := SigmaRalent f1 / ;
+  EVALUATE SigmaSlowd := SigmaSlowd f1 / ;
   EVALUATE D1 := D1 f1 / ;
   EVALUATE D2 := D2 f2 / ;
   EVALUATE f1 := 1.0 ;
   EVALUATE f2 := 1.0 ;
   ECHO "SigmaAbs1 =" SigmaAbs1 ;
   ECHO "SigmaAbs2 =" SigmaAbs2 ;
-  ECHO "SigmaRalent =" SigmaRalent ;
+  ECHO "SigmaSlowd =" SigmaSlowd ;
   ECHO "D1 =" D1 ;
   ECHO "D2 =" D2 ;
 ENDIF ;
-:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaRalent>>
+:: <<D1>> <<D2>> <<SigmaAbs1>> <<SigmaAbs2>> <<SigmaSlowd>>
    <<f1>> <<f2>> ;
 END: ;
 QUIT "LIST" .
