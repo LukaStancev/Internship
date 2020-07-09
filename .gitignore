@@ -1,3 +1,17 @@
-/commit.log
+# Version5 result files stored in this folder
 **/Linux_x86_64/
+
+# Version5 compilation object files
+**/*.o
+**/*.a
+**/*.mod
+Drakkar/Version5/Donjon/src/Donjon
+Drakkar/Version5/Dragon/src/Dragon
+Drakkar/Version5/Ganlib/src/Ganlib
+Drakkar/Version5/Trivac/src/Trivac
+
+# Slurm output (log) files
 **/slurm-*.out
+
+# File I use to write my commit messages :)
+/commit.log
