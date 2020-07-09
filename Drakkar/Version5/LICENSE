@@ -1,0 +1,7 @@
+License conditions and Disclaimer
+
+The Version5 distribution is released under the GNU Lesser General Public License. The LGPL contains an exception to the GNU General Public License that is applicable to library software, which means that Version5 components can be referred as library functions by proprietary software. Any software calling Version5 components doesn't need to be open source; the users are thus proprietary of their computational schemes. Also, the LGPL allows the user to link Version5 components to codes not covered under the LGPL and to distribute combinations without causing the resulting application to be covered by the LGPL, or become affected by the LGPL in any way.
+
+On the other hand, if a modification or improvement is made on an existing component of Version5, this increment is covered by the LGPL and should be return to Corporation de l'École Polytechnique de Montréal.
+
+Corporation de l'École Polytechnique de Montréal disclaims all warranties, representations and conditions, express, implied, statutory or otherwise, including without limitation, any warranty or condition of merchantability, merchantable quality, or fitness for a particular purpose, or arising from a course or dealing, usage or trade practice. In particular, Corporation de l'École Polytechnique de Montréal does not warrant or represent that the software will operate uninterrupted or error free or that defects in the software are correctable or will be corrected.

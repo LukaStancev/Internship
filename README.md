@@ -1,7 +1,9 @@
-The datasets produced during my Ph.D. thesis are centralized on this project. They can be executed with [Version5](https://www.polymtl.ca/merlin/version5.htm), developped at École Polytechnique de Montréal. This principle of openness is intended to allow, in a pragmatic and effective way :
+The datasets produced during my Ph.D. thesis are centralized on this project. This principle of openness is intended to allow, in a pragmatic and effective way:
 * the verifiable and complete reproducibility of this publicly funded research,
 * the transparency necessary for a rigorous peer-review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
+
+The datasets can be executed with [Version5](https://www.polymtl.ca/merlin/version5.htm) (beta, revision 1879), developped at École Polytechnique de Montréal. For the sake of convenience, it is included in this repository.
 
 ### Disclaimer
 

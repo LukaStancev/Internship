@@ -1,0 +1,294 @@
+*DECK PSP
+      SUBROUTINE PSP(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+C
+C----
+C  1- PROGRAMME STATISTICS:
+C      NAME     : PSP
+C      USE      : POSTSCRIPT PLOT UTILITY MODULE
+C      AUTHOR   : G.MARLEAU
+C      CREATED  : 99-01-21
+C
+C      MODIFICATION LOG
+C      --------------------------------------------------------------
+C      | DATE AND INITIALS  | MOTIVATIONS
+C      --------------------------------------------------------------
+C      | 99-01-21 G.M.      | GENERATION OF A POSTSCRIPT FILE
+C      |                    | CONTAINING A SPECIFIC EXCELL 2-D
+C      |                    | GEOMETRIES
+C      ______________________________________________________________
+C
+C  2- ROUTINE PARAMETERS:
+C    INPUT
+C      NENTRY : NUMBER OF DATA STRUCTURES USED.          I
+C      HENTRY : NAME OF DATA STRUCTURES.                 C(NENTRY)*12
+C      IENTRY : TYPE OF DATA STRUCTURES.                 I(NENTRY)
+C               = 1 FOR LINKED LIST;
+C               = 2 FOR XSM FILE;
+C               = 3 FOR SEQUENTIAL BINARY FILE;
+C               = 4 FOR SEQUENTIAL ASCII FILE.
+C      JENTRY : MODE OF DATA STRUCTURES.                 I(NENTRY)
+C               = 0 CREATION MODE;
+C               = 1 UPDATE MODE;
+C               = 2 READ-ONLY MODE.
+C      KENTRY : ADDRESS OF DATA STRUCTURES.              I(NENTRY)
+C               FOR IENTRY = 1  LINKED LIST ADDRESS;
+C               FOR IENTRY > 1  FILE UNIT NUMBER.
+C  3- INPUT REQUIREMENTS
+C      NENTRY  >= 2
+C        IEN = 1 : STRUCTURE IS A SEQUENTIAL ASCII FILE
+C                  CONTAINING THE OUTPUT POSTSCRIPT. THIS CAN BE A
+C                  NEW FILE OR A FILE TO UPDATE.
+C                  IENTRY(IEN) = 4, JENTRY(IEN) <= 1
+C      FOR PSP BY MIXTURE OR REGION
+C        IEN > 1 : STRUCTURE IS A VALID DRAGON GEOMETRY
+C                  FOR EXCELT STORED IN A LINKED LIST OR XSM FILE.
+C                  THIS STRUCTURE MUST BE IN READ-ONLY MODE
+C                  IENTRY(IEN)<= 2, JENTRY(IEN) = 2
+C      FOR PSP BY FLUX
+C        IEN = 2 : STRUCTURE IS A VALID DRAGON GEOMETRY
+C                  FOR EXCELT STORED IN A LINKED LIST OR XSM FILE.
+C                  THIS STRUCTURE MUST BE IN READ-ONLY MODE
+C                  IENTRY(IEN)<= 2, JENTRY(IEN) = 2
+C        IEN = 3 : STRUCTURE IS A VALID FLUX STRUCTURE
+C
+C----
+C
+      USE          GANLIB
+      IMPLICIT     NONE
+      INTEGER      IOUT,NSTATE,ILCMUP,ILCMDN
+      CHARACTER    NAMSBR*6
+      PARAMETER   (IOUT=6,NSTATE=40,ILCMUP=1,ILCMDN=2,
+     >             NAMSBR='PSP   ')
+C----
+C  ROUTINE PARAMTERS
+C----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+C----
+C  LOCAL VARIABLES
+C----
+      INTEGER      ISTATE(NSTATE),IPRINT,IEN,
+     >             IENGT,IENFL,ISPSP,ITYPE,ICOLR,
+     >             NPAGE,ITRK,NGROUP,NUNKNO,IGR,NGT
+      CHARACTER    HSIGN*12,NAMGT*12,NAMLEG*24
+      REAL         XYPOS(2)
+      CHARACTER    NAMTR2*12,NAMGEO*12
+      TYPE(C_PTR)  IPTRK2,IPFL,IPGT
+      INTEGER      IMODT2,IMEDT2,ICLST2,IPRIN2
+      LOGICAL      LASS,LDRASS
+      INTEGER      IMODE,NMODE
+      TYPE(C_PTR)  JPFL,KPFL
+C----
+C  ALLOCATABLE ARRAYS
+C----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: ICOND
+      REAL, ALLOCATABLE, DIMENSION(:) :: FLUX,TFLX
+C----
+      NAMTR2='PSPGEOIPTRK2'
+      IMODT2=0
+      IMEDT2=1
+      IPRIN2=0
+      ICLST2=2
+C----
+C  INPUT PARAMETER VALIDATION
+C----
+      XYPOS(1)=0.5
+      XYPOS(2)=0.5
+      IF(NENTRY    .LT. 2 ) CALL XABORT(NAMSBR//
+     >  ': AT LEAST TWO DATA STRUCTURES REQUIRED')
+      ISPSP=FILUNIT(KENTRY(1))
+      IF(IENTRY(1) .NE. 4 ) CALL XABORT(NAMSBR//
+     >  ': POSTSCRIPT DATA STRUCTURE NOT AN ASCII FILE')
+      IF(JENTRY(1) .NE. 0   .AND.
+     >   JENTRY(1) .NE. 1 ) CALL XABORT(NAMSBR//
+     >  ': POSTSCRIPT DATA STRUCTURE NOT IN CREATE OR MODIFY MODE')
+*----
+*  Find if one of the structures is a flux
+*  and get number of groups if required
+*----
+      NGROUP=1
+      IENFL=0
+      DO IEN=1,NENTRY
+        IF(IENTRY(IEN) .EQ. 1 .OR. IENTRY(IEN) .EQ. 2 ) THEN
+          IF(JENTRY(IEN) .GT. 0 ) THEN
+            IPFL=KENTRY(IEN)
+            CALL LCMGTC(IPFL,'SIGNATURE',12,1,HSIGN)
+            IF(HSIGN .EQ. 'L_FLUX      ') THEN
+              IENFL=IEN
+              CALL XDISET(ISTATE,NSTATE,0)
+              CALL LCMGET(IPFL,'STATE-VECTOR',ISTATE)
+              NGROUP=ISTATE(1)
+              NUNKNO=ISTATE(2)
+            ENDIF
+          ENDIF
+        ENDIF
+      ENDDO
+C----
+C  READ PSP OPTIONS
+C  IPRINT : EDIT LEVEL
+c           = 0 NO EDIT
+C           = 1 NORMAL EDIT  (DEFAULT)
+C           > 1 EDIT FOR DEBUG
+C----
+      ALLOCATE(ICOND(NGROUP))
+      CALL PSPGET(IPRINT,ITYPE,ICOLR,NGROUP,NGT,ICOND)
+C----
+C  OPEN POSTSCRIPT OUTPUT FILE
+C    1) IF THE FIRST DATA STRUCTURE IS IN UPDATE
+C       TEST IF IT IS A POSTSCRIPT FILE CREATED BY DRAGON
+C       AND PREPARE FILE FOR OUTPUT
+C----
+      CALL PSPFIL(ISPSP,JENTRY(1),HENTRY(1),NPAGE)
+C----
+C  SCAN OVER DATA STRUCTURES AND PROCESS STRUCTURE ONE AFTER THE OTHER
+C----
+      IF(ITYPE .EQ. 0 .OR. ITYPE .EQ. 1 .OR. ITYPE .EQ. 4) THEN
+        NUNKNO=1
+        IF(ITYPE .EQ. 0) THEN
+          NAMLEG='Region'
+        ELSE IF(ITYPE .EQ. 1) THEN
+          NAMLEG='Mixture'
+        ELSE IF(ITYPE .EQ. 4) THEN
+          NAMLEG='HMIX'
+        ENDIF
+        ALLOCATE(FLUX(NUNKNO))
+        FLUX=0.0
+        DO 100 IENGT=2,NENTRY
+C----
+C  READ SIGNATURE OF NEXT DATA STRUCTURE AND TEST IF
+C  PSP CAN BE USED TO PROCESS THIS DATA STRUCTURE
+C----
+          IF(IENTRY(IENGT) .NE. 1   .AND.
+     >       IENTRY(IENGT) .NE. 2 ) CALL XABORT(NAMSBR//
+     >      ': NEXT DATA STRUCTURE NOT A LINKED LIST OR XSM FILE')
+          IF(JENTRY(IENGT) .NE. 2 ) CALL XABORT(NAMSBR//
+     >      ': NEXT DATA STRUCTURE NOT IN READ-ONLY MODE')
+          IPGT=KENTRY(IENGT)
+          NAMGT=HENTRY(IENGT)
+          CALL LCMGTC(IPGT,'SIGNATURE',12,1,HSIGN)
+          ITRK=1
+C----
+C  TEST IF GEOMETRY OR EXCELL TRACK DATA STRUCTURE
+C----
+          IF(HSIGN .EQ. 'L_GEOM      ') THEN
+            ITRK=0
+            NAMGEO=HENTRY(IENGT)
+          ELSE IF(HSIGN .EQ. 'L_TRACK     ') THEN
+            CALL LCMGTC(IPGT,'TRACK-TYPE',12,1,HSIGN)
+            IF(HSIGN .NE. 'EXCELL') ITRK=-1
+          ELSE
+            GO TO 115
+          ENDIF
+C----
+C  FOR GEOMETRY OPTION CALL AXGGEO
+C  TO GENERATE TEMPORARY TRACKING STRUCTURE
+C----
+          IF(ITRK .EQ. 0) THEN
+            LASS=LDRASS(IPGT,IPRINT)
+            CALL  LCMOP(IPTRK2,NAMTR2,IMODT2,IMEDT2,IPRIN2)
+            CALL AXGGEO(IPGT  ,IPTRK2,IPRINT,NAMGEO)
+            IPGT=IPTRK2
+          ENDIF
+C----
+C  CALL PSPTRK TO GENERATE POSTSCRIPT
+C----
+          CALL PSPTRK(IPRINT,ISPSP ,ITYPE ,ICOLR ,IPGT  ,NAMGT ,
+     >                NAMLEG,NUNKNO,FLUX )
+          IF(ITRK .EQ. 0) THEN
+            CALL LCMCL(IPTRK2,ICLST2)
+          ENDIF
+          CALL PSCUTP(ISPSP)
+          IF(IENGT .NE. NENTRY) THEN
+            NPAGE=NPAGE+1
+            CALL PSPAGE(ISPSP,NPAGE,XYPOS)
+          ENDIF
+ 115      CONTINUE
+ 100    CONTINUE
+        DEALLOCATE(FLUX)
+      ELSE IF(ITYPE .EQ. 2 .OR. ITYPE .EQ. 3 .OR.
+     >        ITYPE .EQ. 5 .OR. ITYPE .EQ. 6 ) THEN
+C----
+C  TEST SECOND DATA STRUCTURE
+C----
+        IENGT=2
+        IF(IENTRY(IENGT) .NE. 1   .AND.
+     >     IENTRY(IENGT) .NE. 2 ) CALL XABORT(NAMSBR//
+     >    ': SECOND DATA STRUCTURE NOT A LINKED LIST OR XSM FILE')
+        IF(JENTRY(IENGT) .NE. 2 ) CALL XABORT(NAMSBR//
+     >    ': SECOND DATA STRUCTURE NOT IN READ-ONLY MODE')
+        IPGT=KENTRY(IENGT)
+        NAMGT=HENTRY(IENGT)
+        CALL LCMGTC(IPGT,'SIGNATURE',12,1,HSIGN)
+        ITRK=1
+C----
+C  TEST IF GEOMETRY OR EXCELL TRACK DATA STRUCTURE
+C----
+        IF(HSIGN .EQ. 'L_GEOM      ') THEN
+          ITRK=0
+          NAMGEO=HENTRY(IENGT)
+        ELSE IF(HSIGN .EQ. 'L_TRACK     ') THEN
+          CALL LCMGTC(IPGT,'TRACK-TYPE',12,1,HSIGN)
+          IF(HSIGN .NE. 'EXCELL') ITRK=-1
+        ENDIF
+C----
+C  TEST IF FLUX DATA STRUCTURE EXISTS
+C----
+        IF(IENFL .EQ. 0) CALL XABORT(NAMSBR//
+     >    ': No flux data structure available')
+        ALLOCATE(FLUX(NUNKNO),TFLX(NUNKNO))
+        IF(ITYPE .EQ. 5 .OR. ITYPE .EQ. 6) THEN
+          NMODE=ISTATE(4)
+          JPFL=LCMGID(IPFL,'MODE')
+        ELSE
+          NMODE=1
+          JPFL=IPFL
+        ENDIF
+        DO IMODE=1,NMODE
+          IF(ITYPE .EQ. 5 .OR. ITYPE .EQ. 6) THEN
+            KPFL=LCMGIL(JPFL,IMODE)
+          ELSE
+            KPFL=JPFL
+          ENDIF
+        DO IGR=1,NGT
+*----
+*  Compute condensed flux
+*----
+          CALL PSPFCD(KPFL,NGROUP,NUNKNO,IGR,ICOND,FLUX,TFLX)
+C----
+C  FOR GEOMETRY OPTION CALL AXGGEO
+C  TO GENERATE TEMPORARY TRACKING STRUCTURE
+C----
+          IF(NGT .EQ. 1) THEN
+            WRITE(NAMLEG,'(A21)') 'Flux: fully condensed'
+          ELSE IF(NGT .EQ. NGROUP) THEN
+            WRITE(NAMLEG,'(A18,I5)') 'Flux: tran. group ',IGR
+          ELSE
+            WRITE(NAMLEG,'(A18,I5)') 'Flux: cond. group ',IGR
+          ENDIF
+          IF(ITRK .EQ. 0) THEN
+            CALL LCMOP(IPTRK2,NAMTR2,IMODT2,IMEDT2,IPRIN2)
+            CALL AXGGEO(IPGT  ,IPTRK2,IPRINT,NAMGEO)
+            IPGT=IPTRK2
+          ENDIF
+C----
+C  CALL PSPTRK TO GENERATE POSTSCRIPT
+C----
+          CALL PSPTRK(IPRINT,ISPSP ,ITYPE ,ICOLR ,IPGT  ,NAMGT ,
+     >                NAMLEG,NUNKNO,FLUX )
+          IF(ITRK .EQ. 0) THEN
+            CALL LCMCL(IPTRK2,ICLST2)
+          ENDIF
+          CALL PSCUTP(ISPSP)
+          IF(IGR .NE. NGT) THEN
+            NPAGE=NPAGE+1
+            CALL PSPAGE(ISPSP,NPAGE,XYPOS)
+          ENDIF
+        ENDDO
+        ENDDO
+        DEALLOCATE(TFLX,FLUX)
+      ENDIF
+      WRITE(ISPSP,'(1X)')
+      DEALLOCATE(ICOND)
+      RETURN
+      END

@@ -1,0 +1,98 @@
+*DECK INFAPL
+      SUBROUTINE INFAPL(CFILNA,IPRINT,NBISO,HNAMIS,AWR)
+C
+C------------------------------  INFAPL  ------------------------------
+C
+C   TO RECOVER MASS FOR ISOTOPES OF APOLIB LIBRARIES
+C
+C   INPUT
+C     CFILNA : APOLIB1 FILE NAME                    C*64
+C     IPRINT : PRINT FLAG                           I
+C     NBISO  : NUMBER OF ISOTOPES                   I
+C     HNAMIS : ISOTOPE NAMES                        C(NBISO)*8
+C   OUTPUT
+C     AWR    : ISOTOPE WEIGHTS                      R(NBISO)
+C
+C------------------------------  INFAPL  ------------------------------
+C
+      IMPLICIT NONE
+C----
+C PARAMETERS
+C----
+      INTEGER    IOUT,MAXIT
+      PARAMETER (IOUT=6,MAXIT=1000)
+C----
+C FUNCTIONS
+C----
+      INTEGER    KDROPN,KDRCLS
+      DOUBLE PRECISION XDRCST
+C----
+C LOCAL VARIABLES
+C----
+      INTEGER    NBISO,IPRINT,IUNIT,IISO,INDLOR,NR,NIT,I,K,IMX,NISB,
+     1           NRST,ICC,NS1,IC,NRSTR,NN,IER
+      INTEGER    IT(MAXIT)
+C
+      REAL       AA
+      REAL       AWR(NBISO)
+      CHARACTER  CFILNA*64,HNAMIS(NBISO)*8,HNISOR*8,FORM*4
+      EQUIVALENCE(AA,NN)
+      REAL       CONVM
+C----
+C OPEN APOLIB
+C----
+      CONVM=REAL(XDRCST('Neutron mass','amu'))
+      IF( IPRINT.GT.0 ) THEN
+        WRITE(IOUT,6000) CFILNA
+      ENDIF
+      IUNIT=KDROPN(CFILNA,2,2,0)
+      IF( IUNIT.LE.0 )THEN
+        WRITE(IOUT,9000) CFILNA
+        CALL XABORT('INFAPL: APOL LIBRARY CANNOT BE OPENED')
+      ENDIF
+      IISO= 0
+      REWIND(IUNIT)
+   50 READ(IUNIT) INDLOR,NR,NIT,(IT(I),I=1,NIT)
+      IF( NIT.GT.MAXIT ) CALL XABORT('INFAPL: MAXIT IS TOO SMALL')
+      IF(INDLOR.EQ.9999) GO TO 700
+      DO 70 IMX=1,NBISO
+         HNISOR= HNAMIS(IMX)
+         I=INDEX(HNISOR,' ')
+         IF(I.EQ.0) THEN
+            READ(HNISOR,'(I8)') NISB
+         ELSE
+            WRITE(FORM,'(2H(I,I1,1H))') I-1
+            READ(HNISOR,FORM) NISB
+         ENDIF
+         IF( NISB.EQ.INDLOR )THEN
+            IF( IPRINT.GT.0 ) WRITE(IOUT,6001) HNISOR
+            IISO= IISO + 1
+            NRST= IT(4)
+            NS1= 0
+            IF( IT(5).LT.0 ) NS1= -IT(5)
+            IC=5+NS1+NRST
+            NRSTR=IT(IC)
+            ICC=IC+6*NRSTR+1
+            NN=IT(ICC)
+            AWR(IMX)=AA*CONVM
+         ENDIF
+   70 CONTINUE
+      DO 80 K=1,NR
+   80 READ(IUNIT)
+      GO TO 50
+C
+C     CHECK IF ALL NBISO ISOTOPES HAVE BEEN PROCESSED.
+  700 IF( IISO.NE.NBISO )THEN
+         CALL XABORT('INFAPL: SOME ISOTOPES WERE NOT RECOVERED')
+      ENDIF
+C
+C     CLOSE APOLIB FILE.
+      IER=KDRCLS(IUNIT,1)
+      IF(IER.LT.0) CALL XABORT(
+     > 'INFAPL: Impossible to close library '//CFILNA)
+      RETURN
+C
+ 9000 FORMAT(/' ERROR IN PROCESSING APOL LIBRARY:',A8)
+ 6000 FORMAT(/' PROCESSING APOL LIBRARY NAME ',A8)
+ 6001 FORMAT(/'    PROCESSING ISOTOPE/MATERIAL = ',A12)
+      END

@@ -1,0 +1,267 @@
+*DECK T16DRV
+      SUBROUTINE T16DRV(IPCPO ,IFT16 ,IPRINT,MNLOCP,MNCPLP,MNPERT,
+     >                  NALOCP,NCMIXS,NGCCPO,MNBURN,NG    ,NGMTR ,
+     >                  NMATZ ,MTRMSH,NZONE ,IFGMTR,VELMTR,NAMMIX,
+     >                  MIXRCI,MIXPER,MIXREG)
+C
+C----
+C  1- PROGRAMME STATISTICS:
+C      NAME     : T16DRV
+C      USE      : MAIN DRIVER FOR THE TRANSFER OF CROSS SECTION
+C                 FROM TAPE16 TO CPO.
+C      AUTHOR   : G.MARLEAU
+C      CREATED  : 1999/10/21
+C      REF      : IGE-244 REV.1
+C
+C      MODIFICATION LOG
+C      --------------------------------------------------------------
+C      | DATE AND INITIALS  | MOTIVATIONS
+C      --------------------------------------------------------------
+C      | 1999/10/21 G.M.    | DRIVER FOR THE TRANSFER OF CROSS
+C      |                    | SECTION FROM TAPE16 TO CPO.
+C      --------------------------------------------------------------
+C
+C  2- ROUTINE PARAMETERS:
+C    INPUT
+C      IPCPO  : POINTER TO THE CPO STRUCTURE             I
+C      IFT16  : TAPE16 FILE UNIT                         I
+C      IPRINT : PRINT LEVEL                              I
+C               =   0 NO PRINT
+C               >=  1 PRINT PROCESSING OPTIONS READ
+C      MNLOCP : MAXIMUM NUMBER OF LOCAL PARAMETERS       I
+C      MNCPLP : MAXIMUM NUMBER OF COUPLED  PARAMETERS    I
+C      MNPERT : MAXIMUM NUMBER OF PERTURBATION PER       I
+C               LOCAL PARAMETERS
+C      NALOCP : LOCAL PARAMETER NAMES PERMITTED          C(MNLOCP
+C                                                        +MNCPLP)*4
+C      NCMIXS : NUMBER OF CURRENT MIXTURES SAVED         I
+C               TOTAL NUMBER OF MIXTURE SAVED
+C      NGCCPO : NUMBER OF CPO GROUPS                     I
+C      MNBURN : MAXIMUM NUMBER OF BURNUP                 I
+C      NG     : NUMBER OF GROUPS ON CROSS SECTION        I
+C               LIBRARY
+C      NGMTR  : NUMBER OF MAIN TRANSPORT GROUP           I
+C      NMATZ  : NUMBER OF MIXTURES                       I
+C      MTRMSH : NUMBER OF MAIN TRANSPORT MESH POINTS     I
+C      NZONE  : NUMBER OF ZONES                          I
+C      IFGMTR : CPO FEW GROUP IDENTIFIER                 I(NGCCPO)
+C               WITH RESPECT TO MTR GROUPS
+C      VELMTR : AVERAGE VELOCITY IN MAIN GROUPS          R(NGMTR)
+C      NAMMIX : NAME OF MIXTURE                          I(2,NCMIXS)
+C               ALL MIXTURE NAMES TO SAVE
+C               CONTAINS VARIABLE CHARACTER*6 NAME
+C               READ(NAME,'(A4,A2)') (NAMMIX(J,*),J=1,2)
+C      MIXRCI : REFERENCE INFORMATION FOR A MIXTURE      I(2+MNLOCP+
+C               (O) = 0 NO INFORMATION FOR MIXTURE  MNCPLP,NCMIXS)
+C                   > 0 INFORMATION NOT UPDATED
+C                   < 0 INFORMATION TO BE UPDATED
+C      MIXPER : PERTUBATION INFORMATION FOR A MIXTURE    I(MNPERT,
+C                                            MNLOCP+MNCPLP,NCMIXS)
+C      MIXREG : MIXTURE UPDATE IDENTIFIER                I(NCMIXS)
+C               =  0 DO NOT UPDATE
+C               = -1 UPDATE USING CELLAV INFORMATION
+C               >  0 UPDATE USING SPECIFIED REGION NUMBER
+C
+C  3- ROUTINES CALLED
+C    SPECIFIC T16CPO ROUTINES
+C      T16FND : FIND A TAPE16 RECORD
+C               EQUIVALENT TO FIND FUNCTION
+C               IN APPENDIX E OF EACL RC-1176
+C      T16FLX : READ TAPE16 MAIN TRANSPORT FLUX INFORMATION
+C      T16RCA : READ TAPE16 CELLAV INFORMATION
+C      T16RRE : READ TAPE16 REGION INFORMATION
+C      T16WDS : WRITE INFORMATION TO CPO DATA STRUCTURE
+C    UTILITIES ROUTINES
+C      XABORT : ABORT ROUTINE
+C      XDRSET : VECTOR INITIALIZATION ROUTINE
+C      LCMGET : DATA STRUCTURE READ ROUTINE
+C      LCMPUT : DATA STRUCTURE WRITE ROUTINE
+C      LCMSIX : DATA STRUCTURE CHANGE DIRECTORY ROUTINE
+C
+C----
+C
+      USE GANLIB
+      IMPLICIT         NONE
+      TYPE(C_PTR)      IPCPO
+      INTEGER          IFT16,IPRINT,MNLOCP,MNCPLP,MNPERT,
+     >                 NCMIXS,NGCCPO,MNBURN,NG,NGMTR,NMATZ,
+     >                 MTRMSH,NZONE
+      CHARACTER        NALOCP(MNLOCP+MNCPLP)*4
+      INTEGER          IFGMTR(NGCCPO),NAMMIX(2,NCMIXS),
+     >                 MIXRCI(2+MNLOCP+MNCPLP,NCMIXS),
+     >                 MIXPER(MNPERT,MNLOCP+MNCPLP,NCMIXS),
+     >                 MIXREG(NCMIXS)
+      REAL             VELMTR(NGMTR)
+C----
+C  MEMORY ALLOCATION
+C----
+      REAL, ALLOCATABLE, DIMENSION(:) :: BURNUP,WNKB
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: KMSPEC,MATMSH,IDRXSM
+      REAL, ALLOCATABLE, DIMENSION(:) :: VQLE,PHI,FLXINT,FLXDIS,OVERV,
+     > RECXSV,RECXSM,RECTMP,RECSCA
+C----
+C  T16 PARAMETERS
+C----
+      INTEGER          MAXKEY
+      PARAMETER       (MAXKEY=1)
+      CHARACTER        TKEY1(MAXKEY)*10,TKEY2(MAXKEY)*10,
+     >                 RKEY1*10,RKEY2*10
+      INTEGER          NKEY,IOPT,NBE,IR
+C----
+C  LOCAL VARIABLES
+C----
+      INTEGER          IOUT,ILCMUP,ILCMDN,NVXSR,NMXSR
+      CHARACTER        NAMSBR*6
+      PARAMETER       (IOUT=6,ILCMUP=1,ILCMDN=2,NVXSR=20,NMXSR=2,
+     >                 NAMSBR='T16DRV')
+      CHARACTER        NAMDIR*12
+      INTEGER          IMIX,ILOCP,NBPERP,IPER,NBURN,IBURN,NPERTN,
+     >                 ILASTR,INEXTR,ITYXS(NVXSR+NMXSR),IMIREG,
+     >                 MXFGET
+      REAL             VOLUME,B2CRI(3),BRNIRR(3),EFJ
+C----
+C  DATA
+C----
+      CHARACTER        NAMDXS(NVXSR+NMXSR)*12
+      SAVE             NAMDXS
+      DATA             NAMDXS
+     > /'TOTAL       ','TRANC       ','NUSIGF      ','NFTOT       ',
+     >  'CHI         ','NU          ','NG          ','NHEAT       ',
+     >  'N2N         ','N3N         ','N4N         ','NP          ',
+     >  'NA          ','GOLD        ','ABS         ','NWT0        ',
+     >  'STRD        ','STRD X      ','STRD Y      ','STRD Z      ',
+     >  'SIGS 0      ','SIGS 1      '/
+C----
+C  SCRATCH STORAGE ALLOCATION
+C----
+      ALLOCATE(BURNUP(MNBURN),WNKB(MNBURN))
+C----
+C  ALLOCATE MEMORY
+C----
+      MXFGET=NG*MAX(NZONE,MTRMSH)
+      ALLOCATE(KMSPEC(NMATZ),MATMSH(MTRMSH),IDRXSM(NGCCPO*2))
+      ALLOCATE(VQLE(MTRMSH),PHI(MXFGET),FLXINT(NGCCPO),FLXDIS(NGCCPO),
+     > OVERV(NGCCPO),RECXSV(NGCCPO*(NVXSR+NMXSR)),
+     > RECXSM(NGCCPO*NGCCPO*NMXSR),RECTMP(4*NGMTR),
+     > RECSCA(NGMTR*NGMTR))
+      NPERTN=MNLOCP+MNCPLP
+C----
+C  FIND MATERIAL SPECTRUM
+C  REQUIRED FOR FLUX DISADVANTAGE FACTOR
+C----
+      REWIND(IFT16)
+      IOPT=0
+      TKEY1(1)='MATERIAL  '
+      TKEY2(1)='SPECTRUM  '
+      NKEY=1
+      CALL T16FND(IFT16 ,IPRINT,IOPT  ,NKEY  ,TKEY1 ,TKEY2 ,
+     >            NBE   )
+      IF( NBE .NE. NMATZ ) CALL XABORT(NAMSBR//
+     >': CANNOT FIND '//TKEY1(1)//' '//TKEY2(1))
+      READ(IFT16) RKEY1,RKEY2,NBE,(KMSPEC(IR),IR=1,NMATZ)
+C----
+C  SCAN OVER MIXTURES
+C----
+      ILASTR=0
+      DO 100 IMIX=1,NCMIXS
+C----
+C  MIXTURE TO UPDATE
+C----
+        CALL XDRSET(BRNIRR,3,0.0)
+        IMIREG=MIXREG(IMIX)
+        WRITE(NAMDIR,'(A4,A2,A6)')
+     >  NAMMIX(1,IMIX),NAMMIX(2,IMIX),'RC    '
+        NBURN=ABS(MIXRCI(2,IMIX))
+        IF(MIXRCI(2,IMIX) .LT. 0) THEN
+          CALL LCMSIX(IPCPO,NAMDIR,ILCMUP)
+          INEXTR=MIXRCI(1,IMIX)
+          DO 101 IBURN=1,NBURN
+C----
+C  BURNUP STEP TO UPDATE
+C----
+            CALL T16REC(IFT16 ,IPRINT,INEXTR)
+            CALL T16FLX(IFT16 ,IPRINT,NGCCPO,NGMTR ,NMATZ ,MTRMSH,
+     >                  IFGMTR,VELMTR,MXFGET,IMIREG,VOLUME,B2CRI ,
+     >                  FLXINT,FLXDIS,OVERV ,KMSPEC,MATMSH,VQLE  ,
+     >                  PHI)
+            IF(IMIREG .GT. 0) THEN
+              CALL T16REC(IFT16 ,IPRINT,INEXTR)
+              CALL T16RRE(IFT16 ,IPRINT,NGCCPO,NGMTR ,IFGMTR,NVXSR ,
+     >                    NMXSR ,IMIREG,VELMTR,B2CRI ,BRNIRR,
+     >                    FLXINT,OVERV ,RECXSV,
+     >                    RECXSM,RECTMP,RECSCA)
+            ELSE
+              CALL T16REC(IFT16 ,IPRINT,INEXTR)
+              CALL T16RCA(IFT16 ,IPRINT,NGCCPO,NGMTR ,IFGMTR,NVXSR ,
+     >                    NMXSR ,B2CRI ,BRNIRR,RECXSV,RECXSM,RECTMP,
+     >                    RECSCA)
+            ENDIF
+            BURNUP(IBURN)=BRNIRR(1)
+            WNKB(IBURN)=BRNIRR(2)
+            EFJ=BRNIRR(3)
+            CALL T16WDS(IPCPO ,NGCCPO,NVXSR ,NMXSR ,IBURN ,EFJ   ,
+     >                  NAMDXS,ITYXS ,FLXINT,FLXDIS,OVERV,RECXSV,
+     >                  IDRXSM,RECXSM,RECSCA)
+            ILASTR=INEXTR
+            INEXTR=INEXTR+1
+ 101      CONTINUE
+          CALL LCMPUT(IPCPO ,'BURNUP      ',NBURN,2,BURNUP)
+          CALL LCMPUT(IPCPO ,'N/KB        ',NBURN,2,WNKB)
+          CALL LCMSIX(IPCPO,NAMDIR,ILCMDN)
+        ENDIF
+C----
+C  PERTURBATIONS TO UPDATE
+C----
+        DO 110 ILOCP=1,NPERTN
+          NBPERP=ABS(MIXRCI(2+ILOCP,IMIX))
+          IF(MIXRCI(2+ILOCP,IMIX) .LT. 0) THEN
+            DO 111 IPER=1,NBPERP
+              INEXTR=MIXPER(IPER,ILOCP,IMIX)
+              WRITE(NAMDIR,'(A4,A2,A4,I2)')
+     >        NAMMIX(1,IMIX),NAMMIX(2,IMIX),NALOCP(ILOCP),IPER
+              CALL LCMSIX(IPCPO,NAMDIR,ILCMUP)
+              DO 112 IBURN=1,NBURN
+                CALL T16REC(IFT16 ,IPRINT,INEXTR)
+                CALL T16FLX(IFT16 ,IPRINT,NGCCPO,NGMTR ,NMATZ ,MTRMSH,
+     >                      IFGMTR,VELMTR,MXFGET,IMIREG,VOLUME,B2CRI ,
+     >                      FLXINT,FLXDIS,OVERV, KMSPEC,MATMSH,VQLE  ,
+     >                      PHI   )
+                IF(IMIREG .GT. 0) THEN
+                  CALL T16REC(IFT16 ,IPRINT,INEXTR)
+                  CALL T16RRE(IFT16 ,IPRINT,NGCCPO,NGMTR ,IFGMTR,NVXSR ,
+     >                        NMXSR ,IMIREG,VELMTR,B2CRI ,BRNIRR,
+     >                        FLXINT,OVERV ,RECXSV,
+     >                        RECXSM,RECTMP,RECSCA)
+                ELSE
+                  CALL T16REC(IFT16 ,IPRINT,INEXTR)
+                  CALL T16RCA(IFT16 ,IPRINT,NGCCPO,NGMTR ,IFGMTR,NVXSR ,
+     >                        NMXSR ,B2CRI ,BRNIRR,RECXSV,RECXSM,RECTMP,
+     >                        RECSCA)
+                ENDIF
+                BURNUP(IBURN)=BRNIRR(1)
+                WNKB(IBURN)=BRNIRR(2)
+                EFJ=BRNIRR(3)
+                CALL T16WDS(IPCPO ,NGCCPO,NVXSR ,NMXSR ,IBURN ,EFJ   ,
+     >                      NAMDXS,ITYXS ,FLXINT,FLXDIS,OVERV,RECXSV ,
+     >                      IDRXSM,RECXSM,RECSCA)
+                ILASTR=INEXTR
+                INEXTR=INEXTR+1
+ 112          CONTINUE
+              CALL LCMPUT(IPCPO ,'BURNUP      ',NBURN,2,BURNUP)
+              CALL LCMPUT(IPCPO ,'N/KB        ',NBURN,2,WNKB)
+              CALL LCMSIX(IPCPO,NAMDIR,ILCMDN)
+ 111        CONTINUE
+          ENDIF
+ 110    CONTINUE
+ 100  CONTINUE
+C----
+C  RELEASE MEMORY
+C----
+      DEALLOCATE(RECSCA,RECTMP,RECXSM,IDRXSM,RECXSV,OVERV,FLXDIS,
+     > FLXINT,PHI,VQLE,MATMSH,KMSPEC)
+C----
+C  SCRATCH STORAGE DEALLOCATION
+C----
+      DEALLOCATE(WNKB,BURNUP)
+      RETURN
+      END

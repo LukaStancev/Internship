@@ -1,0 +1,67 @@
+*DECK LIBWSC
+      SUBROUTINE LIBWSC(NGROUP,NGD,NGF,NSCT,CSCAT,XSCAT,SIGS)
+C
+C-------------------------- LIBWSC   ----------------------------------
+C
+C  PROGRAMME STATISTICS:
+C     NAME     : LIBWSC
+C     ENTRY    : LIBWSC
+C     USE      : EXPAND WIMS FORMAT SCATTERING XS
+C     MODIFIED : 93-08-17
+C     AUTHOR   : G. MARLEAU
+C
+C  ROUTINE PARAMETERS:
+C   INPUT
+C      NGROUP : NUMBER OF GROUPS                         I
+C      NGD    : STARTING GROUP NUMBER                    I
+C      NGF    : FINISHING GROUP NUMBER                   I
+C      NSCT   : NUMBER OF ELEMENTS IN CSCAT              I
+C      CSCAT  : WIMS CONDENSE SCATTERING AT INPUT        R(NSCT)
+C   OUTPUT
+C      XSCAT  : DRAGON FORMAT EXPANDED SCATTERING        R(NGROUP,
+C               SCAT(JG,IG) IS FROM IG TO JG              NGROUP)
+C      SIGS   : TOTAL SCATTERING OUT OF GROUP            R(NGROUP)
+C
+C-------------------------- LIBWSC   ----------------------------------
+C
+      IMPLICIT NONE
+C----
+C INTERFACE VARIABLES
+C----
+      INTEGER  NGROUP,NGD,NGF,NSCT
+      REAL     CSCAT(NSCT),XSCAT(NGROUP,NGROUP),SIGS(NGROUP)
+C----
+C LOCAL VARIABLES
+C----
+      INTEGER          LG,IG1,IG2,N2,IGG
+      DOUBLE PRECISION SUMSCT
+C
+C----
+C
+      LG=0
+      DO 100 IG1=NGD,NGF
+        CALL XDRSET(XSCAT(1,IG1),NGROUP,0.0)
+        LG=LG+1
+        IG2=IG1-INT(CSCAT(LG)+0.1)
+        LG=LG+1
+        N2=INT(CSCAT(LG)+0.1)
+        SUMSCT=0.0D0
+        DO 110 IGG=1,N2
+          LG=LG+1
+          IG2=IG2+1
+          IF(IG2.LT.1) THEN
+            CALL XABORT('LIBWSC: IG2 < 1')
+          ELSE IF(IG2.GT.NGROUP) THEN
+            CALL XABORT('LIBWSC: IG2 > NGROUP')
+          ENDIF
+          XSCAT(IG2,IG1)=CSCAT(LG)
+          SUMSCT=SUMSCT+DBLE(CSCAT(LG))
+ 110    CONTINUE
+        SIGS(IG1)=REAL(SUMSCT)
+ 100  CONTINUE
+      IF(LG.NE.NSCT) CALL XABORT('LIBWSC: INVALID COUNT')
+C----
+C  RETURN LIBWSC
+C----
+      RETURN
+      END

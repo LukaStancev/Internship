@@ -1,0 +1,110 @@
+*DECK MRGLIN
+      SUBROUTINE MRGLIN(IPRINT,IFTRKO,NSOUTO,NVOUTO,IFTRKN,
+     >                  IMERGE,MXSEG)
+C
+C---------------------------  MRGLIN ---------------------------------
+C
+C  1- PROGRAMME STATISTICS:
+C      NAME     : MRGLIN
+C      USE      : MERGE VOLUME SURFACE INFORMATION ON TRACK FILE
+C      MODIFIED : 97-11-06 (G.M)
+C      AUTHOR   : G.MARLEAU
+C
+C  2- ROUTINE PARAMETERS:
+C    INPUT
+C      IPRINT   : PRINT LEVEL                      I
+C      IFTRKO   : OLD TRACKING FILE                I
+C      NSOUTO   : OLD NUMBER OF SURFACES           I
+C      NVOUTO   : OLD NUMBER OF REGIONS            I
+C      IFTRKN   : NEW TRACKING FILE                I
+C      IMERGE   : MERGED POSITION                  I(-NSOUTO:NVOUTO)
+C      MXSEG    : MAXIMUM NUMBER OF SEGMENTS       I
+C
+C
+C---------------------------   MRGLIN --------------------------------
+C
+      IMPLICIT         NONE
+      INTEGER          IOUT
+      CHARACTER        NAMSBR*6
+      PARAMETER       (IOUT=6,NAMSBR='MRGLIN')
+C----
+C  ROUTINE PARAMETERS
+C----
+      INTEGER          IPRINT,IFTRKO,NSOUTO,NVOUTO,IFTRKN,MXSEG
+      INTEGER          IMERGE(-NSOUTO:NVOUTO)
+C----
+C  LOCAL VARIABLES
+C----
+      INTEGER          ITRAK,IANG,NLINEO,NLINEN,ILINE,
+     >                 ISEG,IVSO
+      REAL             WEIGHT
+*----
+*  Allocatable arrays
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: NRSEG
+      REAL, ALLOCATABLE, DIMENSION(:) :: PATH
+C----
+C  LOOP OVER TRACKS
+C----
+      ALLOCATE(NRSEG(MXSEG),PATH(MXSEG))
+      ITRAK=0
+ 1000 CONTINUE
+        READ (IFTRKO,END=1010) IANG,NLINEO,WEIGHT,
+     >                         (NRSEG(ILINE),ILINE=1,NLINEO),
+     >                         (PATH(ILINE),ILINE=1,NLINEO)
+C----
+C  SCAN NRSEG AND RESET TO NEW VOLUME AND SURFACE NUMBER
+C----
+        ITRAK=ITRAK+1
+        IF(IPRINT.GE.1000) THEN
+          WRITE(IOUT,6000) ITRAK,IANG,NLINEO,WEIGHT
+          WRITE(IOUT,6010)
+     >      (NRSEG(ILINE),PATH(ILINE),ILINE=1,NLINEO)
+        ENDIF
+        DO 100 ILINE=1,NLINEO
+          DO 110 IVSO=-NSOUTO,NVOUTO
+            IF(NRSEG(ILINE) .EQ. IVSO ) THEN
+              NRSEG(ILINE) = IMERGE(IVSO)
+              GO TO 115
+            ENDIF
+ 110      CONTINUE
+ 115      CONTINUE
+ 100    CONTINUE
+C----
+C  COMPRESS REGION OF SUCCESSIVE IDENTICAL REGION
+C  EXCEPT FOR SURFACES
+C----
+        NLINEN=1
+        ISEG=NRSEG(NLINEN)
+        DO 120 ILINE=2,NLINEO
+          IF(NRSEG(ILINE) .EQ. ISEG .AND.
+     >       ISEG .GT. 0                  ) THEN
+            PATH(NLINEN)=PATH(NLINEN)+PATH(ILINE)
+          ELSE
+            NLINEN=NLINEN+1
+            NRSEG(NLINEN)=NRSEG(ILINE)
+            PATH(NLINEN)=PATH(ILINE)
+            ISEG=NRSEG(NLINEN)
+          ENDIF
+ 120    CONTINUE
+        WRITE(IFTRKN) IANG,NLINEN,WEIGHT,
+     >               (NRSEG(ILINE),ILINE=1,NLINEN),
+     >               (PATH(ILINE),ILINE=1,NLINEN)
+        IF(IPRINT.GE.100) THEN
+          WRITE(IOUT,6001) ITRAK,IANG,NLINEN,WEIGHT
+          WRITE(IOUT,6010)
+     >      (NRSEG(ILINE),PATH(ILINE),ILINE=1,NLINEN)
+        ENDIF
+      GO TO 1000
+ 1010 CONTINUE
+      DEALLOCATE(PATH,NRSEG)
+C----
+C  FORMAT
+C----
+ 6000 FORMAT(' INITIAL LINE = ',I10/
+     >       ' PARAMETERS = ',2I10,1P,E15.7)
+ 6001 FORMAT(' FINAL LINE = ',I10/
+     >       ' PARAMETERS = ',2I10,1P,E15.7)
+ 6010 FORMAT(1P,5(I10,E15.7))
+      RETURN
+      END

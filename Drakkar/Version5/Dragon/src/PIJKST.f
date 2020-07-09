@@ -1,0 +1,86 @@
+*DECK PIJKST
+      SUBROUTINE PIJKST(IMPX,NREGIO,PIJSYM,PIJKS)
+C
+C---------------------------  PIJKST  ---------------------------------
+C
+C   1-  PROGRAMME STATISTICS:
+C
+C          NAME       :  PIJKST
+C          FUNCTION   :  EVALUATE PIJ**(-1)*PIJK*
+C          DATE       :  94-07-14
+C          AUTHOR     :  G.MARLEAU AND I.PETROVIC
+C          MODIFIED   :  94-07-14
+C
+C   2-  INPUT AND OUTPUT PARAMETERS:
+C
+C         IMPX    : PRINT/CHECK FLAG.                    I
+C                   EQUAL TO 0 FOR NO PRINT.
+C         NREGIO  : NUMBER OF REGIONS CONSIDERED         I
+C         PIJSYM  : GROUP CONDENSED REDUCE/SYMMETRIC     R(NREGIO*
+C                   PIJ                                  (NREGIO+1)/2
+C         PIJKS   : PIJK*                                R(NREGIO**2,3)
+C
+C---------------------------   PIJKST  --------------------------------
+C
+      IMPLICIT NONE
+C----
+C PARAMETERS
+C----
+      INTEGER     IUNOUT
+      PARAMETER  (IUNOUT=6)
+C----
+C INTERNAL FUNCTIONS
+C----
+      INTEGER     INDPOS
+C----
+C LOCAL VARIABLES
+C----
+      INTEGER     IMPX,NREGIO,IDIR,I,J,INDPIJ,IERROR
+      REAL        PIJSYM(*),PIJKS(NREGIO,NREGIO,3)
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: PIJSCT
+C
+C----- INTRINSIC FUNCTION FOR POSITION IN CONDENSE PIJ MATRIX
+C
+      INDPOS(I,J)=MAX(I,J)*(MAX(I,J)-1)/2+MIN(I,J)
+C----
+C  SCRATCH STORAGE ALLOCATION
+C----
+      ALLOCATE(PIJSCT(NREGIO,2*NREGIO))
+C----
+C  FILL SYSTEM MATRIX WITH PIJ
+C----
+      DO 100 IDIR=1,3
+        DO 110 I=1,NREGIO
+          DO 120 J=1,NREGIO
+            INDPIJ=INDPOS(I,J)
+            PIJSCT(I,J)=DBLE(PIJSYM(INDPIJ))
+            PIJSCT(J,NREGIO+I)=DBLE(PIJKS(I,J,IDIR))
+ 120      CONTINUE
+ 110    CONTINUE
+        CALL ALSBD(NREGIO,NREGIO,PIJSCT,IERROR,NREGIO)
+        IF(IERROR.NE.0) CALL XABORT('PIJKST: SINGULAR MATRIX.')
+        DO 130 I=1,NREGIO
+          DO 140 J=1,NREGIO
+            PIJKS(I,J,IDIR)=REAL(PIJSCT(I,NREGIO+J))
+ 140      CONTINUE
+ 130    CONTINUE
+        IF (IMPX.GE.8) THEN
+          WRITE(IUNOUT,6000) (J,J=1,NREGIO)
+          DO 150 I=1,NREGIO
+            WRITE(IUNOUT,6001) I,(PIJKS(I,J,IDIR),J=1,NREGIO)
+ 150      CONTINUE
+          WRITE(IUNOUT,'(//)')
+        ENDIF
+ 100  CONTINUE
+C----
+C  SCRATCH STORAGE DEALLOCATION
+C----
+      DEALLOCATE(PIJSCT)
+      RETURN
+*
+ 6000 FORMAT (//53H COLLISION PROBAB. MATRIX PIJK""=((PIJ)**(-1))*PIJK":
+     1 //(11X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,2HJ=,
+     2 I4,:,5X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,2HJ=,I4,:,5X,
+     3 2HJ=,I4,:,5X,2HJ=,I4))
+ 6001 FORMAT (3H I=,I4,2H: ,1P,11E11.3/(9X,11E11.3))
+      END

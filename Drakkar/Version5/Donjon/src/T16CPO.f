@@ -1,0 +1,322 @@
+*DECK T16CPO
+      SUBROUTINE T16CPO(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+*  transfer a wims-aecl tape16 file to a donjon/dragon cpo data
+*  structure
+*
+*Copyright:
+* Copyright (C) 1999 Ecole Polytechnique de Montreal
+*
+*Author(s): G. Marleau
+*
+*Parameters: input/output
+* NENTRY  number of LCM objects or files used by the operator.
+* HENTRY  name of each LCM object or file:
+*      IEN = 1 : structure is a linked list or xsm file
+*                containing the output cpo data structure.
+*                this structure must be in creation or
+*                update mode
+*                IENTRY(IEN)<= 2, JENTRY(IEN) <= 1
+*      IEN = 2 : structure is a wims-aecl tape16
+*                readonly sequential binary file
+*                IENTRY(IEN) = 3, JENTRY(IEN) = 2
+* IENTRY  type of each LCM object or file:
+*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
+*         =4 sequential ascii file
+* JENTRY  access of each LCM object or file:
+*         =0 the LCM object or file is created;
+*         =1 the LCM object or file is open for modifications;
+*         =2 the LCM object or file is open in read-only mode.
+* KENTRY  LCM object address or file unit number.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+      IMPLICIT         NONE
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+*----
+*  MEMORY ALLOCATION
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IFGCPO,IFGCND,IFGMTR,IFGEDI
+      REAL, ALLOCATABLE, DIMENSION(:) :: ENET16,ENECPO,VELT16,VELMTR
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: NAMMIX,MIXRCI,MIXPER,MIXREG
+      REAL, ALLOCATABLE, DIMENSION(:) :: PARRCI,PARPER
+*----
+*  READ VARIABLES
+*----
+      CHARACTER        TEXT12*12
+      INTEGER          ITYPE,NITMA
+      REAL             FLOTT
+      DOUBLE PRECISION DFLOTT
+*----
+*  LOCAL VARIABLES
+*----
+      INTEGER          IFT16,IOUT,NSTATE,MXGRP,MNLOCP,MNCPLP,MNPERT,
+     >                 LSUBT
+      CHARACTER        NAMSBR*6,NAMVER*12,NAMDAT*10,NAMMOD*12
+      PARAMETER       (IOUT=6,NSTATE=20,MXGRP=89,MNLOCP=11,
+     >                 MNCPLP=1,MNPERT=10,LSUBT=72,NAMSBR='T16CPO',
+     >                 NAMVER='VERSION 1.0 ',NAMDAT='1999/11/02',
+     >                 NAMMOD='T16CPO:     ')
+      CHARACTER        TEXT4*4,HSIGN*12,NAMDIR*12
+      INTEGER          ISTATE(NSTATE),ITITL(18),ISUBT(LSUBT),
+     >                 MAXMIX,MNBURN,ITEXT4,ITC,ITCPO,NCMIXS,
+     >                 IPRINT,ILIST,IMIXT,NMIXT,NEL,NG,NGMTR,
+     >                 NMATZ,NM,MTRMSH,NFPR,NZONE,NREGON,NGREAC,
+     >                 NRCELA,NRREGI,NGCOND,NGCCPO,IGC,ILASTG
+      TYPE(C_PTR)      IPCPO
+*----
+*  DATA
+*----
+      CHARACTER        NALOCP(MNLOCP+MNCPLP)*4
+      INTEGER          IDLCPL(2,MNLOCP+MNCPLP)
+      SAVE             NALOCP,IDLCPL
+      DATA             NALOCP /'FT  ','MT  ','MD  ','MP  ',
+     >                         'MB  ','CT  ','CD  ','CP  ',
+     >                         'RT  ','RD  ','RP  ','MTMD'/
+      DATA             IDLCPL /  1, 0,  2, 0,  3, 0,  4, 0,
+     >                           5, 0,  6, 0,  7, 0,  8, 0,
+     >                           9, 0, 10, 0, 11, 0,  2, 3/
+*----
+*  PRINT CREDITS
+*----
+      WRITE(IOUT,6900) NAMMOD
+      WRITE(IOUT,6910)
+*----
+*  PARAMETER VALIDATION
+*----
+      TEXT4='    '
+      READ(TEXT4,'(A4)') ITEXT4
+*----
+*  SET TITLE
+*----
+      CALL XDRSET(ITITL,18,ITEXT4)
+      NAMDIR=NAMSBR
+      READ(NAMDIR,'(A4,A2)') (ITITL(ITC),ITC=1,2)
+      NAMDIR=NAMVER
+      READ(NAMDIR,'(3A4)') (ITITL(ITC),ITC=3,5)
+      NAMDIR=NAMDAT
+      READ(NAMDIR,'(3A4)') (ITITL(ITC),ITC=6,8)
+*----
+*  ALLOCATE MEMORY FOR ENERGY
+*----
+      ALLOCATE(IFGCPO(MXGRP),IFGCND(MXGRP),IFGMTR(MXGRP),IFGEDI(MXGRP))
+      ALLOCATE(ENET16(MXGRP+1),ENECPO(MXGRP+1),VELT16(MXGRP),
+     > VELMTR(MXGRP))
+*----
+*  NUMBER OF DATA STRUCTURES
+*----
+      IF(NENTRY .LT. 2) THEN
+        CALL XABORT(NAMSBR//
+     >  ': AT LEAST TWO DATA STRUCTURES EXPECTED.')
+      ENDIF
+*----
+*  FIRST DATA STRUCTURE IS CPO
+*----
+      IF(IENTRY(1) .NE. 1 .AND. IENTRY(1) .NE. 2 ) THEN
+        CALL XABORT(NAMSBR//
+     >  ': LINKED LIST OR XSM FILE EXPECTED FOR CPO.')
+      ENDIF
+      IPCPO=KENTRY(1)
+      ITCPO=0
+      IF(JENTRY(1) .EQ. 0) THEN
+        HSIGN='L_COMPO'
+        CALL LCMPTC(IPCPO,'SIGNATURE',12,1,HSIGN)
+        CALL XDRSET(ISTATE,NSTATE,0)
+        ISTATE(3)=1
+        ISTATE(4)=2
+        ISTATE(6)=1
+        ISTATE(7)=MNLOCP+MNCPLP
+        ISTATE(8)=MNLOCP
+        ISTATE(9)=LSUBT
+      ELSE IF(JENTRY(1) .EQ. 1) THEN
+        CALL LCMGTC(IPCPO,'SIGNATURE',12,1,HSIGN)
+        IF(HSIGN .NE. 'L_COMPO') THEN
+          CALL XABORT(NAMSBR//': SIGNATURE OF '//HENTRY(1)//
+     >      ' IS '//HSIGN//'. L_COMPO EXPECTED.')
+        ENDIF
+        CALL LCMGET(IPCPO,'STATE-VECTOR',ISTATE)
+        IF(ISTATE(3) .NE. 1) CALL XABORT(NAMSBR//
+     >  ': INVALID NUMBER OF ISOTOPES ON UPDATE CPO')
+        IF(ISTATE(4) .NE. 2) CALL XABORT(NAMSBR//
+     >  ': INVALID SCATTERING ANISOTROPY ON UPDATE CPO')
+        IF(ISTATE(5) .LE. 1) CALL XABORT(NAMSBR//
+     >  ': INVALID NUMBER OF BURNUP STEP ON UPDATE CPO')
+        IF(ISTATE(6) .NE. 1) CALL XABORT(NAMSBR//
+     >  ': UPDATE CPO DOES NOT MATCH TAPE16 FORMAT')
+        IF(ISTATE(7) .NE. MNLOCP+MNCPLP) CALL XABORT(NAMSBR//
+     >  ': INVALID NUMBER OF PERTURBATION TYPES ON UPDATE CPO')
+        IF(ISTATE(8) .NE. MNLOCP) CALL XABORT(NAMSBR//
+     >  ': INVALID NUMBER OF LOCAL PARAMETERS ON UPDATE CPO')
+        IF(ISTATE(9) .NE. LSUBT ) CALL XABORT(NAMSBR//
+     >  ': INVALID LENGTH OF SUBTITLE ON UPDATE CPO')
+        ITCPO=1
+        IF(ISTATE(2) .GT. 0) THEN
+          CALL LCMGET(IPCPO,'T16CPOENERGY',ENECPO)
+        ENDIF
+      ELSE
+        CALL XABORT(NAMSBR//': READONLY MODE FOR '//HENTRY(1)//
+     >      ' IS ILLEGAL.')
+      ENDIF
+      NCMIXS=ISTATE(1)
+      NGCCPO=ISTATE(2)
+*----
+*  SECOND DATA STRUCTURE IS TAPE16 FILE
+*----
+      IF(IENTRY(2) .NE. 3) THEN
+        CALL XABORT(NAMSBR//
+     >  ': SEQUENTIAL BINARY FILE EXPECTED FOR TAPE16.')
+      ENDIF
+      IF(JENTRY(2) .NE. 2) THEN
+        CALL XABORT(NAMSBR//': READONLY MODE FOR '//HENTRY(2)//
+     >      ' IS REQUIRED.')
+      ENDIF
+      IFT16=FILUNIT(KENTRY(2))
+*----
+*  RECOVER STATE VECTOR FROM CURRENT CPO FILE AND INITIALIZE DEFAULT
+*  INPUT OPTIONS
+*----
+      IPRINT=1
+*----
+*  READ DATA UNTIL KEYWORD MIX IS REACHED
+*----
+      ILIST=0
+      IMIXT=0
+      NMIXT=1
+      NGCOND=0
+ 100  CONTINUE
+      CALL REDGET(ITYPE,NITMA,FLOTT,TEXT12,DFLOTT)
+      IF(ITYPE.NE.3) CALL XABORT(NAMSBR//
+     >  ' KEYWORD EXPECTED')
+      IF(TEXT12.EQ.';') THEN
+        GO TO 105
+      ELSE IF(TEXT12.EQ.'EDIT') THEN
+        CALL REDGET(ITYPE,IPRINT,FLOTT,TEXT12,DFLOTT)
+        IF(ITYPE.NE.1) CALL XABORT(NAMSBR//
+     >    ': EDIT LEVEL EXPECTED')
+      ELSE IF(TEXT12.EQ.'NMIX') THEN
+        CALL REDGET(ITYPE,NMIXT,FLOTT,TEXT12,DFLOTT)
+        IF(ITYPE.NE.1) CALL XABORT(NAMSBR//
+     >    ': NUMBER OF MIXTURE EXPECTED')
+      ELSE IF(TEXT12.EQ.'CONDG') THEN
+        CALL REDGET(ITYPE,NGCOND,FLOTT,TEXT12,DFLOTT)
+        IF(ITYPE.NE.1) CALL XABORT(NAMSBR//
+     >    ': NUMBER OF CONDENSATION GROUP EXPECTED')
+        ILASTG=0
+        DO 101 IGC=0,NGCOND-1
+          CALL REDGET(ITYPE,NITMA,FLOTT,TEXT12,DFLOTT)
+          IF(ITYPE.NE.1) CALL XABORT(NAMSBR//
+     >      ': GROUP NUMBER REQUIRED')
+          IF( NITMA .GT. MXGRP .OR. NITMA .LT. ILASTG) THEN
+            CALL XABORT(NAMSBR//
+     >      ': INVALID GROUP SEQUENCE PROVIDED')
+          ENDIF
+          IFGCND(IGC+1)=NITMA
+ 101    CONTINUE
+      ELSE IF(TEXT12.EQ.'LIST') THEN
+        ILIST=1
+      ELSE IF(TEXT12.EQ.'MIX') THEN
+        IMIXT=1
+        GO TO 105
+      ENDIF
+      GO TO 100
+105   CONTINUE
+      IF(ILIST .EQ. 1) THEN
+        CALL T16LST(IFT16)
+      ENDIF
+*----
+*  SCAN T16 FOR DIMENSIONING DATA
+*----
+      CALL T16DIM(IFT16 ,IPRINT,MXGRP ,LSUBT ,ISUBT ,NEL   ,
+     >            NG    ,NGMTR ,NMATZ ,NM    ,MTRMSH,NFPR  ,
+     >            NZONE ,NREGON,NGREAC,NRCELA,NRREGI,
+     >            IFGMTR,IFGEDI)
+*----
+*  ANALYZE CONDENSED GROUP STRUCTURE
+*----
+      CALL T16ENE(IPRINT,MXGRP ,NG    ,NGCOND,NGMTR ,NGREAC,
+     >            NGCCPO,
+     >            IFGCPO,IFGCND,IFGMTR,
+     >            IFGEDI,ENECPO,ENET16,
+     >            VELT16,VELMTR)
+      MNBURN=ISTATE(5)
+*----
+*  DEFINE DIMENSIONS ADEQUATELY, ALLOCATE MEMORY AND INITIALIZE
+*----
+      MAXMIX=NCMIXS+NMIXT
+      ALLOCATE(NAMMIX(2*MAXMIX),MIXRCI((2+MNLOCP+MNCPLP)*MAXMIX),
+     > MIXPER(MNPERT*(MNLOCP+MNCPLP)*MAXMIX),MIXREG(MAXMIX))
+      ALLOCATE(PARRCI(MNLOCP*MAXMIX),
+     > PARPER(MNPERT*2*(MNLOCP+MNCPLP)*MAXMIX))
+      CALL XDRSET(NAMMIX,                       2*MAXMIX,ITEXT4)
+      CALL XDRSET(MIXRCI,       (2+MNLOCP+MNCPLP)*MAXMIX,     0)
+      CALL XDRSET(MIXPER,  MNPERT*(MNLOCP+MNCPLP)*MAXMIX,     0)
+      CALL XDRSET(MIXREG,                         MAXMIX,     0)
+      CALL XDRSET(PARRCI,                  MNLOCP*MAXMIX,   0.0)
+      CALL XDRSET(PARPER,MNPERT*2*(MNLOCP+MNCPLP)*MAXMIX,   0.0)
+*----
+C  INITIALIZE DEFAULT VALUES FOR ABOVE MIXTURE PARAMETERS
+C  VECTORS
+*----
+      IF(ITCPO .EQ. 1) THEN
+        CALL T16MPI(IPCPO ,IPRINT,MAXMIX,MNLOCP,MNCPLP,MNPERT,
+     >              NALOCP,IDLCPL,NCMIXS,NGCCPO,ENECPO,NAMMIX,
+     >              MIXRCI,PARRCI,PARPER)
+      ENDIF
+*----
+*  MODIFIFY VALUES FOR ABOVE VECTORS AS SPECIFIED ON INPUT FILE
+*----
+      IF(IMIXT .EQ. 1) THEN
+        CALL T16GET(MAXMIX,MNLOCP,MNCPLP,MNPERT,NALOCP,IDLCPL,
+     >              NCMIXS,MNBURN,
+     >              NAMMIX,MIXRCI,PARRCI,
+     >              MIXPER,PARPER,MIXREG)
+*----
+*  SAVE MODIFIED VALUES FOR ABOVE MIXTURE PARAMETERS VECTORS
+*----
+        CALL T16MPS(IPCPO ,IPRINT,MAXMIX,MNLOCP,MNCPLP,MNPERT,
+     >              NALOCP,IDLCPL,NCMIXS,NGCCPO,ITITL ,LSUBT ,
+     >              ISUBT ,ENECPO,NAMMIX,MIXRCI,PARRCI,PARPER)
+      ENDIF
+      DEALLOCATE(PARPER,PARRCI)
+*----
+*  SAVE UPDATED STATE-VECTOR
+*----
+      ISTATE(1)=NCMIXS
+      ISTATE(2)=NGCCPO
+      ISTATE(5)=MNBURN
+      CALL LCMPUT(IPCPO,'T16CPOENERGY',NGCCPO+1,2,ENECPO)
+      CALL LCMPUT(IPCPO,'STATE-VECTOR',NSTATE,1,ISTATE)
+*----
+*  CALL MAIN T16 CROSS SECTION DRIVER
+*----
+      CALL T16DRV(IPCPO ,IFT16 ,IPRINT,MNLOCP,MNCPLP,MNPERT,
+     >            NALOCP,NCMIXS,NGCCPO,MNBURN,NG    ,NGMTR ,
+     >            NMATZ ,MTRMSH,NZONE ,IFGMTR,VELMTR,NAMMIX,
+     >            MIXRCI,MIXPER,MIXREG)
+*----
+*  RELEASE MEMORY
+*----
+      DEALLOCATE(MIXREG,MIXPER,MIXRCI,NAMMIX)
+      DEALLOCATE(VELMTR,VELT16,ENECPO,ENET16)
+      DEALLOCATE(IFGEDI,IFGMTR,IFGCND,IFGCPO)
+      WRITE(IOUT,6901) NAMMOD
+      RETURN
+*----
+*  PRINT FORMAT
+*----
+ 6900 FORMAT('->@BEGIN MODULE : ',A12)
+ 6901 FORMAT('->@END MODULE   : ',A12)
+ 6910 FORMAT('->@DESCRIPTION  : CONVERT WIMS-TAPE16 TO DRAGON-CPO'/
+     >       '->@CREDITS      : G. MARLEAU'/
+     >       '->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL'/
+     >       '                  ATOMIC ENERGY OF CANADA LIMITED')
+      END

@@ -1,0 +1,191 @@
+*DECK MRGVOL
+      SUBROUTINE MRGVOL(IUPD  ,NSOUTO,NVOUTO,NSOUTN,NVOUTN,NUNN  ,
+     >                  IMERGE,MIXN  ,MATO  ,VOLO  ,MATN  ,VOLN  ,
+     >                  KEYN  ,MATRTO,MATRTN,MAXMN ,NETVOL,NETSUR,
+     >                  MATRO ,KEYRO ,MATRN ,KEYRN )
+C
+C---------------------------  MRGVOL ---------------------------------
+C
+C  1- PROGRAMME STATISTICS:
+C      NAME     : MRGVOL
+C      USE      : MERGE INFORMATION ON DATA STRUCTURE
+C      MODIFIED : 97-11-06 (G.M)
+C      AUTHOR   : G.MARLEAU
+C
+C  2- ROUTINE PARAMETERS:
+C    INPUT
+C      IUPD     : TYPE OF MERGE REQUIRED           I(4)
+C                 IUPD(1) FOR REGION MERGE
+C                 IUPD(2) FOR SURFACE MERGE
+C                 IUPD(3) FOR MATERIAL MERGE
+C                 IUPD(4) FOR ALBEDO MERGE
+C      NSOUTO   : OLD NUMBER OF SURFACES           I
+C      NVOUTO   : OLD NUMBER OF REGIONS            I
+C      NSOUTN   : NEW NUMBER OF SURFACES           I
+C      NVOUTN   : NEW NUMBER OF REGIONS            I
+C      NUNN     : NEW NUMBER OF UNKNOWNS           I
+C      IMERGE   : MERGED POSITION                  I(-NSOUTO:NVOUTO)
+C      MIXN     : NEW MATERIAL FOR OLD REGIONS     I(NVOUTO)
+C      MATO     : OLD MATERIAL PER REGION          I(NVOUTO)
+C      VOLO     : OLD VOLUMES                      I(NVOUTO)
+C      NETVOL   : NUMBER OF ORIGINAL REGIONS       I
+C      NETSUR   : NUMBER OF ORIGINAL SURFACES       I
+C      MATRO    : OLD REGIONAL MATALB              I(-NETSUR:NETVOL)
+C      KEYRO    : OLD REGIONAL KEYMRG              I(-NETSUR:NETVOL)
+C    OUTPUT
+C      MATN     : NEW MATERIAL PER REGION          I(NVOUTN)
+C      VOLN     : NEW VOLUMES                      I(NVOUTN)
+C      KEYN     : NEW KEYFLUX                      I(NUNN)
+C      MAXMN    : NEW MAXIMUM NUMBER OF MIXTURE    I
+C      MATRN    : NEW REGIONAL MATALB              I(-NSOUTN:NVOUTN)
+C      KEYRN    : NEW REGIONAL KEYMRG              I(-NSOUTN:NVOUTN)
+C
+C
+C---------------------------   MRGVOL --------------------------------
+C
+      IMPLICIT         NONE
+      INTEGER          IOUT
+      CHARACTER        NAMSBR*6
+      PARAMETER       (IOUT=6,NAMSBR='MRGVOL')
+C----
+C  ROUTINE PARAMETERS
+C----
+      INTEGER          IUPD(4),NSOUTO,NVOUTO,NSOUTN,NVOUTN,NUNN,
+     >                 MAXMN,NETVOL,NETSUR
+      INTEGER          IMERGE(-NSOUTO:NVOUTO),MIXN(NVOUTO),
+     >                 MATO(NVOUTO),MATN(NVOUTN),KEYN(NUNN),
+     >                 MATRTO(NSOUTO),MATRTN(NSOUTN),
+     >                 MATRO(-NETSUR:NETVOL),KEYRO(-NETSUR:NETVOL),
+     >                 MATRN(-NSOUTN:NVOUTN),KEYRN(-NSOUTN:NVOUTN)
+      REAL             VOLO(NVOUTO),VOLN(NVOUTN)
+C----
+C  LOCAL VARIABLES
+C----
+      INTEGER          IVSN,IVSO
+      DOUBLE PRECISION DVOL
+C----
+C  TRANSFER OLD KEYMRG AND MATALB TO NEW VECTOR
+C----
+      DO 90 IVSN=-NETSUR,NETVOL
+        KEYRN(IVSN)=KEYRO(IVSN)
+        MATRN(IVSN)=MATRO(IVSN)
+ 90   CONTINUE
+C----
+C  CHANGE ORIGINAL MATERIAL IF REQUESTED
+C----
+      IF(IUPD(3) .GT. 0) THEN
+        DO 100 IVSN=1,IUPD(3)
+          MATO(IVSN)=MIXN(IVSN)
+          DO 101 IVSO=1,NETVOL
+            IF(KEYRO(IVSO) .EQ. IVSN) THEN
+              MATRN(IVSO)=MATO(IVSN)
+            ENDIF
+ 101      CONTINUE
+ 100    CONTINUE
+      ENDIF
+      IF(IUPD(1) .GT. 0) THEN
+C----
+C  MERGE MATERIAL VOLUME AND KEY
+C----
+        DO 110 IVSN=1,NVOUTN
+          MATN(IVSN)=0
+          DVOL=0.0D0
+          DO 111 IVSO=1,NVOUTO
+           IF(IMERGE(IVSO) .EQ. IVSN) THEN
+             IF(MATN(IVSN) .EQ. 0) THEN
+               MATN(IVSN)=MATO(IVSO)
+             ELSE IF(MATN(IVSN) .NE. MATO(IVSO))THEN
+               WRITE(IOUT,6000) NAMSBR,IVSN,MATN(IVSN),IVSO,MATO(IVSO)
+               CALL XABORT(NAMSBR//
+     >           ': MATERIAL INCOMPATIBLE FOR MERGE')
+             ENDIF
+             DVOL=DVOL+DBLE(VOLO(IVSO))
+           ENDIF
+ 111      CONTINUE
+          VOLN(IVSN)=REAL(DVOL)
+          KEYN(IVSN)=IVSN
+ 110    CONTINUE
+        DO 112 IVSN=NVOUTN+1,NUNN
+          KEYN(IVSN)=0
+ 112    CONTINUE
+        DO 113 IVSO=1,NVOUTO
+          DO 114 IVSN=1,NETVOL
+            IF(KEYRO(IVSN) .EQ. IVSO) THEN
+              KEYRN(IVSN)=IMERGE(IVSO)
+            ENDIF
+ 114      CONTINUE
+ 113    CONTINUE
+      ELSE
+C----
+C  NO MERGE TRANSFER INFORMATION TO NEW VECTORS
+C----
+        DO 120 IVSO=1,NVOUTO
+          MATN(IVSO)=MATO(IVSO)
+          VOLN(IVSO)=VOLO(IVSO)
+ 120    CONTINUE
+      ENDIF
+C----
+C  CHANGE FINAL MATERIAL IF REQUESTED
+C----
+      IF(IUPD(3) .LT. 0) THEN
+        DO 130 IVSN=1,-IUPD(3)
+          MATN(IVSN)=MIXN(IVSN)
+          DO 131 IVSO=1,NETVOL
+            IF(KEYRO(IVSO) .EQ. IVSN) THEN
+              MATRN(IVSO)=MIXN(IVSN)
+            ENDIF
+ 131      CONTINUE
+ 130    CONTINUE
+      ENDIF
+C----
+C  FIND NEW MAXIMUM NUMBER OF MIXTURE
+C----
+      MAXMN=0
+      DO 140 IVSN=1,NVOUTN
+        MAXMN=MAX(MAXMN,MATN(IVSN))
+ 140  CONTINUE
+C----
+C  MERGE REFLECTION/TRANSMISSION MATRIX
+C----
+      IF(IUPD(2).EQ.0) THEN
+        DO 150 IVSN=1,NSOUTO
+          MATRTN(IVSN)=MATRTO(IVSN)
+ 150    CONTINUE
+      ELSE
+        DO 160 IVSN=-NSOUTN,-1,1
+          DO 161 IVSO=-NSOUTO,-1,1
+            IF(IMERGE(IVSO).EQ.IVSN) THEN
+              MATRTN(-IVSN)=-IMERGE(-MATRTO(-IVSO))
+              GO TO 165
+            ENDIF
+ 161      CONTINUE
+ 165      CONTINUE
+ 160    CONTINUE
+C----
+C  TEST IF MATRTN IS COHERENT
+C----
+        DO 162 IVSN=1,NSOUTN
+          IVSO=MATRTN(IVSN)
+          IF(MATRTN(IVSO).NE.IVSN) THEN
+            CALL XABORT(NAMSBR//
+     >           ': SURFACES BC INCOMPATIBLE FOR MERGE')
+          ENDIF
+ 162    CONTINUE
+        DO 163 IVSO=-1,-NSOUTO,-1
+          DO 164 IVSN=-1,-NETSUR,-1
+            IF(KEYRO(IVSN) .EQ. IVSO) THEN
+              KEYRN(IVSN)=IMERGE(IVSO)
+            ENDIF
+ 164      CONTINUE
+ 163    CONTINUE
+      ENDIF
+      RETURN
+C----
+C  ABORT FORMATS
+C----
+ 6000 FORMAT(' ------ ABORT IN ROUTINE ',A6,'  ------'/
+     >       ' MATERIAL INCOMPATIBLE FOR MERGE '/
+     >       ' NEW REGION = ',I10,5X,'MATERIAL =',I10/
+     >       ' OLD REGION = ',I10,5X,'MATERIAL =',I10/
+     >       ' ----------------------------------------')
+      END

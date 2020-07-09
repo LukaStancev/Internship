@@ -1,0 +1,85 @@
+*DECK INFDRA
+      SUBROUTINE INFDRA(CFILNA,IPRINT,NBISO,HNAMIS,AWRISO)
+C
+C------------------------------  INFDRA  ------------------------------
+C
+C   TO RECOVER MASS FOR ISOTOPES OF DRAGON TYPE LIBRARIES
+C
+C   INPUT
+C     CFILNA : DRAGON FILE NAME                     C*64
+C     IPRINT : PRINT FLAG                           I
+C     NBISO  : NUMBER OF ISOTOPES                   I
+C     HNAMIS : ISOTOPE NAMES                        C(NBISO)*8
+C   OUTPUT
+C     AWRISO : ISOTOPE WEIGHTS                      R(NBISO)
+C
+C------------------------------  INFDRA  ------------------------------
+C
+      USE GANLIB
+      IMPLICIT     NONE
+      INTEGER      IPRINT,NBISO
+      CHARACTER    CFILNA*64,HNAMIS(NBISO)*8
+      REAL         AWRISO(NBISO)
+C----
+C FUNCTIONS
+C----
+      DOUBLE PRECISION XDRCST
+C----
+C  DRAGON LIBRARY PARAMETERS
+C----
+      TYPE(C_PTR)  IPDRL
+      INTEGER      IOUT,ISO,LENGT,ITYLCM
+      PARAMETER   (IOUT=6)
+      CHARACTER    NAMLOC*12,HSMG*131
+      REAL         CONVM
+*----
+*  For INFDRA, file name is limited to 12 characters
+*  because of the requirements for compatibility with 
+*  LINKED_LIST
+*----
+      NAMLOC=CFILNA(1:12)
+C----
+C  TEST IF FILE NAME EXISTS
+C----
+      CONVM=REAL(XDRCST('Neutron mass','amu'))
+      IF(NAMLOC.EQ.' ' )THEN
+        CALL XABORT('INFDRA: DRAGON LIBRARY HAS NOT BEEN SET')
+      ENDIF
+C----
+C  OPEN FILE AND READ INFORMATION DATA RECORDS
+C----
+      CALL LCMOP(IPDRL,NAMLOC,2,2,0)
+      DO 100 ISO=1,NBISO
+        CALL LCMLEN(IPDRL,HNAMIS(ISO),LENGT,ITYLCM)
+        IF(LENGT.EQ.0) THEN
+          CALL LCMLIB(IPDRL)
+          WRITE(HSMG,9000) HNAMIS(ISO),CFILNA
+          CALL XABORT(HSMG)
+        ENDIF
+        CALL LCMSIX(IPDRL,HNAMIS(ISO),1)
+        CALL LCMGET(IPDRL,'AWR',AWRISO(ISO))
+        AWRISO(ISO)=AWRISO(ISO)*CONVM
+        IF(IPRINT.GE.100) THEN
+          WRITE(IOUT,6000) HNAMIS(ISO),AWRISO(ISO)
+        ENDIF
+        CALL LCMSIX(IPDRL,' ',2)
+ 100  CONTINUE
+C----
+C  CLOSE FILE
+C----
+      CALL LCMCL(IPDRL,1)
+C----
+C  RETURN
+C----
+      RETURN
+C----
+C  PRINT FORMAT
+C----
+ 6000 FORMAT(' DRAGON ISOTOPE =',A8,
+     >       ' HAS ATOMIC WEIGHT RATIO = ',F12.5)
+C----
+C  ABORT FORMAT
+C----
+ 9000 FORMAT('INFDRA: MATERIAL/ISOTOPE ',A8,
+     >       ' IS MISING ON DRAGON LIBRARY FILE ',A64)
+      END

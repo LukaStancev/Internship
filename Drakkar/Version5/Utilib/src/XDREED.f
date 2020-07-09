@@ -1,0 +1,95 @@
+*DECK XDREED
+      SUBROUTINE XDREED(IUCCCC,NUMREC,ARRAY,NWDS)
+C
+C------------------------ XDREED/XDRITE ----------------------------
+C
+C   1- PROGRAMME STATISTICS:
+C       NAME     : XDREED
+C       ENTRY    : XDREED,XDRITE
+C       USE      : READ OR WRITE CCCC FORMAT RECORDS
+C       MODIFIED : 91-01-24
+C       AUTHOR   : G.MARLEAU
+C
+C   2- ROUTINE PARAMETERS:
+C    ENTRY XDREED: TRANSFER DATA FROM CCCC FILE TO ARRAY
+C    INPUT
+C       IUCCCC   : FILE UNIT                               I
+C       NUMREC   : RECORD NUMBER TO READ                   I
+C       NWDS     : NUMBER OF WORDS TO READ                 I
+C    OUTPUT
+C       ARRAY    : LOCATION IN CENTRAL MEMORY              R(NWDS)
+C                  WHERE INFORMATION IS TO BE STORED
+C    ENTRY XDRITE: TRANSFER DATA FROM ARRAY TO CCCC FILE
+C    INPUT
+C       IUCCCC   : FILE UNIT                               I
+C       NUMREC   : RECORD NUMBER TO WRITE                  I
+C       NWDS     : NUMBER OF WORDS TO WRITE                I
+C       ARRAY    : LOCATION IN CENTRAL MEMORY              R(NWDS)
+C                  FROM WHERE INFORMATION IS LOCATED
+C
+C   3- INTERNAL PARAMETERS:
+C       NBUNIT  : NOMBRE OF CCCC FILE UNITS AVAILABLE  INT          P
+C       IPUNIT  : CURRENT RECORD IN CCCC FILE UNITS    INT(NBTAPE) I/S
+C
+C   4- REFERENCE:
+C       R. D. O'DELL, 'STANDARD INTERFACE FILES AND PROCEDURES FOR
+C       REACTOR PHYSICS CODES, VERSION IV', LOS ALAMOS NATIONAL
+C       LABORATORY REPORT LA-6941-MS (SEPT. 1977).
+C
+C------------------------ XDREED/XDRITE ----------------------------
+C       ENTRY    : XDREED
+C       USE      : READ CCCC RECORDS
+C------------------------    XDREED     ----------------------------
+C
+      SAVE       IPUNIT
+      PARAMETER (NBUNIT=99)
+      INTEGER    IUCCCC,NUMREC,NWDS,IPUNIT(NBUNIT)
+      REAL       ARRAY(NWDS)
+      DATA      (IPUNIT(JJ),JJ= 1,NBUNIT) /NBUNIT*0/
+C----
+C  READ A RECORD ON A SEQUENTIAL FILE
+C----
+      IF (NUMREC.EQ.0) THEN
+        CALL XABORT('XDREED: RECORD NUMBER 0 CANNOT BE READ '//
+     >              'FROM CCCC FILE')
+      ENDIF
+      IF (NWDS.EQ.0) RETURN
+      IF (NUMREC.EQ.1) THEN
+        REWIND IUCCCC
+      ELSE
+        NSKIP=NUMREC-IPUNIT(IUCCCC)-1
+        IF (NSKIP.GT.0) THEN
+          DO 10 I=1,NSKIP
+            READ(IUCCCC) DUM
+ 10       CONTINUE
+        ELSE IF (NSKIP.LT.0) THEN
+          DO 20 I=1,-NSKIP
+            BACKSPACE IUCCCC
+ 20       CONTINUE
+        ENDIF
+      ENDIF
+      READ(IUCCCC) (ARRAY(JJ),JJ=1,NWDS)
+      IPUNIT(IUCCCC)=NUMREC
+      RETURN
+      END SUBROUTINE XDREED
+C
+C------------------------ XDREED/XDRITE ----------------------------
+C       ENTRY    : XDRITE
+C       USE      : WRITE CCCC RECORDS
+C------------------------    XDRITE     ----------------------------
+C
+      SUBROUTINE XDRITE(IUCCCC,NUMREC,ARRAY,NWDS)
+      INTEGER    IUCCCC,NUMREC,NWDS
+      REAL       ARRAY(NWDS)
+C----
+C  WRITE A RECORD ON A SEQUENTIAL FILE
+C----
+      IF (NUMREC.EQ.0) THEN
+        CALL XABORT('XDRITE: RECORD NUMBER 0 CANNOT BE WRITTEN '//
+     >              'ON CCCC FILE')
+      ENDIF
+      IF (NWDS.EQ.0) RETURN
+      IF (NUMREC.EQ.1) REWIND IUCCCC
+      WRITE(IUCCCC) (ARRAY(JJ),JJ=1,NWDS)
+      RETURN
+      END SUBROUTINE XDRITE
