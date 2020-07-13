@@ -10,6 +10,9 @@ Drakkar/Version5/Dragon/src/Dragon
 Drakkar/Version5/Ganlib/src/Ganlib
 Drakkar/Version5/Trivac/src/Trivac
 
+# Version5 Draglib files
+**/draglib*
+
 # Slurm output (log) files
 **/slurm-*.out
 
