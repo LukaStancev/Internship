@@ -16,5 +16,7 @@ jobs:
       - run:
           name: Tihange HZP JEFF-3.1.1
           command: |
+            yum -y install wget # Required to download Draglib file
             cd Drakkar/data
             ../runVersion5.sh JEFF311.x2m
+          no_output_timeout: 20m # Prevent kills due to timeout limit
