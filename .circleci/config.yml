@@ -12,9 +12,10 @@ jobs:
             echo 'Hello World!'
             echo 'This is the delivery pipeline'
             cat /etc/centos-release
-            gfortran --version
-            make --version
             ls
             pwd
+            yum install gcc-gfortran make
+            gfortran --version
+            make --version
             cd Drakkar/Version5/Donjon/src
             make
