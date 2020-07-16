@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: centos7.3.1611
+      - image: centos:7.3.1611
     steps:
       - run:
           name: The First Step
