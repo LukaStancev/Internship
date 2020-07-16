@@ -1,9 +1,13 @@
 [![IRSN](https://circleci.com/gh/IRSN/UncertaintyPhD.svg?style=shield)](https://circleci.com/gh/IRSN/UncertaintyPhD)
 
+## Introduction
+
 The datasets produced during my Ph.D. thesis are centralized on this project. This principle of openness is intended to allow, in a pragmatic and effective way:
 * the verifiable and complete reproducibility of this publicly funded research,
 * the transparency necessary for a rigorous peer-review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
+
+## Version5 datasets execution
 
 The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1879](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, this revision is also included in this repository. It can be compiled and then executed with the following commands:
 ```
@@ -13,7 +17,7 @@ cd ../../../data
 ../runVersion5.sh JEFF311.x2m
 ```
 
-### Disclaimer
+## Disclaimer
 
 The user of these files is solely responsible for their adequacy to his needs, the precautions to be taken, the qualification of his personnel and the use he makes of the results he obtains.
 IRSN gives no guarantee concerning the results resulting from the use of these files as to their accuracy, reliability, up-to-date status or otherwise. Users use these files under their own responsibility and waive the right to take any action against IRSN regarding the consequences of their use of these files, particularly in the event of infringement proceedings brought against them by third parties.
