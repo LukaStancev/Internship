@@ -15,7 +15,7 @@ DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
 fcompiler = gfortran
 ccompiler = gcc
-opt = -O
+opt = -O2
 PREPRO = cpp
 ifeq ($(openmp),1)
   COMP = -fopenmp

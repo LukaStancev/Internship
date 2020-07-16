@@ -3,7 +3,13 @@ The datasets produced during my Ph.D. thesis are centralized on this project. Th
 * the transparency necessary for a rigorous peer-review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
 
-The datasets can be executed with [Version5](https://www.polymtl.ca/merlin/version5.htm) (beta, revision 1879), developped at École Polytechnique de Montréal. For the sake of convenience, it is included in this repository.
+The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1879](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, Version5 is included in this repository. It can be compiled and then executed with the following commands:
+```
+cd Drakkar/Version5/Donjon/src
+make
+cd ../../../data
+../runVersion5.sh JEFF311.x2m
+```
 
 ### Disclaimer
 

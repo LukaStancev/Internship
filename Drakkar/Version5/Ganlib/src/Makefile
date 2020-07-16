@@ -14,7 +14,7 @@ endif
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
 mpi = 0
-opt = -O
+opt = -O2
 PREPRO = cpp
 ifeq ($(mpi),1)
   FMPI = -DMPI

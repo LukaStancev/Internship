@@ -131,7 +131,7 @@ fi
 
 cd "$DataDir"/../"$MACH"
 if [ $quiet = 0 ]; then
-   tail -15 $xxx.result
+   tail -45 $xxx.result
 else
   RED='\033[0;31m'
   GREEN='\033[0;32m'
