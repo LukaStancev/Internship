@@ -1,0 +1,22 @@
+# Use the 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: centos:7.3.1611 # Current CentOS version on Farux (IRSN internal cluster)
+    steps:
+      - checkout # Retrieve the latest revision of the repository
+      - run:
+          name: Version5 compilation
+          command: |
+            yum -y install gcc-gfortran make
+            cd Drakkar/Version5/Donjon/src
+            make
+      - run:
+          name: Tihange HZP JEFF-3.1.1
+          command: |
+            yum -y install wget # Required to download Draglib file
+            cd Drakkar/data
+            ../runVersion5.sh JEFF311.x2m
+          no_output_timeout: 20m # Prevent kills due to timeout limit
