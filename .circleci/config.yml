@@ -2,7 +2,7 @@
 version: 2.1
 
 jobs:
-  build_and_test:
+  build:
     docker:
       - image: centos:7.3.1611 # Current CentOS version on Farux (IRSN farm)
     steps:
