@@ -14,7 +14,7 @@ jobs:
             cat /etc/centos-release
             ls
             pwd
-            yum install gcc-gfortran make
+            yum -y install gcc-gfortran make
             gfortran --version
             make --version
             cd Drakkar/Version5/Donjon/src
