@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       - image: centos/centos7.3.1611
-   steps:
+    steps:
       - run:
           name: The First Step
           command: |
