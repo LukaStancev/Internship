@@ -5,7 +5,7 @@ XSM_FILE Library Burnup ConcMode Info
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
 *---
 ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
-                     CREA 'dBaffleBarrl' 1 = 4.4 ; ! [cm]
+                     CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
 REFL := Reflector ReflSpecs ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 195 None 1 ;
