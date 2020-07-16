@@ -8,5 +8,5 @@ cd data
 
 srun ../runVersion5.sh JEFF311.x2m
 
-grep "RELATIVE POWER" -A 16 ../Linux_x86_64/JEFF311.result | grep "  1 " -A 14
-grep "EFFECTIVE M" ../Linux_x86_64/JEFF311.result | cut -d"=" -f2
+grep --color=none "RELATIVE POWER" -A 16 ../Linux_x86_64/JEFF311.result | grep --color=none "  1 " -A 14
+grep --color=none "EFFECTIVE M" ../Linux_x86_64/JEFF311.result | cut -d"=" -f2

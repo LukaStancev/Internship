@@ -1,9 +1,11 @@
+[![IRSN](https://circleci.com/gh/IRSN/UncertaintyPhD.svg?style=shield)](https://circleci.com/gh/IRSN/UncertaintyPhD)
+
 The datasets produced during my Ph.D. thesis are centralized on this project. This principle of openness is intended to allow, in a pragmatic and effective way:
 * the verifiable and complete reproducibility of this publicly funded research,
 * the transparency necessary for a rigorous peer-review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
 
-The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1879](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, Version5 is included in this repository. It can be compiled and then executed with the following commands:
+The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1879](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, this revision is also included in this repository. It can be compiled and then executed with the following commands:
 ```
 cd Drakkar/Version5/Donjon/src
 make

@@ -19,4 +19,5 @@ jobs:
             yum -y install wget # Required to download Draglib file
             cd Drakkar/data
             ../runVersion5.sh JEFF311.x2m
-          no_output_timeout: 20m # Prevent kills due to timeout limit
+            ../Reference/Diff.sh # Between obtained and reference results
+          no_output_timeout: 15m # Prevent kills due to timeout limit
