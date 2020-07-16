@@ -2,18 +2,15 @@
 version: 2.1
 
 jobs:
-  build:
+  build_and_test:
     docker:
-      - image: centos:7.3.1611
+      - image: centos:7.3.1611 # Current CentOS version on Farux (IRSN farm)
     steps:
+      - checkout # Retrieve the latest revision
       - run:
-          name: The First Step
+          name: Version5 compilation
           command: |
             echo 'Hello World!'
-            echo 'This is the delivery pipeline'
-            cat /etc/centos-release
-            ls
-            pwd
             yum -y install gcc-gfortran make
             gfortran --version
             make --version
