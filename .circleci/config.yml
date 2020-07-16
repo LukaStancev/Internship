@@ -11,3 +11,10 @@ jobs:
           command: |
             echo 'Hello World!'
             echo 'This is the delivery pipeline'
+            cat /etc/centos-release
+            gfortran --version
+            make --version
+            ls
+            pwd
+            cd Drakkar/Version5/Donjon/src
+            make
