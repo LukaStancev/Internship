@@ -5,14 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for PMAXS file interpolation. Use global and
+* Compute TERP factors for PMAXS file interpolation. Use global and
 * local parameters from a fuel-map object and optional user-defined
 * values.
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMAP   address of the fuel-map object.

@@ -8,15 +8,19 @@
 * a 2--D annular region and an annular pin.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s): G. Marleau.
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * POSANN  spatial description of the annular region with
@@ -31,16 +35,14 @@
 *Parameters: output
 * NXTIAA  type of intersection between annular region and
 *         annular pin, where
-*         \begin{itemize}
-*         \item \verb|NXTIAA|=0 means that there is no intersection
+*         = 0 means that there is no intersection
 *         between the two regions;
-*         \item \verb|NXTIAA|=1 means that the annular region
+*         = 1 means that the annular region
 *         is all located inside the annular pin;
-*         \item \verb|NXTIAA|=2 means that the annular pin
+*         = 2 means that the annular pin
 *         is all located inside the annular region;
-*         \item \verb|NXTIAA|=-1 means that the intersection between
+*         =-1 means that the intersection between
 *         the annular region and the annular pin is partial.
-*         \end{itemize}
 * VOLINT  2-D volume of intersection (area) between annular region and
 *         annular pin.
 *

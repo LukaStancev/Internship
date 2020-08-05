@@ -1,29 +1,30 @@
 *DECK TINSTB
-      SUBROUTINE TINSTB(IPMAP,TIME,BURNSTEP,NCH,NB,NF,BUNDPOW,BURNAVG,
-     1 BURNINST,IMPX)
+      SUBROUTINE TINSTB(IPMAP,TIME,BURNSTP,NCH,NB,NF,BUNDPOW,BURNAVG,
+     1 BURNINS,IMPX)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute new burnup for each bundle given either an average burnup step
+* Compute new burnup for each bundle given either an average burnup step
 * or a burning time
 *
 *Copyright:
 * Copyright (C) 2009 Ecole Polytechnique de Montreal
 *
-*Author(s): B. Toueg
+*Author(s): 
+* B. Toueg
 *
 *Parameters: input/output
-* IPMAP    pointer to fuel-map information.
-* TIME     time to burn
-* BURNSTEP average burnup step
-* NCH      number of reactor channels.
-* NB       number of fuel bundles.
-* NF       number of fuel types.
-* BUNDPOW  bundle powers.
-* BURNAVG  average burnup.
-* BURNINST instantaneous burnups.
-* IMPX     printing index (=0 for no print).
+* IPMAP   pointer to fuel-map information.
+* TIME    time to burn
+* BURNSTP average burnup step
+* NCH     number of reactor channels.
+* NB      number of fuel bundles.
+* NF      number of fuel types.
+* BUNDPOW bundle powers.
+* BURNAVG average burnup.
+* BURNINS instantaneous burnups.
+* IMPX    printing index (=0 for no print).
 *
 *-----------------------------------------------------------------------
 *
@@ -33,8 +34,8 @@
 *----
       TYPE(C_PTR) IPMAP
       INTEGER NCH,NB,NF,IMPX
-      REAL BUNDPOW(NCH,NB), BURNINST(NCH,NB)
-      REAL TIME,BURNSTEP, BURNAVG, PTOT, MASSTOT, WEIGHT
+      REAL BUNDPOW(NCH,NB), BURNINS(NCH,NB)
+      REAL TIME,BURNSTP, BURNAVG, PTOT, MASSTOT, WEIGHT
 *----
 *  LOCAL VARIABLES
 *----
@@ -56,8 +57,8 @@
       CALL XDISET(BUNDMIX,NCH*NB,0)
       CALL LCMGET(IPMAP,'FLMIX',BUNDMIX)
 *     BURN-INST
-      CALL XDRSET(BURNINST,NCH*NB,0.)
-      CALL LCMGET(IPMAP,'BURN-INST',BURNINST)
+      CALL XDRSET(BURNINS,NCH*NB,0.)
+      CALL LCMGET(IPMAP,'BURN-INST',BURNINS)
 *     FUEL INFORMATION (WEIGHT & MIX)
       JPMAP=LCMGID(IPMAP,'FUEL')
       MAXFL=0 ! maximum fuel mix number
@@ -94,14 +95,14 @@
           IF(IFL.EQ.0) CYCLE
           NTOT=NTOT+1
           WEIGHT = FLWEIGHT(IFL)
-          BURNAVG=BURNAVG+BURNINST(ICH,IB)
+          BURNAVG=BURNAVG+BURNINS(ICH,IB)
           PTOT=PTOT+BUNDPOW(ICH,IB)
           MASSTOT=MASSTOT+WEIGHT
         ENDDO
       ENDDO
       BURNAVG=BURNAVG/REAL(NTOT)
       IF(TIME.EQ.0.)THEN
-        TIME = BURNSTEP*MASSTOT/PTOT
+        TIME = BURNSTP*MASSTOT/PTOT
       ENDIF
       IF(IMPX.GT.0)THEN
         WRITE(IOUT,*)'@TINSTB: TOTAL POWER = ',PTOT,' kW'
@@ -123,9 +124,9 @@
           NTOT=NTOT+1
           WEIGHT = FLWEIGHT(IFL)
           IF(WEIGHT.GT.0.)THEN
-            BURNINST(ICH,IB)=BURNINST(ICH,IB)
+            BURNINS(ICH,IB)=BURNINS(ICH,IB)
      1      +(BUNDPOW(ICH,IB)/WEIGHT)*TIME
-            BURNAVG=BURNAVG+BURNINST(ICH,IB)
+            BURNAVG=BURNAVG+BURNINS(ICH,IB)
           ELSE
             IF(IMPX.GT.0)THEN
               WRITE(IOUT,*)'@TINSTB: WARNING MIX ',
@@ -138,7 +139,7 @@
       IF(IMPX.GT.0)THEN
         WRITE(IOUT,*)'@TINSTB: AVERAGE BURN UP AFTER = ',BURNAVG,'MWd/t'
       ENDIF
-      CALL LCMPUT(IPMAP,'BURN-INST',NCH*NB,2,BURNINST)
+      CALL LCMPUT(IPMAP,'BURN-INST',NCH*NB,2,BURNINS)
 *----
 *  RELEASE MEMORY AND RETURN
 *----

@@ -1,41 +1,45 @@
 *DECK XCWSRT
       SUBROUTINE XCWSRT(IPRT,MXSEG,SEGLEN,NRSEG,NNSEG,NTSEG)
-C
-C-------------------------    XCWSRT    -------------------------------
-C
-C 1- SUBROUTINE STATISTICS:
-C     NAME     : XCWSRT
-C     USE      : SORT REGION INTERSECTION BY POSITION
-C     MODIFIED : 94-01-19
-C     AUTHOR   : G. MARLEAU
-C
-C 2- PARAMETERS:
-C  INPUT
-C     IPRT     : PRINT LEVEL                           I
-C     MXSEG    : CURRENT MAXIMUM TRACK LENGTH          I
-C  INPUT/OUTPUT
-C     SEGLEN   : LENGTH OF TRACK                       D(MXSEG)
-C     NRSEG    : REGION CROSSED BY TRACK               I(MXSEG)
-C     NNSEG    : REGION CROSSED BY TRACK  (LEFT)       I(MXSEG)
-C  OUTPUT
-C     NTSEG    : TOTAL NUMBER OF SEGMENTS              I
-C
-C  3-INTERNAL PARAMETERS
-C     IUNOUT   : OUT UNIT NUMBER = 6
-C
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Sort region intersection by position.
+*
+*Copyright:
+* Copyright (C) 1994 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G.Marleau
+*
+*Parameters: input
+* IPRT    print level.
+* MXSEG   current maximum track length.
+*
+*Parameters: input/output
+* SEGLEN  length of track.
+* NRSEG   region crossed by track.
+* NNSEG   region crossed by track (left).
+*
+*Parameters: output
+* NTSEG   total number of segments.
+*
+*----------------------------------------------------------------------
+*
       PARAMETER (IUNOUT=6)
       INTEGER    IPRT,MXSEG,NRSEG(*),NNSEG(*),NTSEG
       DOUBLE PRECISION SEGLEN(*)
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER REFNR,REFNN
       DOUBLE PRECISION REFSL
-C----
-C  REMOVE TERM WITH NRSEG<=0
-C----
+*----
+*  REMOVE TERM WITH NRSEG<=0
+*----
       NTSEG=0
       DO 100 IS=1,MXSEG-1
         IF(NRSEG(IS).GT.0) THEN
@@ -54,9 +58,9 @@ C----
         WRITE(IUNOUT,6010) (IIJJ,SEGLEN(IIJJ),NNSEG(IIJJ),
      >                      NRSEG(IIJJ),IIJJ=1,NSEG)
       ENDIF
-C----
-C  SORT FROM MINIMUM TO MAXIMUM
-C----
+*----
+*  SORT FROM MINIMUM TO MAXIMUM
+*----
       DO 110 IS=2,NSEG
         REFSL=SEGLEN(IS)
         REFNR=NRSEG(IS)
@@ -82,10 +86,10 @@ C----
         WRITE(IUNOUT,6010) (IIJJ,SEGLEN(IIJJ),NNSEG(IIJJ),
      >                      NRSEG(IIJJ),IIJJ=1,NSEG)
       ENDIF
-C----
-C  CHECK FOR ROD INTERSECTION WITH ANNULUS OR
-C  ANNULUS LOCATED BETWEEN ROD SETS
-C----
+*----
+*  CHECK FOR ROD INTERSECTION WITH ANNULUS OR
+*  ANNULUS LOCATED BETWEEN ROD SETS
+*----
       DO 120 IS=1,NSEG
         NTB=NRSEG(IS)
         NFB=NNSEG(IS)
@@ -122,9 +126,9 @@ C----
         ENDIF
  124    CONTINUE
  120  CONTINUE
-C----
-C  REMOVE NEW TERMS WITH NRSEG<=0
-C----
+*----
+*  REMOVE NEW TERMS WITH NRSEG<=0
+*----
       NTSEG=0
       DO 130 IS=1,NSEG-1
         IF(NRSEG(IS).GT.0) THEN
@@ -139,9 +143,9 @@ C----
       NNSEG(NSEG)=NNSEG(MXSEG)
       SEGLEN(NSEG)=SEGLEN(MXSEG)
       RETURN
-C----
-C  FORMATS
-C----
+*----
+*  FORMATS
+*----
  6000 FORMAT(' COMPRESSED TRACKING FILE'/
      >5X,'NUMBER',7X,'POSITION',4X,'BEFORE',5X,'AFTER')
  6001 FORMAT(' SORTED TRACKING FILE'/

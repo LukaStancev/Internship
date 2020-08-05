@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* description of the archive segments used in the APOLIB-2 file
+* Description of the archive segments used in the APOLIB-2 file
 * used as external subroutine by subroutine AEXTRT
 *
 *Copyright:

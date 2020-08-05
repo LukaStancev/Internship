@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* put/get number densities of particularized isotopes in the microlib
+* Put/get number densities of particularized isotopes in the microlib
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IMPX    print parameter.

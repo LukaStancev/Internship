@@ -5,14 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover FISSION cross sections of an elementary calculation and store
+* Recover FISSION cross sections of an elementary calculation and store
 * in INFO/BRANCH_INFO/MACROLIB_XS/SFI.
 * WARNING: the GET_SFI_XS subroutine cannot recover FISSION XS in the
 * case where cross sections are ineterpolated by the SCR: module
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-* parameters: input
+*Parameters: input
 * IPDAT   address of the INFO data block
 * ICAL    number of the elementary calculation in which fission cross
 *         sections is to be recovered
@@ -30,9 +31,17 @@
 *         LABS(2) abs xs recovered from sap ; LABS (3)  abs xs recovered
 *         from SAP minus excess xs
 
-*parameters: output
+*Parameters: output
 * SFI     fission cross sections of the current BRANCH:
 *         INFO/BRANCH_INFO/MACROLIB_XS/SFI
+*
+*Parameters: 
+* IPRINT  
+* NVAR    
+* B2      
+* ADF_T   
+* SCAT    
+* LADF    
 *
 *-----------------------------------------------------------------------
 *

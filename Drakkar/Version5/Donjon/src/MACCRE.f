@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover nuclear properties from an initial macrolib and store them
+* Recover nuclear properties from an initial macrolib and store them
 * in a new one containing one mixture per region.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, E. Varin, D. Sekki
+*Author(s): 
+* J. Koclas, E. Varin, D. Sekki
 *
 *Parameters: input
 * IPOLD   pointer to the initial macrolib.

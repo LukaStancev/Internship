@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute a set of total (SIGT**N) and partial (SIGA*(SIGT**N)) moments
+* Compute a set of total (SIGT**N) and partial (SIGA*(SIGT**N)) moments
 * and a set of reference self-shielded flux and cross sections.
 *
 *Copyright:

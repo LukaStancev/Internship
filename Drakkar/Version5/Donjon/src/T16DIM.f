@@ -3,64 +3,70 @@
      >                  NG    ,NGMTR ,NMATZ ,NM    ,MTRMSH,NFPR  ,
      >                  NZONE ,NREGON,NGREAC,NRCELA,NRREGI,
      >                  IFGMTR,IFGEDI)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16DIM
-C      USE      : SCAN WIMS-AECL TAPE16 FILE
-C                 FOR GENERAL DIMENSIONING INFORMATION
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/22
-C      REF      : EPM  IGE-244 REV.1
-C                 EACL RC-1176 (COG-94-52)
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/22 G.M.    | SCAN WIMS-AECL TAPE16 FILE
-C      |                    | FOR GENERAL DIMENSIONING INFORMATION
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C      IPRINT : PRINT LEVEL                              I
-C               =   0 NO PRINT
-C               >=  1 PRINT RECORD TO READ
-C               >= 10 PRINT ALL RECORD READ TO REACH
-C                     REQUESTED RECORD
-C      MXGRP  : MAXIMUM NUMBER OF GROUPS PERMITTED       I
-C      LSUBT  : MAXIMUM LENGHT OF SUBTITLE               I
-C    OUTPUT
-C      ISUBT  : INTEGER VECTOR FOR TITLE                 I(LSUBT)
-C      NEL    : NUMBER OF ISOTOPES ON THE CROSS SECTION  I
-C               LIBRARY
-C      NG     : NUMBER OF GROUPS ON CROSS SECTION        I
-C               LIBRARY
-C      NGMTR  : NUMBER OF MAIN TRANSPORT GROUP           I
-C      NMATZ  : NUMBER OF MIXTURES                       I
-C      NM     : NUMBER OF BURNABLE MATERIALS             I
-C      MTRMSH : NUMBER OF MAIN TRANSPORT MESH POINTS     I
-C      NFPR   : NUMBER OF FUEL PIN RINGS                 I
-C      NZONE  : NUMBER OF ZONES                          I
-C      NREGON : NUMBER OF EDIT REGIONS                   I
-C      NGREAC : NUMBER OF EDIT GROUPS                    I
-C      NRCELA : NUMBER OF CELLAV SETS OF RECORDS         I
-C      NRREGI : NUMBER OF REGION SETS OF RECORDS         I
-C      IFGMTR : FEWGROUPS FOR MAIN TRANSPORT             I(MXGRP)
-C      IFGEDI : FEWGROUPS FOR EDIT                       I(MXGRP)
-C
-C  3- ROUTINES CALLED
-C    SPECIFIC T16CPO ROUTINES
-C      T16FND : FIND A TAPE16 RECORD
-C               EQUIVALENT TO FIND FUNCTION
-C               IN APPENDIX E OF EACL RC-1176
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16DIM
+*
+*Purpose:
+*  SCAN WIMS-AECL TAPE16 FILE
+*                 FOR GENERAL DIMENSIONING INFORMATION
+*
+*Author(s):
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/22
+*      REF      : EPM  IGE-244 REV.1
+*                 EACL RC-1176 (COG-94-52)
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/22 G.M.    | SCAN WIMS-AECL TAPE16 FILE
+*      |                    | FOR GENERAL DIMENSIONING INFORMATION
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+* IPRINT  PRINT LEVEL                              I
+*         =   0 NO PRINT
+*         >=  1 PRINT RECORD TO READ
+*         >= 10 PRINT ALL RECORD READ TO REACH
+*               REQUESTED RECORD
+* MXGRP   MAXIMUM NUMBER OF GROUPS PERMITTED       I
+* LSUBT   MAXIMUM LENGHT OF SUBTITLE               I
+*
+*Parameters: input
+* ISUBT   INTEGER VECTOR FOR TITLE                 I(LSUBT)
+* NEL     NUMBER OF ISOTOPES ON THE CROSS SECTION  I
+*         LIBRARY
+* NG      NUMBER OF GROUPS ON CROSS SECTION        I
+*         LIBRARY
+* NGMTR   NUMBER OF MAIN TRANSPORT GROUP           I
+* NMATZ   NUMBER OF MIXTURES                       I
+* NM      NUMBER OF BURNABLE MATERIALS             I
+* MTRMSH  NUMBER OF MAIN TRANSPORT MESH POINTS     I
+* NFPR    NUMBER OF FUEL PIN RINGS                 I
+* NZONE   NUMBER OF ZONES                          I
+* NREGON  NUMBER OF EDIT REGIONS                   I
+* NGREAC  NUMBER OF EDIT GROUPS                    I
+* NRCELA  NUMBER OF CELLAV SETS OF RECORDS         I
+* NRREGI  NUMBER OF REGION SETS OF RECORDS         I
+* IFGMTR  FEWGROUPS FOR MAIN TRANSPORT             I(MXGRP)
+* IFGEDI  FEWGROUPS FOR EDIT                       I(MXGRP)
+*
+*  3- ROUTINES CALLED
+*    SPECIFIC T16CPO ROUTINES
+*      T16FND : FIND A TAPE16 RECORD
+*               EQUIVALENT TO FIND FUNCTION
+*               IN APPENDIX E OF EACL RC-1176
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16,IPRINT,MXGRP,LSUBT,NEL,NG,NGMTR,
      >                 NMATZ,NM,MTRMSH,NFPR,NZONE,NREGON,

@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* produce an equivalent tracking with NCOR=1.
+* Produce an equivalent tracking with NCOR=1.
 *
 *Copyright:
 * Copyright (C) 2009 Ecole Polytechnique de Montreal
@@ -34,9 +34,9 @@
       CHARACTER          CTRK*4, COMENT*80
       INTEGER            IOUT
       PARAMETER        ( IOUT=6 )
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: MATALB,ICODE,NRSEG,KANGL
       REAL, ALLOCATABLE, DIMENSION(:) :: VOLSUR,ALBEDO
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: ANGLES,DENSTY

@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* find the dilutions corresponding to a resonant isotope within a
+* Find the dilutions corresponding to a resonant isotope within a
 * library in Apolib-2 format.
 *
 *Copyright:

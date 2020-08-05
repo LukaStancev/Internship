@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the contribution of a track to the numerical surfaces and 
+* Compute the contribution of a track to the numerical surfaces and 
 * connection matrices for an EXCELT tracking.
 *
 *Copyright:

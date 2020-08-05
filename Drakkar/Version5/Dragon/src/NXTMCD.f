@@ -7,12 +7,16 @@
 *----------
 *
 *Purpose:
-* To create a multicell description for the geometry and verify
+* Create a multicell description for the geometry and verify
 * if intrinsic cell symmetry required by boundary conditions
 * are satisfied.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -23,9 +27,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPGEO   pointer to the GEOMETRY data structure.
@@ -40,29 +44,25 @@
 * NBTCLS  total number of cluster geometry.
 * ITSYM   array to identify the symmetry to test for each original
 *         cell where
-*         \begin{itemize}
-*         \item \moc{ITSYM(1,*)} identify $X$ symmetry;
-*         \item \moc{ITSYM(2,*)} identify $Y$ symmetry;
-*         \item \moc{ITSYM(3,*)} identify $Z$ symmetry;
-*         \item \moc{ITSYM(4,*)} identify $X-Y$ symmetry.
-*         \end{itemize}
+*         ITSYM(1,*) identify $X$ symmetry;
+*         ITSYM(2,*) identify $Y$ symmetry;
+*         ITSYM(3,*) identify $Z$ symmetry;
+*         ITSYM(4,*) identify $X-Y$ symmetry.
 *         A value of 0 indicate that the geometry does not need
 *         to be verified while a value of 1 implies a verification
 *         of the geometry.
 * IDFEX   identify faces associated with external boundary for a
 *         generating cell and number of times this cell is used. Here
-*         \begin{itemize}
-*         \item \moc{IDFEX(1,*)}  identify bottom $U$ hexagonal face;
-*         \item \moc{IDFEX(2,*)}  identify top $U$ hexagonal face;
-*         \item \moc{IDFEX(3,*)}  identify bottom $V$ hexagonal face;
-*         \item \moc{IDFEX(4,*)}  identify top $V$ hexagonal face;
-*         \item \moc{IDFEX(5,*)}  identify bottom $Z$ face;
-*         \item \moc{IDFEX(6,*)}  identify top $Z$ face;
-*         \item \moc{IDFEX(7,*)}  not used;
-*         \item \moc{IDFEX(8,*)}  not used;
-*         \item \moc{IDFEX(9,*)}  identify bottom $W$ hexagonal face;
-*         \item \moc{IDFEX(10,*)} identify top $W$ hexagonal face;
-*         \end{itemize}
+*         IDFEX( 1,*)  identify bottom $U$ hexagonal face;
+*         IDFEX( 2,*)  identify top $U$ hexagonal face;
+*         IDFEX( 3,*)  identify bottom $V$ hexagonal face;
+*         IDFEX( 4,*)  identify top $V$ hexagonal face;
+*         IDFEX( 5,*)  identify bottom $Z$ face;
+*         IDFEX( 6,*)  identify top $Z$ face;
+*         IDFEX( 7,*)  not used;
+*         IDFEX( 8,*)  not used;
+*         IDFEX( 9,*)  identify bottom $W$ hexagonal face;
+*         IDFEX(10,*) identify top $W$ hexagonal face;
 * DCMESH  global mesh for each cell.
 * NAGGEO  names of generating geometries.
 * ITURN   geometry turns.

@@ -3,51 +3,54 @@
      >                    NTIDL, NBLOCK, MAXGRI,  NUNKO,   IPRT,  CELLG,
      >                    NSURO,  NVOLO, IDLGEO, MATGEO, KEYGEO, IDLTYP,
      >                   IDLBLK, KEYTYP, MATTYP, KEYINT)
-************************************************************************
-*                                                                      *
-*           NAME: XELBIN                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL IDENTIFY EVERY ZONE OF EVERY TYPE  *
-*                 TO ITS MATERIAL; IT WILL ALSO INTERFACE ALL INTERNAL *
-*                 SURFACES FOR CELLS PRESENT IN THE SUPERCELL.         *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* NDIM   / # OF DIMENSIONS (2 OR 3).                    /I./INT        *
-* NGEOME / # OF GEOMETRIES.                             /I./INT        *
-* L1CELL / .TRUE. IF ONLY ONE CELL.                     /I./LOG        *
-* NTYPES / # OF TYPES.                                  /I./INT        *
-* NGIDL  / LENGHT OF GEOMETRIC NUMBERING.               /I./INT        *
-* NTIDL  / LENGHT OF TYPE NUMBERING.                    /I./INT        *
-* NBLOCK / # OF BLOCKS.                                 /I./INT        *
-* MAXGRI / # OF CELLS ALONG EACH AXIS.                  /I./INT(3)     *
-* NUNKO  / OLD # OF UNKNOWNS.                           /I./INT        *
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* CELLG  / TO KEEP GEOMETRY  NAMES.                     /I./C*4(3*NGEOM*
-* NSURO  / # OF SURFACES OF EACH GEOMETRY.              /I./INT(NGEOME)*
-* NVOLO  / # OF ZONES OF EACH GEOMETRY.                 /I./INT(NGEOME)*
-* IDLGEO / POSITION OF EACH GEOMETRY IN THE             /I./INT(NGEOME)*
-*        /            GEOMETRY NUMBERING SCHEME.        /  /           *
-* MATGEO / MATERIAL #S CORRESPONDING TO GEOMETRIES.     /I./INT(NGIDL) *
-* KEYGEO / GEOMETRIC KEY FOR EACH TYPE.                 /I./INT(NTYPES)*
-* IDLTYP / POSITION OF EACH TYPE IN NUMBERING SCHEME.   /I./INT(NTYPES)*
-* IDLBLK / POSITION OF EACH BLOCK IN NUMBERING SCHEME.  /I./INT(NBLOCK)*
-* KEYTYP / TYPE KEY FOR EACH BLOCK.                     /I./INT(NBLOCK)*
-* MATTYP / MATERIAL #S FOR ZONES OF EVERY TYPE.         /.O/INT(NTIDL) *
-* KEYINT / INTERFACE KEY (GIVING THE CONNECTED SURFACE)./.O/INT(NUNKO )*
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Identify every zone of every type  to its material and 
+* interface all internal surfaces for cells present in the supercell. 
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (l_geom)             
+* NDIM    number of dimensions (2 or 3).                    
+* NGEOME  number of geometries.                             
+* L1CELL  .true. if only one cell.                     
+* NTYPES  number of types.                                  
+* NGIDL   lenght of geometric numbering.               
+* NTIDL   lenght of type numbering.                    
+* NBLOCK  number of blocks.                                 
+* MAXGRI  number of cells along each axis.                  
+* NUNKO   old number of unknowns.                           
+* IPRT    intermediate printing level for output.      
+* CELLG   to keep geometry  names.                     
+* NSURO   number of surfaces of each geometry.              
+* NVOLO   number of zones of each geometry.                 
+* IDLGEO  position of each geometry in the             
+*         geometry numbering scheme.        
+* MATGEO  material numbers corresponding to geometries.     
+* KEYGEO  geometric key for each type.                 
+* IDLTYP  position of each type in numbering scheme.   
+* IDLBLK  position of each block in numbering scheme.  
+* KEYTYP  type key for each block.                     
+*
+*Parameters: output
+* MATTYP  material numbers for zones of every type.         
+* KEYINT  interface key (giving the connected surface).
+*
+*-----------------------------------------------------------------------
+*
       USE                GANLIB
       IMPLICIT           NONE
-C
+*
       TYPE(C_PTR)        IPGEOM 
       INTEGER            NDIM, NGEOME, NTYPES, NGIDL, NTIDL, NBLOCK,
      >                   NUNKO, IPRT
@@ -55,7 +58,7 @@ C
      >                   MATGEO( NGIDL), KEYGEO(NTYPES), IDLTYP(NTYPES),
      >                   MATTYP( NTIDL), KEYTYP(NBLOCK), IDLBLK(NBLOCK),
      >                   KEYINT(NUNKO ), MAXGRI(NDIM)  , CELLG(3*NTYPES)
-C
+*
       INTEGER            ILO(3,2), NO(2), KTYP(2),
      >                     KMAT(2),    KSUR(2), KABSO(2), KSID(2),
      >                   ICOORD(3),   NCODE(6)
@@ -74,11 +77,11 @@ C
      >                   K0, K1, K2, K3, KR, IBLK, ISUX
       EQUIVALENCE      ( ICOORD(1),LX ),(ICOORD(2),LY),(ICOORD(3),LZ )
       DATA        TEMESH / 'X', 'Y', 'Z', 'R'/
-C
+*
       NUMGEO(I,K)= I + IDLGEO(K)
       NUMTYP(I,K)= I + IDLTYP(K)
       NUMBLK(I,K)= I + IDLBLK(K)
-C
+*
       SWKILL= .FALSE.
       LL1= .FALSE.
       LL2= .FALSE.
@@ -106,13 +109,13 @@ C
          CALL LCMGET(IPGEOM,'STATE-VECTOR',ISTATE)
          ITYPG= ISTATE(1)
          IF( ITYPG.EQ.20) THEN
-C           FOR *CARCEL* GEOMETRIES
+*           FOR *CARCEL* GEOMETRIES
             ICYL= 1
             ICX=  1
             ICY=  2
             ICZ=  3
          ELSEIF(ITYPG.EQ.3.OR.ITYPG.EQ.6 )THEN
-C           FOR *CARCEL*, *TUBE* OR *TUBEZ* GEOMETRIES
+*           FOR *CARCEL*, *TUBE* OR *TUBEZ* GEOMETRIES
             ICYL= 1
             ICX=  1
             ICY=  2
@@ -121,13 +124,13 @@ C           FOR *CARCEL*, *TUBE* OR *TUBEZ* GEOMETRIES
                CALL XABORT( 'XELBIN: DIAGONAL SYMETRIES NOT POSSIBLE')
             ENDIF
          ELSEIF( ITYPG.GT.20 )THEN
-C           FOR *CARCELX*, *CARCELY* OR *CARCELZ*
+*           FOR *CARCELX*, *CARCELY* OR *CARCELZ*
             ICYL= 1
             ICZ= ITYPG-20
             ICX= MOD(ICZ  , 3) + 1
             ICY= MOD(ICZ+1, 3) + 1
          ELSE
-C           FOR *CAR2D* OR *CAR3D*
+*           FOR *CAR2D* OR *CAR3D*
             ICYL= 0
             ICX=  1
             ICY=  2
@@ -141,8 +144,8 @@ C           FOR *CAR2D* OR *CAR3D*
          DO 30 ISUR= NSUX, -1
             MATTYP(NUMTYP(ISUR,ITYP))= MATGEO(NUMGEO(ISUR,IGEO))
    30    CONTINUE
-C
-C        GET MIXTURE NUMBERS
+*
+*        GET MIXTURE NUMBERS
          CALL LCMLEN(IPGEOM, 'MIX', ILEN, ITYLCM)
          IF( ILEN.NE.KOLD )THEN
             WRITE(IOUT,*) 'LENGHT(MIX)=  ',ILEN
@@ -151,17 +154,17 @@ C        GET MIXTURE NUMBERS
             CALL XABORT( 'XELBIN: INVALID NUMBER OF MIXTURES')
          ENDIF
          CALL LCMGET(IPGEOM,'MIX',MATTYP(NUMTYP(1,ITYP)))
-C
-C        IN THE CASE OF DIAGONAL SYMMETRY IN 'ONE-CELL'
-C        CAR2D AND CAR3D  GEOMETRY UNFOLD MIXTURES 
-C
+*
+*        IN THE CASE OF DIAGONAL SYMMETRY IN 'ONE-CELL'
+*        CAR2D AND CAR3D  GEOMETRY UNFOLD MIXTURES 
+*
       IF(ITYPG .LT. 20) THEN
          K3=ISTATE(6)
          NBMD=(LZ*LY*(LX+1))/2
          IF(K3 .EQ. NBMD) THEN
-C----
-C MIXTURE ENTERED IN DIAGONAL FORM
-C----
+*----
+* MIXTURE ENTERED IN DIAGONAL FORM
+*----
          IF( LL1 )THEN
             DO 70 IZ=LZ,1,-1
             IOFF=(IZ-1)*LX*LY
@@ -194,16 +197,16 @@ C----
          ENDIF
          ENDIF
       ENDIF
-C
-C        FOR THE PARTICULAR CASE OF *TUBE* OR *TUBEZ* GEOMETRIES
+*
+*        FOR THE PARTICULAR CASE OF *TUBE* OR *TUBEZ* GEOMETRIES
          IF( ITYPG.EQ.3.OR.ITYPG.EQ.6 )THEN
             DO 39 IZ= 1, LZ
                MATTYP(NUMTYP(KOLD+IZ,ITYP))= -2
    39       CONTINUE
             KOLD= KOLD+LZ
          ENDIF
-C
-C        FILL UP MATTYP ACCORDING TO SPLITTING VALUES.
+*
+*        FILL UP MATTYP ACCORDING TO SPLITTING VALUES.
          KNEW= NVOX
          ISR= 0
          ISX= 0
@@ -251,13 +254,13 @@ C        FILL UP MATTYP ACCORDING TO SPLITTING VALUES.
             ENDIF
          DO 303 J2=ISX,1,-1
             KOLD= KIOFX
-C           FOR RECTANGULAR OUTER REGIONS.
+*           FOR RECTANGULAR OUTER REGIONS.
             IMYT= MATTYP(NUMTYP(KOLD,ITYP))
             MATTYP(NUMTYP(KNEW,ITYP))= IMYT
             KNEW= KNEW-1
             KOLD= KOLD-1
             IF( ICYL.EQ.1 )THEN
-C              FOR CYLINDRICAL INNER REGIONS.
+*              FOR CYLINDRICAL INNER REGIONS.
                DO 302 KR= LR,1,-1
                   TEDATA= 'SPLIT'//TEMESH(4)
                   CALL LCMLEN(IPGEOM,TEDATA,ILEN,ITYLCM)
@@ -286,17 +289,17 @@ C              FOR CYLINDRICAL INNER REGIONS.
             WRITE(IOUT,*) 'XELBIN: KOLD.NE.0 = PROBLEM WITH SPLITTING'
             SWKILL= .TRUE.
          ENDIF
-C
+*
          IF( .NOT.L1CELL ) CALL LCMSIX(IPGEOM, ' ',    2)
    40 CONTINUE
-C
-C     RECOMPOSE INTERNAL SURFACES COUPLING (INTERFACES)
-C        THIS ASSUMES THAT AN ORDERING OF SURFACES IS DONE
-C        BECAUSE:  SIDE-BY-SIDE INTERFACES
-C                  ARE SUPPOSED IN INCREASING POSITION.
+*
+*     RECOMPOSE INTERNAL SURFACES COUPLING (INTERFACES)
+*        THIS ASSUMES THAT AN ORDERING OF SURFACES IS DONE
+*        BECAUSE:  SIDE-BY-SIDE INTERFACES
+*                  ARE SUPPOSED IN INCREASING POSITION.
       DO 220 N= 1, NDIM
-C
-C        DEFINITION OF THE SIDE NUMBER TO COUPLE.
+*
+*        DEFINITION OF THE SIDE NUMBER TO COUPLE.
          KSID(1)=  -2*N
          KSID(2)= (-2*N) + 1
          NP1   = MOD(N  ,NDIM) + 1
@@ -317,12 +320,12 @@ C        DEFINITION OF THE SIDE NUMBER TO COUPLE.
                   KTYP(JC)= KEYTYP( NO(JC) )
                   IF( KTYP(JC).EQ.0 ) GO TO 110
                   IGEO  = KEYGEO( KTYP(JC) )
-C                 SEARCH FROM THE END
+*                 SEARCH FROM THE END
                   KSUR(JC)= NSURO(IGEO)
                   KMAT(JC)= MATTYP( NUMTYP(KSUR(JC),KTYP(JC)) )
   100          CONTINUE
-C
-C              ORDERING INTERFACING OF THE TWO BLOCKS.
+*
+*              ORDERING INTERFACING OF THE TWO BLOCKS.
   101          CONTINUE
                   IF( KMAT(1).EQ.KSID(1).AND.KMAT(2).EQ.KSID(2) )THEN
                      IF( KSUR(1).EQ.0 .OR. KSUR(2).EQ.0 ) GO TO 109
@@ -365,12 +368,12 @@ C              ORDERING INTERFACING OF THE TWO BLOCKS.
                   KTYP(JC)= KEYTYP( NO(JC) )
                   IF( KTYP(JC).EQ.0 ) GO TO 210
                   IGEO  = KEYGEO( KTYP(JC) )
-C                 SEARCH FROM THE END
+*                 SEARCH FROM THE END
                   KSUR(JC)= NSURO(IGEO)
                   KMAT(JC)= MATTYP( NUMTYP(KSUR(JC),KTYP(JC)) ) 
   200          CONTINUE
-C
-C              ORDERING INTERFACING OF THE TWO BLOCKS.
+*
+*              ORDERING INTERFACING OF THE TWO BLOCKS.
   201          CONTINUE
                   IF( KMAT(1).EQ.KSID(1).AND.KMAT(2).EQ.KSID(2) )THEN
                      IF( KSUR(1).EQ.0 .OR. KSUR(2).EQ.0 ) GO TO 209
@@ -406,7 +409,7 @@ C              ORDERING INTERFACING OF THE TWO BLOCKS.
             CALL XABORT( 'XELBIN: *** FALSE NDIM VALUE')
          ENDIF
   220 CONTINUE
-C
+*
       IF( IPRT.GE.100 .OR. SWKILL )THEN
          IUNK= 0
          WRITE(IOUT,'(/40H       KEYINT       COUPLE    MATERIAL  )')
@@ -433,6 +436,6 @@ C
   250    CONTINUE
       ENDIF
       IF( SWKILL ) CALL XABORT( 'XELBIN: IMPOSSIBLE TO INTERFACE')
-C
+*
       RETURN
       END

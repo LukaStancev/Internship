@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solves a linear optimization problem with quadratic constraints using
+* Solves a linear optimization problem with quadratic constraints using
 * the method of LEMKE. 
 * PLMAP2 = Linear Programmation MAP2
 *
@@ -22,7 +22,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input
 * N0      number of control variables.

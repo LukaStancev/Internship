@@ -3,62 +3,55 @@
      >                   MAROD, NANGL,  DENS, ISYMM,IFTEMP,  IPRT,
      >                  NRINFO,   RAN,  COTE, NRODS,  RODS, NRODR,
      >                    RODR, MXSEG,  NXRI,   IMS)
-C
-C-------------------------    XCWICL    -------------------------------
-C
-C 1- SUBROUTINE STATISTICS:
-C     NAME     : XCWICL
-C     USE      : PERFORM ISOTROPIC TRACKING FOR 2-D CLUSTER GEOMETRY
-C     AUTHOR   : G. MARLEAU
-C
-C 2- PARAMETERS:
-C  INPUT
-C     NDIM     : DIMENSION OF PROBLEM                   I
-C     NSURX    : NUMBER OF INITIAL OUTER SURFACES       I
-C     NVOL     : TOTAL NUMBER OF REGIONS                I
-C     NBAN     : NUMBER OF CONCENTRIC REGIONS           I
-C     NRT      : NUMBER OF ROD TYPES                    I
-C     MSROD    : MAXIMUM NUMBER OF SUBROD PER RODS      I
-C     MAROD    : MAXIMUM NUMBER OF ROD IN ANY CLUSTER   I
-C     NANGL    : NUMBER OF INTEGRATION ANGLES           I
-C     DENS     : MINIMUM PARALLEL LINE TRAK DENSITY     R
-C     ISYMM    : INTEGRATION SYMMETRY FACTOR            I
-C     IFTEMP   : TEMPORARY TRACKING FILE UNIT           I
-C     IPRT     : PRINT LEVEL                            I
-C     NRINFO   : TYPE OF CONCENTRIC REGION              I(2,NBAN)
-C                NRINFO(1,IAN) = NEW REGION NUMBER
-C                NRINFO(2,IAN) = ASSOCIATED CLUSTER
-C                              = 0 NO CLUSTER
-C     RAN      : RADIUS/LATTICE SIDE OF REGION          R(NBAN)
-C     COTE     : Y DIMENSION FOR RECTANGLE              R
-C     NRODS    : INTEGER DESCRIPTION OF ROD  TYPE       I(3,NRT)
-C                NRODS(1,IRT) = NUMBER OF ROD
-C                NRODS(2,IRT) = NUMBER OF SUBRODS IN ROD
-C                NRODS(3,IRT) = ASSOCIATED ANNULUS
-C     RODS     : DESCRIPTION OF ROD OF A GIVEN TYPE     R(2,NRT)
-C                RODS(1,IRT) = ROD CENTER RADIUS
-C                RODS(2,IRT) = ANGLE POSITION OF ONE ROD
-C     NRODR    : SUBROD REGION                          I(NRT)
-C     RODR     : SUBROD RADIUS                          R(MSROD,NRT)
-C     MXSEG    : CURRENT MAXIMUM TRACK LENGTH           I
-C     NXRI     : ANNULAR REGION CONTENT MULTI-ROD       I(NRT,NBAN)
-C     IMS      : SURFACE MERGE                          I(6)
-C  OUTPUT
-C     ANGLES   : INTEGRATION ANGLES                     D(NDIM,NANGL)
-C     DENSTY   : DENSITY FOR EACH ANGLE                 D(NANGL)
-C     SEGLEN   : LENGTH OF TRACK                        D(MXSEG)
-C     NRSEG    : REGION CROSSED BY TRACK  (RIGHT)       I(MXSEG)
-C  WORK
-C     RODP     : ROD POSITION IN CARTESIAN GEOMETRY     R(2,MAROD,NRT)
-C     ATOP     : NUMBER OF ROD BETWEEN ORIGIN AND ROD1  R(NRT)
-C     NNSEG    : REGION CROSSED BY TRACK  (LEFT)        I(MXSEG)
-C
-C  3-INTERNAL PARAMETERS
-C     IUNOUT   : OUT UNIT NUMBER = 6
-C     PI       : NUMERICAL VALUE OF PI
-C     SQ3      : SQRT(3)
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Perform isotropic tracking for 2-d cluster geometry
+*
+*Copyright:
+* Copyright (C) 1994 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G.Marleau
+*
+*Parameters: input
+* NDIM    dimension of problem.
+* NSURX   number of initial outer surfaces.
+* NVOL    total number of regions.
+* NBAN    number of concentric regions.
+* NRT     number of rod types.
+* MSROD   maximum number of subrod per rods.
+* MAROD   maximum number of rod in any cluster.
+* NANGL   number of integration angles.
+* DENS    minimum parallel line trak density.
+* ISYMM   integration symmetry factor.
+* IFTEMP  temporary tracking file unit.
+* IPRT    print level.
+* NRINFO  type of concentric region:
+*         NRINFO(1,IAN) = new region number;
+*         NRINFO(2,IAN) = associated cluster;
+*                       = 0 no cluster.
+* RAN     radius/lattice side of region.
+* COTE    y dimension for rectangle.
+* NRODS   integer description of rod type:
+*         NRODS(1,IRT) = number of rod;
+*         NRODS(2,IRT) = number of subrods in rod;
+*         NRODS(3,IRT) = associated annulus.
+* RODS    description of rod of a given type:
+*         RODS(1,IRT) = rod center radius;
+*         RODS(2,IRT) = angle position of one rod.
+* NRODR   subrod region.
+* RODR    subrod radius.
+* MXSEG   current maximum track length.
+* NXRI    annular region content multi-rod.
+* IMS     surface merge.
+*
+*----------------------------------------------------------------------
+*
       PARAMETER (IUNOUT=6,PI=3.1415926535897932,SQ3=1.7320508075688773)
       INTEGER    NDIM,NSURX,NVOL,NBAN,NRT,MSROD,MAROD,NANGL,
      >           ISYMM,IFTEMP,IPRT,NXRI(NRT,NBAN),NRINFO(2,NBAN),
@@ -68,27 +61,27 @@ C
      >           XPOS(2)
       DOUBLE PRECISION DCSA(2),SIDE(2),TRKPOS(2,2),ROTPOS(2,2),
      >                 DRADC,WEIGHT
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: NRSEG,NNSEG
       REAL, ALLOCATABLE, DIMENSION(:) :: ATOP
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: DENSTY,SEGLEN
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: ANGLES
       REAL, ALLOCATABLE, DIMENSION(:,:,:) :: RODP
-C----
-C  SCRATCH STORAGE ALLOCATION
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
       ALLOCATE(NRSEG(MXSEG),NNSEG(MXSEG))
       ALLOCATE(ANGLES(NDIM,NANGL),DENSTY(NANGL),SEGLEN(MXSEG),
      > RODP(2,MAROD,NRT),ATOP(NRT))
-C
+*
       IF(IPRT.GE.1) THEN
         WRITE(IUNOUT,'(//1X,A20)') 'ISOTROPIC TRACKING  '
       ENDIF
-C----
-C  DETERMINE INTEGRATION LIMITS FOR CLUSTER REGIONS
-C----
+*----
+*  DETERMINE INTEGRATION LIMITS FOR CLUSTER REGIONS
+*----
       IF(NSURX.EQ.6) THEN
         RADEQ=RAN(NBAN)
         NTAN=NBAN-1
@@ -127,9 +120,9 @@ C----
  5    CONTINUE
       WRITE(IFTEMP) ((ANGLES(II,JJ),II=1,NDIM),JJ=1,NANGL)
       WRITE(IFTEMP) (DENSTY(JJ),JJ=1,NANGL)
-C----
-C  NUMBER OF RODS BETWEEN ORIGIN AND ROD 1
-C----
+*----
+*  NUMBER OF RODS BETWEEN ORIGIN AND ROD 1
+*----
       DO 90 IRT=1,NRT
         IF(NRODS(3,IRT).GT.0) THEN
           NBROD=NRODS(2,IRT)
@@ -142,24 +135,24 @@ C----
           ENDIF
         ENDIF
  90   CONTINUE
-C----
-C  SWEEP THROUGH TRACK ANGLES
-C----
+*----
+*  SWEEP THROUGH TRACK ANGLES
+*----
       DO 100 IANG=1,NANGL
         ANGD=ANGD+DANGI
         DCSA(1)=COS(DBLE(ANGD))
         DCSA(2)=SIN(DBLE(ANGD))
-C----
-C  LOCALIZE RODS WITH RESPECT TO TRAKING ANGLE
-C  RODP(1,IRD,IRT)= X POSITION OF CENTER
-C  RODP(2,IRD,IRT)= Y POSITION OF CENTER
-C----
+*----
+*  LOCALIZE RODS WITH RESPECT TO TRAKING ANGLE
+*  RODP(1,IRD,IRT)= X POSITION OF CENTER
+*  RODP(2,IRD,IRT)= Y POSITION OF CENTER
+*----
         DO 110 IRT=1,NRT
           IF(NRODS(3,IRT).GT.0) THEN
             DANGR=2.*PI/FLOAT(NRODS(1,IRT))
-C----
-C  NUMBER OF RODS BETWEEN FIRST ROD AND Y=0 TRACK
-C----
+*----
+*  NUMBER OF RODS BETWEEN FIRST ROD AND Y=0 TRACK
+*----
             ANGC=(ANGD/DANGR)-ATOP(IRT)
             IF(ANGC.GT.0.0) THEN
               IRDEP=INT(ANGC+0.9999)
@@ -167,10 +160,10 @@ C----
               IRDEP=INT(ANGC)
             ENDIF
             ANGC=RODS(2,IRT)-ANGD+IRDEP*DANGR
-C----
-C  STORE POSITION OF NRODS+1 RODS STARTING WITH FIRST
-C  ROD ABOVE OR ON Y=0 TRACK
-C----
+*----
+*  STORE POSITION OF NRODS+1 RODS STARTING WITH FIRST
+*  ROD ABOVE OR ON Y=0 TRACK
+*----
             DO 120 IRD=1,NRODS(1,IRT)
               RODP(1,IRD,IRT)=RODS(1,IRT)*COS(ANGC)
               RODP(2,IRD,IRT)=RODS(1,IRT)*SIN(ANGC)
@@ -180,9 +173,9 @@ C----
  110    CONTINUE
         RADC=RADD
         DO 130 IRAD=1,NPLINE
-C----
-C  INITIALIZE REGION POSITION VECTOR
-C----
+*----
+*  INITIALIZE REGION POSITION VECTOR
+*----
           DO 135 ISEG=1,MXSEG
             NRSEG(ISEG)=0
             NNSEG(ISEG)=0
@@ -217,14 +210,14 @@ C----
             NNSEG(NLSEG+1)=NRIN
             SEGLEN(NFSEG)=XPOS(1)
           ENDIF
-C----
-C  TRACK INSIDE ANNULAR REGIONS
-C----
+*----
+*  TRACK INSIDE ANNULAR REGIONS
+*----
           DO 140 IAN=NTAN,1,-1
             IF(RADC.GT.RAN(IAN)) GO TO 141
-C----
-C  LINE INTERSECT ANNULUS IAN
-C----
+*----
+*  LINE INTERSECT ANNULUS IAN
+*----
             XPOS(2)=SQRT(RAN(IAN)*RAN(IAN)-RADC2)
             XPOS(1)=-XPOS(2)
             NRSEG(NLSEG)=NRIN
@@ -237,9 +230,9 @@ C----
             NNSEG(NLSEG+1)=NRIN
             SEGLEN(NFSEG)=XPOS(1)
             IF(NRINFO(2,IAN).NE.0) THEN
-C----
-C  TRACK INSIDE RODS
-C----
+*----
+*  TRACK INSIDE RODS
+*----
               DO 146 KRT=1,NRT
                 JRT=NXRI(KRT,IAN)
                 IF((JRT.GT.3000000).OR.
@@ -260,9 +253,9 @@ C----
                   NXTR=NRODR(IRT)
                   DO 144 IRD=NRODS(2,IRT),1,-1
                     IF(RADC.GT.RODR(IRD,IRT)) GO TO 141
-C----
-C  LINE INTERSECT CENTERED ROD IRD
-C----
+*----
+*  LINE INTERSECT CENTERED ROD IRD
+*----
                     XPOS(2)=SQRT(RODR(IRD,IRT)*RODR(IRD,IRT)-RADC2)
                     XPOS(1)=-XPOS(2)
                     NRSEG(NLSEG)=NRIN
@@ -282,9 +275,9 @@ C----
             ENDIF
  140      CONTINUE
  141      CONTINUE
-C----
-C  COMPRESS AND SORT TRACK VECTOR
-C----
+*----
+*  COMPRESS AND SORT TRACK VECTOR
+*----
           IF(IPRT.GE.20) THEN
             WRITE(IUNOUT,6020) IANG,ANGD,IRAD,RADC
           ENDIF
@@ -294,9 +287,9 @@ C----
             WRITE(IUNOUT,6002) NSEG,-INDS(1),-INDS(2)
             WRITE(IUNOUT,6021) (SEGLEN(IIJJ),NRSEG(IIJJ),IIJJ=1,NSEG+1)
           ENDIF
-C----
-C  CONVERT SEGMENT DIVISION TO SEGMENT LENGTH
-C----
+*----
+*  CONVERT SEGMENT DIVISION TO SEGMENT LENGTH
+*----
           DO 160 ISEG=1,NSEG
             SEGLEN(ISEG)=SEGLEN(ISEG+1)-SEGLEN(ISEG)
  160      CONTINUE
@@ -317,15 +310,15 @@ C----
           ENDIF
  130    CONTINUE
  100  CONTINUE
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(ATOP,RODP,SEGLEN,DENSTY,ANGLES)
       DEALLOCATE(NNSEG,NRSEG)
       RETURN
-C----
-C  FORMATS
-C----
+*----
+*  FORMATS
+*----
  6000 FORMAT(1X,'INTEGRATION PARAMETERS',/
      >       1X,'        NUMBER OF ANGLES =',I10,/
      >       1X,'  MINIMUM TRACK DENSITY  =',1P,E15.7,/

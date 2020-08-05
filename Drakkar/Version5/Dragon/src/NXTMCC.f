@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculate and store the compressed index and region/surface ids for
+* Calculate and store the compressed index and region/surface ids for
 * an elementary geometry.
 *
 *Copyright:
@@ -26,7 +26,7 @@
 * NREGF   number of regions (compressed).
 * NSURF   number of surfaces (compressed).
 *
-*Parameters input/output
+*Parameters: input/output
 * INDEX   index vector (uncompressed and compressed).
 * IDSUR   surface identificator (uncompressed and compressed).
 * IDREG   region identificator (uncompressed and compressed).

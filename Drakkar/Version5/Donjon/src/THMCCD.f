@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the product of the heat capacity of fuel (in J/Kg/K) times
+* Compute the product of the heat capacity of fuel (in J/Kg/K) times
 * its density (in Kg/m^3).
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet
+*Author(s): 
+* P. Gallet
 *
 *Parameters: input
 * TEMP    fuel temperature in Kelvin.

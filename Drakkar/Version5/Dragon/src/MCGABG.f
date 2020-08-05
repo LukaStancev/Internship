@@ -43,6 +43,11 @@
 *Parameters: output
 * F       corrective fluxes and currents
 *
+*Parameters: scratch
+* JU      undefined
+* ILUDF   undefined
+* ILUCF   undefined
+*
 *-----------------------------------------------------------------------
 *
       IMPLICIT NONE

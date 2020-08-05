@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the TERP interpolation/derivation/integration factors using
+* Compute the TERP interpolation/derivation/integration factors using
 * table-of-content information of the multicompo for mixture IBMOLD.
 *
 *Copyright:
 * Copyright (C) 2006 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert, R. Chambon
+*Author(s): 
+* A. Hebert, R. Chambon
 *
 *Parameters: input
 * IPCPO   address of the multidimensional multicompo object.

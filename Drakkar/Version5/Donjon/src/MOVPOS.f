@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read the movement option and displace an individual rod to a new
+* Read the movement option and displace an individual rod to a new
 * position in the reactor core.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * IPDEV  pointer to device information.

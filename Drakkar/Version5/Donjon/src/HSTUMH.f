@@ -11,7 +11,8 @@
 *Copyright:
 * Copyright (C) 2004 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin
+*Author(s): 
+* E. Varin
 *
 *Parameters: input
 * IPMAP   address of the \dds{map} data structure.
@@ -21,7 +22,7 @@
 * NBUN    number of bundles per channel.
 * IDCELL  cell identifier for each fuel bundle in each channel.
 *
-*Parameters: work
+*Parameters: work        
 * BURNUP   burnup for each fuel bundle in each channel.
 *
 *-----------------------------------------------------------------------

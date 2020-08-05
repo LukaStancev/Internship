@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the value of the friction factor coefficient with the Muller
+* Compute the value of the friction factor coefficient with the Muller
 * Steinhagen correlation formula
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet
+*Author(s): 
+* P. Gallet
 *
 *Parameters: input
 * REY     reynolds number 

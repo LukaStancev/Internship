@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build the Macrolib by scanning the NCAL elementary calculations of
+* Build the Macrolib by scanning the NCAL elementary calculations of
 * a Saphyb and weighting them with TERP factors.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMAC   address of the output Macrolib LCM object.

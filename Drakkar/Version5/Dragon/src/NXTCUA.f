@@ -11,7 +11,11 @@
 * the assembly according to the symmetries.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -21,19 +25,17 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPRINT  print level.
 * NDIM    problem dimensions.
-* IDIAG   the diagonal symmetry flag where
-*         \begin{itemize}
-*         \item \moc{IDIAG}=-1 indicates X- Y+ \moc{DIAG} symmetry;
-*         \item \moc{IDIAG}= 1 indicates X+ Y- \moc{DIAG} symmetry;
-*         \item \moc{IDIAG}=0  indicates no \moc{DIAG} symmetry.
-*         \end{itemize}
+* IDIAG   the diagonal symmetry flag where:
+*         =-1 indicates X- Y+ DIAG symmetry;
+*         = 1 indicates X+ Y- DIAG symmetry;
+*         = 0 indicates no DIAG symmetry.
 * ISAXIS  symmetry vector for each direction.
 * NBOCEL  number of cells in original geometry.
 * NBUCEL  number of cells in unfolded geometry.
@@ -44,32 +46,28 @@
 *
 *Parameters: output
 * ITSYM   array to identify the symmetry to test for each original
-*         cell where
-*         \begin{itemize}
-*         \item \moc{ITSYM(1,*)} identify $X$ symmetry;
-*         \item \moc{ITSYM(2,*)} identify $Y$ symmetry;
-*         \item \moc{ITSYM(3,*)} identify $Z$ symmetry;
-*         \item \moc{ITSYM(4,*)} identify $X-Y$ symmetry.
-*         \end{itemize}
+*         cell where:
+*         ITSYM(1,*) identify $X$ symmetry;
+*         ITSYM(2,*) identify $Y$ symmetry;
+*         ITSYM(3,*) identify $Z$ symmetry;
+*         ITSYM(4,*) identify $X-Y$ symmetry.
 *         A value of 0 indicate that the geometry does not need
 *         to be verified while a value of 1 implies a verification
 *         of the geometry.
 * IDFEX   identify faces associated with external boundary for a
 *         generating cell and number of times this cell is used. Here
-*         \begin{itemize}
-*         \item \moc{IDFEX(1,*)}  identify bottom $X$ hexagonal face;
-*         \item \moc{IDFEX(2,*)}  identify top $X$ hexagonal face;
-*         \item \moc{IDFEX(3,*)}  identify bottom $Y$ hexagonal face;
-*         \item \moc{IDFEX(4,*)}  identify top $Y$ hexagonal face;
-*         \item \moc{IDFEX(5,*)}  identify bottom $Z$ face;
-*         \item \moc{IDFEX(6,*)}  identify top $Z$ face;
-*         \item \moc{IDFEX(7,*)}  not used;
-*         \item \moc{IDFEX(8,*)}  not used;
-*         \item \moc{IDFEX(9,*)}  not used;
-*         \item \moc{IDFEX(10,*)} not used;
-*         \end{itemize}
+*         IDFEX( 1,*)  identify bottom $X$ hexagonal face;
+*         IDFEX( 2,*)  identify top $X$ hexagonal face;
+*         IDFEX( 3,*)  identify bottom $Y$ hexagonal face;
+*         IDFEX( 4,*)  identify top $Y$ hexagonal face;
+*         IDFEX( 5,*)  identify bottom $Z$ face;
+*         IDFEX( 6,*)  identify top $Z$ face;
+*         IDFEX( 7,*)  not used;
+*         IDFEX( 8,*)  not used;
+*         IDFEX( 9,*)  not used;
+*         IDFEX(10,*)  not used.
 * IDFRT   identify reflection/transmission faces.
-* IUNFLD  array to identify the generating cell (\moc{IUNFLD(1,*)})
+* IUNFLD  array to identify the generating cell (IUNFLD(1,*))
 *         and the rotation associated with this region in space.
 *
 *----------

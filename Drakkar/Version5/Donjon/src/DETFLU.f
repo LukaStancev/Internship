@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute flux at detector site
+* Compute flux at detector site
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters:
 * LHEX   =.TRUE. if hexagonal detectors are present

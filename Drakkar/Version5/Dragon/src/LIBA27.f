@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* probe the APOLIB-2 file and compute the IPR main index vector
+* Probe the APOLIB-2 file and compute the IPR main index vector
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

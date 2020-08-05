@@ -5,13 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create and check the fuel-map geometry.
+* Create and check the fuel-map geometry.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, D. Sekki and V. Descotes
-*           R. Chambon 2014
+*Author(s): 
+* E. Varin, D. Sekki and V. Descotes
+*Update(s):
+* R. Chambon 2014
 *
 *Parameters: input
 * IPMAP  pointer to fuel-map information.

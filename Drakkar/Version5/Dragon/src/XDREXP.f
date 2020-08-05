@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* construct exponential tables for linear interpolation.
+* Construct exponential tables for linear interpolation.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

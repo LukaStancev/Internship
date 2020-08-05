@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover and/or interpolate l_compo information, store properties
+* Recover and/or interpolate l_compo information, store properties
 * in a new or existing macrolib.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, M. Guyot
+*Author(s): 
+* A. Hebert, M. Guyot
 *
 *Parameters: input/output
 * IPMAC   pointer to the macrolib information.

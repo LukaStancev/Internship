@@ -7,7 +7,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform flux normalization and call EVOSOL to solve the depletion
+* Perform flux normalization and call EVOSOL to solve the depletion
 * system for each depleting mixture between times XT(1) and XT(2).
 *
 *Copyright:

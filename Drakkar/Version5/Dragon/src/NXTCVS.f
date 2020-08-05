@@ -10,7 +10,11 @@
 * and to create the EXCELL type MATALB and KEYMRG vector.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -21,23 +25,18 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPTRK   pointer to the TRACKING data structure.
 * IPRINT  print level.
 * NDIM    problem dimensions.
 * ITYPBC  type of boundary conditions where
-*         \begin{itemize}
-*         \item \moc{ITYPBC}=0 for geometry with Cartesian
-*         boundaries;
-*         \item \moc{ITYPBC}=1 for geometry with annular
-*         boundary;
-*         \item \moc{ITYPBC}=2 for geometry with hexagonal
-*         boundary;
-*         \end{itemize}
+*         =0 for geometry with Cartesian boundaries;
+*         =1 for geometry with annular boundary;
+*         =2 for geometry with hexagonal boundary.
 * NBOCEL  number of cells in original geometry.
 * NFSUR   final number of surfaces.
 * NFREG   final number of regions.

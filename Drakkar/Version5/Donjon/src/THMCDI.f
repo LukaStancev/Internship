@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the thermal conductivity integral of UOX or MOX fuel.
+* Compute the thermal conductivity integral of UOX or MOX fuel.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, V. Salino
+*Author(s): 
+* A. Hebert, V. Salino
 *
 *Parameters: input
 * T2K     final temperature in Kelvin.

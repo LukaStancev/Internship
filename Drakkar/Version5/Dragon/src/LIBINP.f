@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read the information related to microscopic cross section libraries.
+* Read the information related to microscopic cross section libraries.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

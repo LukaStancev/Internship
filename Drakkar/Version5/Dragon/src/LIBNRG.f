@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* test for energy mesh compatibility
+* Test for energy mesh compatibility
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -56,7 +56,7 @@
 *----
       REAL, POINTER, DIMENSION(:) :: ENERG
       REAL, ALLOCATABLE, DIMENSION(:) :: UUU,TEMPE,EIER
-      TYPE(C_PTR) ENERG_PTR
+      TYPE(C_PTR) IPENER
 *
       NGRI=0
 *----
@@ -162,14 +162,14 @@
 *---
 *  APOLLO-2 LIBRARY
 *----
-        CALL LIBA2G(NAMFIL,NGRI,ENERG_PTR)
-        CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRI+1 /))
+        CALL LIBA2G(NAMFIL,NGRI,IPENER)
+        CALL C_F_POINTER(IPENER,ENERG,(/ NGRI+1 /))
       ELSE IF(NAMLBT.EQ.'APXSM') THEN
 *---
 *  APOLLO-XSM LIBRARY
 *----
-        CALL LIBXS3(NAMFIL,NGRI,ENERG_PTR)
-        CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRI+1 /))
+        CALL LIBXS3(NAMFIL,NGRI,IPENER)
+        CALL C_F_POINTER(IPENER,ENERG,(/ NGRI+1 /))
       ELSE IF(NAMLBT.EQ.'MATXS') THEN
 *---
 *  MATXS LIBRARY
@@ -274,8 +274,8 @@
 *---
 *  WIMS-NDAS LIBRARY
 *----
-        CALL LIBND0(NAMFIL,NGRI,ENERG_PTR)
-        CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRI+1 /))
+        CALL LIBND0(NAMFIL,NGRI,IPENER)
+        CALL C_F_POINTER(IPENER,ENERG,(/ NGRI+1 /))
       ENDIF
       IF(ENERG(NGRI+1).EQ.0.0) ENERG(NGRI+1)=1.0E-5
       IF(NGT.EQ.0) THEN
@@ -321,7 +321,7 @@
       ENDIF
       IF((NAMLBT.EQ.'NDAS').OR.(NAMLBT.EQ.'APLIB2').OR.
      >   (NAMLBT.EQ.'APXSM')) THEN
-        CALL LCMDRD(ENERG_PTR)
+        CALL LCMDRD(IPENER)
       ELSE
         DEALLOCATE(ENERG)
       ENDIF

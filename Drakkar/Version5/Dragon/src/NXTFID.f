@@ -5,10 +5,11 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Locate all the regions/surfaces within a cell/pin corresponding to a certain x, y and r position along the projection axis.
+* Locate all the regions/surfaces within a cell/pin corresponding
+* to a certain x, y and r position along the projection axis.
 *
 *Copyright:
-* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
@@ -32,12 +33,12 @@
 *
 *Parameters: output
 * IDZ     regions/surfaces encountered along the projection axis.
-* ITYP    "what was encountered?" flag:
-*          0: non existing IMX,IMY,IMR combination
-*          1: non-vanishing top/bottom surfaces and regions
-*          2: vanishing region.
-*         -1: non-vanishing lateral surface
-*         -2: vanishing lateral surface
+* ITYP    flag for "what was encountered?":
+*          = 0 : non existing IMX,IMY,IMR combination
+*          = 1: non-vanishing top/bottom surfaces and regions
+*          = 2: vanishing region.
+*          =-1: non-vanishing lateral surface
+*          =-2: vanishing lateral surface
 *-----------------------------------------------------------------------
 *
       IMPLICIT NONE

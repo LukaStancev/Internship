@@ -2,46 +2,53 @@
       SUBROUTINE XHXTRK(IPTRK ,IPGEOM,GEONAM,IDISP ,IFTEMP,
      >                  IPRT  ,NDIM  ,ITOPT ,NV    ,NS    ,NANGL ,
      >                  ISYMM ,DENS  ,PCORN ,MXSEG ,ICODE ,TITREC)
-C
-C-------------------------- XHXTRK -------------------------------------
-C
-C  FUNCTION : CALL ALL ROUTINES FOR THE PRODUCTION OF
-C             TRACKS FOR THE HEXAGONAL GEOMETRY
-C  CREATED  : JUNE 13-1991
-C  REVISED  : OCTOBER 12-1993
-C  AUTHOR   : M. OUISLOUMEN
-C  INPUT
-C     IPTRK    : POINTER TO THE EXCELL TRACKING         TYPE(C_PTR)
-C     IPGEOM   : POINTER TO THE GEOMETRY                TYPE(C_PTR)
-C     GEONAM   : GEOMETRY NAME                          C*12
-C     IDISP    : TRACKING FILE DISPOSITION              I
-C                = -1 MODIFY TRACKING FILE
-C                =  0 OLD TRACKING FILE
-C                =  1 NEW TRACKING FILE
-C     IFTEMP   : TEMPORARY TRACKING FILE                I
-C     IPRT     : PRINT OPTION                           I
-C     TITREC   : TITLE FOR EXECUTION                    C*72
-C  OUTPUT
-C     IDISP    : TRACKING FILE DISPOSITION              I
-C                = -2 NO TRAKING - ONLY ANALYSE GEOMETRY
-C                     THEN ABORT (OPTION HALT)
-C                = -1 MODIFY TRACKING FILE
-C                =  0 OLD TRACKING FILE
-C                =  1 NEW TRACKING FILE
-C     NDIM     : NUMBER OF PHYSICAL DIMENSIONS          I
-C     ITOPT    : TRACKING OPTION                        I
-C                = 0 FINITE;   = 1 CYCLIC
-C     NVOL     : NUMBER OF PHYSICAL REGIONS             I
-C     NSUR     : NUMBER OF OUTER SURFACE                I
-C     NANGL    : NUMBER OF ANGLES                       I
-C     ISYMM    : SYMMETRY FACTOR                        I
-C     DENS     : TRACK DENSITY                          R
-C     PCORN    : CORNER PROXIMITY                       R
-C     MXSEG    : MAXIMUM SEGMENT LENGTH                 I
-C     ICODE    : ALBEDO ASSOCIATED WITH FACE            I(6)
-C
-C------------------------ XHXTRK ---------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Call all routines for the production of tracks for the 
+* hexagonal geometry.
+*
+*Copyright:
+* Copyright (C) 1991 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): M. Ouisloumen
+*
+*Parameters: input
+* IPTRK   pointer to the excell tracking 
+* IPGEOM  pointer to the geometry        
+* GEONAM  geometry name                  
+* IFTEMP  temporary tracking file        
+* IPRT    print option                   
+* TITREC  title for execution            
+*
+*Parameters: input/output
+* IDISP   tracking file disposition:
+*         = -2 no traking - only analyse GEOMETRY
+*              then abort (option halt);
+*         = -1 modify tracking file;
+*         =  0 old tracking file;
+*         =  1 new tracking file.
+*
+*Parameters: output
+* NDIM    number of physical dimensions.
+* ITOPT   tracking option:
+*         = 0 finite;  = 1 cyclic.
+* NV      number of physical regions.
+* NS      number of outer surface.
+* NANGL   number of angles.
+* ISYMM   symmetry factor.
+* DENS    track density.
+* PCORN   corner proximityé
+* MXSEG   maximum segment length.
+* ICODE   albedo associated with face.
+*
+*-----------------------------------------------------------------------
+*
       USE             GANLIB
       IMPLICIT        NONE
       INTEGER         IOUT,NSTATE
@@ -80,18 +87,18 @@ C
      >               IAUXX,IANG,ISS,ISUR
       REAL           POIDSH,RCUTOF,CUTOFX,DEN,REDATA,SIDE,ZMIN,SQRT3
       CHARACTER      TEDATA*8,COMENT*80
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: KEYMRG,MATALB,LATV,ICEL,
      + IPLAN,IFACB,IFFV,ISURB,IVSYM,ISSYM,IMAT,KCORN,IVOIS,MATRT,SURL,
      + IV0
       REAL, ALLOCATABLE, DIMENSION(:) :: VOLSUR,MESH,XGS,WGS,XGS1,
      + WGS1,WW,A1,A2,A3,T0,T1,RAUX
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: ANGLES,DENSTY,POP
-C----
-C  DATA AND COMMONS
-C----
+*----
+*  DATA AND COMMONS
+*----
       CHARACTER       CSTOP*8,CTISO*8, CTSPC*8,CNOTR*8, CBLAN*8,
      >                CGAUS*8, CEQW*8
       SAVE             CSTOP,CTISO,CTSPC,CNOTR,CBLAN,CGAUS,CEQW
@@ -113,7 +120,7 @@ C----
       CALL LCMGET(IPGEOM,'NCODE',NCODE)
       NDIM=2
       IF(ISTATE(5).GT.0) NDIM=3
-C
+*
       NSMIN = 0
       NSMAX = 0
       NCELA = 0
@@ -141,9 +148,9 @@ C
          ENDIF
          LTRK=1
          IF( TEDATA(1:4).EQ.CSTOP(1:4) ) THEN
-C
-C  INITIALISATION PAR DEFAUT
-C
+*
+*  INITIALISATION PAR DEFAUT
+*
             NPHI=5
             NTETA=5
             IQUAD=1
@@ -210,9 +217,9 @@ C
    55    CONTINUE
       ENDIF
 **    EVERYTHING IS NOW READ.
-C----
-C  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
-C----
+*----
+*  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
+*----
       CALL XDISET(ISTATE,NSTATE,0)
       CALL XDRSET(EXTKOP,NSTATE,0.0)
       ISTATE(9)=LTRK-1
@@ -229,14 +236,14 @@ C----
       IF( IPRT.GT.0 )THEN
          WRITE(IOUT,6000) GEONAM
       ENDIF
-C -------------*************************************--------------------
-C             /                                         /
-C           /  TRAITEMENT DE LA GEOMETRIE HEXAGONALE  /
-C         /                                         /
-C--------------*************************************--------------------
-C
-C       DUPLICATE AND UNFOLD THE GEOMETRY.
-C
+* -------------*************************************--------------------
+*             /                                         /
+*           /  TRAITEMENT DE LA GEOMETRIE HEXAGONALE  /
+*         /                                         /
+*--------------*************************************--------------------
+*
+*       DUPLICATE AND UNFOLD THE GEOMETRY.
+*
       CALL LCMGET(IPGEOM,'IHEX',IHEX)
       LEVEL= 1
       IF(IHEX.EQ.9) THEN
@@ -256,7 +263,7 @@ C
       ALLOCATE(SURL(MAX(1,ISUR)))
       IF(ISUR.GT.0) CALL LCMGET(IPTRK,'SURL_HEX',SURL)
       CALL LCMSIX(IPTRK,' ',2)
-C
+*
       NCELAP=NCELA/IPLANZ
       IDIM1=2*NCELA+MVOLUM
       IDIM2=2*IPLANZ
@@ -272,16 +279,16 @@ C
       ALLOCATE(WW(NANGLE),A1(NANGLE),A2(NANGLE))
       IF(NDIM.EQ.3)ALLOCATE(A3(NANGLE))
       IF(IQUAD.EQ.1) THEN
-C
-C  GAUSS-LEGENDRE INTEGRATION POINTS
-C
+*
+*  GAUSS-LEGENDRE INTEGRATION POINTS
+*
          CALL ALGPT(NPHI,-1.,1.,XGS,WGS)
          IF(NDIM.EQ.3)
      >     CALL ALGPT(NTETA,-1.,1.,XGS1,WGS1)
       ELSEIF(IQUAD.EQ.2) THEN
-C
-C        EQUAL WEIGHT INTEGRATION POINTS.
-C
+*
+*        EQUAL WEIGHT INTEGRATION POINTS.
+*
          DO 51 IA=1,NPHI
            XGS(IA)=(2.0*REAL(IA)-1.0)/REAL(NPHI)-1.0
            WGS(IA)=2.0/REAL(NPHI)
@@ -292,23 +299,23 @@ C
              WGS1(IA)=2.0/REAL(NTETA)
    61      CONTINUE
          ENDIF
-C
+*
       ENDIF
       IF(IQUAD.EQ.1.OR.IQUAD.EQ.2) THEN
       KGAUS=-1
       IF(NDIM.EQ.3) THEN
       AUX=PI*0.125D0*0.125D0
       DO 444 IG=0,NTETA-1
-C
-C INTEGRATION OVER (0,PI/2) (COLATITUDE)
-C
+*
+* INTEGRATION OVER (0,PI/2) (COLATITUDE)
+*
          SINT=SIN(0.25D0*PI*(DBLE(XGS1(IG+1))+1.0D0))
          COST=COS(0.25D0*PI*(DBLE(XGS1(IG+1))+1.0D0))
-C INTEGRATION OVER (PI/2,PI) (COLATITUDE)
+* INTEGRATION OVER (PI/2,PI) (COLATITUDE)
          SINT1=SIN(0.25D0*PI*(DBLE(XGS1(IG+1))+3.0D0))
          COST1=COS(0.25D0*PI*(DBLE(XGS1(IG+1))+3.0D0))
          DO 444 JG=0,NPHI-1
-C INTEGRATION OVER  (0,PI/2) (LATITUDE)
+* INTEGRATION OVER  (0,PI/2) (LATITUDE)
             SINF=SIN(0.25D0*PI*(DBLE(XGS(JG+1))+1.0D0))
             COSF=COS(0.25D0*PI*(DBLE(XGS(JG+1))+1.0D0))
             KGAUS=KGAUS+1
@@ -321,7 +328,7 @@ C INTEGRATION OVER  (0,PI/2) (LATITUDE)
             A1(KGAUS+1)=REAL(SINT1*COSF)
             A2(KGAUS+1)=REAL(SINT1*SINF)
             A3(KGAUS+1)=REAL(COST1)
-C INTEGRATION OVER (PI/2,PI)
+* INTEGRATION OVER (PI/2,PI)
             SINF1=SIN(0.25D0*PI*(DBLE(XGS(JG+1))+3.0D0))
             COSF1=COS(0.25D0*PI*(DBLE(XGS(JG+1))+3.0D0))
             KGAUS=KGAUS+1
@@ -339,14 +346,14 @@ C INTEGRATION OVER (PI/2,PI)
       ELSE
       AUX=0.125D0
       DO 544 JG=0,NPHI-1
-C INTEGRATION OVER  (0,PI/2)
+* INTEGRATION OVER  (0,PI/2)
          SINF=SIN(0.25D0*PI*(DBLE(XGS(JG+1))+1.0D0))
          COSF=COS(0.25D0*PI*(DBLE(XGS(JG+1))+1.0D0))
          KGAUS=KGAUS+1
          WW(KGAUS+1)=REAL(AUX*WGS(JG+1))
          A1(KGAUS+1)=REAL(COSF)
          A2(KGAUS+1)=REAL(SINF)
-C INTEGRATION OVER (PI/2,PI)
+* INTEGRATION OVER (PI/2,PI)
          SINF=SIN(0.25*PI*(DBLE(XGS(JG+1))+3.0D0))
          COSF=COS(0.25*PI*(DBLE(XGS(JG+1))+3.0D0))
          KGAUS=KGAUS+1
@@ -375,14 +382,14 @@ C INTEGRATION OVER (PI/2,PI)
      +            ISURB,IVSYM,ISSYM,IHEX,LXI,
      +            NV,MCODE,SURL,IPLANI,LATV,ZMIN)
       CALL LCMSIX(IPGEOM,' ',0)
-cd -
+*d -
       IF(IHEX.EQ.9) THEN
          IF(MCODE.GT.0) DEALLOCATE(LATV)
       ENDIF
       DEALLOCATE(SURL)
-C----
-C  SET ARRAY MERGE CONTAINING MERGED VOLUMES AND SURFACES
-C----
+*----
+*  SET ARRAY MERGE CONTAINING MERGED VOLUMES AND SURFACES
+*----
       NSOUT=0
       JAUX=0
       DO 20 J=NS-1, 0,-1
@@ -397,9 +404,9 @@ C----
          JAUX= JAUX+1
    29 CONTINUE
       DEALLOCATE(IVSYM,ISSYM)
-C
-C      OPENING THE TRACK FILE
-C
+*
+*      OPENING THE TRACK FILE
+*
       IFILE=KDROPN('DUMMYSQ2',0,2,0)
       IF( IFILE.LE.0 ) GO TO 998
       IF( IFILE.EQ.IFTEMP ) CALL XABORT('XHXTRK: BAD TRACKING UNIT')
@@ -444,15 +451,15 @@ C
       MTT=2*(MAXCYL+1)
       MT0=2*MTT*(1+6*(MAXSEC-1))
       ALLOCATE(T0(2*MT0),T1(2*MT0),IV0(MT0))
-C
-C RAYON DU CYLINDRE ENGLOBANT LA GEOMETRIE ET VALEURES EXTREMES DE Z
-C
+*
+* RAYON DU CYLINDRE ENGLOBANT LA GEOMETRIE ET VALEURES EXTREMES DE Z
+*
       DSIDE=DBLE(SIDE)
       RAYON=0.5D0*DSIDE*SQRT(1.0D0+3.0D0*(DBLE(2*NCOUR-1))**2) 
-C
-C FIND ODD NUMBER OF TRACKS THAT ENSURES MINIMUM REQUIRED
-C DENSITY IS RESPECTED
-C
+*
+* FIND ODD NUMBER OF TRACKS THAT ENSURES MINIMUM REQUIRED
+* DENSITY IS RESPECTED
+*
       NBLINE=INT(RAYON*DENUSR+0.5D0)
       IF(MOD(NBLINE,2) .EQ. 0) NBLINE=NBLINE+1
       PASY=1.D0/DBLE(NBLINE)
@@ -475,13 +482,13 @@ C
       ELSE
         DZMAX=DZMIN
       ENDIF
-C
+*
       SQRT3=SQRT(3.)
       ALLOCATE(RAUX(2*MAXCYL))
-C
-C--CREATION DU VECTEUR CORN NECESSAIRE POUR LE STOCKAGE DES CELLULES
-C--PERIPHERIQUES UTILISEES DANS TRKHEX
-C
+*
+*--CREATION DU VECTEUR CORN NECESSAIRE POUR LE STOCKAGE DES CELLULES
+*--PERIPHERIQUES UTILISEES DANS TRKHEX
+*
       IF(NDIM.EQ.3) THEN
         ICORN=IPLAN(1)
         IF(IPLANZ.GT.1) ICORN=ICORN+IPLAN(1)
@@ -522,9 +529,9 @@ C
            IXX=IXX+1
  145    CONTINUE
       ENDIF
-C
-C   LES CELLULES VOISINES A CHAQUE VOLUME SONT STOCKEES.
-C
+*
+*   LES CELLULES VOISINES A CHAQUE VOLUME SONT STOCKEES.
+*
       NCEL2=NCELA/IPLANZ
       ALLOCATE(IVOIS(6*NCEL2))
       IVV=-1
@@ -543,9 +550,9 @@ C
           WRITE(IOUT,6201) (MESH(II),MESH(II+NCELA),II=1,NCELA)
         ENDIF
       ENDIF
-C----
-C  SAVE EXCELL TRACKING FOR HEXAGONAL GEOMETRY
-C----
+*----
+*  SAVE EXCELL TRACKING FOR HEXAGONAL GEOMETRY
+*----
       CALL LCMSIX(IPTRK,'EXCELL      ',1)
       CALL XDISET(IPARAM,NSTATE,0)
       IAUX=NV+NS+1 
@@ -602,25 +609,25 @@ C----
       IF(NDIM.EQ.3) DEALLOCATE(IFACB,A3)
       ENDIF
       DEALLOCATE(MESH,ICEL,IPLAN)
-C----
-C  SET BC MATRIX
-C----
+*----
+*  SET BC MATRIX
+*----
       ALLOCATE(MATRT(NSOUT))
       DO 200 ISS=1,NSOUT
         MATRT(ISS)=ISS
  200  CONTINUE
       CALL LCMPUT(IPTRK,'BC-REFL+TRAN',NSOUT,1,MATRT)
       DEALLOCATE(MATRT)
-C----
-C  SET NCOR=1
-C----
+*----
+*  SET NCOR=1
+*----
       REWIND IFILE
       CALL XELCOR(IFILE,IFTEMP)
       IER=KDRCLS(IFILE,2)
       IF(IER.LT.0) GO TO 999
       DEALLOCATE(KEYMRG,MATALB,VOLSUR)
       RETURN
-C
+*
   998 WRITE(IOUT,'(31H ECHO = UNABLE TO OPEN  FILE FT,I4)') IFILE
       CALL XABORT('XHXTRK: OPEN  FAILED')
   999 WRITE(IOUT,'(31H ECHO = UNABLE TO CLOSE FILE FT,I4)') IFILE

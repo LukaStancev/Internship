@@ -2,47 +2,49 @@
       SUBROUTINE XELGPR(  NDIM,   NTX,   NTY,   NTZ,  NTR,ISYMM,
      >                    NSUR,  NVOL,NTOTCL,MINDIM,MAXDIM,
      >                  KEYMRG, INDEX,MATALB)
-C
-C--------------------------    XELGPR    -------------------------------
-C
-C 1- PROGRAMME STATISTICS:
-C           NAME: XELGPR
-C      COMPONENT: EXCELL GEOMETRY ANALYSIS
-C      CALLED BY: XELTRK
-C        CALLING: ------
-C        VERSION: 1.0
-C       CREATION: 97/10/31
-C         AUTHOR: G. MARLEAU
-C            USE: PRINTS A SEMI-GRAPHICAL REPRESENTATION
-C                 OF THE GEOMETRY COMPUTE ANNULAR SURFACE
-C 2- INPUT
-C   RANN   : ANNULAR RADIUS                                 R
-C   PLANE  : CARTESIAN PLANE LOCATION                       R
-C   NTX    : NUMBER OF X-MESH                               I
-C   NTY    : NUMBER OF Y-MESH                               I
-C   NTZ    : NUMBER OF Z-MESH                               I
-C   NTR    : NUMBER OF R-MESH                               I
-C   ISYMM  : FLAG FOR INTRINSIC SYMMETRY                    I        
-C            ISYMM = 2 -> reflection plane normal to X axis
-C            ISYMM = 4 -> reflection plane normal to Y axis
-C            ISYMM = 8  -> reflection plane normal to X and Y axis  
-C            ISYMM =16 -> reflection plane normal to Z axis
-C            ISYMM =18 -> reflection plane normal to X and Z axis
-C            ISYMM =20 -> reflection plane normal to Y and Z axis
-C            ISYMM =24 -> reflection plane normal to X, Y and Z axis  
-C   NSUR   : # OF SURFACES.                                 I
-C   NVOL   : # OF ZONES.                                    I
-C   NTOTCL : TOT # OF CYLINDERS IN EXACT GEOMETRY.          I
-C   MINDIM : MIN INDEX VALUES FOR ALL AXES (RECT/CYL).      I(NTOTCL)
-C   MAXDIM : MAX INDEX VALUES FOR ALL AXES (RECT/CYL)       I(NTOTCL)
-C   KEYMRG : MERGING VECTOR        OF EXACT GEOMETRY.      I(NSUR:NVOL)
-C   INDEX  : #ING OF SURFACES & ZONES.                   I(4,NSUR:NVOL)
-C   MATALB : MATERIAL/ALBEDO                               I(NSUR:NVOL)
-C
-C--------------------------    XELGPR    -------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Prints a semi-graphical representation of the geometry 
+* compute annular surface
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G. Marleau
+*
+*Parameters: input
+* NDIM    number of dimensions.
+* NTX     number of X-mesh.
+* NTY     number of Y-mesh.
+* NTZ     number of Z-mesh.
+* NTR     number of R-mesh.
+* ISYMM   flag for intrinsic symmetry:
+*          2 -> reflection plane normal to X axis;
+*          4 -> reflection plane normal to Y axis;
+*          8 -> reflection plane normal to X and Y axis;  
+*         16 -> reflection plane normal to Z axis;
+*         18 -> reflection plane normal to X and Z axis;
+*         20 -> reflection plane normal to Y and Z axis;
+*         24 -> reflection plane normal to X, Y and Z axis.  
+* NSUR    number of surfaces. 
+* NVOL    number of zones.
+* NTOTCL  tot number of cylinders in exact geometry.
+* MINDIM  min index values for all axes (rect/cyl).
+* MAXDIM  max index values for all axes (rect/cyl).
+* KEYMRG  merging vector of exact geometry.
+* INDEX   numbering of surfaces and zones.
+* MATALB  material/albedo.
+*
+*--------------------------    XELGPR    -------------------------------
+*
       IMPLICIT             NONE
-C
+*
       INTEGER              NDIM,   NTX,   NTY,   NTZ,   NTR,ISYMM,
      >                     NSUR,  NVOL,NTOTCL,
      >                     MINDIM(NTOTCL),
@@ -54,22 +56,22 @@ C
       PARAMETER          ( NTC=4,IOUT=6 )
       CHARACTER            CABS*16,CNON*16,CNAM*16
       CHARACTER            FMTB*24,FMTVS*24,FMTE*24
-C
+*
       INTEGER              MAXZ, MINZ, MAXY, MINY, MAXX, MINX, LNFMT,
      >                     ITRZ, NTRZ, IZ, IY, IX, ISURZ, ISURY, ISURX,
      >                     ISURG, ITC, IVS, ICL, IR
       INTEGER              IPX,IPY,IPZ,IPPZ
       INTEGER, ALLOCATABLE, DIMENSION(:,:,:,:,:) :: NAMNUM
-C----
-C  SCRATCH STORAGE ALLOCATION
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
       ALLOCATE(NAMNUM(4,NTR+1,0:NTX+1,0:NTY+1,0:NTZ+1))
-C
+*
       CABS='          ABSENT'
       CNON='                '
-C----
-C  COMPUTE MEMORY SIZE REQUIRED
-C----
+*----
+*  COMPUTE MEMORY SIZE REQUIRED
+*----
       MAXZ=MAXDIM(3)
       MINZ=MINDIM(3)-1
       MAXY=MAXDIM(2)
@@ -86,9 +88,9 @@ C----
         ITRZ=1
         NTRZ=1
       ENDIF
-C----
-C  INITIALIZE NAMNUM
-C----
+*----
+*  INITIALIZE NAMNUM
+*----
       DO 100 IZ=ITRZ,NTRZ
         IF(IZ .EQ. 0 .OR. IZ .EQ. NTZ+1) THEN
           ISURZ=1
@@ -107,63 +109,63 @@ C----
             ELSE
               ISURX=0
             ENDIF
-C----
-C  DETERMINE IF SURFACE REPRESENTS A LINE OR CORNER
-C  FOR SURFACE
-C----
+*----
+*  DETERMINE IF SURFACE REPRESENTS A LINE OR CORNER
+*  FOR SURFACE
+*----
             ISURG=ISURX*ISURY+ISURX*ISURZ+ISURY*ISURZ
             DO 103 IR=1,NTR+1
               IF(ISURG.EQ.0) THEN
-C----
-C REGION REQUIRED
-C INITIALIZED TO ABSENT
-C----
+*----
+* REGION REQUIRED
+* INITIALIZED TO ABSENT
+*----
                 READ(CABS,5010) (NAMNUM(ITC,IR,IX,IY,IZ),ITC=1,NTC)
               ELSE
-C----
-C  REGION NOT REQUIRED
-C  INITIALIZE TO BLANK
-C----
+*----
+*  REGION NOT REQUIRED
+*  INITIALIZE TO BLANK
+*----
                 READ(CNON,5010) (NAMNUM(ITC,IR,IX,IY,IZ),ITC=1,NTC)
               ENDIF
  103        CONTINUE
  102      CONTINUE
  101    CONTINUE
  100  CONTINUE
-C----
-C  SCAN ALL SURFACE AND REGIONS AND LOCATE POSITION
-C  STORE ADEQUATE REGION NUMVER IN NAMNUM
-C----
+*----
+*  SCAN ALL SURFACE AND REGIONS AND LOCATE POSITION
+*  STORE ADEQUATE REGION NUMVER IN NAMNUM
+*----
       DO 110 IVS=NSUR,NVOL
         IF(KEYMRG(IVS) .NE. 0) THEN
-C----
-C  POSITION IN X, Y AND Z LOCATED
-C----
+*----
+*  POSITION IN X, Y AND Z LOCATED
+*----
           IX=INDEX(1,IVS)-MINX
           IY=INDEX(2,IVS)-MINY
           IZ=INDEX(3,IVS)-MINZ
           IF(INDEX(4,IVS) .EQ. 0) THEN
-C----
-C  CARTESIAN POSITION
-C  STORE AT LOCATION NTR+1
-C----
+*----
+*  CARTESIAN POSITION
+*  STORE AT LOCATION NTR+1
+*----
             IR=NTR+1
             WRITE(CNAM,5011) MATALB(IVS),KEYMRG(IVS)
             READ(CNAM,5010)
      >        (NAMNUM(ITC,IR,IX,IY,IZ),ITC=1,NTC)
           ELSE
-C----
-C  ANNULAR POSITION
-C  DETERMINE WHICH ANNULUS
-C----
+*----
+*  ANNULAR POSITION
+*  DETERMINE WHICH ANNULUS
+*----
             DO 111 ICL=4,NTOTCL
               IF( INDEX(4,IVS) .GE. MINDIM(ICL)-1 .AND.
      >            INDEX(4,IVS) .LT. MAXDIM(ICL)      ) THEN
                 IR=INDEX(4,IVS)-MINDIM(ICL)+2
-C----
-C  ANNULAR POSITION
-C  STORE AT LOCATION IR
-C----
+*----
+*  ANNULAR POSITION
+*  STORE AT LOCATION IR
+*----
                 WRITE(CNAM,5011) MATALB(IVS),KEYMRG(IVS)
                 READ(CNAM,5010)
      >            (NAMNUM(ITC,IR,IX,IY,IZ),ITC=1,NTC)
@@ -174,57 +176,57 @@ C----
           ENDIF
         ENDIF
  110  CONTINUE
-C----
-C PRINT HEADER
-C----
+*----
+* PRINT HEADER
+*----
       WRITE(IOUT,6000)
-C----
-C  PRINT NAMNUM MATRIX
-C----
+*----
+*  PRINT NAMNUM MATRIX
+*----
       IPZ=NTRZ
       IPY=0
       IPX=0
       IF(ISYMM .GE. 16) THEN
-C----
-C  Z SYMMETRY
-C----
+*----
+*  Z SYMMETRY
+*----
         IPZ=(NTZ+1)/2
         WRITE(IOUT,6010)
       ENDIF
       IF(ISYMM .EQ. 8 .OR. ISYMM .EQ. 24) THEN
-C----
-C  X AND Y SYMMETRY
-C----
+*----
+*  X AND Y SYMMETRY
+*----
         IPX=NTX/2+1
         IPY=NTY/2+1
         WRITE(IOUT,6011)
       ELSE IF(ISYMM .EQ. 4 .OR. ISYMM .EQ. 20) THEN
-C----
-C  Y SYMMETRY
-C----
+*----
+*  Y SYMMETRY
+*----
         IPY=NTY/2+1
         WRITE(IOUT,6012)
       ELSE IF(ISYMM .EQ. 2 .OR. ISYMM .EQ. 18) THEN
-C----
-C  X SYMMETRY
-C----
+*----
+*  X SYMMETRY
+*----
         IPX=NTX/2+1
         WRITE(IOUT,6013)
       ENDIF
-C----
-C Start test print
-C      write(IOUT,7000) isymm,ntx,ipx,nty,ipy,ntz,ipz
-C 7000 format(1x,'Test print:'/
-C     >       1x,'Symmetry factor = ',i10/
-C     >       1x,'ntx,ipx =',2i10/
-C     >       1x,'nty,ipy =',2i10/
-C     >       1x,'ntz,ipz =',2i10/
-C     >       1x,'keymrg follows')
-C      write(IOUT,7001) (ir,keymrg(ir),ir=-1,nsur,-1)
-C      write(IOUT,7001) (ir,keymrg(ir),ir=1,nvol)
-C 7001 format(10i10)
-C Finish test print
-C----
+*----
+* Start test print
+*      write(IOUT,7000) isymm,ntx,ipx,nty,ipy,ntz,ipz
+* 7000 format(1x,'Test print:'/
+*     >       1x,'Symmetry factor = ',i10/
+*     >       1x,'ntx,ipx =',2i10/
+*     >       1x,'nty,ipy =',2i10/
+*     >       1x,'ntz,ipz =',2i10/
+*     >       1x,'keymrg follows')
+*      write(IOUT,7001) (ir,keymrg(ir),ir=-1,nsur,-1)
+*      write(IOUT,7001) (ir,keymrg(ir),ir=1,nvol)
+* 7001 format(10i10)
+* Finish test print
+*----
       DO 140 IZ=NTRZ,ITRZ,-1
         IPPZ=1
         IF(NDIM .EQ. 3) THEN
@@ -255,22 +257,22 @@ C----
         ENDIF
         WRITE(IOUT,FMTE)
  140  CONTINUE
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(NAMNUM)
       RETURN
-C----
-C  FORMATS TO CREATE FORMATS
-C----
+*----
+*  FORMATS TO CREATE FORMATS
+*----
  5000 FORMAT('(2X,',I10,'(1H-) )   ')
  5001 FORMAT('(   ',I10,'(2X,4A4)) ')
  5002 FORMAT('(2X,',I10,'(1H-)/)   ')
  5010 FORMAT(4A4)
  5011 FORMAT('(',I6,') ',I7)
-C----
-C  OTHER PRINT FORMATS
-C----
+*----
+*  OTHER PRINT FORMATS
+*----
  6000 FORMAT(//' PRINTING GEOMETRY DESCRIPTION BY PLANES '/
      >         ' ---- NOTATION USED:'/
      >10X,'NEGATIVE INTEGERS REPRESENT SURFACES'/

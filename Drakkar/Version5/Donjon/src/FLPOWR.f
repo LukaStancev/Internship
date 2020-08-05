@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute and print a power distribution over the whole reactor core.
+* Compute and print a power distribution over the whole reactor core.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * NMIX   maximum number of material mixtures.

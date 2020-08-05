@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  compute factors for Lagrangian interpolation
+* Compute factors for Lagrangian interpolation
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -16,15 +16,15 @@
 *Author(s): A. Hebert and G. Marleau
 *
 *Parameters: input
-*    NELE   number of elements in table
-*    PNTE   extrapolation point
-*    ELMT   values of elements in table
-*    NOTX   order of interpolation:
-*           >0 order NOTX in square root of PNTE;
-*           <0 order -NOTX in PNTE
+* NELE    number of elements in table
+* PNTE    extrapolation point
+* ELMT    values of elements in table
+* NOTX    order of interpolation:
+*         >0 order NOTX in square root of PNTE;
+*         <0 order -NOTX in PNTE
 *
 *Parameters: output
-*    TERP   extrapolation factor
+* TERP    extrapolation factor
 *
 *-----------------------------------------------------------------------
 *

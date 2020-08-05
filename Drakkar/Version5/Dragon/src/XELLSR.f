@@ -3,44 +3,46 @@
      >                   INDEL, MINDIM, MAXDIM, ICOORD,   ICUR,   INCR,
      >                  TRKORI, TRKDIR, TRKCUT,  NSCUT,  NCROS,
      >                  TOTLEN)
-************************************************************************
-*                                                                      *
-*           NAME: XELLSR                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELTI2' & 'XELTI3' & 'XELTS2')         *
-*        VERSION: 1.0                                                  *
-*       CREATION: 90/05                                                *
-*       MODIFIED: 91/07 (R.R.)                                         *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL FIND THE BEGINNING AND ENDING      *
-*                 SURFACES CROSSED BY A TRACK.                         *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NDIM   / # OF DIMENSION (2 OR 3).                     /I./INT        *
-* NCP    / # OF CYLINDRES OF A TYPE + 3    (.LT.NC3MAX)./I./INT        *
-* NSUR   / # OF SURFACES.                               /I./INT        *
-* MAXREM / MAX NUMBER OF REAL MESH VALUES IN "REMESH".  /I./INT        *
-* REMESH / REAL MESH VALUES (RECT/CYL).                 /I./REL(MAXREM)*
-* INDEL  / #ING OF SURFACES & ZONES.                    /I./INT(4*NVS) *
-* MINDIM / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NC3MAX)*
-* MAXDIM / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NC3MAX)*
-* ICOORD / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /I./INT(NC3MAX)*
-* ICUR   / CURRENT ZONAL LOCATION FOR A TRACK SEGMENT.  /../INT(NC3MAX)*
-* INCR   / INCREMENT DIRECTION FOR NEXT TRACK SEGMENT.  /../INT(NC3MAX)*
-* TRKORI / ORIGIN OF A TRACK.                           /I./REL(3)     *
-* TRKDIR / DIRECTION OF A TRACK IN ALL AXES.            /I./REL(3)     *
-* TRKCUT / POINTS WHERE TRACK CUT THE DOMAIN.           /.O/REL(3,2)   *
-* NSCUT  / SURFACE   WHERE THE TRACK BEGINS/ENDS        /.O/INT(2)     *
-* NCROS  / # OF SURFACE CROSSING                        /.O/INT        *
-* TOTLEN / TOTAL LENGTH OF THE TRACK                    /.O/REL        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Find the beginning and ending surfaces crossed by a track.
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NDIM    number of dimension (2 or 3).                     
+* NCP     number of cylindres of a type + 3.
+* NSUR    number of surfaces.                               
+* MAXREM  max number of real mesh values in "remesh".  
+* REMESH  real mesh values (rect/cyl).                 
+* INDEL   numbering of surfaces and zones.                    
+* MINDIM  min index values for all axes (rect/cyl).    
+* MAXDIM  max index values for all axes (rect/cyl).    
+* ICOORD  principal axes direction (X/Y/Z) for meshes. 
+* ICUR    current zonal location for a track segment.  
+* INCR    increment direction for next track segment.  
+* TRKORI  origin of a track.                           
+* TRKDIR  direction of a track in all axes.            
+*
+*Parameters: output
+* TRKCUT  points where track cut the domain.           
+* NSCUT   surface where the track begins/ends        
+* NCROS   number of surface crossing                        
+* TOTLEN  total length of the track                    
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
-C
+*
       INTEGER NDIM, NCP, NSUR, MAXREM, NCROS
       REAL    TRKCUT(3,2), REMESH(MAXREM), TRKDIR(3), TRKORI(3), TOTLEN,
      >        TKBEG1, TKBEG2, R2BEG
@@ -53,29 +55,29 @@ C
      >            XYZP1
       INTEGER     I, J, NUM, NCRBEG, NCREND, NP1, NUMP1, NP2, NUMP2,
      >            N, NUMP0, K, IBEGIN, KELSUR, KWW, IDM
-C
+*
       ANORM2(A,B)= A*A + B*B
       CENTRE(I,J)= REMESH( MAXDIM(I-1) + J )
       NUM(J)= J + 1 - NSUR
       NUMP2= 0
       CALL XDISET(IFACUT,2,0)
       CALL XDISET(ISFCUT,2,0)
-C
+*
       IF( NDIM.EQ.2 )THEN
          NP2= 3
          NUMP2 = ICOORD(NP2)
          XYZP2= 0.0
       ENDIF
-C
-C     IF THERE ARE NO CYLINDER AT ALL
+*
+*     IF THERE ARE NO CYLINDER AT ALL
       NSCUT(1)= 0
       NSCUT(2)= 0
       NCRBEG= 0
       NCREND= 0
       CONBEG=+1.0E+36
       CONEND=-1.0E+36
-C
-C     FING BEGINNING AND ENDING POINTS OF THE TRACK
+*
+*     FING BEGINNING AND ENDING POINTS OF THE TRACK
       DO 75 N   = 1, NDIM
          NUMP0 = ICOORD(N  )
          IF( INCR(NUMP0).EQ.0 ) GO TO 75
@@ -123,8 +125,8 @@ C     FING BEGINNING AND ENDING POINTS OF THE TRACK
       TOTLEN= CONEND - CONBEG
       IF( NCROS.EQ.0 ) GO TO 1000
       NCROS = NCREND + 1 - NCRBEG
-C
-C     FIND BEGINNING AND ENDING SURFACE NUMBERS
+*
+*     FIND BEGINNING AND ENDING SURFACE NUMBERS
       DO 900 K= NCRBEG, NCREND
          DO 90 I   = 1, NDIM
             N      = ICOORD(I)
@@ -148,16 +150,16 @@ C     FIND BEGINNING AND ENDING SURFACE NUMBERS
   100       CONTINUE
             IBEGIN= MAXDIM(I) + 3
   110    CONTINUE
-C
-C        FIND IORD(4) FOR LOCATION IN THE INDEX VECTOR
+*
+*        FIND IORD(4) FOR LOCATION IN THE INDEX VECTOR
          DO 115 I= 1,NCP
             IORD(MIN(4,I))= ICUR(I)
             IF( I.GT.3.AND.ICUR(I).LT.MAXDIM(I)) GOTO 116
   115    CONTINUE
          IORD(4)= 0
   116    CONTINUE
-C
-C        FIND NSCUT=BEGINNING/ENDING SURFACE #S
+*
+*        FIND NSCUT=BEGINNING/ENDING SURFACE #S
          KELSUR= NSUR
          INDEL(1,NUM(0))= IORD(1)
          INDEL(2,NUM(0))= IORD(2)
@@ -180,6 +182,6 @@ C        FIND NSCUT=BEGINNING/ENDING SURFACE #S
             CALL XABORT('XELLSR: BAD SURFACE IDENTIFICATION')
          ENDIF
   900 CONTINUE
-C
+*
  1000 RETURN
       END

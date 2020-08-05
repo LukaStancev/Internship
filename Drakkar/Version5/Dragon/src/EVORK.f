@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* fifth-order Runge-Kutta Cash-Karp step with monitoring of local
+* Fifth-order Runge-Kutta Cash-Karp step with monitoring of local
 * truncation error to ensure accuracy and adjust stepsize.
 * Special version for isotopic depletion calculations.
 *

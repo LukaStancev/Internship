@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the leakage rate in each energy group
+* Compute the leakage rate in each energy group
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
@@ -13,7 +13,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMAC   pointer to the macrolib structure.

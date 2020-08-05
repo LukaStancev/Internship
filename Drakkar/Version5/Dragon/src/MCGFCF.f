@@ -8,7 +8,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* flux integration upon the non-cyclic tracking.
+* Flux integration upon the non-cyclic tracking.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -55,6 +55,7 @@
 * WZMU    polar quadrature set in 2D.
 * S       total source vector components.
 * SIGAL   total cross-section and albedo array.
+* ISGNR   sign of correction.
 * IDIR    direction of fundamental current for TIBERE with MoC 
 *         (=0,1,2,3). 
 * NSOUT   number of outer surfaces

@@ -2,64 +2,69 @@
       SUBROUTINE T16MPI(IPCPO ,IPRINT,MAXMIX,MNLOCP,MNCPLP,MNPERT,
      >                  NALOCP,IDLCPL,NCMIXS,NGCCPO,ENECPO,NAMMIX,
      >                  MIXRCI,PARRCI,PARPER)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16MPI
-C      USE      : INITIALIZE MIXTURE PROCESSING OPTIONS
-C                 FROM OLD CPO
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/21 G.M.    | READ FROM INPUT T16CPO
-C      |                    | PROCESSING OPTIONS
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IPCPO  : POINTER TO THE CPO STRUCTURE             I
-C      IPRINT : PRINT LEVEL                              I
-C               >=  10 PRINT ACTIVATED
-C      MAXMIX : MAXIMUM NUMBER OF MIXTURE PERMITTED      I
-C      MNLOCP : MAXIMUM NUMBER OF LOCAL PARAMETERS       I
-C      MNCPLP : MAXIMUM NUMBER OF COUPLED  PARAMETERS    I
-C      MNPERT : MAXIMUM NUMBER OF PERTURBATION PER       I
-C               LOCAL PARAMETERS
-C      NALOCP : LOCAL PARAMETER NAMES PERMITTED          C(MNLOCP
-C                                                        +MNCPLP)*4
-C      IDLCPL : LOCAL PARAMETER ID FOR PERTURBATION      I(2,MNLOCP
-C               PARAMETER                                 +MNCPLP)
-C      NCMIXS : NUMBER OF CURRENT MIXTURES SAVED         I
-C               TOTAL NUMBER OF MIXTURE SAVED
-C      NGCCPO : NUMBER OF CPO GROUPS                     I
-C      ENECPO : FINAL ENERGY GROUP STRUCTURE             R(NGCCPO+1)
-C      NAMMIX : NAME OF MIXTURE                          I(2,MAXMIX)
-C               ALL MIXTURE NAMES TO SAVE
-C               CONTAINS VARIABLE CHARACTER*6 NAME
-C               READ(NAME,'(A4,A2)') (NAMMIX(J,*),J=1,2)
-C      MIXRCI : REFERENCE INFORMATION FOR A MIXTURE      I(2+MNLOCP+
-C               (O) = 0 NO INFORMATION FOR MIXTURE  MNCPLP,MAXMIX)
-C                   > 0 INFORMATION NOT UPDATED
-C                   < 0 INFORMATION TO BE UPDATED
-C      PARRCI : REFERENCE LOCAL PARAMETERS FOR A         R(MNLOCP,
-C               MIXTURE                                    MAXMIX)
-C      PARPER : PERTURBATION PARAMETERS FOR A            R(MNPERT,2,
-C               MIXTURE                      MNLOCP+MNCPLP,MAXMIX)
-C
-C  3- ROUTINES CALLED
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C      XDRSET : VECTOR INITIALIZATION ROUTINE
-C      LCMGET : DATA STRUCTURE READ ROUTINE
-C      LCMSIX : DATA STRUCTURE CHANGE DIRECTORY ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16MPI
+*
+*Purpose:
+*  INITIALIZE MIXTURE PROCESSING OPTIONS
+*                 FROM OLD CPO
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/21 G.M.    | READ FROM INPUT T16CPO
+*      |                    | PROCESSING OPTIONS
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IPCPO   POINTER TO THE CPO STRUCTURE             I
+* IPRINT  PRINT LEVEL                              I
+*         >=  10 PRINT ACTIVATED
+* MAXMIX  MAXIMUM NUMBER OF MIXTURE PERMITTED      I
+* MNLOCP  MAXIMUM NUMBER OF LOCAL PARAMETERS       I
+* MNCPLP  MAXIMUM NUMBER OF COUPLED  PARAMETERS    I
+* MNPERT  MAXIMUM NUMBER OF PERTURBATION PER       I
+*         LOCAL PARAMETERS
+* NALOCP  LOCAL PARAMETER NAMES PERMITTED          C(MNLOCP
+*                                                  +MNCPLP)*4
+* IDLCPL  LOCAL PARAMETER ID FOR PERTURBATION      I(2,MNLOCP
+*         PARAMETER                                 +MNCPLP)
+* NCMIXS  NUMBER OF CURRENT MIXTURES SAVED         I
+*         TOTAL NUMBER OF MIXTURE SAVED
+* NGCCPO  NUMBER OF CPO GROUPS                     I
+* ENECPO  FINAL ENERGY GROUP STRUCTURE             R(NGCCPO+1)
+* NAMMIX  NAME OF MIXTURE                          I(2,MAXMIX)
+*         ALL MIXTURE NAMES TO SAVE
+*         CONTAINS VARIABLE CHARACTER*6 NAME
+*         READ(NAME,'(A4,A2)') (NAMMIX(J,*),J=1,2)
+* MIXRCI  REFERENCE INFORMATION FOR A MIXTURE      I(2+MNLOCP+
+*         (O) = 0 NO INFORMATION FOR MIXTURE  MNCPLP,MAXMIX)
+*             > 0 INFORMATION NOT UPDATED
+*             < 0 INFORMATION TO BE UPDATED
+* PARRCI  REFERENCE LOCAL PARAMETERS FOR A         R(MNLOCP,
+*         MIXTURE                                    MAXMIX)
+* PARPER  PERTURBATION PARAMETERS FOR A            R(MNPERT,2,
+*         MIXTURE                      MNLOCP+MNCPLP,MAXMIX)
+*
+*  3- ROUTINES CALLED
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*      XDRSET : VECTOR INITIALIZATION ROUTINE
+*      LCMGET : DATA STRUCTURE READ ROUTINE
+*      LCMSIX : DATA STRUCTURE CHANGE DIRECTORY ROUTINE
+*
+*----
+*
       USE GANLIB
       IMPLICIT         NONE
       TYPE(C_PTR)      IPCPO

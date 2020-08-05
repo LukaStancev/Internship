@@ -1,72 +1,78 @@
 *DECK T16FND
       SUBROUTINE T16FND(IFT16 ,IPRINT,IOPT  ,NKEY  ,TKEY1 ,TKEY2 ,
      >                  NBELEM)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16DIM
-C      USE      : FIND NEXT RECORD IDENTIFIED BY
-C                 TKEY1 AND TKEY2 ON TAPE16 FILE
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/22
-C      REF      : EPM  IGE-244 REV.1
-C                 EACL RC-1176 (COG-94-52)
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/22 G.M.    | FIND NEXT RECORD IDENTIFIED BY
-C      |                    | TKEY1 AND TKEY2 ON TAPE16 FILE
-C      |                    | CAN ALSO BE USED TO PRINT THE LIST
-C      |                    | OF RECORDS ON TAPE16 IF IPRINT=10000
-C      |                    | AND TKEY1=TKEY2=' '
-C      --------------------------------------------------------------
-C      | 1999/11/08 GM      | MULTIPLE SET OF RECORDS KEYS PERMITTED
-C      |                    | (TKEY1(1),TKEY2(1)) MUST APPEAR
-C      |                    | BEFORE (TKEY1(IK),TKEY2(IK)) IK=2,NKEY
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C      IPRINT : PRINT LEVEL                              I
-C               <  100 NO PRINT
-C               >= 100 PRINT RECORD TO READ
-C               >= 10000 PRINT ALL RECORD READ TO REACH
-C                     REQUESTED RECORD
-C      IOPT   : PROCESSING OPTION                        I
-C               IOPT =-1 START AT CURRENT POSITION
-C                        AND READ UNTIL END OF FILE
-C                        NO BACKSPACE BEFORE RETURN
-C               IOPT = 0 START AT CURRENT POSITION
-C                        AND READ UNTIL END OF FILE
-C                        BACKSPACE BEFORE RETURN
-C               IOPT = 1 REWIND FILE BEFORE READING
-C                        AND READ UNTIL END OF FILE
-C               IOPT = 2 REWIND FROM CURRENT POSITION
-C                        TO PREVIOUS POSITION WITH
-C                        A REWIND AT END OF FILE
-C      NKEY   : NUMBER OF KEYS                           I
-C               = 1 -> SEARCH FOR TKEY1(1),TKEY2(1)
-C                      UNTIL END OF FILE REACHED
-C               > 1 -> SEARCH FOR TKEY1(1),TKEY2(1)
-C                      UNTIL (TKEY1(IK),TKEY2(IK),IK=2,NKEY)
-C                      OR END OF FILE REACHED
-C      TKEY1  : MAIN RECORD KEY REQUIRED                 C(NKEY)*10
-C      TKEY2  : SUB RECORD KEY REQUIRED                  C(NKEY)*10
-C    OUTPUT
-C      NBELEM : NUMBER OF ELEMENTS ON RECORD FOUND       I
-C               NBELEM < -1 RECORD NOT FOUND BEFORE
-C                           ALTERNATIVE KEY -NBELEM
-C                           REACHED
-C               NBELEM = -1 RECORD NOT FOUND BEFORE
-C                           END OF FILE
-C               NBELEM =  0 TOTAL NUMBER OF ELEMENTS ON
-C                           RECORD
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16DIM
+*
+*Purpose:
+*  FIND NEXT RECORD IDENTIFIED BY
+*                 TKEY1 AND TKEY2 ON TAPE16 FILE
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/22
+*      REF      : EPM  IGE-244 REV.1
+*                 EACL RC-1176 (COG-94-52)
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/22 G.M.    | FIND NEXT RECORD IDENTIFIED BY
+*      |                    | TKEY1 AND TKEY2 ON TAPE16 FILE
+*      |                    | CAN ALSO BE USED TO PRINT THE LIST
+*      |                    | OF RECORDS ON TAPE16 IF IPRINT=10000
+*      |                    | AND TKEY1=TKEY2=' '
+*      --------------------------------------------------------------
+*      | 1999/11/08 GM      | MULTIPLE SET OF RECORDS KEYS PERMITTED
+*      |                    | (TKEY1(1),TKEY2(1)) MUST APPEAR
+*      |                    | BEFORE (TKEY1(IK),TKEY2(IK)) IK=2,NKEY
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+* IPRINT  PRINT LEVEL                              I
+*         <  100 NO PRINT
+*         >= 100 PRINT RECORD TO READ
+*         >= 10000 PRINT ALL RECORD READ TO REACH
+*               REQUESTED RECORD
+* IOPT    PROCESSING OPTION                        I
+*         IOPT =-1 START AT CURRENT POSITION
+*                  AND READ UNTIL END OF FILE
+*                  NO BACKSPACE BEFORE RETURN
+*         IOPT = 0 START AT CURRENT POSITION
+*                  AND READ UNTIL END OF FILE
+*                  BACKSPACE BEFORE RETURN
+*         IOPT = 1 REWIND FILE BEFORE READING
+*                  AND READ UNTIL END OF FILE
+*         IOPT = 2 REWIND FROM CURRENT POSITION
+*                  TO PREVIOUS POSITION WITH
+*                  A REWIND AT END OF FILE
+* NKEY    NUMBER OF KEYS                           I
+*         = 1 -> SEARCH FOR TKEY1(1),TKEY2(1)
+*                UNTIL END OF FILE REACHED
+*         > 1 -> SEARCH FOR TKEY1(1),TKEY2(1)
+*                UNTIL (TKEY1(IK),TKEY2(IK),IK=2,NKEY)
+*                OR END OF FILE REACHED
+* TKEY1   MAIN RECORD KEY REQUIRED                 C(NKEY)*10
+* TKEY2   SUB RECORD KEY REQUIRED                  C(NKEY)*10
+*
+*Parameters: output
+* NBELEM  NUMBER OF ELEMENTS ON RECORD FOUND       I
+*         NBELEM < -1 RECORD NOT FOUND BEFORE
+*                     ALTERNATIVE KEY -NBELEM
+*                     REACHED
+*         NBELEM = -1 RECORD NOT FOUND BEFORE
+*                     END OF FILE
+*         NBELEM =  0 TOTAL NUMBER OF ELEMENTS ON
+*                     RECORD
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16,IPRINT,IOPT,NKEY,NBELEM
       CHARACTER        TKEY1(NKEY)*10,TKEY2(NKEY)*10

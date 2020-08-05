@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print the table of content of a Saphyb.
+* Print the table of content of a Saphyb.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPSAP   address of the multidimensional Saphyb object.

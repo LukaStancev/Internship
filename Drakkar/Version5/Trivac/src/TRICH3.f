@@ -43,11 +43,13 @@
 *
 *-----------------------------------------------------------------------
 *
+      USE GANLIB
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER ISPLH,IPTRK,LX,LZ,L4,MAT(LX*LZ),KN(*),MUW(L4),MUX(L4),
-     1 MUY(L4),MUZ(L4),IPW(L4),IPX(L4),IPY(L4),IPZ(L4),IMPX
+      TYPE(C_PTR) IPTRK
+      INTEGER ISPLH,LX,LZ,L4,MAT(LX*LZ),KN(*),MUW(L4),MUX(L4),MUY(L4),
+     1 MUZ(L4),IPW(L4),IPX(L4),IPY(L4),IPZ(L4),IMPX
 *----
 *  LOCAL VARIABLES
 *----

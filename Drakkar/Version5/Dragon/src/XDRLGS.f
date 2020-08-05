@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* get/save Legendre-dependent cross section data from/on IPLIB
+* Get/save Legendre-dependent cross section data from/on IPLIB
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

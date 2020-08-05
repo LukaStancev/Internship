@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute self-shielded flux and cross sections from effective rates
+* Compute self-shielded flux and cross sections from effective rates
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

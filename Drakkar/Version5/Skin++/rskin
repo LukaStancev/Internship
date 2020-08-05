@@ -101,9 +101,9 @@ else
   GREEN='\033[0;32m'
   NC='\033[0m' # No Color
   if tail result | grep -q "normal end" ; then
-    echo -e result ${GREEN}[OK]${NC}
+    printf "${GREEN}[OK]${NC}\n"
   else
-    echo -e result ${RED}[FAILED]${NC}
+    printf "${RED}[FAILED]${NC}\n"
   fi
 fi
 chmod -R 777 $Rundir

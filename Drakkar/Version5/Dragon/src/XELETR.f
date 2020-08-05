@@ -6,71 +6,73 @@
      >                   RMESHO, IDLREM, INDEXO,  VOLSO, MATGEO, KEYINT,
      >                   MATTYP, REMESH, MINDIM, MAXDIM,  ICORD, VOLSUR,
      >                   KEYMRG,  INDEX, INCELL, MATALB,  NSURC,  NVOLC)
-************************************************************************
-*                                                                      *
-*           NAME: XELETR                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 90/08                                                *
-*       MODIFIED: 97/11 (G.M.) INTRODUCE MATGEO()=0 CASE               *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL PREPARE TRACKING BY PRODUCING      *
-*                 THE REQUIRED NUMBERING AND RECALCULATE MESH FOR      *
-*                 AN EXACT GEOMETRY TREATMENT.                         *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* NDIM   / # OF DIMENSIONS (2 OR 3).                    /I./INT        *
-* MAXGRI / # OF BLOCKS IN X/Y/Z DIRECTIONS.             /I./INT(3)     *
-* NGEOME / # OF GEOMETRIES.                             /I./INT        *
-* NTOTCO / TOT NUMBER OF CYLINDERS IN ALL GEOMETRIES.   /I./INT        *
-* NTYPES / # OF CELL TYPES.                          .  /I./INT        *
-* NTIDL  / LENGHT OF TYPE NUMBERING.                    /I./INT        *
-* NBLOCK / # OF BLOCKS.                                 /I./INT        *
-* NSUR   / # OF SURFACES.                               /I./INT        *
-* NVOL   / # OF ZONES.                                  /I./INT        *
-* NTOTCL / TOT # OF CYLINDERS IN EXACT GEOMETRY.        /I./INT        *
-* NUNKO  / OLD # OF UNKNOWNS.                           /I./INT        *
-* NSURO  / # OF SURFACES OF EACH GEOMETRY.              /I./INT(NGEOME)*
-* NVOLO  / # OF ZONES OF EACH GEOMETRY.                 /I./INT(NGEOME)*
-* MINDO  / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NTOTCO)*
-* MAXDO  / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NTOTCO)*
-* ICORDO / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /I./INT(NTOTCO)*
-* IDLDIM / POSITION OF EACH GEOMETRY IN CYLINDER #ING.  /I./INT(NGEOME)*
-* IDLGEO / POSITION OF EACH GEOMETRY IN THE             /I./INT(NGEOME)*
-*        /            GEOMETRY NUMBERING SCHEME.        /  /           *
-* KEYGEO / GEOMETRIC KEY FOR EACH TYPE.                 /I./INT(NTYPES)*
-* IDLTYP / POSITION OF EACH TYPE IN NUMBERING SCHEME.   /I./INT(NTYPES)*
-* KEYTYP / TYPE KEY FOR EACH BLOCK.                     /I./INT(NBLOCK)*
-* IDLBLK / POSITION OF EACH BLOCK IN NUMBERING SCHEME.  /I./INT(NBLOCK)*
-* KEYCYL / INDEX OF CYLINDERS BY BLOCK.                 /I./INT(NBLOCK)*
-* RMESHO / REAL MESH VALUES (RECT/CYL).                 /I./REL(*     )*
-* IDLREM / POSITION OF MESH VALUES PER GEOMETRY.        /I./INT(NGEOME)*
-* INDEXO / INDEX FOR SEARCH IN 'RMESHO'.                /I./I(4*NGIDL) *
-* VOLSO  / VOLUMES & SURFACES FOR EACH GEOMETRY.        /I./REL(NGIDL) *
-* MATGEO / MATERIAL #S CORRESPONDING TO GEOMETRIES.     /I./INT(NGIDL) *
-* KEYINT / INTERFACE KEY (GIVING THE CONNECTED SURFACE)./I./INT(NUNKO )*
-* MATTYP / MATERIAL #S FOR ZONES OF EVERY TYPE.         /I./INT(NTIDL) *
-* REMESH / REAL MESH VALUES (RECT/CYL).                 /.O/REL(*     )*
-* MINDIM / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(NTOTCL)*
-* MAXDIM / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(NTOTCL)*
-* ICORD  / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /.O/INT(NTOTCL)*
-* VOLSUR / VOLUME-SURFACE VECTOR OF EXACT GEOMETRY.     /.O/REL(*    ) *
-* KEYMRG / MERGING VECTOR        OF EXACT GEOMETRY.     /.O/INT(*    ) *
-* INDEX  / #ING OF SURFACES & ZONES.                    /.O/INT(4,*  ) *
-* INCELL / BLOCK   #ING.                                /.O/INT(*)     *
-* MATALB / MATERIAL TYPES.                              /.O/INT(*)     *
-* NSURC  / # OF COMPRESSED SURFACES.                    /.O/INT        *
-* NVOLC  / # OF COMPRESSED ZONES.                       /.O/INT        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Prepare tracking by producing the required numbering and recalculate
+* mesh for an exact geometry treatment.
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPRT    intermediate printing level for output.      
+* NDIM    number of dimensions (2 or 3).                    
+* MAXGRI  number of blocks in X/Y/Z directions.             
+* NGEOME  number of geometries.                             
+* NTOTCO  tot number of cylinders in all geometries.   
+* NTYPES  number of cell types.                          .  
+* NTIDL   lenght of type numbering.                    
+* NBLOCK  number of blocks.                                 
+* NSUR    number of surfaces.                               
+* NVOL    number of zones.                                  
+* NTOTCL  tot number of cylinders in exact geometry.        
+* NUNKO   old number of unknowns.                           
+* NSURO   number of surfaces of each geometry.              
+* NVOLO   number of zones of each geometry.                 
+* MINDO   min index values for all axes (rect/cyl).    
+* MAXDO   max index values for all axes (rect/cyl).    
+* ICORDO  principal axes direction (X/Y/Z) for meshes. 
+* IDLDIM  position of each geometry in cylinder numbering.  
+* IDLGEO  position of each geometry in the             
+*         geometry numbering scheme.        
+* KEYGEO  geometric key for each type.                 
+* IDLTYP  position of each type in numbering scheme.   
+* KEYTYP  type key for each block.                     
+* IDLBLK  position of each block in numbering scheme.  
+* KEYCYL  index of cylinders by block.                 
+* RMESHO  real mesh values (rect/cyl).                 
+* IDLREM  position of mesh values per geometry.        
+* INDEXO  index for search in 'rmesho'.                
+* VOLSO   volumes and surfaces for each geometry.        
+* MATGEO  material numbers corresponding to geometries.     
+* KEYINT  interface key (giving the connected surface).
+* MATTYP  material numbers for zones of every type.         
+*
+*Parameters: output
+* REMESH  real mesh values (rect/cyl).                 
+* MINDIM  min index values for all axes (rect/cyl).    
+* MAXDIM  max index values for all axes (rect/cyl).    
+* ICORD   principal axes direction (X/Y/Z) for meshes. 
+* VOLSUR  volume-surface vector of exact geometry.     
+* KEYMRG  merging vector of exact geometry.     
+* INDEX   numbering of surfaces and zones.                    
+* INCELL  block numbering.                                
+* MATALB  material types.                              
+* NSURC   number of compressed surfaces.                    
+* NVOLC   number of compressed zones.                       
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT           NONE
-C
+*
       INTEGER              IPRT,   NDIM, NGEOME, NTOTCO, NTYPES,
      >                    NTIDL, NBLOCK,   NSUR,   NVOL, NTOTCL,  NUNKO,
      >                    NSURC,  NVOLC
@@ -85,7 +87,7 @@ C
      >                   MINDIM(NTOTCL), MAXDIM(NTOTCL), ICORD(NTOTCL),
      >                   INDEX(4,*), KEYMRG(*), MATALB(*), INCELL(*)
       REAL               RMESHO(*), REMESH(*), VOLSO(*), VOLSUR(*)
-C
+*
       INTEGER            ICUR(4)
       INTEGER            NUNK, IDLGE2, IG2, I4, N, ICX, IREM, I, J, K,
      >                   IBLK, ITYP, IGEO, IDLD, IDLR, MINABS, MAXABS,
@@ -99,10 +101,10 @@ C
       PARAMETER        ( IOUT=6 )
       INTEGER            NUMBLK, KL
       DATA        TEMESH / 'X', 'Y', 'Z', 'C' /
-C
+*
       NUMBLK(I,K)= I + IDLBLK(K)
-C
-C     INITIALIZE: NO INTERFACE & PUT INDEXES TO 0.
+*
+*     INITIALIZE: NO INTERFACE & PUT INDEXES TO 0.
       NUNK = NVOL + 1 - NSUR
       IDLGE2=       1 - NSUR
       DO 5 IG2= 1, NUNK
@@ -113,13 +115,13 @@ C     INITIALIZE: NO INTERFACE & PUT INDEXES TO 0.
       DO 5 I4= 1,4
          INDEX(I4,IG2)= 0
     5 CONTINUE
-C
+*
       IF( IPRT.GE.1 )THEN
           WRITE(IOUT,'(1H )')
           WRITE(IOUT,'(/24H  ====> GLOBAL MESHING   )')
       ENDIF
-C
-C     RECONSTRUCT CARTESIAN MESH
+*
+*     RECONSTRUCT CARTESIAN MESH
       J= 0
       ICUR(1)= 1
       ICUR(2)= 1
@@ -129,8 +131,8 @@ C     RECONSTRUCT CARTESIAN MESH
          RSTART= 0.0
          ICORD(N)= N
          MINDIM(N)= J+1
-C
-C        SCANNING CELLS ON THE AXIS #N
+*
+*        SCANNING CELLS ON THE AXIS #N
          DO 20 ICX= 1, MAXGRI(N)
             ICUR(N)= ICX
             IF( NDIM.EQ.2 )THEN
@@ -162,8 +164,8 @@ C        SCANNING CELLS ON THE AXIS #N
          ENDIF
    30 CONTINUE
       NTOTCX= 3
-C
-C     RECONSTRUCT CYLINDRICAL MESH
+*
+*     RECONSTRUCT CYLINDRICAL MESH
       IF( NDIM.EQ.2 )THEN
          MDMIN= 3
       ELSE
@@ -173,8 +175,8 @@ C     RECONSTRUCT CYLINDRICAL MESH
          ICUR(N)= 1
          NP1= MOD(N  ,3) + 1
          NP2= MOD(N+1,3) + 1
-C
-C        (XP1,XP2) ARE COORDINATES AT BEGINNING OF BLOCK (IP1,IP2)
+*
+*        (XP1,XP2) ARE COORDINATES AT BEGINNING OF BLOCK (IP1,IP2)
          XP2= 0.0
          DO 120 IP2= 1, MAXGRI(NP2)
          XP1= 0.0
@@ -206,8 +208,8 @@ C        (XP1,XP2) ARE COORDINATES AT BEGINNING OF BLOCK (IP1,IP2)
                 MINP2 = MINDO(IDLD+NP2)
                 MINC  = MINDO(IDLD+4)
                 ICORD(NTOTCX)= ICORDO(IDLD+4)
-C
-C               RECENTER CYLINDERS
+*
+*               RECENTER CYLINDERS
                 REMESH(J+1)= RMESHO(IDLR+MINC-2)-RMESHO(IDLR+MINP1)+XP1
                 REMESH(J+2)= RMESHO(IDLR+MINC-1)-RMESHO(IDLR+MINP2)+XP2
                 J= J+2
@@ -271,9 +273,9 @@ C               RECENTER CYLINDERS
             XP2= XP2 + (RMESHO(IDLR+MAXABS)-RMESHO(IDLR+MINABS))
   120    CONTINUE
   130 CONTINUE
-C
-C     REESTABLISH INDEXING OF ALL UNKNOWNS
-C     NOW, *ICUR()* IS THE INCREMENT FOR CARTESIAN CELL MESHING
+*
+*     REESTABLISH INDEXING OF ALL UNKNOWNS
+*     NOW, *ICUR()* IS THE INCREMENT FOR CARTESIAN CELL MESHING
       ISU2= 0
       IVO2= 0
       ICREM = 0
@@ -318,7 +320,7 @@ C     NOW, *ICUR()* IS THE INCREMENT FOR CARTESIAN CELL MESHING
                INCELL( IDLGE2+IVSN)= IBLK
                IF( ICYL.NE.0 )THEN
                   IF( INDEXO(4,IDLGEX+IVS).NE.MAXDO(IDLD+4) )THEN
-C                    IF WE ARE INSIDE THE CYLINDER:
+*                    IF WE ARE INSIDE THE CYLINDER:
                      INDEX(4,IDLGE2+IVSN)=  INDEXO(4,IDLGEX+IVS)
      >                                   + (MINDIM(ICYL)-MINDO(IDLD+4))
                   ENDIF
@@ -353,7 +355,7 @@ C                    IF WE ARE INSIDE THE CYLINDER:
                INCELL( IDLGE2+IVSN)= IBLK
                IF( ICYL.NE.0 )THEN
                   IF( INDEXO(4,IDLGEX+IVS).NE.MAXDO(IDLD+4) )THEN
-C                    IF WE ARE INSIDE THE CYLINDER:
+*                    IF WE ARE INSIDE THE CYLINDER:
                        INDEX(4,IDLGE2+IVSN)=  INDEXO(4,IDLGEX+IVS)
      >                                   + (MINDIM(ICYL)-MINDO(IDLD+4))
                   ENDIF
@@ -366,9 +368,9 @@ C                    IF WE ARE INSIDE THE CYLINDER:
   220 CONTINUE
          ICUR(3)= ICUR(3) + (MAXDO(IDLD+3)-MINDO(IDLD+3))
   230 CONTINUE
-C----
-C  REMOVE ZONES AND SURFACES WITH VANISHING VOLSUR
-C---- 
+*----
+*  REMOVE ZONES AND SURFACES WITH VANISHING VOLSUR
+*---- 
       IVS=0
       DO 410 ISU2=NSUR,-1
         IF(VOLSUR(ISU2-NSUR+1) .GT. 0.0) THEN

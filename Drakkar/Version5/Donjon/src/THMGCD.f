@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the product of the heat capacity of cladding (in J/Kg/K) times
+* Compute the product of the heat capacity of cladding (in J/Kg/K) times
 * its density (in Kg/m^3).
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet
+*Author(s): 
+* P. Gallet
 *
 *Parameters: input
 * TEMP    cladding temperature in Kelvin.

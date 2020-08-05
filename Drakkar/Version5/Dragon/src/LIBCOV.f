@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* convert a lower-case character variable to upper case
+* Convert a lower-case character variable to upper case
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

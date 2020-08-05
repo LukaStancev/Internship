@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* find the isotope index of an isotope in the microlib.
+* Find the isotope index of an isotope in the microlib.
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal
@@ -14,7 +14,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * MAXISO  maximum number of isotopes in the microlib.

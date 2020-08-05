@@ -12,8 +12,10 @@
 *Copyright:
 * Copyright (C) 2004 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau, E. Varin
+*Author(s): 
+* G. Marleau, E. Varin
 *
+*Parameters:
 * IPHST   address of the \dds{history} data structure.
 * IPMAP   address of the \dds{map} data structure.
 * IPRINT  print level.

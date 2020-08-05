@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* construct Bickley tables for KI1(X), KI2(X), KI3(X), KI4(X), KI5(X),
+* Construct Bickley tables for KI1(X), KI2(X), KI3(X), KI4(X), KI5(X),
 * taking into account logarithmic singularities for KI1(X) and KI2(X).
 *
 *Copyright:

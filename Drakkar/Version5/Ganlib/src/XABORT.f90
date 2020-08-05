@@ -18,6 +18,7 @@
 subroutine XABORT(msg)
    ! abort execution
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    character(len=*) :: msg
    character(kind=c_char), dimension(73) :: msg_c
    interface

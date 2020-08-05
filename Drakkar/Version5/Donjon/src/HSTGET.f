@@ -7,12 +7,13 @@
 *
 *Purpose:
 * To read from the input file or send to CLE-2000 variables the 
-*local and burnup parameters associated with a fuel cell.
+* local and burnup parameters associated with a fuel cell.
 *
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau
+*Author(s): 
+* G. Marleau
 *
 *Parameters: input
 * IPHST   address of the \dds{history} data structure.
@@ -22,18 +23,15 @@
 * NCHA    number of fuel channels.                   
 * NBUN    number of bundles per channel.
 * ITYPRO  type of processing where:
-*         \begin{itemize} 
-*         \item ITYPRO $>$ 0 if the \dds{history} is in creation
-*          or update mode; 
-*         \item ITYPRO $<$ 0 if the \dds{history} is in read-only mode. 
-*         \end{itemize}            
+*         ITYPRO > 0 if history is in creation or update mode; 
+*         ITYPRO < 0 if history is in read-only mode. 
 * ITYRED  type of the last variable read.                
 * CARRED  last character string read.
 *
 *Parameters: input/output
 * NMAG    global parameter names.
 * PARAMG  values of the global parameters.
-* NMAG    local parameter names.
+* NMAL    local parameter names.
 * PARAML  values of the local parameters.
 * IDCELL  cell identifier for each fuel bundle in each channel.
 * IDFUEL  fuel type identifier for each fuel bundle in each channel.

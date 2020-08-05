@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover scattering matrices and store them in a new macrolib for
+* Recover scattering matrices and store them in a new macrolib for
 * a given anistropic level and energy group.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, E. Varin, D. Sekki
+*Author(s): 
+* J. Koclas, E. Varin, D. Sekki
 *
 *Parameters: input
 * KPOLD   pointer to group directory in the initial macrolib.

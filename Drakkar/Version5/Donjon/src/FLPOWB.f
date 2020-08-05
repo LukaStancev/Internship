@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the channel and bundle powers over the fuel lattice.
+* Compute the channel and bundle powers over the fuel lattice.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki, M. Guyot, V. Descotes
+*Author(s): 
+* D. Sekki, M. Guyot, V. Descotes
 *
 *Parameters: input
 * IPPOW  pointer to power information.

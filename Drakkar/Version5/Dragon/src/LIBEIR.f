@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on input file
+* Read depletion data on input file
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -31,11 +31,8 @@
 * KPAX    complete reaction type matrix
 * BPAX    complete branching ratio matrix
 *
-*-----------------------------------------------------------------------
-*
-*----
+*Comments:
 *  INPUT FORMAT
-*----
 *    CHAIN
 *    [[ hnamson [ izea ]
 *      [ [[ { DECAY    constant |
@@ -45,6 +42,8 @@
 *          [[ yield hnampar ]] ]] } ]
 *    ]]
 *    ENDCHAIN
+*
+*-----------------------------------------------------------------------
 *
       USE GANLIB
       IMPLICIT NONE

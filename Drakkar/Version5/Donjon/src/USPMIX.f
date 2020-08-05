@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover and check the material mixtures.
+* Recover and check the material mixtures.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * IPMTX  pointer to matex information.

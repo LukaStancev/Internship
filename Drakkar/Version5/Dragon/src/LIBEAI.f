@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* initialize dimensions for depletion data with APOLIB-2
+* Initialize dimensions for depletion data with APOLIB-2
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

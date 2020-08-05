@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the composite flux for the Hebert or Sanchez-Pomraning
+* Calculation of the composite flux for the Hebert or Sanchez-Pomraning
 * double heterogeneity model (part 3).
 *
 *Copyright:
@@ -42,22 +42,21 @@
 *         If IBI(IKK) is greater than IR1, the volume IKK contains a
 *         micro structure.
 * FRACT   volumic fractions of the micro volumes.
-* VOL     volumes of the composite geometry.
 * VOLK    volumic fractions of the tubes or shells in the micro volumes.
 * SIGMA   equivalent total macroscopic cross section in each mixture.
 * SIGMS   equivalent scattering macroscopic cross section in each
 *         mixture.
+* NCO     number of volumes in each composite mixture.
 * QKOLD   information computed by XDRH11.
 * QKDEL   information computed by XDRH11 or XDRH12.
 * PKL     information computed by XDRH11 or XDRH12.
 * RRRR    information computed by XDRH11 or XDRH12.
 * COEF    information computed by XDRH11 or XDRH12.
 * SUNKNO  sources defined in the composite geometry.
-* FUNKNO  macro-flux. Solution of the transport equation defined over
-*         the macro-geometry.
 *
-*Parameters: output
-* FUNKNO  composite flux.
+*Parameters: input/output
+* FUNKNO  macro-flux on input (solution of the transport equation 
+*         defined over the macro-geometry) and composite flux on output.
 *
 *-----------------------------------------------------------------------
 *

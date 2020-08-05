@@ -3,55 +3,58 @@
      >                  MAXGRI, ALBEDO, ICODE,  NCODE, LCLSYM, LCLTRA,
      >                  MRGSUR, LEAKSW,   LL1,   LL2,  L1CELL, NEXTGE,
      >                  IFCSYM, IPRT)
-************************************************************************
-*                                                                      *
-*           NAME: XELPRP                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 89/12                                                *
-*       MODIFIED: 97/11 (G.M.) INTRODUCE PERIODIC B.C.                 *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE READS THE GEOMETRY ON LCM AND           *
-*                 CHECK IF THE GEOMETRY IS ACCEPTABLE FOR "EXCELL".    *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* GEONAM / GEOMETRY NAME                                /I./CAR*12     *
-* NDIM   / # OF DIMENSIONS ( 2 OR 3)                    /.O/INT        *
-* NTYPO / # OF TYPES                                    /.O/INT        *
-* NBLOCK / # OF BLOCKS                                  /.O/INT        *
-* NBMIX  / # OF MIXTURES                                /.O/INT        *
-* MAXGRI / GRID DIMENSIONS (NX*NY*NZ)                   /.O/INT(3)     *
-* ALBEDO / GEOMETRIC ALBEDOS ON THE SIX FACES.          /.O/REL(6)     *
-* ICODE  / INDEX FOR BOUNDARY CONDITIONS.               /.O/INT(6)     *
-* NCODE  / TYPE OF BOUNDARY CONDITIONS.                 /.O/INT(6)     *
-* LCLSYM / SYMMETRY FLAGS (0:NO,-1/+1:SYME,,-2/+2:SSYM) /.O/INT(3)     *
-* LCLTRA / TRANSLATION FLAGS (0:NO,+1:TRA)              /.O/INT(3)     *
-* MRGSUR / SIMILARITY BETWEEN FACES                     /.O/INT(-6:-1) *
-* LEAKSW / LEAKAGE SWITCH                               /.O/LOG        *
-* LL1    / DIAGONAL SYMMETRY (2,3)                      /.O/LOG        *
-* LL2    / DIAGONAL SYMMETRY (1,4)                      /.O/LOG        *
-* L1CELL / TO INDICATE THAT THERE IS ONLY 1 CELL        /.O/LOG        *
-* NEXTGE / RECTANGULAR(0)/CIRCULAR(1) BOUNDARY          /.O/INT        *
-* IFCSYM / # OF SYMMETRY IN FULL ASSEMBLY (1,2,3,4,5)   /.O/INT        *
-* IPRT   / PRINTING LEVEL.                              /I./INT        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Reads the geometry on lcm and check if the geometry 
+* is acceptable for EXCELL.
+*
+*Copyright:
+* Copyright (C) 1989 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (L_GEOM)             
+* GEONAM  geometry name                                
+* IPRT    printing level.                              
+*
+*Parameters: output
+* NDIM    number of dimensions.
+* NTYPO   number of types                                    
+* NBLOCK  number of blocks                                  
+* NBMIX   number of mixtures                                
+* MAXGRI  grid dimensions (NX*NY*NZ)                   
+* ALBEDO  geometric albedos on the six faces.          
+* ICODE   index for boundary conditions.               
+* NCODE   type of boundary conditions.                 
+* LCLSYM  symmetry flags (0:no,-1/+1:syme,,-2/+2:ssym) 
+* LCLTRA  translation flags (0:no,+1:tra)              
+* MRGSUR  similarity between faces                     
+* LEAKSW  leakage switch                               
+* LL1     diagonal symmetry (2,3)                      
+* LL2     diagonal symmetry (1,4)                      
+* L1CELL  to indicate that there is only 1 cell        
+* NEXTGE  rectangular(0)/circular(1) boundary          
+* IFCSYM  number of symmetry in full assembly (1,2,3,4,5)   
+*
+*-----------------------------------------------------------------------
+*
       USE          GANLIB
       IMPLICIT     NONE
-C
+*
       TYPE(C_PTR)  IPGEOM
       INTEGER      NDIM,  NTYPO, NBLOCK, NBMIX, NEXTGE, IFCSYM, IPRT
       INTEGER      MAXGRI(3),LCLSYM(3),LCLTRA(3),
      >             NCODE(6),ICODE(6),MRGSUR(-6:-1)
       LOGICAL      LEAKSW,LL1,LL2,L1CELL
       REAL         ALBEDO(6)
-C
+*
       INTEGER      NLCM, NIXS, NSTATE, IOUT
       PARAMETER  ( NLCM=26, NIXS=8, NSTATE=40, IOUT=6 )
       INTEGER      LNLCM(NLCM),INVLCM(NIXS),
@@ -61,7 +64,7 @@ C
       CHARACTER    LCMNM(NLCM)*12, GEONAM*12, CORIEN(-6:0)*4
       INTEGER      ILCM, IDIR, IIXS, ILONG, ITPLCM, ISUR, ITYPE,
      >             LREG, ISUB1, ISUB2, ISPLIT, ITRAN, I2, IAL
-C
+*
       DATA         CORIEN
      >             / ' Z+ ',' Z- ',' Y+ ',' Y- ',' X+ ',' X- ','    ' /
       DATA INVLCM/  6, 12, 16, 17, 18, 20, 21, 22 /
@@ -71,7 +74,7 @@ C
      >             'NPIN',   'RPIN',   'APIN',   'BIHET',  'POURCE', 
      >           'PROCEL',   'IHEX',   'NCODE',   'ZCODE',  'ICODE',
      >           'CENTER'/
-C
+*
       IFCSYM=    1
       DO 10 ILCM= 1, NLCM
          CALL LCMLEN(IPGEOM, LCMNM(ILCM), LNLCM(ILCM), ITPLCM )
@@ -81,8 +84,8 @@ C
         LCLSYM(IDIR)=0
         LCLTRA(IDIR)=0
  11   CONTINUE
-C
-C     ELIMINATES THE INVALID OPTIONS
+*
+*     ELIMINATES THE INVALID OPTIONS
       DO 20 IIXS= 1, NIXS
         IF( LNLCM(INVLCM(IIXS)).NE.0 )
      >     CALL XABORT( 'XELPRP:*'//GEONAM//'* IS '//
@@ -100,7 +103,7 @@ C     ELIMINATES THE INVALID OPTIONS
          MRGSUR(-ISUR)= -ISUR
          ICODE ( ISUR)= -ISUR
    35 CONTINUE
-C
+*
       ITYPE=  ISTATE(1)
       LREG=   ISTATE(6)
       NBMIX=  ISTATE(7)
@@ -108,10 +111,10 @@ C
       ISUB2=  ISTATE(9)
       ISPLIT= ISTATE(11)
       NEXTGE= 0
-C
+*
       IF( ISUB1.NE.0 )THEN
-C
-C        MANY CELLS
+*
+*        MANY CELLS
          L1CELL= .FALSE.
          MAXGRI(1)= MAX(1,ISTATE(3))
          MAXGRI(2)= MAX(1,ISTATE(4))
@@ -137,8 +140,8 @@ C        MANY CELLS
             CALL XABORT( 'XELPRP: INVALID GEOMETRY FOR EXCELL')
          ENDIF
       ELSE
-C
-C        JUST ONE CELL
+*
+*        JUST ONE CELL
          L1CELL= .TRUE.
          MAXGRI(1)= 1
          MAXGRI(2)= 1
@@ -186,13 +189,13 @@ C        JUST ONE CELL
             CALL XABORT( 'XELPRP: INVALID GEOMETRY FOR EXCELL')
          ENDIF
       ENDIF
-C
-C     RECOVERS B.C.
+*
+*     RECOVERS B.C.
       CALL LCMGET(IPGEOM,'NCODE',NCODE)
       CALL LCMGET(IPGEOM,'ZCODE',ZCODE)
       CALL LCMGET(IPGEOM,'ICODE',JCODE)
-C
-C     TREATMENT OF DIAGONAL B.C.
+*
+*     TREATMENT OF DIAGONAL B.C.
       LL1= .FALSE.
       LL2= .FALSE.
       ITRAN=0
@@ -224,8 +227,8 @@ C     TREATMENT OF DIAGONAL B.C.
             CALL XABORT('XELPRP: INVALID B.C. FOR EXCELL')
          ENDIF
    50 CONTINUE
-C
-C     DIAGONAL  B.C.
+*
+*     DIAGONAL  B.C.
       IF( I2.GT.0 )THEN
          IF( I2.NE.2 )
      >     CALL XABORT('XELPRP: NO MORE THAN 2 DIAGONAL CONDITIONS')
@@ -258,12 +261,12 @@ C     DIAGONAL  B.C.
      >                  'X-: DIAG Y+: DIAG ARE THE ONLY PERMITTED.')
          ENDIF
       ENDIF
-C
-C     TRANSLATION BC (PERIODIC CELL)
-C     ONLY PAIRS PERMITTED:
-C       1) X- TRAN X+ TRAN
-C       2) Y- TRAN Y+ TRAN
-C       3) Z- TRAN Z+ TRAN
+*
+*     TRANSLATION BC (PERIODIC CELL)
+*     ONLY PAIRS PERMITTED:
+*       1) X- TRAN X+ TRAN
+*       2) Y- TRAN Y+ TRAN
+*       3) Z- TRAN Z+ TRAN
       IF( ITRAN.GT.0 )THEN
          IF( MOD(ITRAN,2).EQ.1 )THEN
             CALL XABORT('XELPRP: TRANSLATION SYMETRIES COME IN PAIRS')
@@ -282,8 +285,8 @@ C       3) Z- TRAN Z+ TRAN
             CALL XABORT('XELPRP: WRONG PAIRS OF TRANSLATION SYMETRIES')
          ENDIF
       ENDIF
-C
-C     SYMMETRIC B.C.
+*
+*     SYMMETRIC B.C.
       DO 40 IAL= 1, 6
          IF( .NOT.SWALBE(IAL) ) GO TO 40
          ALBEDO( IAL)= ZCODE(IAL)
@@ -325,7 +328,7 @@ C     SYMMETRIC B.C.
             ENDIF
          ENDIF
    40 CONTINUE
-C
+*
       NBLOCK= MAXGRI(1)*MAXGRI(2)*MAXGRI(3)
       LEAKSW= .TRUE.
       DO 60 ISUR= 1, 6
@@ -346,7 +349,7 @@ C
            CALL XABORT( 'XELPRP:*'//GEONAM//'* IS '//
      >                  'A TUBE/TUBEZ GEOMETRY (NOT AVAILABLE)')
       ENDIF
-C
+*
       RETURN
  6000 FORMAT(/1X,'*** ONLY FOR GEOMETRIC ALBEDOS ***'       
      >       /1X,'PERCENT LEAKAGE X-: ',F5.1,'% X+: ',F5.1,'%'

@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read specifications for the liquid zone controllers from input file.
+* Read specifications for the liquid zone controllers from input file.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * IPDEV  pointer to device information.

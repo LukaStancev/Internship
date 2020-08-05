@@ -12,7 +12,11 @@
 * HEXT, HEXCELT, HEXTZ and HEXTCELZ geometry.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau
@@ -23,9 +27,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPTRK   pointer to the TRACKING data structure.
@@ -40,6 +44,7 @@
 * MIX     final mixture description for geometry (including MMIX).
 * DAMESH  final mesh description for geometry.
 * ISPLT   final split desctiption for geometry.
+* NMIXS   number of regional mixtures.
 * NMS     mesh size after splitting.
 * ITSYM   flag for symmetries to test.
 * NREGS   maximum number of regions in splitted geometry.
@@ -49,9 +54,9 @@
 * NEREN   maximum number of elements in IREN.
 *
 *Parameters: input/output
-* DAMESS   mesh description for rotated geometry.
-* IDREG    region identifier after symmetry.
-* IDSUR    surface identifier after symmetry.
+* DAMESS  mesh description for rotated geometry.
+* IDREG   region identifier after symmetry.
+* IDSUR   surface identifier after symmetry.
 *
 *-----------------------------------------------------------------------
 *

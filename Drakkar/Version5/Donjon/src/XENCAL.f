@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the Xenon distribution according to the bundle flux
+* Compute the Xenon distribution according to the bundle flux
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): M. Guyot
+*Author(s): 
+* M. Guyot
 *
 *Parameters: input/output
 * IPLIB   adress of the L_LIBRARY

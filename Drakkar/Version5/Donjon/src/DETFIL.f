@@ -4,12 +4,13 @@
 *----------------------------------------------------------------------
 *
 *Purpose:
-* filters the n values of x vector for TC seconds.
+* Filters the n values of x vector for TC seconds.
 * Formulations are taken from the expression of the different
 * equation of a filter with a linear variation of x in DT time
 * step.
 *
-*Author(s): xxx
+*Author(s): 
+* xxx
 *
 *Parameters:
 * Y   real variables Y(I) at previous time

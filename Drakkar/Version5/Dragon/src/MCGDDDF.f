@@ -32,8 +32,6 @@
 *         of the neutron flux and reactions rates are required.
 * NREG    number of volumes for which specific values
 *         of the neutron flux and reactions rates are required.
-* LEXAC   type of exponential function calculation (=.false. to compute
-*         exponential functions using tables).
 * IMU     polar angle index.
 * NMU     order of the polar quadrature set.
 * NFUNL   number of moments of the flux (in 2D : NFUNL=NANI*(NANI+1)/2).
@@ -45,11 +43,11 @@
 * MODST   starting angular mode index.
 *
 *Parameters: input/output
-* PJJ
-* PSJ
+* PJJ     collision probabilities
+* PSJ     escape probabilities
 *
 *Parameters: scratch
-* H
+* H       undefined
 *
 *-----------------------------------------------------------------------
 *

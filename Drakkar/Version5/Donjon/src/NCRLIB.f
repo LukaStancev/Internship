@@ -6,13 +6,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build the microlib by scanning the NCAL elementary calculations and
+* Build the microlib by scanning the NCAL elementary calculations and
 * weighting them with TERP factors.
 *
 *Copyright:
 * Copyright (C) 2006 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * MAXNIS  maximum value of NISO(I) in user data.

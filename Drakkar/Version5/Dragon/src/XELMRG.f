@@ -2,50 +2,55 @@
       SUBROUTINE XELMRG (  IPRT,   NSUR,   NVOL,   NSBC, NTOTCL, INDEX,
      >                   MINDIM, MAXDIM, LCLSYM, LCLTRA,    LL1,   LL2,
      >                   MRGCEL, MATALB, KEYMRG, INCELL, MATRT)
-************************************************************************
-*                                                                      *
-*           NAME: XELMRG                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 90/12                                                *
-*       MODIFIED: 97/11 (G.M.) INTRODUCE PERIODIC B.C.                 *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE CONSTRUCT *KEYMRG* ACCORDING TO IMPLICIT*
-*                 MERGING IMPOSED BY THE BOUNDARY CONDITIONS.          *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPRT   / PRINTING LEVEL                               /I./INT        *
-* NSUR   / # OF SURFACES.                               /I./INT        *
-* NVOL   / # OF ZONES.                                  /I./INT        *
-* NSBC   / # OF SURFACES WITH INDEPENDENT BC            /I./INT        *
-* NTOTCL / # OF CYLINDRES+3.                            /I./INT        *
-* INDEX  / #ING OF SURFACES AND ZONES.                  /I./INT(4,*)   *
-* MINDIM / MINIMUM INDEX VALUES FOR ALL AXES (RECT/CYL) /I./INT(*)     *
-* MAXDIM / MAXIMUM INDEX VALUES FOR ALL AXES (RECT/CYL) /I./INT(*)     *
-* LCLSYM / SYMMETRY FLAGS (0:NO,-1/+1:SYME,,-2/+2:SSYM) /I./INT(3)     *
-* LCLTRA / TRANSLATION FLAGS (0:NO,-1/+1:TRA)           /I./INT(3)     *
-* LL1    / DIAGONAL SYMMETRY (2,3)                      /I./LOG        *
-* LL2    / DIAGONAL SYMMETRY (1,4)                      /I./LOG        *
-* MRGCEL / MERGING CELL #ING.                           /I./INT(*)     *
-* MATALB / MATERIAL TYPES.                              /I./INT(*)     *
-* KEYMRG / INITIAL #ING AT INPUT, MERGED AT OUTPUT.     /IO/INT(*)     *
-* INCELL / BLOCK   #ING AT INPUT, MERGED AT OUTPUT.     /IO/INT(*)     *
-* MATRT  / REFLECTION/TRANSMISSION VECTOR               /.O/IN(-NSUR,2)*
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Construct keymrg according to implicit merging imposed by the 
+* boundary conditions.
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPRT    printing level                               
+* NSUR    number of surfaces.                               
+* NVOL    number of zones.                                  
+* NSBC    number of surfaces with independent bc            
+* NTOTCL  number of cylindres+3.                            
+* INDEX   numbering of surfaces and zones.                  
+* MINDIM  minimum index values for all axes (rect/cyl) 
+* MAXDIM  maximum index values for all axes (rect/cyl) 
+* LCLSYM  symmetry flags (0:no,-1/+1:syme,,-2/+2:ssym) 
+* LCLTRA  translation flags (0:no,-1/+1:tra)           
+* LL1     diagonal symmetry (2,3)                      
+* LL2     diagonal symmetry (1,4)                      
+* MRGCEL  merging cell numbering.                           
+* MATALB  material types.                              
+*
+*Parameters: input/output
+* KEYMRG  initial numbering at input, merged at output.     
+* INCELL  block   numbering at input, merged at output.     
+*
+*Parameters: output
+* MATRT   reflection/transmission vector.
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT     NONE
-C
+*
       INTEGER      IPRT,   NSUR,   NVOL,   NSBC, NTOTCL
       INTEGER      LCLSYM(3), LCLTRA(3), IORD(4), INDEX(4,*), KEYMRG(*),
      >             MATALB(*), MINDIM(NTOTCL), MAXDIM(NTOTCL), INCELL(*),
      >             MRGCEL(*), MATRT(-NSUR,2)
       LOGICAL      LL1, LL2
-C
+*
       LOGICAL      SWOK, SWSUR, SWSTOP
       INTEGER      NUM, I, ISUR, ITRA, IVS1, IVS2, ISYM, IORD4, ICC1,
      >             INDEX4, INCR, NO1, NO2, IB1, IB2, NZSU, NZVO, NZABS,
@@ -54,42 +59,42 @@ C
       CHARACTER*4  CORIEN(-6:0)
       INTEGER      IOUT
       PARAMETER  ( IOUT=6 )
-C
+*
       DATA              CORIEN
      >        / ' Z+ ',' Z- ',' Y+ ',' Y- ',' X+ ',' X- ','    ' /
-C
+*
       NUM(I)= I + 1 - NSUR
-C
-C     INITIALIZE MATRT TO REFLECTION FOR ORIGINAL SURFACES
+*
+*     INITIALIZE MATRT TO REFLECTION FOR ORIGINAL SURFACES
       NVOLM=0
       DO 300 ISUR=1, -NSUR
         MATRT(ISUR,1)=0
         MATRT(ISUR,2)=ISUR
  300  CONTINUE
-C
-C  0) TREAT TRANSLATION SYMMETRIES *************************************
+*
+*  0) TREAT TRANSLATION SYMMETRIES *************************************
       DO 310 ITRA =1,3
         IF( LCLTRA(ITRA) .EQ. 1) THEN
           DO 320 IVS1 = NSUR, -1
             IF( (KEYMRG(NUM(IVS1)) .NE.  0   ) .AND.
      >          (MATRT(-IVS1,2)    .EQ. -IVS1)       ) THEN
-C
-C             LOCATE SURFACE IN X, Y, Z AND R
+*
+*             LOCATE SURFACE IN X, Y, Z AND R
               IORD(1)= INDEX(1,NUM(IVS1))
               IORD(2)= INDEX(2,NUM(IVS1))
               IORD(3)= INDEX(3,NUM(IVS1))
               IORD(4)= INDEX(4,NUM(IVS1))
-C
-C             LOCATE TRANSLATED SURFACE IN X, Y, Z AND R
+*
+*             LOCATE TRANSLATED SURFACE IN X, Y, Z AND R
               IF( (IORD(ITRA) .GE. MINDIM(ITRA)) .AND.
      >            (IORD(ITRA) .LT. MAXDIM(ITRA)) ) GO TO 345
               IORD(ITRA)= (MAXDIM(ITRA)+MINDIM(ITRA))-(IORD(ITRA)+1)
-C              INDEX(1,NUM(0))= IORD(1)
-C              INDEX(2,NUM(0))= IORD(2)
-C              INDEX(3,NUM(0))= IORD(3)
-C              INDEX(4,NUM(0))= IORD(4)
-C
-C             FOR CYLINDERS, *IORD4* IS ABSOLUTE.
+*              INDEX(1,NUM(0))= IORD(1)
+*              INDEX(2,NUM(0))= IORD(2)
+*              INDEX(3,NUM(0))= IORD(3)
+*              INDEX(4,NUM(0))= IORD(4)
+*
+*             FOR CYLINDERS, *IORD4* IS ABSOLUTE.
               IORD4 = IORD(4)
               IF(IORD(4) .NE. 0 )THEN
                 DO 330 ICC1= NTOTCL, 4, -1
@@ -110,10 +115,10 @@ C             FOR CYLINDERS, *IORD4* IS ABSOLUTE.
                       ENDIF
   350               CONTINUE
                   ENDIF
-C
-C                 SYMMETRIC SURFACE LOCATED FOR TRANSMISSION BC
-C                 STORE SURFACES IDENTIFIER IN MATRT AND
-C                 EXIT TO 345
+*
+*                 SYMMETRIC SURFACE LOCATED FOR TRANSMISSION BC
+*                 STORE SURFACES IDENTIFIER IN MATRT AND
+*                 EXIT TO 345
                   IF( INDEX4.EQ.IORD4) THEN
                     MATRT(-IVS1,2)=-IVS2
                     MATRT(-IVS2,2)=-IVS1
@@ -127,21 +132,21 @@ C                 EXIT TO 345
  320      CONTINUE
         ENDIF
  310  CONTINUE
-C
-C  1) TREAT AXIAL SYMMETRIES ******************************************
+*
+*  1) TREAT AXIAL SYMMETRIES ******************************************
       DO 20 ISYM= 1, 3
          IF( LCLSYM(ISYM).NE.0 )THEN
             DO 10 IVS1= NSUR, NVOL
-C
-C              FOR REGIONS ABSENT FROM FINAL CELL
-C              DO NOT BOTHER TO SYMMETRIZE
+*
+*              FOR REGIONS ABSENT FROM FINAL CELL
+*              DO NOT BOTHER TO SYMMETRIZE
                IF( IVS1 .EQ. 0 .OR. KEYMRG(NUM(IVS1)) .EQ. 0) GO TO 10
                IORD(1)= INDEX(1,NUM(IVS1))
                IORD(2)= INDEX(2,NUM(IVS1))
                IORD(3)= INDEX(3,NUM(IVS1))
                IORD(4)= INDEX(4,NUM(IVS1))
-C
-C  1.1)        RECOMPOSE *ISYM* VALUE TO  GET THE SYMMETRIC COORDINATE
+*
+*  1.1)        RECOMPOSE *ISYM* VALUE TO  GET THE SYMMETRIC COORDINATE
                IORD(ISYM)= (MAXDIM(ISYM)+MINDIM(ISYM))-(IORD(ISYM)+1)
                IF( IVS1.GT.0 )THEN
                   IVS2= NVOL
@@ -150,12 +155,12 @@ C  1.1)        RECOMPOSE *ISYM* VALUE TO  GET THE SYMMETRIC COORDINATE
                   IVS2= NSUR
                   INCR= +1
                ENDIF
-C               INDEX(1,NUM(0))= IORD(1)
-C               INDEX(2,NUM(0))= IORD(2)
-C               INDEX(3,NUM(0))= IORD(3)
-C               INDEX(4,NUM(0))= IORD(4)
-C
-C  1.2)        TO SEARCH FOR THE GOOD CYLINDER, *IORD4* IS ABSOLUTE.
+*               INDEX(1,NUM(0))= IORD(1)
+*               INDEX(2,NUM(0))= IORD(2)
+*               INDEX(3,NUM(0))= IORD(3)
+*               INDEX(4,NUM(0))= IORD(4)
+*
+*  1.2)        TO SEARCH FOR THE GOOD CYLINDER, *IORD4* IS ABSOLUTE.
                IORD4 = IORD(4)
                IF( IORD(4).NE.0 )THEN
                   DO 110 ICC1= NTOTCL, 4, -1
@@ -187,8 +192,8 @@ C  1.2)        TO SEARCH FOR THE GOOD CYLINDER, *IORD4* IS ABSOLUTE.
                NO2= KEYMRG(NUM(IVS2))
                IB1= INCELL(NUM(IVS1))
                IB2= INCELL(NUM(IVS2))
-C
-C  1.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
+*
+*  1.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
                IF( LCLSYM(ISYM).GT.0 )THEN
                   KEYMRG(NUM(IVS1))= MIN(NO1,NO2)
                   KEYMRG(NUM(IVS2))= MIN(NO1,NO2)
@@ -203,26 +208,26 @@ C  1.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
    10       CONTINUE
          ENDIF
    20 CONTINUE
-C
-C  2) TREAT DIAGONAL SYMMETRIES ***************************************
-C                       (SIDE #3)
-C               (SIDE #1) GEOM  (SIDE #2)
-C                       (SIDE #4)
-C
+*
+*  2) TREAT DIAGONAL SYMMETRIES ***************************************
+*                       (SIDE #3)
+*               (SIDE #1) GEOM  (SIDE #2)
+*                       (SIDE #4)
+*
       IF( LL1.OR.LL2 )THEN
          DO 30 IVS1= NSUR, NVOL
-C
-C           FOR REGIONS ABSENT FROM FINAL CELL
-C           DO NOT BOTHER TO SYMMETRIZE
+*
+*           FOR REGIONS ABSENT FROM FINAL CELL
+*           DO NOT BOTHER TO SYMMETRIZE
             IF( IVS1 .EQ. 0 .OR. KEYMRG(NUM(IVS1)) .EQ. 0 ) GO TO 30
-C
-C  2.1)        FOR (SIDE #1).EQ.(SIDE #4)
-C              AND (SIDE #2).EQ.(SIDE #3) *** DIAGONAL SYMMETRY (\) ***
-C           NOTE: ***NOT*** ACCEPTED IN DRAGON.
-C**         IORD(1)= (MAXDIM(2)+MINDIM(1)) - (INDEX(2,NUM(IVS1))+1)
-C**         IORD(2)= (MAXDIM(1)+MINDIM(2)) - (INDEX(1,NUM(IVS1))+1)
-C  2.2)        FOR (SIDE #2).EQ.(SIDE #4)
-C              AND (SIDE #1).EQ.(SIDE #3) *** DIAGONAL SYMMETRY (/) ***
+*
+*  2.1)        FOR (SIDE #1).EQ.(SIDE #4)
+*              AND (SIDE #2).EQ.(SIDE #3) *** DIAGONAL SYMMETRY (\) ***
+*           NOTE: ***NOT*** ACCEPTED IN DRAGON.
+***         IORD(1)= (MAXDIM(2)+MINDIM(1)) - (INDEX(2,NUM(IVS1))+1)
+***         IORD(2)= (MAXDIM(1)+MINDIM(2)) - (INDEX(1,NUM(IVS1))+1)
+*  2.2)        FOR (SIDE #2).EQ.(SIDE #4)
+*              AND (SIDE #1).EQ.(SIDE #3) *** DIAGONAL SYMMETRY (/) ***
             IORD(1)= INDEX(2,NUM(IVS1)) + MINDIM(1) - MINDIM(2)
             IORD(2)= INDEX(1,NUM(IVS1)) + MINDIM(2) - MINDIM(1)
             IORD(3)= INDEX(3,NUM(IVS1))
@@ -234,10 +239,10 @@ C              AND (SIDE #1).EQ.(SIDE #3) *** DIAGONAL SYMMETRY (/) ***
                IVS2= NSUR
                INCR= +1
             ENDIF
-C            INDEX(1,NUM(0))= IORD(1)
-C            INDEX(2,NUM(0))= IORD(2)
-C            INDEX(3,NUM(0))= IORD(3)
-C            INDEX(4,NUM(0))= IORD(4)
+*            INDEX(1,NUM(0))= IORD(1)
+*            INDEX(2,NUM(0))= IORD(2)
+*            INDEX(3,NUM(0))= IORD(3)
+*            INDEX(4,NUM(0))= IORD(4)
             IORD4 = IORD(4)
             IF( IORD(4).NE.0 )THEN
                DO 33 ICC1= NTOTCL, 4, -1
@@ -269,8 +274,8 @@ C            INDEX(4,NUM(0))= IORD(4)
             NO2= KEYMRG(NUM(IVS2))
             IB1= INCELL(NUM(IVS1))
             IB2= INCELL(NUM(IVS2))
-C
-C  2.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
+*
+*  2.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
             IF( LL2 )THEN
                KEYMRG(NUM(IVS1))= MIN(NO1,NO2)
                KEYMRG(NUM(IVS2))= MIN(NO1,NO2)
@@ -284,13 +289,13 @@ C  2.3)        SELECT THE MAX OR MIN VALUE TO CORRECTLY # ZONES
             ENDIF
    30    CONTINUE
       ENDIF
-C
-C  3) NOW, STOCK NEW INCREASING VALUES IN *KEYMRG* AND *INCELL* ********
+*
+*  3) NOW, STOCK NEW INCREASING VALUES IN *KEYMRG* AND *INCELL* ********
       NZSU= 0
       DO 40 IVS1= -1, NSUR,-1
         DO 41 IVS2= -1, NSUR, -1
-C
-C  3.1.1) COUNT THE NUMBER OF SURFACES.
+*
+*  3.1.1) COUNT THE NUMBER OF SURFACES.
           IF( KEYMRG(NUM(IVS2)).EQ.IVS1 )THEN
             NZSU= NZSU-1
             GO TO 40
@@ -300,8 +305,8 @@ C  3.1.1) COUNT THE NUMBER OF SURFACES.
       NZVO=0
       DO 42 IVS1= 1, NVOL
         DO 43 IVS2= 1, NVOL
-C
-C  3.1.2) COUNT THE NUMBER OF VOLUMES.
+*
+*  3.1.2) COUNT THE NUMBER OF VOLUMES.
           IF( KEYMRG(NUM(IVS2)).EQ.IVS1 )THEN
             NZVO= NZVO+1
             GO TO 42
@@ -312,8 +317,8 @@ C  3.1.2) COUNT THE NUMBER OF VOLUMES.
       DO 50 IVS1= -1, NSUR, -1
         SWOK= .FALSE.
         DO 51 IVS2= -1, NSUR, -1
-C
-C  3.2.1) RENUMBER SURFACES.
+*
+*  3.2.1) RENUMBER SURFACES.
           IF( KEYMRG(NUM(IVS2)).EQ.IVS1 )THEN
             SWOK= .TRUE.
             KEYMRG(NUM(IVS2))= NZABS
@@ -331,8 +336,8 @@ C  3.2.1) RENUMBER SURFACES.
       DO 52 IVS1= 1, NVOL
         SWOK= .FALSE.
         DO 53 IVS2= 1, NVOL
-C
-C  3.2.2) RENUMBER VOLUMES.
+*
+*  3.2.2) RENUMBER VOLUMES.
           IF( KEYMRG(NUM(IVS2)).EQ.IVS1 )THEN
             SWOK= .TRUE.
             KEYMRG(NUM(IVS2))= NZABS
@@ -347,8 +352,8 @@ C  3.2.2) RENUMBER VOLUMES.
       ENDIF
       NMBLK= 0
       DO 60 IVS2= NSUR, NVOL
-C
-C  3.3) COUNT NUMBER OF BLOCKS.
+*
+*  3.3) COUNT NUMBER OF BLOCKS.
         IF( KEYMRG(NUM(IVS2)).NE.0 )THEN
           IBLK=INCELL(NUM(IVS2))
           IF( IBLK.NE.0 )THEN
@@ -360,8 +365,8 @@ C  3.3) COUNT NUMBER OF BLOCKS.
       DO 70 IBLK= 1, NMBLK
         SWOK= .FALSE.
         DO 71 IVS2= NSUR, NVOL
-C
-C  3.4)   RENUMBER BLOCKS.
+*
+*  3.4)   RENUMBER BLOCKS.
           IF( KEYMRG(NUM(IVS2)).NE.0 )THEN
             IF( INCELL(NUM(IVS2)).EQ.IBLK )THEN
               SWOK= .TRUE.
@@ -377,9 +382,9 @@ C  3.4)   RENUMBER BLOCKS.
       IF( NZBLK .LE. 0 .OR. NZBLK .GT. NMBLK)THEN
          CALL XABORT( 'XELMRG: PROBLEMS TO MERGE BLOCKS' )
       ENDIF
-C
-C  3.5) RENUMBER CELL BLOCKS ACCORDING TO THE MERGE INDEX *MRGCEL*
-C     *** THIS WILL RENUMBER VOLUMES, BUT NOT SURFACES. ***
+*
+*  3.5) RENUMBER CELL BLOCKS ACCORDING TO THE MERGE INDEX *MRGCEL*
+*     *** THIS WILL RENUMBER VOLUMES, BUT NOT SURFACES. ***
       NMVO = 0
       NMBLK= 1
       SWSTOP= .FALSE.
@@ -423,8 +428,8 @@ C     *** THIS WILL RENUMBER VOLUMES, BUT NOT SURFACES. ***
   290 CONTINUE
       NMBLK= NMBLK-1
       NSBC=-NZSU
-C
-C  4) RESET *MATRT* FOR MERGED SURFACES INSTEAD OF ORIGINAL SURFACES ***
+*
+*  4) RESET *MATRT* FOR MERGED SURFACES INSTEAD OF ORIGINAL SURFACES ***
       NZSU=0
       DO 360 IVS1=-1,NSUR,-1
         ICMP1=KEYMRG(NUM(IVS1))
@@ -438,8 +443,8 @@ C  4) RESET *MATRT* FOR MERGED SURFACES INSTEAD OF ORIGINAL SURFACES ***
           ENDIF
         ENDIF
  360  CONTINUE
-C
-C  5) PRINTING *********************************************************
+*
+*  5) PRINTING *********************************************************
       IF( IPRT.GT.2 )THEN
          NSURC = -1
          WRITE(IOUT,'(1H )')
@@ -492,6 +497,6 @@ C  5) PRINTING *********************************************************
       IF( SWSTOP )THEN
          CALL XABORT('XELMRG: MERGE CELL ONLY WITH SAME # OF ZONES')
       ENDIF
-C
+*
       RETURN
       END

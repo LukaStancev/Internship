@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read dilution-dependent information of one isotope in multi-dilution
+* Read dilution-dependent information of one isotope in multi-dilution
 * internal library format.
 *
 *Copyright:
@@ -28,10 +28,11 @@
 * HVECT   names of the extra vector edits.
 * NDEL    number of delayed neutron precursor groups.
 * IMPX    print flag.
+*
+*Parameters: input/output
 * DILUT   dilutions.
 *
 *Parameters: output
-* DILUT   dilutions.
 * MDIL    number of finite dilutions used.
 * LSCAT   Legendre flag (=.true. if a given Legendre order of the
 *         scattering cross section exists).

@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the macro-source for the Hebert or Sanchez-Pomraning
+* Calculation of the macro-source for the Hebert or Sanchez-Pomraning
 * double heterogeneity model (part 2).
 *
 *Copyright:
@@ -44,6 +44,7 @@
 * FRACT   volumic fractions of the micro volumes.
 * VOLK    volumic fractions of the tubes or shells in the micro volumes.
 * SIGMA   equivalent total macroscopic cross section in each mixture.
+* NCO     number of volumes in each composite mixture.
 * QKOLD   information computed by XDRH11.
 * QKDEL   information computed by XDRH11 or XDRH12.
 * PKL     information computed by XDRH11 or XDRH12.

@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the composite flux for the She-Liu-Shi double
+* Calculation of the composite flux for the She-Liu-Shi double
 * heterogeneity model (part 3).
 *
 *Copyright:
@@ -42,17 +42,16 @@
 *         If IBI(IKK) is greater than IR1, the volume IKK contains a
 *         micro structure.
 * FRACT   volumic fractions of the micro volumes.
-* VOL     volumes of the composite geometry.
 * VOLK    volumic fractions of the tubes or shells in the micro volumes.
 * SIGMA   equivalent total macroscopic cross section in each mixture.
 * P1I     non collision probability in subvolume with 1 grain type    
 * P1KI    escape probability from layer k in subvolume with 1 grain type
 * P1DI    escape probability from matrix in subvolume with 1 grain type
-* FUNKNO  macro-flux. Solution of the transport equation defined over
-*         the macro-geometry.
+* SIGA1   undefined.
 *
-*Parameters: output
-* FUNKNO  composite flux.
+*Parameters: input/output
+* FUNKNO  macro-flux on input (solution of the transport equation 
+*         defined over the macro-geometry) and composite flux on output.
 *
 *-----------------------------------------------------------------------
 *

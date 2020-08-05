@@ -11,7 +11,7 @@
 * an axis for a set of cells/pins.
 *
 *Copyright:
-* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
@@ -25,37 +25,46 @@
 * IZ      projection axis.
 * NFSUR   number of outer surfaces in the 3D geometry.
 * NFREG   number of regions in the 3D geometry.
-* MXGSUR  maximum number of surfaces for any sub-geometry of the 3D geometry.
-* MXGREG  maximum number of regions for any sub-geometry of the 3D geometry.
-* MAXMSH  maximum dimension of any mesh in any sub-geometry of the 3D geometry.
+* MXGSUR  maximum number of surfaces for any sub-geometry of 
+*         the 3D geometry.
+* MXGREG  maximum number of regions for any sub-geometry of 
+*         the 3D geometry.
+* MAXMSH  maximum dimension of any mesh in any sub-geometry of 
+*         the 3D geometry.
 * NZP     total number of plans in the 3D geometry.
 * NUCELZ  number of cells/pins along the projection axis.
-* MESHCZM maximum number of meshes along the projection axis within any cell/pin.
+* MESHCZM maximum number of meshes along the projection axis within 
+*         any cell/pin.
 * MESHC   cells/pins meshes size.
 * NSURC   number of surfaces for the cells/pins.
 * NREGC   number of regions for the cells/pins.
 * LSTORE  2D cell/pin storage flag.
-* ILEV    geometry level 1:cells / 2:pins.
-* IEL     index of the first 3D cell/pin considered.
-* N2EL    index of the corresponding 2D cell.
 * II      x index to locate.
 * JJ      y index to locate.
 * LL      r index to locate.
 *
 *Parameters: input/output
-* INDEX   cells/pins index vector for 3D cells/pins and corresponding 2D cell/pin.
-* IDSUR   surface index array for 3D cells/pins and corresponding 2D cell/pin.
-* IDREG   region index array for 3D cells/pins and corresponding 2D cell/pin.
+* INDEX   cells/pins index vector for 3D cells/pins and corresponding
+*         2D cell/pin.
+* IDSUR   surface index array for 3D cells/pins and corresponding 2D 
+*         cell/pin.
+* IDREG   region index array for 3D cells/pins and corresponding 2D 
+*         cell/pin.
 * N2REG   number of regions in the projected 2D geometry.
 * N2SUR   number of outer surfaces in the projected 2D geometry.
-* IND2T3  mapping index between the 2D projected geometries (plan by plan) and the initial 3D geometry.
+* IND2T3  mapping index between the 2D projected geometries 
+*         (plan by plan) and the initial 3D geometry.
 * REGI    region sweeping flag array.
-* NZC     array containing the number of meshes alon the projection axis for each cell/pin.
-* I2SURC  initial/final outer surface position in surface index array for corresponding 2D cell/pin..
-* N2REGC  initial/final outer surface position in region index array for corresponding 2D cell/pin..
+* NZC     array containing the number of meshes alon the projection 
+*         axis for each cell/pin.
+* I2SURC  initial/final outer surface position in surface index array 
+*         for corresponding 2D cell/pin..
+* N2REGC  initial/final outer surface position in region index array 
+*         for corresponding 2D cell/pin..
 *
-*Parameters: scratch
-* IDZ
+*Parameters: temporary storage
+* IDZ     work vector.
+*
 *-----------------------------------------------------------------------
 *
       IMPLICIT NONE

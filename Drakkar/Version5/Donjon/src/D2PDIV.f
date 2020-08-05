@@ -7,19 +7,19 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the DIVERS directory of an elementary calculation and store
+* Recover the DIVERS directory of an elementary calculation and store
 * additional XS recovered directly from IPSAP
-
-*WARNING: the GET_DIVERS_INFO subroutine cannot recover DIVERS
+* WARNING: the GET_DIVERS_INFO subroutine cannot recover DIVERS
 * information in the case where cross sections are interpolated by
 * the SCR: module
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of the INFO data block
 * IPSAP   address of the saphyb object
-* IPPRINT control the printing on screen
+* IPRINT  control the printing on screen
 * NGP     number of energy groups
 * NBU     number of burnup point in IPSAP
 * NVAR    number of state parameters in INFO data block
@@ -39,6 +39,9 @@
 * LABS    information for absorption reconstruction
 * SCAT    information for scattering XS reconstruction
 * LADF    flag for ADF reconstrcution
+*
+*Parameters: 
+* NADRX   
 *
 *-----------------------------------------------------------------------
 *

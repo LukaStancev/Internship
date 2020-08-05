@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read channel-dependent data.
+* Read channel-dependent data.
 *
 *Copyright:
 * Copyright (C) 2018 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * HNAME   character*8 name of the data

@@ -1,63 +1,82 @@
 *DECK LIBWTE
       SUBROUTINE LIBWTE(IACT,ITXS,NGROUP,NGTHER,NTMP,NF,TERP,SCAT,
      >                  SIGS,XSNG,SIGF,XSFI,TRAN,TMPXS,TMPSC)
-C
-C------------------------------  LIBWTE  ------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBWTE
-C     ENTRY    : LIBWTE
-C     USE      : PERFORM TEMPERATURE INTERPOLATION FOR
-C                WIMS-AECL OR WIMS-D4 XS
-C     MODIFIED : 97-08-17
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C     IACT   : ACTION                               I
-C              = 1 INITIALIZE BEFORE ADDING
-C              = 2 ONLY ADD
-C     ITXS   : TYPE                                 I
-C              = 1 ALL CROSS SECTIONS
-C              = 2 ONLY SCATTERING
-C     NGROUP : NUMBER OF GROUPS                     I
-C     NGTHER : NUMBER OF THERMAL GROUPS             I
-C     NTMP   : NUMBER OF TEMPERATURES               I
-C     NF     : FISSILE FLAG                         I
-C     TERP   : TEMPERATURE COEFFICIENTS             D(NTMP)
-C   INPUT/OUTPUT
-C     SCAT   : COMPLETE SCATTERING MATRIX           R(NGROUP,
-C              SCAT(JG,IG) IS FROM IG TO JG           NGROUP)
-C     SIGS   : TOTAL SCATTERING OUT OF GROUP        R(NGROUP)
-C     XSNG   : NG XS                                R(NGROUP)
-C     SIGF   : NU*FISSION XS                        R(NGROUP)
-C     XSFI   : FISSION XS                           R(NGROUP)
-C     TRAN   : TRANSPORT XS                         R(NGROUP)
-C   WORK
-C     TMPXS  : TEMPERATURE DEPENDENT VECT XS        R(NGTHER,5,NTMP)
-C     TMPSC  : TEMPERATURE DEPENDENT SCAT XS        R(NGROUP,
-C                                               NGROUP,NTMP)
-C
-C------------------------------  LIBWTE  ------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Perform temperature interpolation for WIMS-AECL or WIMS-D4 XS
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* IACT    Action
+*         = 1 initialize before adding
+*         = 2 only add
+* ITXS    type
+*              = 1 all cross sections
+*              = 2 only scattering
+* NGROUP  number of groups
+* NGTHER  number of thermal groups
+* NTMP    number of temperature
+* NF      flag for fissile
+* TERP    temperature coefficients
+*
+*Parameters: input/output
+* SCAT    complete scattering matrix           
+*         SCAT(JG,IG) is from IG to JG           
+* SIGS    total scattering out of group        
+* XSNG    NG XS                                
+* SIGF    NU*FISSION XS
+* XSFI    FISSION XS                           
+* TRAN    TRANSPORT XS                         
+*
+*Parameters: scratch
+* TMPXS   temperature dependent vect XS        
+* TMPSC   temperature dependent scat XS        
+*
+*Comments:
+*   WIMS-AECL library parameters
+*   MAXISO : max. nb. of iso = 246                
+*   MLDEP  : maximum number of reaction per       
+*            isotope = MAXISO +4
+*   LPZ    : length of parameter array = 9   
+*   LMASTB : length of mst tab = MAXISO+9         
+*   LMASIN : length of mst idx = LMASTB-4         
+*   LGENTB : length of gen tab = 6                
+*   LGENIN : length of gen idx = LGENTB
+*   MASTER : master index array                   
+*   GENINX : general index array
+*   NPZ    : list of main parameters              
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
-C----
-C INTERFACE VARIABLES
-C----
+*----
+* INTERFACE VARIABLES
+*----
       INTEGER          IACT,ITXS,NGROUP,NGTHER,NTMP,NF
       DOUBLE PRECISION TERP(NTMP)
       REAL             SCAT(NGROUP,NGROUP),SIGS(NGROUP),
      1                 XSNG(NGROUP),SIGF(NGROUP),XSFI(NGROUP),
      2                 TRAN(NGROUP),TMPXS(NGROUP,5,NTMP),
      3                 TMPSC(NGROUP,NGROUP,NTMP)
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER          IGF,ITM,IGD,NGD
       REAL             RTERP
-C----
-C  INITIALIZED IF REQUIRED
-C----
+*----
+*  INITIALIZED IF REQUIRED
+*----
       NGD=NGROUP-NGTHER+1
       IF(IACT.EQ.1) THEN
         IF(ITXS.EQ.1) THEN
@@ -75,9 +94,9 @@ C----
  110      CONTINUE
         ENDIF
       ENDIF
-C----
-C  INTERPOLATE STANDARD CROSS SECTIONS IN TEMPERATURE
-C----
+*----
+*  INTERPOLATE STANDARD CROSS SECTIONS IN TEMPERATURE
+*----
       IF(ITXS.EQ.1) THEN
         DO 120 ITM=1,NTMP
           RTERP=REAL(TERP(ITM))
@@ -93,9 +112,9 @@ C----
           ENDIF
  120    CONTINUE
       ENDIF
-C----
-C  INTERPOLATE SCATTERING CROSS SECTIONS IN TEMPERATURE
-C----
+*----
+*  INTERPOLATE SCATTERING CROSS SECTIONS IN TEMPERATURE
+*----
       IF(ITXS.GE.1) THEN
         DO 130 ITM=1,NTMP
           RTERP=REAL(TERP(ITM))

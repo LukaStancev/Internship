@@ -5,13 +5,27 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* computes platinum detector reading with delay time consideration
+* Computes platinum detector reading with delay time consideration
 * and normalized to a reference value.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin
+*Author(s): 
+* E. Varin
+*
+*Parameters: 
+* DT       
+* RESPON   
+* REF      
+* KC       
+* PDD      
+* REGUL    
+* PDF      
+* PDT      
+* NDDG     
+* AP       
+* BP       
 *
 *-----------------------------------------------------------------------
 *

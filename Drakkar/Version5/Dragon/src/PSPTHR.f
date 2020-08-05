@@ -41,11 +41,12 @@
 *
 *----------
 *
+      USE              GANLIB
       IMPLICIT         NONE
 *----
 *  Subroutine arguments
 *----
-      INTEGER          IPTRK,ISPSP
+      TYPE(C_PTR)      IPTRK,ISPSP
       INTEGER          IPRINT,ICEL,NDIM,NFREG,MAXMSH,MXGREG,MAXPIN
       INTEGER          KPSP(7)
       REAL             COLREG(4,NFREG)

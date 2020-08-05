@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* interpolate dilution-tabulated information, perform Livolant-
+* Interpolate dilution-tabulated information, perform Livolant-
 * Jeanpierre normalization and compute self-shielded cross sections
 * at specific dilution
 *

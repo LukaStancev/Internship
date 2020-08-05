@@ -3,7 +3,8 @@
 *
 *-----------------------------------------------------------------------
 *
-* compute gradients of system characteristics.
+*Purpose:
+* Compute gradients of system characteristics.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
@@ -12,22 +13,35 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): creation or modification type(L_OPTIMIZE);
-*         HENTRY(2): read-only type(L_FLUX);
-*         HENTRY(3): read-only type(L_GPT).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The calling specifications are:
+* OPTIM := GRAD: [ OPTIM ] DFLUX GPT :: (grad\_data) ;
+* where
+*   OPTIM : name of the \emph{optimize} object (L\_OPTIMIZE signature) 
+*     containing the optimization informations. Object OPTIM must appear on the 
+*     RHS to be able to updated the previous values.
+*   DFLUX : name of the \emph{flux} object (L\_FLUX signature) containing a set
+*     of solutions of fixed-source eigenvalue problems.
+*   GPT   : name of the \emph{gpt} object (L\_GPT signature) containing a set 
+*     of direct or adjoint sources.
+*   (grad\_data) : structure containing the data to the module GRAD:.
 *
 *-----------------------------------------------------------------------
 *

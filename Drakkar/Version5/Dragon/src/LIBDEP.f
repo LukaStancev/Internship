@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read the information related to the depletion calculation.
+* Read the information related to the depletion calculation.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

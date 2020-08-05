@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the useful interpolated microscopic cross section
+* Transcription of the useful interpolated microscopic cross section
 * data from APOLIB-1 to LCM data structures
 *
 *Copyright:

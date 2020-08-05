@@ -6,12 +6,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* nucleate boiling correlations along a single coolant channel.
+* Nucleate boiling correlations along a single coolant channel.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, P. Gallet
+*Author(s): 
+* A. Hebert, P. Gallet
 *
 *Parameters: input
 * ITIME   type of calculation  (0=steady-state; 1=transient).

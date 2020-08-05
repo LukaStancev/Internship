@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* burnup localisation and interpolation
+* Burnup localisation and interpolation
 *
 *Copyright:
 * Copyright (C) 1996 Ecole Polytechnique de Montreal
@@ -13,7 +13,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): M.T. Sissaoui
+*Author(s): 
+* M.T. Sissaoui
 *
 *Parameters: input
 *  NBURN  total number of burnup steps.
@@ -22,9 +23,15 @@
 *  XBMIN  lower burnup value.
 *
 *Parameters: output
-*  MAX   maximum burnup number
-*  MIN   minimum burnup number
-*  COF   interpolation coefficient (Lagrange)
+*  MAX    maximum burnup number
+*  MIN    minimum burnup number
+*  COF    interpolation coefficient (Lagrange)
+*
+*Parameters: 
+* NTP     
+* MAX     
+* MIN     
+* ILIN    
 *
 *---------------------------------------------------------------*
 *

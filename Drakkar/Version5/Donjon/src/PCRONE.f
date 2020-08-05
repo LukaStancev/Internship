@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* copy an elementary calculation of the PMAXS file into a microlib.
+* Copy an elementary calculation of the PMAXS file into a microlib.
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert and D. Calic
+*Author(s): 
+* A. Hebert and D. Calic
 *
 *Parameters: input
 * IMPX    print parameter.

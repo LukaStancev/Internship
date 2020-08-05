@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the global stated variable data contained in the Multicompo
+* Recover the global stated variable data contained in the Multicompo
 * object (for reflector cross sections)
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of the INFO data block
 * IPMUL   address of the MULTICOMPO object
 * STAVEC  various parameters associated with the IPDAT structure
@@ -61,7 +62,7 @@
       ! MOVING AND RECOVER INFORMATION FROM MULTICOMPO
       CALL LCMSIX(IPMUL,'default',1)
       CALL LCMSIX(IPMUL,'GLOBAL',1)
-      CALL LCMGET(IPMUL,'PARKEY',CB_name)
+      CALL LCMGTC(IPMUL,'PARKEY',6,1,CB_name)
       ! CHECK IF PKEY FOR BORON CONCENTRATION IS C-BORE
       IF(CB_name.NE.'C-BORE') THEN
         CALL XABORT('@D2PMUL: ONLY C-BORE PKEY EXPECTED')
@@ -74,7 +75,7 @@
       ! CREATION OF INFO/SAPHYB_INFO/ CONTENT
       CALL LCMPUT(IPDAT,'BARR_INFO',1,1,1)
       CALL LCMSIX(IPDAT,'SAPHYB_INFO',1)
-      CALL LCMPUT(IPDAT,'STATE_VAR',NPAR,3,'BARRDMODCBORTCOMBURN')
+      CALL LCMPTC(IPDAT,'STATE_VAR',4,5,'BARRDMODCBORTCOMBURN')
       CALL LCMPUT(IPDAT,'MIX',1,1,MIX)
 
       ! ATTRIBUTION OF DEFAULT VALUES FOR OTHER STATE VARIABLES THAN
@@ -108,22 +109,22 @@
       DO J=1, 6
          KPTH=LCMDIL(IPTH,J)
          IF(J==1) THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"BARR    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"BARR    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.TRUE.)
          ELSE IF(J==2)THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"DMOD    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"DMOD    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.TRUE.)
          ELSE IF(J==3) THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"CBOR    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"CBOR    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.TRUE.)
          ELSE IF(J==4)THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"TCOM    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"TCOM    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.TRUE.)
          ELSE IF(J==5)THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"TMOD    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"TMOD    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.FALSE.)
          ELSE IF(J==6) THEN
-           CALL LCMPUT(KPTH,"NAME",2,3,"BURN    ")
+           CALL LCMPTC(KPTH,"NAME",8,1,"BURN    ")
            CALL LCMPUT(KPTH,"LFLAG",1,5,.TRUE.)
          ENDIF
       ENDDO

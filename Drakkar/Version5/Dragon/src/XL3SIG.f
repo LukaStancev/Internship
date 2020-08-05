@@ -2,42 +2,43 @@
       SUBROUTINE XL3SIG(  NGRT,  NBMIX,  XSSIGT,ALBEDO,  NPSYS,
      >                    NGRP,     NS,     NR, MATALB,    VOL,
      >                  SIGTAL, SIGVOL, SWVOID, SWNZBC)
-************************************************************************
-*                                                                      *
-*           NAME: XL3SIG                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XL3TRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 96/09 (R.R.)                                         *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE IS USED TO UNFOLD CROSS-SECTION DATA    *
-*                 WHICH BECOMES AVAILABLE BY SUBSET OF GROUPS          *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NGRT   / TOTAL NUMBER OF GROUPS                       /I./INT        *
-* NBMIX  / # OF MIXTURES IN THE MACROLIB                /I./INT        *
-* XSSIGT / TOTAL XS FOR MIXTURES IN THE MACROLIB        /I./REL(NBMIX  *
-*        /                                              /I./  +1,NGRT) *
-* ALBEDO / GEOMETRIC ALBEDOS.                           /I./REL(6)     *
-* NPSYS  / GROUP MASKS                                  /I./INT(NGRP)  *
-* NGRP   / NUMBER OF GROUPS                             /I./INT        *
-* NS     / # OF SURFACES IN THE ASSEMBLY.               /I./INT        *
-* NR     / # OF ZONES IN THE ASSEMBLY.                  /I./INT        *
-* MATALB / MATERIAL #S FOR ZONES IN THE SUPERCELL       /I./INT(NS:NR) *
-* VOL    / VOLUMES                                      /I./INT        *
-* SIGTAL / TOTAL XS & ALBEDOS BY REGION & SURFACE       /.O/REL(NS:NR, *
-*        /                                              /  /     NGRP) *
-* SIGVOL / VOLUME TIMES TOTAL XS BY REGION              /.O/REL(NR,    *
-*        /                                              /  /     NGRP) *
-* SWVOID / LOGICAL SWITCH (.TRUE. IF VOID REGIONS)      /.O/LOG        *
-* SWNZBC / LOGICAL SWITCH (.TRUE. IF NON-ZERO B.C.)     /.O/LOG        *
-************************************************************************
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Unfold cross-section data which becomes available by subset of groups.
+*
+*Copyright:
+* Copyright (C) 1996 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NGRT    total number of groups.                       
+* NBMIX   number of mixtures in the MACROLIB                
+* XSSIGT  total XS for mixtures in the MACROLIB        
+* ALBEDO  geometric albedos.                           
+* NPSYS   group masks                                  
+* NGRP    number of groups                             
+* NS      number of surfaces in the assembly.               
+* NR      number of zones in the assembly.                  
+* MATALB  material numbers for zones in the supercell       
+* VOL     volumes                                      
+*
+*Parameters: output
+* SIGTAL  total XS and albedos by region & surface       
+* SIGVOL  volume times total XS by region              
+* SWVOID  logical switch (.true. if void regions)      
+* SWNZBC  logical switch (.true. if non-zero B.C.)     
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT   NONE
-C
+*
       INTEGER    NGRT,NBMIX,NGRP,NS,NR,NPSYS(NGRP)
       REAL       XSSIGT(0:NBMIX,NGRT),VOL(NR),SIGTAL(NS:NR,NGRP),
      >           SIGVOL(NR,NGRP),ALBEDO(6)
@@ -47,13 +48,13 @@ C
       REAL       ZERO
       INTEGER    IOUT
       PARAMETER (ZERO=0.0,IOUT=6)
-C
+*
       SWVOID= .FALSE.
       SWNZBC= .FALSE.
-C
+*
       IF( NS.GT.0 ) CALL XABORT('XL3SIG: # OF SURFACES IS > 0')
       IF( NR.LT.0 ) CALL XABORT('XL3SIG: # OF REGIONS  IS < 0')
-C
+*
       DO 10 IUN= NS, NR
       DO 20 JG= 1, NGRP
          IF(NPSYS(JG).EQ.0) GO TO 20
@@ -76,6 +77,6 @@ C
          ENDIF
    20 CONTINUE
    10 CONTINUE
-C
+*
       RETURN
       END

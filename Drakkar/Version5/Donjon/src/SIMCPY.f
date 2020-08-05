@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the burnup of an assembly in another cycle.
+* Recover the burnup of an assembly in another cycle.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input/output
 * NCH     number of assemblies or number of quart-of-assemblies.

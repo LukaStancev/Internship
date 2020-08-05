@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build the macrolib by scanning the NCAL elementary calculations and
+* Build the macrolib by scanning the NCAL elementary calculations and
 * weighting them with TERP factors.
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * MAXNIS  maximum value of NISO(I) in user data.

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* multi-purpose driver for solving the isotopic depletion equations,
+* Multi-purpose driver for solving the isotopic depletion equations,
 * taking into account the saturation phenomena.
 *
 *Copyright:

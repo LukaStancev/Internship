@@ -7,7 +7,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the contribution of reconstructed tracks to the numerical 
+* Compute the contribution of reconstructed tracks to the numerical 
 * surfaces/volumes and connection matrices for a 3D prismatic extended
 * tracking (from a 2D EXCELT tracking).
 *
@@ -51,9 +51,17 @@
 * SURF    numerical surfaces.
 * VNUM    numerical volumes.
 * 
+*Parameters: 
+* CMU     undefined.
+* CMUI    undefined.
+* SMU     undefined.
+* SMUI    undefined.
+* TMU     undefined.
+* TMUI    undefined.
+*
 *Parameters: scratch
-* NOM3D
-* H3D
+* NOM3D   undefined.
+* H3D     undefined.
 *
 *-----------------------------------------------------------------------
 *

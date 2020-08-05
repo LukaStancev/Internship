@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* computation of Xenon and Neptunium concentrations.
+* Computation of Xenon and Neptunium concentrations.
 *
 *Copyright:
 * Copyright (C) 1996 Ecole Polytechnique de Montreal
@@ -13,16 +13,19 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): M.T. Sissaoui
+*Author(s): 
+* M.T. Sissaoui
 *
 *Parameters: input
-*  SIGX  Xenon absorption micro-x-section dimension (ngrp).
-*  SIGF  fission macro-x-section dimension (ngrp).
-*  FLUX  flux dimension (ngrp)
+* NGRP
+* SIGX  Xenon absorption micro-x-section dimension (ngrp).
+* SIGF  fission macro-x-section dimension (ngrp).
+* FLUX  flux dimension (ngrp)
 *
 *Parameters: output
-*  XXE   Xenon concentration
-*  XNP   Neptunium concentration
+* XXE   Xenon concentration
+* XNP   Neptunium concentration
+* FLUR
 *
 *-----------------------------------------------------------------------
 *

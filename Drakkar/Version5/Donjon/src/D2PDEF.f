@@ -13,9 +13,10 @@
 * values from the list: the first, middle and last of Saphyb. For
 * parameters BARR and BURN, all values are kept
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT      address of info data block
 * NVAR       number of state variables
 * NCRD       number of control rod composotion
@@ -25,6 +26,22 @@
 * STAIDX     index of state values for current branch calculation
 * REFSTA     values for each state variables of reference branch
 * HSTSTA     values for each state variables of history branch
+*
+*Parameters: 
+* IPDAT    
+* PKEY     
+* VALPAR   
+* NVALPA   
+* STAIDX   
+* REFIDX   
+* REFSTA   
+* HSTSTA   
+* STATE    
+* CRDINF   
+* NCRD     
+* NVAR     
+* PKIDX    
+* IPRINT   
 *
 *-----------------------------------------------------------------------
 *
@@ -146,10 +163,10 @@
 
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'SAPHYB_INFO',1)
-      CALL LCMPUT(IPDAT,'STATE_VAR',3*NVAR,3,PKEY)
+      CALL LCMPTC(IPDAT,'STATE_VAR',12,NVAR,PKEY)
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'BRANCH_INFO',1)
-      CALL LCMPUT(IPDAT,'BRANCH',3,3,PKNAM(1))
+      CALL LCMPTC(IPDAT,'BRANCH',12,1,PKNAM(1))
       CALL LCMPUT(IPDAT,'BRANCH_IT',1,1,1)
       CALL LCMPUT(IPDAT,'REF_STATE',NVAR-1,2,REFSTA)
       CALL LCMPUT(IPDAT,'HST_STATE',NVAR-1,2,REFSTA)

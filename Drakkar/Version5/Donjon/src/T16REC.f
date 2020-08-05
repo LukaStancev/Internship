@@ -1,40 +1,45 @@
 *DECK T16REC
       SUBROUTINE T16REC(IFT16 ,IPRINT,INEXTR)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16REC
-C      USE      : LOCATE NEXT SET OF RECORDS
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/12/17 G.M.    | EXTRACTED FROM T16FLX
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C      IPRINT : PRINT LEVEL                              I
-C               =   0 NO PRINT
-C               >=  1 PRINT PROCESSING OPTIONS READ
-C      INEXTR : NEXT RECORD TO READ                      I
-C
-C  3- ROUTINES CALLED
-C    SPECIFIC T16CPO ROUTINES
-C      T16FND : FIND A TAPE16 RECORD
-C               EQUIVALENT TO FIND FUNCTION
-C               IN APPENDIX E OF EACL RC-1176
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C      XDRSET : VECTOR INITIALIZATION ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16REC
+*
+*Purpose:
+*  LOCATE NEXT SET OF RECORDS
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/12/17 G.M.    | EXTRACTED FROM T16FLX
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+* IPRINT  PRINT LEVEL                              I
+*         =   0 NO PRINT
+*         >=  1 PRINT PROCESSING OPTIONS READ
+* INEXTR  NEXT RECORD TO READ                      I
+*
+*  3- ROUTINES CALLED
+*    SPECIFIC T16CPO ROUTINES
+*      T16FND : FIND A TAPE16 RECORD
+*               EQUIVALENT TO FIND FUNCTION
+*               IN APPENDIX E OF EACL RC-1176
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*      XDRSET : VECTOR INITIALIZATION ROUTINE
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16,IPRINT,INEXTR
 C----

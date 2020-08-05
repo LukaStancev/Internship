@@ -9,9 +9,10 @@
 * sections for one branch at a fixed burnup point in the INFO data
 * block.
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of info data block
 * IPSAP   address of the saphyb object
 * IPMIC   address of the microlib object
@@ -19,6 +20,9 @@
 * SIGNAT  signature of the object containing cross sections
 * MIXDIR  directory that contains homogeneous mixture information
 * IPRINT  control the printing on screen
+*
+*Parameters: 
+* JOBOPT  
 *
 *-----------------------------------------------------------------------
 *
@@ -184,6 +188,7 @@
       NADD=ISTATE(5)           ! NUMBER OF ADDITIONAL CROSS SECTIONS
       NFISS=ISTATE(4)          ! NUMBER OF FISSILE ISOTOPES
       ITR=ISTATE(6)            ! TRANSPORT CORRECTION OTPION
+      NED=ISTATE(13)           ! NUMBER OF P0 ADDITIONAL XS
       ISPH=ISTATE(14)
 
       IF(IPRINT > 0)  THEN
@@ -235,15 +240,15 @@
         IF(LTH) THEN
           ICOR=STAVEC(22)
           ! RECOVER THE T/H INVARIANT BLOCK (OPTIONAL IN PMAXS FILES)
-          CALL D2PTH(    IPDAT, IPMIC , IPRINT,    NBU,   NGP,    NBMIX,
-     >                   NFISS,   NDEL,   NVAR, STAIDX,JOBOPT,     FLAG)
+          CALL D2PTH(    IPDAT, IPMIC , IPRINT,    NBU,   NGP,   NBMIX,
+     >                   NFISS,   NDEL,   NVAR, STAIDX,JOBOPT,    FLAG)
         ENDIF
 
         IF((LXES).OR.(LDET).OR.(LCOR)) THEN
           ! RECOVER MICROSCOPIC CROSS SECTIONS FROM SAPHYB
           CALL D2PMIC  (  IPDAT, IPMIC , IPRINT,    NGP,  NBMIX, NBISO,
-     >                     NVAR, STAIDX,   LXES,   LDET,   LCOR,  FLUX,
-     >                     STATE                                      )
+     >                      NED,   NVAR, STAIDX,   LXES,   LDET,  LCOR,
+     >                     FLUX                                       )
         ENDIF
 
         IF((GRID<2).and. (SIGNAT .EQ. 'L_SAPHYB')) THEN

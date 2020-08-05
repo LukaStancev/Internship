@@ -25,7 +25,7 @@
 * VOL     region volumes.
 *
 *Parameters: output
-* PJJ     PJJ in sigle precision, normalized
+* PJJ     PJJ in sigle precision, normalized.
 * 
 *-----------------------------------------------------------------------
 *

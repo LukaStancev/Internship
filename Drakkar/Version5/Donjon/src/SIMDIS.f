@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* axial normalization of the burnup distribution using information from
+* Axial normalization of the burnup distribution using information from
 * another cycle.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input/output
 * LSET    type of normalization (=.true.: use FORM info; =.false: use

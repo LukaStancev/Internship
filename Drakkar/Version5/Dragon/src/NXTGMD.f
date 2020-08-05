@@ -11,7 +11,11 @@
 * To evaluate global mesh for assembly.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -22,9 +26,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *  This routine is based on the XELDCL routine written by
 *  R. Roy for the EXCELT: module. It contains an additional
 *  level for cluster subgeometry analysis.
@@ -34,14 +38,9 @@
 * IPTRK   pointer to the TRACKING data structure.
 * IPRINT  print level.
 * ITYPBC  type of boundary conditions where
-*         \begin{itemize}
-*         \item \moc{ITYPBC}=0 for geometry with all Cartesian
-*         boundaries;
-*         \item \moc{ITYPBC}=1 for geometry with one annular
-*         boundary;
-*         \item \moc{ITYPBC}=2 for geometry with one hexagonal
-*         boundary;
-*         \end{itemize}
+*         ITYPBC=0 for geometry with all Cartesian boundaries;
+*         ITYPBC=1 for geometry with one annular boundary;
+*         ITYPBC=2 for geometry with one hexagonal boundary;
 * ILCELL  cell level.
 * NEDIM   number of elements for general dimension vector.
 * NBOCEL  number of cells in original geometry.
@@ -50,14 +49,11 @@
 *         each directions.
 * NUCELL  number of cell after unfolding in
 *         $X$, $Y$ and $Z$ directions.
-* IUNFLD  array to identify the generating cell (\moc{IUNFLD(1,*)})
+* IUNFLD  array to identify the generating cell (IUNFLD(1,*))
 *         and the rotation associated with this region in space.
 *
 *Parameters: input/output
 * IEDIMG  general dimension vector for problem where
-*         \begin{itemize}
-*         \item \moc{IEDIMG(1)}.
-*         \end{itemize}
 * NAGGEO  geometry names.
 * ITURN   geometry turns.
 * MERGE   geometry merge.

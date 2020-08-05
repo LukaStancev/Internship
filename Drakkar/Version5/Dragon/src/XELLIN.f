@@ -4,51 +4,51 @@
      >                  ICOORD,ICUR,INCR,TRKBEG,TRKEND,TRKDIR,
      >                  PROJC2,TOTLEN,
      >                  CONV,LINMAX,LENGHT,NUMERO,LINE)
-************************************************************************
-*                                                                      *
-*           NAME: XELLIN                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELTI2' & 'XELTI3' & 'XELTS2' )        *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 91/07 (R.R.)                                         *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL CONSTRUCT ONE TRACKING LINE        *
-*                 WHICH CONSISTS OF TWO VECTORS:                       *
-*                          (LENGHT(I),I=1,LINE) <= SEGMENT LENGTHS     *
-*                          (NUMERO(I),I=1,LINE) <= REGION  NUMBERS     *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NDIM   / # OF DIMENSION (2 OR 3).                     /I./INT        *
-* NCP    / # OF CYLINDRES OF A TYPE + 3    (.LT.NC3MAX)./I./INT        *
-* MAXREM / MAX NUMBER OF REAL MESH VALUES IN "REMESH".  /I./INT        *
-* REMESH / REAL MESH VALUES (RECT/CYL).                 /I./REL(MAXREM)*
-* NSUR   / # OF SURFACES.                               /I./INT        *
-* NVOL   / # OF ZONES.                                  /I./INT        *
-* INDEL  / #ING OF SURFACES & ZONES.                    /I./INT(4*NVS) *
-* MINDIM / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NC3MAX)*
-* MAXDIM / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NC3MAX)*
-* ICOORD / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /I./INT(NC3MAX)*
-* ICUR   / CURRENT ZONAL LOCATION FOR A TRACK SEGMENT.  /../INT(NC3MAX)*
-* INCR   / INCREMENT DIRECTION FOR NEXT TRACK SEGMENT.  /../INT(NC3MAX)*
-* TRKBEG / POSITION WHERE A TRACK BEGINS.               /../REL(NC3MAX)*
-* TRKEND / POSITION WHERE A TRACK ENDS.                 /../REL(NC3MAX)*
-* TRKDIR / DIRECTION OF A TRACK IN ALL AXES.            /I./REL(NC3MAX)*
-* PROJC2 / PROJECTIONS OF "TRKDIR" ALONG TRACKED ANGLES./I./REL(3)     *
-* TOTLEN / TOTAL LENGHT OF THE TRACK.                   /I./REL        *
-* CONV   / SEGMENTS OF TRACKS.                          /../REL(NC3MAX)*
-* LINMAX / MAX. # OF TRACK SEGMENTS IN A SINGLE TRACK.  /I./INT        *
-* LENGHT / RELATIVE LENGHT OF EACH SEGMENT IN A TRACK.  /.O/REL(LINMAX)*
-* NUMERO / REGION IDENTIFICATION OF EACH TRACK SEGMENT  /.O/INT(LINMAX)*
-* LINE   / LENGHT OF THE TRACK                          /.O/INT        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Construct one tracking line which consists of two vectors.
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NDIM    number of dimension (2 or 3).                     
+* NCP     number of cylindres of a type + 3    (.lt.nc3max).
+* MAXREM  max number of real mesh values in "remesh".  
+* REMESH  real mesh values (rect/cyl).                 
+* NSUR    number of surfaces.                               
+* NVOL    number of zones.                                  
+* INDEL   numbering of surfaces & zones.                    
+* MINDIM  min index values for all axes (rect/cyl).    
+* MAXDIM  max index values for all axes (rect/cyl).    
+* ICOORD  principal axes direction (X/Y/Z) for meshes. 
+* ICUR    current zonal location for a track segment.  
+* INCR    increment direction for next track segment.  
+* TRKBEG  position where a track begins.               
+* TRKEND  position where a track ends.                 
+* TRKDIR  direction of a track in all axes.            
+* PROJC2  projections of TRKDIR along tracked angles.
+* TOTLEN  total lenght of the track.                   
+* CONV    segments of tracks.                          
+* LINMAX  max. number of track segments in a single track.  
+*
+*Parameters: input
+* LENGHT  relative lenght of each segment in a track.  
+* NUMERO  region identification of each track segment  
+* LINE    lenght of the track                          
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT          NONE
-C
+*
       INTEGER           NDIM, NCP, MAXREM, NSUR, NVOL, LINMAX, LINE
       REAL              TRKBEG(NCP), TRKDIR(NCP), CONV(NCP),
      >                  REMESH(MAXREM), TRKEND(*), PROJC2(*), TOTLEN
@@ -56,25 +56,25 @@ C
       INTEGER           MINDIM(NCP), MAXDIM(NCP), ICUR(NCP),
      >                  ICOORD(NCP), INCR(NCP), INDEL(4,*),
      >                  NUMERO(LINMAX)
-C
+*
       INTEGER           IORD(4), N, NP1, NP2, IBEGIN, IEND, KELVOL
       REAL              TKBEG1, TKBEG2, TKEND1, TKEND2, R2BEG, R2END
       DOUBLE PRECISION  CONVOK, PAT0, PAT1
       LOGICAL           BETWEN
       INTEGER           NEXT, NUM, I, J
       REAL              ANORM2, CENTRE, A, B
-C
+*
       ANORM2(A,B)= A*A + B*B
       CENTRE(I,J)= REMESH( MAXDIM(I-1) + J )
       NEXT(J)= ICUR(J) + MAX( 0, INCR(J) )
       NUM(J)= J + 1 - NSUR
-C
-C     IF THERE ARE NO CYLINDER AT ALL
+*
+*     IF THERE ARE NO CYLINDER AT ALL
       IEND=0
       DO 90 I   = 1, NDIM
          N     = ICOORD(I)
-C
-C        FIND BEGINNING VOLUME #
+*
+*        FIND BEGINNING VOLUME #
          ICUR(I)= MINDIM(I)
          DO 80 J = MINDIM(I), MAXDIM(I)-1
             IF(TRKBEG(N).GE.REMESH(J)) ICUR(I)= J
@@ -90,7 +90,7 @@ C        FIND BEGINNING VOLUME #
             ENDIF
          ENDIF
    90 CONTINUE
-C
+*
       IBEGIN= MAXDIM(3) + 3
       DO 110 I  = 4, NCP
          N     = ICOORD(I)
@@ -133,12 +133,12 @@ C
             ENDIF
          ENDIF
   110 CONTINUE
-C
-C     VOLUME TRACKED
+*
+*     VOLUME TRACKED
       LINE  = 0
   120 LINE  = LINE + 1
-C
-C        LOOKING FOR THE MINIMUM VALUE IN "CONVOK"
+*
+*        LOOKING FOR THE MINIMUM VALUE IN "CONVOK"
          CONVOK= TOTLEN
          DO 130 I= 1, NCP
             IF( CONV(I) .LT. CONVOK ) CONVOK= CONV(I)
@@ -164,11 +164,11 @@ C        LOOKING FOR THE MINIMUM VALUE IN "CONVOK"
   895    IF(KELVOL.EQ.0) CALL XABORT('XELLIN: TRACKING FAILURE.')
          NUMERO(LINE)= KELVOL
          LENGHT(LINE)= CONVOK
-C
-C        IF "CONVOK" IS "TOTLEN" THE TRACKING IS FINISHED
+*
+*        IF "CONVOK" IS "TOTLEN" THE TRACKING IS FINISHED
          IF( CONVOK.EQ.TOTLEN ) GO TO 160
-C
-C        UPDATE WHERE THE MINIMUM VALUE "CONVOK" IS OBTAINED
+*
+*        UPDATE WHERE THE MINIMUM VALUE "CONVOK" IS OBTAINED
          DO 140 I   = 1, NDIM
             IF( CONV(I) .NE. CONVOK ) GO TO 140
             ICUR(I)= ICUR(I) + INCR(I)
@@ -193,19 +193,19 @@ C        UPDATE WHERE THE MINIMUM VALUE "CONVOK" IS OBTAINED
      >                  SQRT( (REMESH(NEXT(I))-TRKDIR(I))/PROJC2(N) )
             ENDIF
   150    CONTINUE
-C
-C     GO TO NEXT COORDINATE
+*
+*     GO TO NEXT COORDINATE
       IF( LINE .NE. LINMAX ) GO TO 120
       CALL XABORT('XELLIN: TOO MANY TRACKS')
   160 CONTINUE
-C
-C     TRANSFORM LOCAL COORDINATES TO PATH LENGTHS
+*
+*     TRANSFORM LOCAL COORDINATES TO PATH LENGTHS
       PAT0=   0.0D0
       DO 170 I= 1, LINE
          PAT1= LENGHT(I)
          LENGHT(I)= PAT1-PAT0
          PAT0= PAT1
   170 CONTINUE
-C
+*
       RETURN
       END

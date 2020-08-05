@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solves the quasi-linear problem using the augmented Lagrangian.
+* Solves the quasi-linear problem using the augmented Lagrangian.
 * PLLA = Linear Programmation Augmented Lagrangian
 *
 *Copyright:

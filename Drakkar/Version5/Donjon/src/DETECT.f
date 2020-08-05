@@ -4,25 +4,42 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  this module compute detectors readings
+*  This module compute detectors readings
 *
+*Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, M. Guyot
-
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): modification type ;
-*         HENTRY(2): read-only type .
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Author(s): 
+* E. Varin, M. Guyot
+*
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The DETECT: module specifications are:
+* DETEC := DETECT: DETEC FLUX  TRACK GEOM :: (descdetect) ;
+* where
+*   DETEC : name of the \emph{detect} containing the detector positions and 
+*     responses. 
+*   FLUX  : name of the \emph{flux} containing the flux solution computed by
+*     the FLUD: or FLPOW: modules. To obtain a correct result, the best is to
+*     use a normalized flux, coming from the FLPOW: module. In this case, the 
+*     fluxes are normalized to the reactor power.
+*   TRACK : name of the \emph{track} containing the TRIVAC tracking.
+*   GEOM  : name of the \emph{geometry} containing the mesh-splitting 
+*     geometry created by the USPLIT: or GEO: modules.
+*   (descdetect) : structure containing the data to module DETECT:.
 *
 *-----------------------------------------------------------------------
 *

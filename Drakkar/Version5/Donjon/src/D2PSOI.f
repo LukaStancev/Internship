@@ -4,14 +4,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* sort D2PSOR state variable integer array to match GENPMAXS order, in
+* Sort D2PSOR state variable integer array to match GENPMAXS order, in
 * ascendent order
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
-* TAB      vector of rank index of state variables
-* DIMTAB   dimension of TAB
+*Parameters: input
+* TAB     vector of rank index of state variables
+* DIMTAB  dimension of TAB
 *
 *-----------------------------------------------------------------------
 *

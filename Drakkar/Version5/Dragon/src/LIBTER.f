@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the Lagrange interpolation factors (TERP) for temperature and
+* Compute the Lagrange interpolation factors (TERP) for temperature and
 * dilution interpolation of cross sections. TRANSX CTR algorithm
 *
 *Copyright:

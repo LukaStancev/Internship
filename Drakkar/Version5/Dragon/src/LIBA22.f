@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* temperature interpolation of a cross section array stored in the
+* Temperature interpolation of a cross section array stored in the
 * APOLIB-2 format
 *
 *Copyright:

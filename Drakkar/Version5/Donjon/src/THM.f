@@ -4,26 +4,43 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* simplified thermal-hydraulics module.
+* Simplified thermal-hydraulics module.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, P. Gallet and V. Salino
+*Author(s): 
+* A. Hebert, P. Gallet and V. Salino
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_THM);
-*         HENTRY(2): modification type(L_MAP);
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The THM: module specification is:
+* THERMO MAPFL := THM: [ THERMO ] MAPFL :: (descthm) ;
+* where
+*   THERMO : name of the \emph{thermo) object that will be created or updated 
+*     by the THM: module. Object \emph{thermo} contains thermal-hydraulics 
+*     information set or computed by THM: in transient or in permanent 
+*     conditions such as the distribution of the enthalpy, the pressure, the 
+*     velocity, the density and the temperatures of the coolant for all the 
+*     channels in the geometry. It also contains all the values of the fuel 
+*     temperatures in transient or in permanent conditions according to the 
+*     discretisation chosen for the fuel rods.
+*   MAPFL : name of the \emph{map} object containing fuel regions description 
+*     and local parameter informations.
+*   (descthm) : structure describing the input data to the THM: module. 
 *
 *-----------------------------------------------------------------------
 *

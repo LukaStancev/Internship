@@ -52,6 +52,7 @@
 * CAZ2    second cosines of the different tracking azimuthal angles.
 * CPO     cosines of the different tracking polar angles in 2D.
 * PACA    type of preconditioner to solve the ACA corrective system.
+* LC0     used in ILU0-ACA acceleration.
 * LPS     dimension of JS.
 * LTMT    tracking merging flag.
 * NPJJM   number of pjj modes to store for STIS option.

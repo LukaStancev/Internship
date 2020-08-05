@@ -37,7 +37,7 @@
 * PSI     corrective flux
 *
 *Parameters: scratch
-* MATRIX
+* MATRIX  undefined.
 *
 *-----------------------------------------------------------------------
 *

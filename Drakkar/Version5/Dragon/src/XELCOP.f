@@ -1,28 +1,26 @@
 *DECK XELCOP
       SUBROUTINE XELCOP( IFILE1, IFILE2)
-************************************************************************
-*                                                                      *
-*           NAME: XELCOP                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 2 (CALLED BY 'EXCELT')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 91/07                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL COPY A DRAGON TRACKING FILE;       *
-*                 THE FILE *IFILE1* IS COPIED OVER *IFILE2*.           *
-*                                                                      *
-*           NOTE: THE FILES "IFILE1" AND "IFILE2" ARE SUPPOSED TO BE:  *
-*                 1) CONNECTED AND OPENED;                             *
-*                 2) PLACED FOR ACCESSING THE FIRST RECORD (REWIND).   *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IFILE1 / FIRST  TRACKING FILE # (AT INPUT).           /I./INT        *
-* IFILE2 / SECOND TRACKING FILE # (AT OUTPUT).          /I./INT        *
-************************************************************************
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Copy the DRAGON tracking file IFILE1 over IFILE2
+*
+*Copyright:
+* Copyright (C) 1991 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IFILE1  first tracking file number (AT INPUT).
+* IFILE2  second tracking file number (AT OUTPUT).
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT          NONE
 C
       DOUBLE PRECISION  WEIGHT

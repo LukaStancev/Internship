@@ -8,7 +8,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* isotopic depletion calculation.
+* Isotopic depletion calculation.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -89,10 +89,10 @@
 *         depletion table at time XTI).
 * XTF     final set time (recover the number densities from the
 *         depletion table at time XTF and modify the internal library).
-* XT(1)   initial time (independent variable) for the depletion
+* XT      time variable (independent variable) for the depletion
 *         calculation.
-* XT(2)   final time (independent variable) for the depletion
-*         calculation.
+*         XT(1) initial time
+*         XT(2) final time
 * LMACRO  macrolib building flag (=.true. to compute the embedded
 *         macrolib).
 * FLUMIX  average fluxes in mixtures.

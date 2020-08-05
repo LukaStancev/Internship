@@ -3,7 +3,8 @@
 *
 *-----------------------------------------------------------------------
 *
-* compute the reactivity during a Runge-Kutta time step taking into
+*Purpose:
+* Compute the reactivity during a Runge-Kutta time step taking into
 * account feedback effects.
 *
 *Copyright:
@@ -13,7 +14,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMAP   pointer to the point kinetic directory

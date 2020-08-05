@@ -15,6 +15,7 @@
 subroutine XSDOPN(namfil, ierr)
    ! open the NDAS file
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    character(len=*) :: namfil
    integer ierr
    character(kind=c_char), dimension(73) :: name73
@@ -31,6 +32,7 @@ end subroutine XSDOPN
 !
 subroutine XSDNAM(iset, numericId, isonam, ierr)
    ! recover an isotope name from NDAS file
+   use LCMAUX
    use, intrinsic :: iso_c_binding
    integer iset,numericId, ierr
    character(len=*) :: isonam

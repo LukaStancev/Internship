@@ -4,33 +4,37 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  transfer a wims-aecl tape16 file to a donjon/dragon cpo data
+*  Transfer a wims-aecl tape16 file to a donjon/dragon cpo data
 *  structure
 *
 *Copyright:
 * Copyright (C) 1999 Ecole Polytechnique de Montreal
 *
-*Author(s): G. Marleau
+*Author(s): 
+* G. Marleau
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*      IEN = 1 : structure is a linked list or xsm file
-*                containing the output cpo data structure.
-*                this structure must be in creation or
-*                update mode
-*                IENTRY(IEN)<= 2, JENTRY(IEN) <= 1
-*      IEN = 2 : structure is a wims-aecl tape16
-*                readonly sequential binary file
-*                IENTRY(IEN) = 3, JENTRY(IEN) = 2
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The T16CPO: module specifications  are:
+*  DONCPO :=  T16CPO: [ DONCPO ] WIMS16 :: (desct16cpo)  ; 
+* where
+*   DONCPO : name of data structure where the output \emph{cpo} is stored. This 
+*     can be a new data structure or an old data structure which will be 
+*     updated. 
+*   (desct16cpo] : input specifications for the execution of the T16CPO: module.  
 *
 *-----------------------------------------------------------------------
 *

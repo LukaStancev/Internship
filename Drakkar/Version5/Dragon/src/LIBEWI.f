@@ -1,59 +1,68 @@
 *DECK LIBEWI
       SUBROUTINE LIBEWI(CFILNA,NEL)
-C
-C-------------------------- LIBEWI   ----------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBEWI
-C     ENTRY    : LIBEWI
-C     USE      : INITIALIZE DIMENSIONS FOR DEPLETION DATA ON WIMS-AECL
-C                FORMAT LIBRARY
-C     MODIFIED : 97-01-08
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C     CFILNA : WIMS FILE NAME                       C*8
-C   OUTPUT
-C     NEL    : NUMBER OF ISOTOPES ON LIBRARY        I
-C   WIMS-AECL LIBRARY PARAMETERS
-C     MAXISO : MAX. NB. OF ISO = 246                I
-C     MLDEP  : MAXIMUM NUMBER OF REACTION PER       I
-C              ISOTOPE IN WIMS-AECL = MAXISO+4
-C     LPZ    : LENGTH OF WIMS PARAMETER ARRAY = 9   I
-C     LMASTB : LENGTH OF MST TAB = MAXISO+9         I
-C     LMASIN : LENGTH OF MST IDX = LMASTB-4         I
-C     LGENTB : LENGTH OF GEN TAB = 6                I
-C     LGENIN : LENGTH OF GEN IDX = LGENTB           I
-C     MASTER : MASTER INDEX ARRAY                   I(LMASTB)
-C     GENINX : GENERAL INDEX ARRAY                  I(LGENTB)
-C     NPZ    : LIST OF MAIN PARAMETERS              I(LPZ)
-C
-C--------------------------  LIBEWI  ----------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Initialize dimensions for depletion data on WIMS-AECL
+* format library
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* CFILNA  WIMS file name
+*
+*Parameters: output
+* NEL     NUMBER OF ISOTOPES ON LIBRARY        I
+*
+*Comments:
+*   WIMS-AECL library parameters
+*   MAXISO : max. nb. of iso = 246                
+*   MLDEP  : maximum number of reaction per       
+*            isotope = MAXISO +4
+*   LPZ    : length of parameter array = 9   
+*   LMASTB : length of mst tab = MAXISO+9         
+*   LMASIN : length of mst idx = LMASTB-4         
+*   LGENTB : length of gen tab = 6                
+*   LGENIN : length of gen idx = LGENTB
+*   MASTER : master index array                   
+*   GENINX : general index array
+*   NPZ    : list of main parameters              
+*
+*-----------------------------------------------------------------------
+*
+
       IMPLICIT NONE
-C----
-C  WIMS-AECL LIBRARY PARAMETERS
-C----
+*----
+*  WIMS-AECL LIBRARY PARAMETERS
+*----
       INTEGER      LRIND,IACTO,IACTC,IUTYPE,MAXISO,MLDEP,LPZ,
      1             MAXTEM,LMASTB,LMASIN,LGENTB,LGENIN
       PARAMETER   (LRIND=256,IACTO=2,IACTC=1,IUTYPE=4,MAXISO=246,
      1             MLDEP=MAXISO+4,LPZ=9,MAXTEM=20,LMASTB=MAXISO+9,
      2             LMASIN=LMASTB-4,LGENTB=6,LGENIN=LGENTB)
       INTEGER      MASTER(LMASTB),GENINX(LGENTB),NPZ(LPZ)
-C----
-C EXTERNAL FUNCTIONS
-C----
+*----
+* EXTERNAL FUNCTIONS
+*----
       INTEGER      KDROPN
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER      NEL,IUNIT
       CHARACTER    CFILNA*8
-C----
-C  OPEN WIMS-AECL LIBRARY
-C  READ INDEX AND GENERAL DIMENSIONING NPZ
-C----
+*----
+*  OPEN WIMS-AECL LIBRARY
+*  READ INDEX AND GENERAL DIMENSIONING NPZ
+*----
       IUNIT=KDROPN(CFILNA,IACTO,IUTYPE,LRIND)
       IF(IUNIT.LE.0) CALL XABORT('LIBEWI: WIMS-AECL LIBRARY '//
      >    CFILNA//' CANNOT BE OPENED FOR DEPLETION')
@@ -63,13 +72,13 @@ C----
       NEL=NPZ(1)
       IF(NEL.GT.MAXISO) CALL XABORT('LIBEWI: TOO MANY ISOTOPES '//
      >    'ON WIMS-AECL LIBRARY'//CFILNA)
-C----
-C  CLOSE WIMS-AECL LIBRARY AND
-C  RETURN
-C----
+*----
+*  CLOSE WIMS-AECL LIBRARY AND
+*  RETURN
+*----
       CALL CLSIND(IUNIT)
-C----
-C  RETURN
-C----
+*----
+*  RETURN
+*----
       RETURN
       END

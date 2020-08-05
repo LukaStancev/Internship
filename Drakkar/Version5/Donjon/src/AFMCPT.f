@@ -12,7 +12,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the cross sections
+* Compute the cross sections
 *
 *Copyright:
 * Copyright (C) 1996 Ecole Polytechnique de Montreal
@@ -21,28 +21,82 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): M.T. Sissaoui
+*Author(s): 
+* M.T. Sissaoui
 *
 *Parameters: input
-*  KENTRY address of the linked list or handle to the xsm file.
-*  NGRP   number of energy groups.
-*  NISO   number of extracted isotopes.
-*  NL     number of Legendre orders (=1 for isotropic scattering).
-*  NBURN  number of burnup steps.
-*  NTYP   total number of cross sections type.
-*  TF     fuel temperature.
-*  TC     coolant temperature.
-*  TM     moderator temperature.
-*  DC     coolant density.
-*  DM     moderator density.
-*  BOR    Boron concentration.
-*  XEN    Xenon concentration.
-*  SM     Samarium concentration.
-*  RNP9   Neptunium concentration.
-*  XI     moderator purity.
-*  NMIX   mixture number.
-*  NPS    NPS-2 power shift.
-*  IXYZ   type of diffusion coefficient (=0: isotropic; =1: directional)
+* KENTRY  address of the linked list or handle to the xsm file.
+* NGRP    number of energy groups.
+* NISO    number of extracted isotopes.
+* NL      number of Legendre orders (=1 for isotropic scattering).
+* NBURN   number of burnup steps.
+* NTYP    total number of cross sections type.
+* TF      fuel temperature.
+* TC      coolant temperature.
+* TM      moderator temperature.
+* DC      coolant density.
+* DM      moderator density.
+* BOR     Boron concentration.
+* XEN     Xenon concentration.
+* SM      Samarium concentration.
+* RNP9    Neptunium concentration.
+* XI      moderator purity.
+* NMIX    mixture number.
+* NPS     NPS-2 power shift.
+* IXYZ    type of diffusion coefficient (=0: isotropic; =1: directional)
+*
+*Parameters: 
+* IMPX     
+* SMACB    
+* XBORB    
+* XPURB    
+* XXENB    
+* XT1FB    
+* XT2FB    
+* XT1CB    
+* XT2CB    
+* XT1MB    
+* XT2MB    
+* XD1CB    
+* XD2CB    
+* XD1MB    
+* XD2MB    
+* XSMB     
+* XNP9B    
+* XMFDB    
+* XMMDB    
+* XPF1B    
+* XPF2B    
+* XPF1LB   
+* XPF2LB   
+* DENSITB  
+* CPW1B    
+* CPW2B    
+* FLUXB    
+* OVERVB   
+* CHIB     
+* IJJ      
+* NJJ      
+* HISO     
+* CTITRE   
+* SIGMA    
+* TFR      
+* TCR      
+* TMR      
+* XIR      
+* OVERV      
+* FLUX       
+* CHI        
+* SCAT       
+* MMIX       
+* PW           
+* XBRH     
+* XBURN    
+* LTAV     
+* IRAV     
+* IDF      
+* JTAB     
+* ILIN     
 *
 *-----------------------------------------------------------------------
 *

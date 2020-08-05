@@ -3,14 +3,8 @@
 *
 *-----------------------------------------------------------------------
 *
-*Purpose: "unfold" a tracking line (MOCC) for connection matrices
-* calculation or preconditioner calculation.
-* ex: -5 2 3 1 -4 -4 2 1 -1 -1 1 -5
-*      r        v  v      r  r    r
-* -->    2 3 1 -4    2 1
-* where r stands for reflective boundary condition,
-*       v     \\     void             \\          .
-* 
+*Purpose: 
+* Unfold a tracking line (MOCC) for connection matrices.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -29,6 +23,14 @@
 * NOM     segment index array of this track "folded"/"unfolded".
 * H       segment length array of this track "folded"/"unfolded".
 *
+*Comments:
+*   Preconditioner calculation.
+*   ex: -5 2 3 1 -4 -4 2 1 -1 -1 1 -5
+*        r        v  v      r  r    r
+*   -->    2 3 1 -4    2 1
+*   where r stands for reflective boundary condition,
+*         v     \\     void             \\          .
+* 
 *-----------------------------------------------------------------------
 *
 *----

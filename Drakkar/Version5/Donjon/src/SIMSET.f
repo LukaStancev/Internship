@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* set the burnup and fuel type of a group of assemblies at positions
+* Set the burnup and fuel type of a group of assemblies at positions
 * ASMB1.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input/output
 * NCH     number of assemblies or number of quart-of-assemblies.

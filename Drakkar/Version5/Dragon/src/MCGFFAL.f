@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solution of transport equation on a finite track.
+* Solution of transport equation on a finite track.
 * Linear-discontinuous-characteristics approximation.
 * Ray-tracing (anisotropic scattering case,'source term isolation' off).
 *
@@ -20,6 +20,7 @@
 *Author(s): A. Hebert
 *
 *Parameters: input
+* SUBSCH  track coefficients calculation subroutine.
 * K       total number of volumes for which specific values
 *         of the neutron flux and reactions rates are required.
 * KPN     total number of unknowns in vectors F.
@@ -51,6 +52,9 @@
 * F       vector containing the zonal scalar flux (surface components).
 * PHIV    vector containing the zonal scalar flux (component 1).
 * DPHIV   vector containing the zonal scalar flux (components 2 and 3).
+*
+*Parameters: scratch
+* B       undefined.
 *
 *-----------------------------------------------------------------------
 *

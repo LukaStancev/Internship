@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver to generate a macrolib using fbm
+* Driver to generate a macrolib using fbm
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -15,10 +15,12 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): M.T. Sissaoui
-*  Modified by : E. Varin 28/03/00, B. Dionne 26/02/01, 
-*                A. Lagarrigue 30/07/05
-*                A. Hebert 11/11/11 (remove table support)
+*Author(s): 
+* M.T. Sissaoui
+*Update(s):
+*  E. Varin 28/03/00, B. Dionne 26/02/01, 
+*  A. Lagarrigue 30/07/05
+*  A. Hebert 11/11/11 (remove table support)
 *
 *Parameters: input
 * KENTRY  address of the LCM objects
@@ -33,6 +35,7 @@
 * MNPS    number of shifts + 2
 * NL      number of legendre orders (=1 for isotropic scattering)
 * ILEAK   type of leakage
+* NTYP
 * NBCH    number of bundles per channel
 * NCCO    number of channels in the core
 * NCZO    number of combustion zones

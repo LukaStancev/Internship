@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover T/H inveariant data block and store in INFO/TH_DATA/
+* Recover T/H inveariant data block and store in INFO/TH_DATA/
 * WARNING: These data are extracted only if the corresponding flag is
 * set to T in the GENPMAXS_INP/JOBOPT vector.
 * NB 1 : The data for T/H are recovered from the reference state,  the
@@ -16,9 +16,10 @@
 * NB 4 : The Helios format cannot recover the Decay Heat Data (DBET and
 * DLAM in GenPMAXS), it is fixed to default values even if JOBOPT(14)=T.
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of the INFO data block
 * IPMIC   address of the MICROLIB object
 * IPPRINT control the printing on screen
@@ -30,6 +31,10 @@
 * NFISS   number of fissile isotopes
 * STAIDX  index of state variables
 * FLAG    End of a bran calculation (=-1: branch for yields calculation)
+*
+*Parameters: 
+* IPRINT  
+* JOBOPT  
 *
 *-----------------------------------------------------------------------
 *
@@ -155,7 +160,7 @@
           ALLOCATE (ISOTOPESDEPL(NDEPL), PF(NDEPL),DEPLETE_DECA(NDEPL))
           CALL LCMGET(IPMIC,'DEPLETE-DECA',DEPLETE_DECA)
           CALL LCMGET(IPMIC,'DEPLETE-ENER',DEPLETE_ENER)
-          CALL LCMGET(IPMIC,'ISOTOPESDEPL',ISOTOPESDEPL)
+          CALL LCMGTC(IPMIC,'ISOTOPESDEPL',12,NDEPL,ISOTOPESDEPL)
 
           IF ((NDFI.EQ.0 ).OR. (NDFP .EQ. 0)) THEN
            WRITE(6,*) "@D2PTH : NUMBER OF DIRECT FISSILE ISOTOPES",

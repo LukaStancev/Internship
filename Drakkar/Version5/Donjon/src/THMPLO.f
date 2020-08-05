@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the value of the corrective factor for two phase calculation
+* Compute the value of the corrective factor for two phase calculation
 * of frictional pressure loss based on an homogeneous flow correlation
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet
+*Author(s): 
+* P. Gallet
 *
 *Parameters: input
 * P       pressure (Pa)

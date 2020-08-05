@@ -1,5 +1,14 @@
 *DECK DETSPLI2
       SUBROUTINE DETSPLI2(XA,YA,Y2A,N,X,Y)
+*
+*Parameters: 
+* XA       
+* YA       
+* Y2A      
+* N        
+* X         
+* Y    
+*     
       DIMENSION XA(N),YA(N),Y2A(N)
       KLO=1
       KHI=N

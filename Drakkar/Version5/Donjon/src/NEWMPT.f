@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* store modified nuclear properties in a new macrolib.
+* Store modified nuclear properties in a new macrolib.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * IPMAC   pointer to create mode macrolib.

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transposition of the usefull interpolated microscopic cross section
+* Transposition of the usefull interpolated microscopic cross section
 * for producing an adjoint problem
 *
 *Copyright:

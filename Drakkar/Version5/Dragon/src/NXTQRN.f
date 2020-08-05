@@ -8,17 +8,20 @@
 * To define quadruple range (QR) quadrature angles.
 *
 *Copyright:
-* Copyright (C) 2008 Ecole Polytechnique de Montreal.
+* Copyright (C) 2008 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s): 
 * N. Martin
 *
 *References: 
-* I. K. Abu-Shumays, "Angular quadratures for improved transport
-* computations", Transport Theory and Statistical Physics, 30:2,
+* I. K. Abu-Shumays, Angular quadratures for improved transport
+* computations, Transport Theory and Statistical Physics, 30:2,
 * 169 - 204 (2001).
-*
-* E. M. Baker, "Quadruple range quadrature verification and extention",
+* E. M. Baker, Quadruple range quadrature verification and extention,
 * Los Alamos documentation LA-UR-07-8050 (2006).
 *
 *Parameters: input
@@ -31,6 +34,7 @@
 *Parameters: output
 * DANGLT  director cosines of angles.
 * DDENWT  angular density for each angle.
+*
 *----------
 *
       IMPLICIT   NONE

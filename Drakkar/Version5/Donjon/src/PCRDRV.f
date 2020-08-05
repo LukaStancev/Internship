@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for PMAXS file interpolation. Use user-defined
+* Compute TERP factors for PMAXS file interpolation. Use user-defined
 * global and local parameters.
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * LCUBIC  =.TRUE.: cubic Ceschino interpolation; =.FALSE: linear

@@ -4,7 +4,20 @@
 *----------------------------------------------------------------------
 *Purpose: routine de HQSIMEX
 *
-*Author(s): M. Beaudet
+*Author(s): 
+* M. Beaudet
+*
+*Parameters: 
+* V1     
+* V2     
+* V3     
+* U1     
+* U2     
+* U3     
+* AS     
+* BS     
+* CS     
+*
 *----------------------------------------------------------------------
 *
       CHARACTER*6 CLNAME

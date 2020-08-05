@@ -86,7 +86,6 @@
 *----
       CHARACTER         TITREC*72
       LOGICAL           LEAKSW
-*      INTEGER           IPTRK
       TYPE(C_PTR)       IPTRK
       INTEGER           IFTRAK, IPRNTP, NREGIO,  NBMIX,   NANI,
      >                  MATCOD(NREGIO),NRENOR, NELPIJ,  IPIJK,   NSBG,
@@ -633,7 +632,7 @@
          ENDIF
   160 CONTINUE
       CALL PIJD2R(NREG,NSOUT,DPROB(1,ISBG),FFACT,.FALSE.,NELPIJ,
-     >            PIJ(1,1,ISBG))
+     >            N2PROB,PIJ(1,1,ISBG))
 *----
 *  CHARGE PIJX AND PIJY MATRICES IN THE DRAGON SYMMETRIZED FORMAT
 *  ( PIJX=PIJY ), AND PIJZ CALCULATION ( PIJZ=3*PIJ-PIJX-PIJY )
@@ -641,7 +640,7 @@
 *----
       IF(LPIJK)THEN
         CALL PIJD2R(NREG,NSOUT,DPROBX(1,ISBG),FFACT,.TRUE.,NELPIJ,
-     >              PIJ(1,2,ISBG))
+     >              N2PROB,PIJ(1,2,ISBG))
         IVV=0
         DO 181 IUN=1,NREG
           IU=IUN

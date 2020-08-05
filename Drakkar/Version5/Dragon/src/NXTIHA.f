@@ -8,15 +8,19 @@
 * a 2--D hexagon and an annular pin.
 *
 *Copyright:
-* Copyright (C) 2010 Ecole Polytechnique de Montreal.
+* Copyright (C) 2010 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s): G. Marleau.
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * POSHEX  spatial description of the hexagon with
@@ -30,16 +34,14 @@
 *
 *Parameters: output
 * NXTIHA  type of intersection between haxagon and annular pin, where
-*         \begin{itemize}
-*         \item \verb|NXTIHA|=0 means that there is no intersection
+*         = 0 means that there is no intersection
 *         between the two regions;
-*         \item \verb|NXTIHA|=1 means that the hexagon
+*         = 1 means that the hexagon
 *         is all located inside the annular pin;
-*         \item \verb|NXTIHA|=2 means that the annular pin
+*         = 2 means that the annular pin
 *         is all located inside the hexagon;
-*         \item \verb|NXTIHA|=-1 means that the intersection between
+*         =-1 means that the intersection between
 *         the hexagon and the annular pin is partial.
-*         \end{itemize}
 * VOLINT  2-D volume of intersection (area) between hexagon and
 *         annular pin.
 *

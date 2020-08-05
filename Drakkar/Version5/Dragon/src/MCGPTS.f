@@ -9,7 +9,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the PJJ and PSJ (3D prismatic extended tracking).
+* Calculation of the PJJ and PSJ (3D prismatic extended tracking).
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -74,14 +74,14 @@
 * SSYM    symmetry flag.
 *
 *Parameters: input/output
-* PJJD
-* PSJ
+* PJJD    collision probabilities.
+* PSJ     leakage probabilities.
 *
 *Parameters: scratch
-* RHARM
-* TRHAR
-* NOM3D
-* H3D
+* RHARM   undefined.
+* TRHAR   undefined.
+* NOM3D   undefined.
+* H3D     undefined.
 *
 *-----------------------------------------------------------------------
 *

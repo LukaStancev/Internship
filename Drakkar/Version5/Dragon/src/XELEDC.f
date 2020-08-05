@@ -5,50 +5,53 @@
      >                   ICORDO, IDLDIM, KEYGEO,
      >                   KEYTYP, IDLBLK, KEYINT,
      >                   NTOTCL,   MAXR,   NSUR,   NVOL, KEYCYL )
-************************************************************************
-*                                                                      *
-*           NAME: XELEDC                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 90/08                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL ASSOCIATE ALL BLOCKS OF A PROBLEM  *
-*                 TO ONLY ONE GEOMETRY & WILL GENERATE THE 4           *
-*                 USEFUL INTEGER VALUES THAT WILL DESCRIBE THE PROBLEM *
-*                 IN ITS EXACT GEOMETRIC DESCRIPTION.                  *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NDIM   / # OF DIMENSIONS.                             /I./INT        *
-* MAXGRI / # OF GRID CELL IN X/Y/Z DIRECTIONS           /I./INT(3)     *
-* NGEOME / # OF GEOMETRIES.                             /I./INT        *
-* NTOTCO / TOT # OF CYLINDERS IN ALL GEOMETRIES         /I./INT        *
-* NTYPES / # OF TYPES.                                  /I./INT        *
-* NBLOCK / # OF BLOCKS.                                 /I./INT        *
-* NUNKO  / # OF UNKNOWNS.                               /I./INT        *
-* NSURO  / # OF SURFACES OF EACH GEOMETRY.              /I./INT(NTYPES)*
-* NVOLO  / # OF ZONES OF EACH GEOMETRY.                 /I./INT(NTYPES)*
-* MINDO  / MIN INDEX IN THE REMESH ARRAY.               /I./INT(NTOTCO)*
-* MAXDO  / MIN INDEX IN THE REMESH ARRAY.               /I./INT(NTOTCO)*
-* ICORDO / COORDINATE   FOR REMESH ARRAY.               /I./INT(NTOTCO)*
-* IDLDIM / POSITION OF EACH GEOEMTRY IN CYLINDERS #ING. /I./INT(NGEOME)*
-* KEYGEO / GEOMETRIC KEY FOR EACH TYPE.                 /I./INT(NTYPES)*
-* KEYTYP / TYPE KEY FOR EACH BLOCK.                     /I./INT(NBLOCK)*
-* IDLBLK / POSITION OF EACH BLOCK IN NUMBERING SCHEME.  /I./INT(NBLOCK)*
-* KEYINT / #ING OF CELL INTERFACES.                     /I./INT(NUNKO )*
-* NTOTCL / TOT # OF CYLINDERS IN EXACT GEOMETRY.        /.O/INT        *
-* MAXR   / LENGHT TO STOCK REAL ABSCISSAE.              /.O/INT        *
-* NSUR   / # OF SURFACES OF EXACT GEOMETRY (NEGATIVE).  /.O/INT        *
-* NVOL   / # OF ZONES OF EXACT GEOMETRY.                /.O/INT        *
-* KEYCYL / INDEX OF CYLINDERS BY BLOCK.                 /.O/INT(NBLOCK)*
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Associate all blocks of a problemto only one geometry and generate
+* the 4 useful integer values that will describe the problem
+* in its exact geometric description.    
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NDIM    number of dimensions.                             
+* MAXGRI  number of grid cell in x/y/z directions           
+* NGEOME  number of geometries.                             
+* NTOTCO  tot number of cylinders in all geometries         
+* NTYPES  number of types.                                  
+* NBLOCK  number of blocks.                                 
+* NUNKO   number of unknowns.                               
+* NSURO   number of surfaces of each geometry.              
+* NVOLO   number of zones of each geometry.                 
+* MINDO   min index in the remesh array.               
+* MAXDO   min index in the remesh array.               
+* ICORDO  coordinate for remesh array.               
+* IDLDIM  position of each geoemtry in cylinders numbering. 
+* KEYGEO  geometric key for each type.                 
+* KEYTYP  type key for each block.                     
+* IDLBLK  position of each block in numbering scheme.  
+* KEYINT  numbering of cell interfaces.                     
+*
+*Parameters: input
+* NTOTCL  tot number of cylinders in exact geometry.        
+* MAXR    lenght to stock real abscissae.              
+* NSUR    number of surfaces of exact geometry (negative).  
+* NVOL    number of zones of exact geometry.                
+* KEYCYL  index of cylinders by block.                 
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT     NONE
-C
+*
       INTEGER      NDIM, NGEOME, NTOTCO, NTYPES, NBLOCK, NUNKO,
      >             NTOTCL, MAXR, NSUR, NVOL
       INTEGER      MAXGRI(3),      NSURO(NTYPES),  NVOLO(NTYPES),
@@ -56,27 +59,27 @@ C
      >             IDLDIM(NTYPES), KEYGEO(NTYPES),
      >             KEYTYP(NBLOCK), IDLBLK(NBLOCK), KEYCYL(NBLOCK),
      >             KEYINT( NUNKO)
-C
+*
       INTEGER      ICUR(3), IBLK, N, ICX, ITYP, IGEO, IDLD, MDMIN,
      >             NP1, NP2, IP1, IP2, IP3, NC, NSUX, NVOX, IVX
       INTEGER      NUMBLK, I, K
-C
+*
       NUMBLK(I,K)= I + IDLBLK(K)
-C
+*
       DO 5 IBLK= 1, NBLOCK
          KEYCYL(IBLK)= 0
     5 CONTINUE
-C
-C     DETERMINE: NTOTCL & MAXR
-C.1)  RECONSTRUCT CARTESIAN MESH
+*
+*     DETERMINE: NTOTCL & MAXR
+*.1)  RECONSTRUCT CARTESIAN MESH
       MAXR= 0
       NTOTCL= 3
       ICUR(1)= 1
       ICUR(2)= 1
       ICUR(3)= 1
       DO 30 N= 1, 3
-C
-C        SCANNING CELLS ON THE AXIS #N
+*
+*        SCANNING CELLS ON THE AXIS #N
          DO 20 ICX= 1, MAXGRI(N)
             ICUR(N)= ICX
             IF( NDIM.EQ.2 )THEN
@@ -94,8 +97,8 @@ C        SCANNING CELLS ON THE AXIS #N
          ICUR(N)= 1
          MAXR= MAXR+1
    30 CONTINUE
-C
-C.2)  RECONSTRUCT INFORMATIONS FOR CYLINDRICAL MESH
+*
+*.2)  RECONSTRUCT INFORMATIONS FOR CYLINDRICAL MESH
       IF( NDIM.EQ.2 )THEN
          MDMIN= 3
       ELSE
@@ -144,8 +147,8 @@ C.2)  RECONSTRUCT INFORMATIONS FOR CYLINDRICAL MESH
   110    CONTINUE
   120    CONTINUE
   130 CONTINUE
-C
-C     DETERMINE: NSUR & NVOL
+*
+*     DETERMINE: NSUR & NVOL
       NSUR= 0
       NVOL= 0
       DO 230 IBLK= 1,NBLOCK
@@ -164,6 +167,6 @@ C     DETERMINE: NSUR & NVOL
             ENDIF
   220    CONTINUE
   230 CONTINUE
-C
+*
       RETURN
       END

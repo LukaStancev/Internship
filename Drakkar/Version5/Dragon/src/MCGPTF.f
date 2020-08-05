@@ -8,7 +8,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* flux integration upon the tracking (3D prismatic extended tracking).
+* Flux integration upon the tracking (3D prismatic extended tracking).
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

@@ -4,16 +4,24 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build a procedure file for the interpolation of cross sections
+* Build a procedure file for the interpolation of cross sections
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   adress of info data block
 * HEQUI   name of the equivalence record in the saphyb|MCO object
 * HMASL   name of heavy metal density record in the saphyb|MCO object
 * ISOTVAL concentration of particularized isotopes
 * ISOTOPT otpion for paticularised isotopes
+*
+*Parameters: 
+* IPPRC    
+* LMEM     
+* IPRINT   
+* MIXDIR   
+* JOBOPT   
 *
 *-----------------------------------------------------------------------
 *

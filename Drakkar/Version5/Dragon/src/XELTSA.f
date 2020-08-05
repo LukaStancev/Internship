@@ -12,21 +12,20 @@
 *
 *Author(s): R. Roy
 *
-*Reference:
-* R. Roy, G. Marleau, A. H\'{e}bert and D. Rozon,
-* ``A Cyclic Tracking Procedure for Collision Probability Calculations
-* in 2-D Lattices'', in
-* \textsl{Advances in Mathematics, Computations and Reactor Physics},
-* Pittsburgh, PA, April 28 - May 2 (1991).
-*
 *Parameters: input
-* NDIN   number of dimensions for the problem.
+* NDIM   number of dimensions for the problem.
 * ABSC   multidimensional width of the cell.
 * INDC   index of each coordinate of the angles.
 *
 *Parameters: output
 * DENS   effective periodic density.
 * ANGTSA tracking direction and its normal.
+*
+*Reference:
+* R. Roy, G. Marleau, A. Hebert and D. Rozon,
+* A Cyclic Tracking Procedure for Collision Probability Calculations
+* in 2-D Lattice', Advances in Mathematics, Computations and 
+* Reactor Physics, Pittsburgh, PA, April 28 - May 2 (1991).
 *
 *-----------------------------------------------------------------------
 *

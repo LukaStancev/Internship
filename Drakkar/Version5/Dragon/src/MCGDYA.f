@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* return the dyadic matrix of Eq. (43).
+* Returns the dyadic matrix of Eq. (43).
 *
 *Copyright:
 * Copyright (C) 2015 Ecole Polytechnique de Montreal

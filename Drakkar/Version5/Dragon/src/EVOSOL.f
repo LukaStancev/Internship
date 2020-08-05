@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* put the depletion matrix system in sparse storage mode for a single
+* Put the depletion matrix system in sparse storage mode for a single
 * depleting mixture. Solve this system between times XT(1) and XT(2).
 *
 *Copyright:

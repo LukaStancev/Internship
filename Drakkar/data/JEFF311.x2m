@@ -1,8 +1,13 @@
-MODULE UTL: DELETE: END: ;
+MODULE GREP: MSTR: UTL: DELETE: END: ;
 PROCEDURE EvoNominale MakeBib1BU Reflector Tihange ;
 LINKED_LIST ReflSpecs ;
 XSM_FILE Library Burnup ConcMode Info
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+XSM_FILE PowerCD PowerD PowerARO ;
+SEQ_ASCII PowerCD_asc  :: FILE './_PowerCD.ascii'  ;
+SEQ_ASCII PowerD_asc   :: FILE './_PowerD.ascii'   ;
+SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
+XSM_FILE Temp ;
 *---
 ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
                      CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
@@ -10,29 +15,42 @@ REFL := Reflector ReflSpecs ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 195 None 1 ;
 UOX195 := MakeBib1BU Library Burnup ConcMode Info ;
-Library Burnup ConcMode Info := DELETE:
-Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 310 None 1 ;
 UOX310 := MakeBib1BU Library Burnup ConcMode Info ;
-Library Burnup ConcMode Info := DELETE:
-Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 255 Py8 1 ;
 UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info ;
-Library Burnup ConcMode Info := DELETE:
-Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 255 Py12 1 ;
 UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info ;
-Library Burnup ConcMode Info := DELETE:
-Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale :: TIH UOX 310 Py12 1 ;
 UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info ;
-Library Burnup ConcMode Info := DELETE:
-Library Burnup ConcMode Info ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-Tihange REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+PowerCD PowerD PowerARO := Tihange
+  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+*--- Export the bare minimum to ASCII, i.e. radial power distributions
+*    and k-effectives
+INTEGER Length ;
+UTL: PowerCD :: DUMP ;
+GREP: PowerCD :: LENGTH POWER-CHAN >>Length<< ;
+Temp := MSTR: PowerCD  :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
+                          CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+PowerCD_asc := Temp ;
+Temp := DELETE: Temp ;
+Temp := MSTR: PowerD   :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
+                          CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+PowerD_asc := Temp ;
+Temp := DELETE: Temp ;
+Temp := MSTR: PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
+                          CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+PowerARO_asc := Temp ;
+Temp := DELETE: Temp ;
 END: ;
 QUIT "LIST" .

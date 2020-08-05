@@ -1,10 +1,10 @@
 *DECK LIBXS3
-      SUBROUTINE LIBXS3 (NAMFIL,NGRO,ENERG_PTR)
+      SUBROUTINE LIBXS3 (NAMFIL,NGRO,IPENER)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover energy group information from an APOLIB-XSM library
+* Recover energy group information from an APOLIB-XSM library
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal
@@ -19,8 +19,8 @@
 * NAMFIL  name of the APOLIB-XSM file
 *
 *Parameters: output
-* NGRO       number of energy groups
-* ENERG_PTR  C_PTR pointer of the energy mesh limit array
+* NGRO    number of energy groups
+* IPENER  pointer of the energy mesh limit array
 *
 *-----------------------------------------------------------------------
 *
@@ -30,7 +30,7 @@
 *----
       INTEGER NGRO
       CHARACTER NAMFIL*(*)
-      TYPE(C_PTR) ENERG_PTR
+      TYPE(C_PTR) IPENER
 *----
 *  Local variables
 *----
@@ -41,8 +41,8 @@
       CALL LCMSIX(IPAP,'PMAIL',1)
       CALL LCMLEN(IPAP,'E',NV,ITYLCM)
       NGRO=NV-1
-      ENERG_PTR=LCMARA(NGRO+1)
-      CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRO+1 /))
+      IPENER=LCMARA(NGRO+1)
+      CALL C_F_POINTER(IPENER,ENERG,(/ NGRO+1 /))
       CALL LCMGET(IPAP,'E',ENERG)
       CALL LCMSIX(IPAP,' ',2)
       CALL LCMCL(IPAP,1)

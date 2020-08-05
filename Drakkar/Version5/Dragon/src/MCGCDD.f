@@ -21,7 +21,7 @@
 *
 *Parameters: input
 * IPRINT  print parameter.
-* JPMACR  pointer to the macrolib LCM object ('GROUP' directory)
+* IPMACR  pointer to the macrolib LCM object ('GROUP' directory)
 * IG      group being processed.
 * NG      number of groups.
 * NGEFF   number of groups to process.

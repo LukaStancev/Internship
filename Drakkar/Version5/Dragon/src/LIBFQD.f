@@ -7,7 +7,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute NOR-point Calendf-type probability tables;
+* Compute NOR-point Calendf-type probability tables;
 * compute physical and/or slowing-down correlated probability tables;
 * component of the Ribon extended method.
 *
@@ -55,6 +55,7 @@
 * SIGTF   microscopic total x-sections in the fine groups.
 * SIGSF   microscopic P0 scattering x-sections in the fine groups.
 * AWR     mass ratio for current isotope.
+* SIGFF   microscopic nu*fission cross sections in the fine groups.
 * ISMIN   minimum secondary group corresponding to each primary group
 * ISMAX   maximum secondary group corresponding to each primary group
 * GOLD    method flag: =-998.0 to use the CALENDF approach; =-999.0 to

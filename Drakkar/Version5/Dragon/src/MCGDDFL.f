@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculate coefficients of a track for the characteristics 
+* Calculate coefficients of a track for the characteristics 
 * integration.
 * DD1 Diamond-Differencing scheme without fix-up.
 * 'source term isolation' option turned off.

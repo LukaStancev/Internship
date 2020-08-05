@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read input data stream for MIX record and recover the information
+* Read input data stream for MIX record and recover the information
 * from l_compo linked list.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input/output
 * IPCPO   pointer to l_compo information.

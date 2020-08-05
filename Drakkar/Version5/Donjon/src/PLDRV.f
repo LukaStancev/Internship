@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* prepares the different matrices for the resolution of a linear
+* Prepares the different matrices for the resolution of a linear
 * optimisation problem with a quadratic constraint. The different
 * available methods are the MAP technique, the lemke, the augmented-
 * Lagrangian and the penalty function.
@@ -18,7 +18,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input
 * IPOPT   pointer to the L_OPTIMIZE object.

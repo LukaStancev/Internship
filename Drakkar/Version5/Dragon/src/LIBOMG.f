@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the correlated weight matrix preserving a matrix of moments.
+* Compute the correlated weight matrix preserving a matrix of moments.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

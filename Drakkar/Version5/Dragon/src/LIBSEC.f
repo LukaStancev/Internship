@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the values of the transfer macroscopic cross section for
+* Compute the values of the transfer macroscopic cross section for
 * secondary neutrons in group LLL. Component of the APOLIB-1 reader
 *
 *Copyright:

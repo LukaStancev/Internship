@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read and store the data related to global and local parameters.
+* Read and store the data related to global and local parameters.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki, R. Chambon, M. Guyot, V. Descotes, B. Toueg
+*Author(s): 
+* D. Sekki, R. Chambon, M. Guyot, V. Descotes, B. Toueg
 *
 *Parameters: input/output
 * IPMAP   pointer to fuel-map information.
@@ -179,17 +180,19 @@
               IF(ITYP.NE.2)CALL XABORT('@RESPAR: REAL'
      1         //' DATA FOR VALUE EXPECTED.')
               DO 40 IB=1,NB
-   40         IF(FMIX(ICH,IB).NE.0) VALUE(ICH,IB)=FLOT
+              IF(FMIX(ICH,IB).NE.0) VALUE(ICH,IB)=FLOT
+   40         CONTINUE
             ENDDO
 *
           ELSEIF(TEXT.EQ.'BUND')THEN
-            DO 50 IB=1,NB
+            DO 55 IB=1,NB
             DO 50 ICH=1,NCH
               IF(FMIX(ICH,IB).EQ.0) GO TO 50
               CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
               IF(ITYP.EQ.2)VALUE(ICH,IB)=FLOT
               IF(ITYP.EQ.3)CVALUE(ICH,IB)=TEXT
    50       CONTINUE
+   55       CONTINUE
           ELSEIF(TEXT.EQ.'TIMES')THEN
 ! try to find the parameters called DMOD
             CALL REDGET(ITYP,NITMA,FLOT,KEYN,DFLOT)
@@ -305,7 +308,7 @@
             CALL LCMGET(JPMAP,'MESHZ',ZZ)
             CALL LCMGET(IPMAP,'BMIX',NUM)
             ICH=0
-            DO 100 IY=1,NY
+            DO 105 IY=1,NY
             DO 100 IX=1,NX
             IEL=(IY-1)*NX+IX
             DO 80 IZ=1,NZ
@@ -334,6 +337,7 @@
               IF(FMIX(ICH,IB).NE.0) VALUE(ICH,IB)=VB(IB)
             ENDDO
   100       CONTINUE
+  105       CONTINUE
             IF(ICH.NE.NCH) CALL XABORT('@RESPAR: INVALID NUMBER OF CHA'
      1      //'NNELS.')
             DEALLOCATE(VB,IND,NUM,ZZ)
@@ -341,7 +345,7 @@
             CALL XABORT('@RESPAR: INVALID KEYWORD '//TEXT)
           ENDIF
           IF(ITYP.EQ.2)CALL LCMPUT(KPMAP,'P-VALUE',NCH*NB,2,VALUE)
-          IF(ITYP.EQ.3)CALL LCMPUT(KPMAP,'P-VALUE',NCH*NB,3,CVALUE)
+          IF(ITYP.EQ.3)CALL LCMPTC(KPMAP,'P-VALUE',12,NCH*NB,CVALUE)
           IF(ITYP.EQ.11)CALL LCMPUT(KPMAP,'P-VALUE',1,2,VALUE(1,1))
         ENDIF
 *----
@@ -357,7 +361,8 @@
      1     //' BUNDLE-SHIFT MUST BE POSITIVE AND NON-ZERO NUMBER'
      1     //' AND MAX EQUAL TO NUMBER OF FUEL BUNDLES PER CHANNEL')
           DO 110 ICZ=1,NCOMB
-  110     IBSH(ICZ)=NITMA
+          IBSH(ICZ)=NITMA
+  110     CONTINUE
         ELSEIF((ITYP.EQ.3).AND.(TEXT.EQ.'COMB'))THEN
           DO ICZ=1,NCOMB
             CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
@@ -390,7 +395,7 @@
         CALL XDISET(NSCH,NCH,0)
         IEL=0
         ICH=0
-        DO 130 IY=1,NY
+        DO 135 IY=1,NY
         DO 130 IX=1,NX
         IEL=IEL+1
         IF(MIX(IEL).EQ.0)GOTO 130
@@ -398,6 +403,7 @@
         ISHIFT=IBSH(IZONE(ICH))
         NSCH(ICH)=((-1)**(IEL+IY-1))*ISHIFT
   130   CONTINUE
+  135   CONTINUE
         CALL LCMPUT(IPMAP,'REF-SCHEME',NCH,1,NSCH)
         LRSCH=.TRUE.
 *----

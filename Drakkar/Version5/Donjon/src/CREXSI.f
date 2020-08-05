@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover and/or interpolate l_compo data.
+* Recover and/or interpolate l_compo data.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, D. Sekki
+*Author(s): 
+* A. Hebert, D. Sekki
 *
 *Parameters: input
 * IPMAP   pointer to the fuel-map information.

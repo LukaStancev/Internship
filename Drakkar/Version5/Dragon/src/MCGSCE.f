@@ -30,7 +30,7 @@
 * XST     macroscopic total cross section.
 *
 *Parameters: output
-* B
+* B       undefined.
 *
 *-----------------------------------------------------------------------
 *

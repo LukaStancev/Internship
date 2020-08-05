@@ -1,50 +1,51 @@
 *DECK LIBENI
       SUBROUTINE LIBENI(CFILNA,NEL)
-C
-C-------------------------- LIBENI   ----------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBENI
-C     ENTRY    : LIBENI
-C     USE      : INITIALIZE DIMENSIONS FOR DEPLETION DATA ON WIMS-D4
-C                FORMAT LIBRARY
-C     MODIFIED : 97-01-03
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C     CFILNA : WIMS FILE NAME                       C*8
-C   OUTPUT
-C     NEL    : NUMBER OF ISOTOPES ON LIBRARY        I
-C   WIMS-D4 LIBRARY PARAMETERS
-C     LPZ    : LENGTH OF WIMS PARAMETER ARRAY = 8   I
-C     NPZ    : LIST OF MAIN PARAMETERS              I(LPZ)
-C
-C--------------------------  LIBENI  ----------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Initialize dimensions for depletion data for WIMS-D4 format library.
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): G. Marleau.
+*
+*Parameters: input
+* CFILNA  WIMS file name
+*
+*Parameters: output
+* NEL     number of isotopes on library
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
-C----
-C PARAMETERS
-C----
+*----
+* PARAMETERS
+*----
       INTEGER      LRIND,IACTO,IACTC,IUTYPE,LPZ
       PARAMETER   (LRIND=0,IACTO=2,IACTC=1,IUTYPE=2,LPZ=8)
-C----
-C EXTERNAL FUNCTIONS
-C----
+*----
+* EXTERNAL FUNCTIONS
+*----
       INTEGER      KDRCLS,KDROPN
-C----
-C LOCAL VARIABLES
-C-----
+*----
+* LOCAL VARIABLES
+*-----
       INTEGER      NEL,IUNIT,II,IERR
       CHARACTER    CFILNA*8
-C----
-C  WIMS-D4 LIBRARY PARAMETERS
-C----
+*----
+*  WIMS-D4 LIBRARY PARAMETERS
+*----
       INTEGER      NPZ(LPZ)
-C----
-C  OPEN WIMS-D4 LIBRARY
-C  READ GENERAL DIMENSIONING
-C----
+*----
+*  OPEN WIMS-D4 LIBRARY
+*  READ GENERAL DIMENSIONING
+*----
       IUNIT=KDROPN(CFILNA,IACTO,IUTYPE,LRIND)
       IF(IUNIT.LE.0) CALL XABORT('LIBENI: WIMS-D4 LIBRARY '//
      >    CFILNA//' CANNOT BE OPENED FOR DEPLETION')
@@ -54,8 +55,8 @@ C----
       IF(IERR.LT.0)
      >  CALL XABORT('LIBENI: WIMS-D4 LIBRARY '//
      >    CFILNA//' CANNOT BE CLOSED')
-C----
-C  RETURN
-C----
+*----
+*  RETURN
+*----
       RETURN
       END

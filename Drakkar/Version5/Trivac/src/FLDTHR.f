@@ -78,6 +78,7 @@
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
+      IF(MAXINR.EQ.0) RETURN
       ALLOCATE(GAR2(NUN,NGRP),WORK(LL4,NGRP,3))
 *
       IF(NSTARD.GT.0) CALL LCMGET(IPFLUX,'STATE-VECTOR',ISTATE)
@@ -156,15 +157,16 @@
             IF(NSTARD.EQ.0) THEN
                WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
                CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GAR2(1,IGR),NADI)
+               JTER=NADI
             ELSE
 *              use a GMRES solution of the linear system
                DERTOL=EPSINR
                ISTATE(39)=IGR
                CALL LCMPUT(IPFLUX,'STATE-VECTOR',NSTATE,1,ISTATE)
                ALLOCATE(DWORK1(LL4),DWORK2(LL4))
-               DWORK1(:LL4)=GAR2(:LL4,IGR) ! source
-               DWORK2(:LL4)=0.0            ! estimate of the flux
-               CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,MAXINR,IMPX,
+               DWORK1(:LL4)=GAR2(:LL4,IGR)   ! source
+               DWORK2(:LL4)=WORK(:LL4,IGR,3) ! estimate of the flux
+               CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,NADI,IMPX,
      1         IPTRK,IPSYS,IPFLUX,DWORK2,JTER)
                GAR2(:LL4,IGR)=REAL(DWORK2(:LL4))
                DEALLOCATE(DWORK2,DWORK1)
@@ -230,15 +232,16 @@
             IF(NSTARD.EQ.0) THEN
                WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
                CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GAR2(1,IGR),NADI)
+               JTER=NADI
             ELSE
 *              use a GMRES solution of the linear system
                DERTOL=EPSINR
                ISTATE(39)=IGR
                CALL LCMPUT(IPFLUX,'STATE-VECTOR',NSTATE,1,ISTATE)
                ALLOCATE(DWORK1(LL4),DWORK2(LL4))
-               DWORK1(:LL4)=GAR2(:LL4,IGR) ! source
-               DWORK2(:LL4)=0.0            ! estimate of the flux
-               CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,MAXINR,IMPX,
+               DWORK1(:LL4)=GAR2(:LL4,IGR)   ! source
+               DWORK2(:LL4)=WORK(:LL4,IGR,3) ! estimate of the flux
+               CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,NADI,IMPX,
      1         IPTRK,IPSYS,IPFLUX,DWORK2,JTER)
                GAR2(:LL4,IGR)=REAL(DWORK2(:LL4))
                DEALLOCATE(DWORK2,DWORK1)
@@ -250,7 +253,7 @@
   110       CONTINUE
   115       CONTINUE
          ENDIF
-         IF(MOD(ITER-1,NCTOT).GE.NCPTM) THEN
+         IF(MOD(ITER-2,NCTOT).GE.NCPTM) THEN
             CALL FLD2AC(NGRP,LL4,IGDEB,WORK,ZMU)
          ELSE
             ZMU=1.0
@@ -269,7 +272,8 @@
          CALL KDRCPU(TK2)
          TKT=TKT+(TK2-TK1)
          IF(GINN.LT.EPSINR) TEXT3='YES'
-         IF(IMPX.GT.2) WRITE(6,1000) ITER,GINN,EPSINR,IGDEB,ZMU,TEXT3
+         IF(IMPX.GT.2) WRITE(6,1000) ITER,GINN,EPSINR,IGDEB,ZMU,TEXT3,
+     1   JTER
          IF((GINN.LT.EPSINR).OR.(ITER.EQ.MAXINR)) EXIT
          ITER=ITER+1
       ENDDO
@@ -288,5 +292,6 @@
       RETURN
 *
  1000 FORMAT (10X,3HIN(,I3,6H) FLX:,5H PRC=,1P,E9.2,5H TAR=,E9.2,
-     1 7H IGDEB=, I13,6H ACCE=,0P,F12.5,12H  CONVERGED=,A3)
+     1 7H IGDEB=, I13,6H ACCE=,0P,F12.5,12H  CONVERGED=,A3,6H JTER=,
+     2 I4)
       END

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* fourth-order Kaps-Rentrop step for integrating stiff O.D.E.'s, with
+* Fourth-order Kaps-Rentrop step for integrating stiff O.D.E.'s, with
 * monitoring of local truncation error to adjust stepsize.
 * Special version for isotopic depletion calculations.
 *

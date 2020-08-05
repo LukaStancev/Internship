@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the GPT sources corresponding to the gradient of the RMS
+* Compute the GPT sources corresponding to the gradient of the RMS
 * absorption distribution. Case with direct effect.
 *
 *Copyright:
@@ -16,7 +16,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPRINT  print parameter
@@ -44,6 +45,10 @@
 *
 *Parameters: output
 * RMSD    RMS error on rate distribution.
+*
+*Parameters: 
+* ITYPE
+* IELEM
 *
 *-----------------------------------------------------------------------
 *

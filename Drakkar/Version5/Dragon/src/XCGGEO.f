@@ -3,70 +3,73 @@
      >                  IPRT,ILK,NMAT,RAN,NRODS,RODS,NRODR,RODR,NRINFO,
      >                  MATALB,VOLSUR,COTE,RADMIN,NCODE,ICODE,ZCODE,
      >                  ALBEDO,KEYMRG,NXRS,NXRI)
-C
-C----------------------------------------------------------------------
-C
-C 1-  SUBROUTINE STATISTICS:
-C
-C          NAME      -> XCGGEO
-C          USE       -> READ AND ANALYSE 2-D CLUSTER GEOMETRY
-C          DATE      -> 15-06-1990
-C          AUTHOR    -> G. MARLEAU
-C
-C 2-  PARAMETERS:
-C
-C INPUT
-C  IPGEOM  : POINTER TO THE GEOMETRY                     I
-C  IROT    : TYPE OF PIJ RECONSTRUCTION                  I
-C            IROT < 0 -> CP CALCULATIONS WITH SYMMETRIES
-C            IROT = 0 -> CP CALCULATIONS
-C            IROT = 1 -> DIRECT JPM RECONSTRUCTION
-C            IROT=  2 -> ROT2 TYPE RECONSTRUCTION
-C  NSOUT   : NUMBER OF OUTER SURFACE                     I
-C  NVOL    : MAXIMUM NUMBER OF REGIONS                   I
-C  NBAN    : NUMBER OF CONCENTRIC REGIONS                I
-C  MNAN    : MAXIMUM NUMBER OF RADIUS TO READ            I
-C  NRT     : NUMBER OF ROD TYPES                         I
-C  MSROD   : MAXIMUM NUMBER OF SUBRODS PER RODS          I
-C  IPRT    : IMPRESSION LEVEL                            I
-C
-C OUTPUT
-C  ILK     : ILK=.TRUE. IF NEUTRON LEAKAGE THROUGH       L
-C            EXTERNAL BOUNDARY IS PRESENT.
-C  NMAT    : TOTAL NUMBER OF MATERIALS                   I
-C  RAN     : RADIUS OF ANNULAR REGIONS                   R(NBAN)
-C  NRODS   : INTEGER DESCRIPTION OF ROD OF A GIVEN TYPE  I(3,NRT)
-C            NRODS(1,IRT) = NUMBER OF ROD
-C            NRODS(2,IRT) = NUMBER OF SUBRODS IN ROD
-C            NRODS(3,IRT) = FIRST CONCENTRIC REGION
-C  RODS    : REAL DESCRIPTION OF ROD OF A GIVEN TYPE     R(2,NRT)
-C            RODS(1,IRT) = ROD CENTER RADIUS
-C            RODS(2,IRT) = ANGULAR POSITION OF FIRST ROD
-C  NRODR   : SUBROD REGION                               I(NRT)
-C  RODR    : SUBROD RADIUS                               R(MSROD,NRT)
-C  NRINFO  : ANNULAR REGION CONTENT                      I(2,NBAN)
-C            NRINFO(1,IAN) = NEW REGION NUMBER
-C            NRINFO(2,IAN) = +I CLUSTER NUMBER        (ALL)
-C                          = 1000000+I CLUSTER NUMBER CUT (IN)
-C                          = 2000000+I CLUSTER NUMBER CUT (PART)
-C                          = 3000000+I CLUSTER NUMBER CUT (OUT)
-C                          = 0 NO CLUSTER ASSOCIATED
-C                          = -I CLUSTER AT CENTER     (ALL)
-C  MATALB  : ALBEDO-MATERIAL OF REGIONS                  I(-NSOUT:NVOL)
-C  VOLSUR  : SURFACE/4-VOLUME OF REGIONS                 R(-NSOUT:NVOL)
-C  COTE    : ADDITIONAL SIDE LENGTH FOR RECTANGLE        R
-C  RADMIN  : MINIMUM RADIUS OF REGION                    R
-C  NCODE   : ALBEDO TYPE                                 I(6)
-C  ICODE   : ALBEDO NUMBER ASSOCIATED WITH FACE          I(6)
-C  ZCODE   : ALBEDO ZCODE VECTOR                         R(6)
-C  ALBEDO  : ALBEDO                                      R(6)
-C  KEYMRG  : REGION-SURFACE MERGE VECTOR                 I(-NSOUT:NVOL)
-C  NXRS    : INTEGER DESCRIPTION OF ROD OF A GIVEN TYPE  I(NRT)
-C            LAST CONCENTRIC REGION
-C  NXRI    : ANNULAR REGION CONTENT MULTI-ROD            I(NRT,NBAN)
-C
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Read and analyse 2-D cluster geometry
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G. Marleau
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry.
+* IROT    type of pij reconstruction:
+*          < 0 -> cp calculations with symmetries
+*          = 0 -> cp calculations
+*          = 1 -> direct jpm reconstruction
+*          =  2 -> rot2 type reconstruction
+* NSOUT   number of outer surface.
+* NVOL    maximum number of regions.
+* NBAN    number of concentric regions.
+* MNAN    maximum number of radius to read.
+* NRT     number of rod types.
+* MSROD   maximum number of subrods per rods.
+* IPRT    impression level.
+*
+*Parameters: output
+* ILK     leakage flag. ILK=.TRUE. if neutron leakage through
+*         external boundary is present.
+* NMAT    total number of materials.
+* RAN     radius of annular regions.
+* NRODS   integer description of rod of a given type:
+*         NRODS(1,IRT) = number of rod;
+*         NRODS(2,IRT) = number of subrods in rod;
+*         NRODS(3,IRT) = first concentric region.
+* RODS    real description of rod of a given type:
+*         RODS(1,IRT) = rod center radius;
+*         RODS(2,IRT) = angular position of first rod.
+* NRODR   subrod region.
+* RODR    subrod radius.
+* NRINFO  annular region content:
+*         NRINFO(1,IAN) = new region number
+*         NRINFO(2,IAN) = +I cluster number        (all)
+*                       = 1000000+I cluster number cut (in)
+*                       = 2000000+I cluster number cut (part)
+*                       = 3000000+I cluster number cut (out)
+*                       = 0 no cluster associated
+*                       = -I cluster at center     (all)
+* MATALB  albedo-material of regions.
+* VOLSUR  surface/4-volume of regions.
+* COTE    additional side length for rectangle.
+* RADMIN  minimum radius of region.
+* NCODE   albedo type.
+* ICODE   albedo number associated with face.
+* ZCODE   albedo zcode vector.
+* ALBEDO  albedo.
+* KEYMRG  region-surface merge vector.
+* NXRS    integer description of rod of a given type
+*         last concentric region.
+* NXRI    annular region content multi-rod.
+*
+*----------------------------------------------------------------------
+*
       USE        GANLIB
       IMPLICIT   NONE
       INTEGER    IOUT,NSTATE,NMCOD
@@ -102,21 +105,21 @@ C
       INTEGER, ALLOCATABLE, DIMENSION(:,:) :: MATROD
       REAL, ALLOCATABLE, DIMENSION(:) :: RAD
       REAL, ALLOCATABLE, DIMENSION(:,:) :: VRGIO
-C----
-C  SCRATCH STORAGE ALLOCATION
-C   MATANN  : TYPE OF MATERIAL FOR ANNULAR REGIONS        I(NBAN)
-C   MATROD  : TYPE OF MATERIAL FOR EACH SUBROD            I(MSROD,NRT)
-C   ISPLIT  : SPLITTING VECTOR FOR RODS                   I(NBAN)
-C   RAD     : RADIUS VECTOR                               R(MNAN)
-C   VRGIO   : DIVIDED ROD VOLUME                          R(2,NRT)
-C           : 2 - INSIDE REGION
-C           : 1 - OUTSIDE REGION
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   MATANN  : TYPE OF MATERIAL FOR ANNULAR REGIONS        I(NBAN)
+*   MATROD  : TYPE OF MATERIAL FOR EACH SUBROD            I(MSROD,NRT)
+*   ISPLIT  : SPLITTING VECTOR FOR RODS                   I(NBAN)
+*   RAD     : RADIUS VECTOR                               R(MNAN)
+*   VRGIO   : DIVIDED ROD VOLUME                          R(2,NRT)
+*           : 2 - INSIDE REGION
+*           : 1 - OUTSIDE REGION
+*----
       ALLOCATE(MATANN(NBAN),MATROD(MSROD,NRT),ISPLIT(NBAN))
       ALLOCATE(RAD(MNAN),VRGIO(2,NRT))
-C----
-C  INITIALIZE NRINFO, NXRI AND NXRS TO 0
-C----
+*----
+*  INITIALIZE NRINFO, NXRI AND NXRS TO 0
+*----
       DO 3 IRT=1,NRT
         NXRS(IRT)=0
         NRODR(IRT)=0
@@ -133,14 +136,14 @@ C----
  6    CONTINUE
       VOLSUR(0)=0.0
       MATALB(0)=0
-C----
-C  READ GEOMETRY INFORMATIONS
-C----
+*----
+*  READ GEOMETRY INFORMATIONS
+*----
       CALL XDISET(ISTATE,NSTATE,0)
       CALL LCMGET(IPGEOM,'STATE-VECTOR',ISTATE)
-C----
-C  RECOVER THE BOUNDARY CONDITIONS.
-C----
+*----
+*  RECOVER THE BOUNDARY CONDITIONS.
+*----
       CALL LCMGET(IPGEOM,'NCODE',NCODE)
       CALL LCMGET(IPGEOM,'ZCODE',ALBEDO)
       CALL LCMGET(IPGEOM,'ICODE',ICODE)
@@ -239,18 +242,18 @@ C----
           ENDIF
         ENDIF
       ENDIF
-C----
-C  RECOVER THE MIXTURE FOR ANNULAR REGIONS
-C----
+*----
+*  RECOVER THE MIXTURE FOR ANNULAR REGIONS
+*----
       NRANN=ISTATE(6)
       CALL LCMGET(IPGEOM,'MIX',MATANN)
       NMAT=0
       DO 110 I=1,NRANN
         NMAT=MAX(NMAT,MATANN(I))
  110  CONTINUE
-C----
-C  RECOVER THE MESH COORDINATES
-C----
+*----
+*  RECOVER THE MESH COORDINATES
+*----
       IF((IROT.LT.-400).OR.(NSOUT.GT.1)) THEN
         NRRANN=NRANN-1
         MATANN(NBAN)=MATANN(NRANN)
@@ -259,9 +262,9 @@ C----
       ENDIF
       CALL LCMGET(IPGEOM,'RADIUS',RAD)
       IF(ISTATE(11).EQ.1) THEN
-C----
-C  SPLIT ANNULUS WHEN REQUIRED
-C----
+*----
+*  SPLIT ANNULUS WHEN REQUIRED
+*----
         CALL LCMLEN(IPGEOM,'SPLITR',ILONG,ITYPE)
         IF(ILONG.GT.NBAN) CALL XABORT(NAMSBR//': SPLITR OVERFLOW')
         CALL LCMGET(IPGEOM,'SPLITR',ISPLIT)
@@ -276,9 +279,9 @@ C----
           RAN(ILSTP)=RADL
           MATANN(ILSTP)=MATANN(ISA)
           IF(ISPLIT(ISA).LT.0) THEN
-C----
-C  ANNULUS EQUAL VOLUMES SPLIT
-C----
+*----
+*  ANNULUS EQUAL VOLUMES SPLIT
+*----
             VFIN=RADL*RADL
             DELV=(VFIN-RADN*RADN)/FLOAT(ABS(ISPLIT(ISA)))
             DO 165 ISPL=ABS(ISPLIT(ISA))-1,1,-1
@@ -288,9 +291,9 @@ C----
               MATANN(ILSTP)=MATANN(ISA)
  165        CONTINUE
           ELSE IF(ISPLIT(ISA).GT.0) THEN
-C----
-C  ANNULUS EQUAL TICKNESS SPLIT
-C----
+*----
+*  ANNULUS EQUAL TICKNESS SPLIT
+*----
             VFIN=RADL
             DELV=(VFIN-RADN)/FLOAT(ISPLIT(ISA))
             DO 175 ISPL=ISPLIT(ISA)-1,1,-1
@@ -342,15 +345,15 @@ C----
           VOLSUR(-4)=VOLSUR(-2)
         ENDIF
       ENDIF
-C----
-C  READ CLUSTER GEOMETRY AND ANALYSE
-C----
+*----
+*  READ CLUSTER GEOMETRY AND ANALYSE
+*----
       ALLOCATE(JGEOM(3*NRT))
       IPOS=1
       CALL LCMGET(IPGEOM,'CLUSTER',JGEOM)
-C----
-C  READ ROD DESCRIPTION AND SAVE
-C----
+*----
+*  READ ROD DESCRIPTION AND SAVE
+*----
       DO 120 IRT=1,NRT
         WRITE(TEXT12(1:4),'(A4)')  JGEOM(IPOS)
         WRITE(TEXT12(5:8),'(A4)')  JGEOM(IPOS+1)
@@ -371,9 +374,9 @@ C----
           NMAT=MAX(NMAT,MATROD(IM,IRT))
  121    CONTINUE
         IF(ISTATE(11).EQ.1) THEN
-C----
-C  SPLIT RODS WHEN REQUIRED
-C----
+*----
+*  SPLIT RODS WHEN REQUIRED
+*----
           CALL LCMLEN(IPGEOM,'SPLITR',ILONG,ITYPE)
           IF(ILONG.GT.NBAN) CALL XABORT(NAMSBR//': SPLITR OVERFLOW')
           CALL LCMGET(IPGEOM,'SPLITR',ISPLIT)
@@ -390,9 +393,9 @@ C----
               RADN=RODR(ISR-1,IRT)
             ENDIF
             IF(ISPLIT(ISR).LT.0) THEN
-C----
-C  RODS EQUAL VOLUMES SPLIT
-C----
+*----
+*  RODS EQUAL VOLUMES SPLIT
+*----
               RODR(ILSTP,IRT)=RADL
               MATROD(ILSTP,IRT)=MATROD(ISR,IRT)
               VFIN=RADL*RADL
@@ -404,9 +407,9 @@ C----
                 MATROD(ILSTP,IRT)=MATROD(ISR,IRT)
  160          CONTINUE
             ELSE IF(ISPLIT(ISR).GT.0) THEN
-C----
-C  RODS EQUAL TICKNESS SPLIT
-C----
+*----
+*  RODS EQUAL TICKNESS SPLIT
+*----
               RODR(ILSTP,IRT)=RADL
               MATROD(ILSTP,IRT)=MATROD(ISR,IRT)
               VFIN=RADL
@@ -428,13 +431,13 @@ C----
         RADMIN=MIN(RADMIN,RODR(1,IRT))
         CALL LCMSIX(IPGEOM,' ',2)
  120  CONTINUE
-C----
-C  CHECK ROD GEOMETRY AND REORDER IF NECESSARY
-C----
+*----
+*  CHECK ROD GEOMETRY AND REORDER IF NECESSARY
+*----
       CALL XCGROD(NRT,MSROD,NRODS,RODS,MATROD,RODR)
-C----
-C  LOCALIZE ROD POSITION WITH RESPECT TO ANNULUS
-C----
+*----
+*  LOCALIZE ROD POSITION WITH RESPECT TO ANNULUS
+*----
       IZRT=0
       DO 122 IRT=1,NRT
         XTOP=RODS(1,IRT)+RODR(NRODS(2,IRT),IRT)
@@ -451,10 +454,10 @@ C----
             CALL XABORT(NAMSBR//': CENTRAL ROD OVERLAPP WITH ANNULUS')
           ENDIF
         ELSE
-C----
-C  SEARCH IN ANNULUS SINCE RODS MAY NOT BE LOCATED IN
-C  SQUARE OR HEXAGONAL CROWN WHERE NTAN=NBAN-1
-C----
+*----
+*  SEARCH IN ANNULUS SINCE RODS MAY NOT BE LOCATED IN
+*  SQUARE OR HEXAGONAL CROWN WHERE NTAN=NBAN-1
+*----
           JAN=0
           KRT=0
           DO 130 IAN=1,NTAN
@@ -509,15 +512,15 @@ C----
  133        CONTINUE
           ENDIF
         ENDIF
-C----
-C  GEOMETRY CANNOT BE TRACKED BY JPM
-C---
+*----
+*  GEOMETRY CANNOT BE TRACKED BY JPM
+*---
         IF(IROT.GT.0.AND.IZRT.GT.1) CALL XABORT(NAMSBR//
      >  ': ROD OVERLAPP -- JPM CAN NOT TRACK THIS GEOMETRY')
  122  CONTINUE
-C----
-C  CHECK FOR VALID CLUSTER IN JPM TRACKING
-C----
+*----
+*  CHECK FOR VALID CLUSTER IN JPM TRACKING
+*----
       IF(IROT.GT.0) THEN
         DO  180 IAN=1,NTAN
           ILR=NRINFO(2,IAN)
@@ -558,9 +561,9 @@ C----
         WRITE(IOUT,6012) ((IRT,ISR,RODR(ISR,IRT),MATROD(ISR,IRT),
      >                ISR=1,NRODS(2,IRT)),IRT=1,NRT)
       ENDIF
-C----
-C  FILL IN VOLSUR AND MATALB VECTORS
-C----
+*----
+*  FILL IN VOLSUR AND MATALB VECTORS
+*----
       VOLI=0.0
       IPOS=0
       VOLFS=0.0
@@ -598,22 +601,22 @@ C----
                 NRODR(JRT)=IPOS
                 VOLROD=VOLROD+VOLFS
               ELSE IF(JRT.GT.0) THEN
-C----
-C  ANNULUS INTERSECT RODS
-C  1) FIND X (XINT) AND Y (YINT) INTERSECTION
-C     XINT=(RAN**2+RPIN**2-RODR**2)/(2*RPIN)
-C     YINT=SQRT(RAN**2-XINT**2)
-C  2) FIND OPENNING ANGLE FOR VOLUME LIMITED BY
-C     ANNULUS (ANGA) AND ROD (ANGR)
-C     ANGA=ACOS(XINT/RAN)
-C     ANGR=ACOS((XINT-RPIN)/RODR)
-C  3) EVALUATE VOLUME
-C     VRDOUT=ANGR*RODR**2-YINT*(XINT-RPIN)
-C     VANIN=ANGA*RAN**2-YINT*XINT
-C     VRGOUT=VRDOUT-VANIN
-C           =ANGR*RODR**2-ANGA*RAN**2+YINT*RPIN
-C     VRGIN=PI*RODR*RODR-VRGOUT
-C----
+*----
+*  ANNULUS INTERSECT RODS
+*  1) FIND X (XINT) AND Y (YINT) INTERSECTION
+*     XINT=(RAN**2+RPIN**2-RODR**2)/(2*RPIN)
+*     YINT=SQRT(RAN**2-XINT**2)
+*  2) FIND OPENNING ANGLE FOR VOLUME LIMITED BY
+*     ANNULUS (ANGA) AND ROD (ANGR)
+*     ANGA=ACOS(XINT/RAN)
+*     ANGR=ACOS((XINT-RPIN)/RODR)
+*  3) EVALUATE VOLUME
+*     VRDOUT=ANGR*RODR**2-YINT*(XINT-RPIN)
+*     VANIN=ANGA*RAN**2-YINT*XINT
+*     VRGOUT=VRDOUT-VANIN
+*           =ANGR*RODR**2-ANGA*RAN**2+YINT*RPIN
+*     VRGIN=PI*RODR*RODR-VRGOUT
+*----
                 JPRT=JRT/1000000
                 JRT=MOD(JRT,1000000)
                 ILSTR=NRODS(2,JRT)
@@ -629,10 +632,10 @@ C----
                   VRGIO(1,JRT)=(ANGR*VRDSPI-ANGA*VANSPI)
      >                       +YINT*RODS(1,JRT)
                   VRGIO(2,JRT)=PI*VRDSPI-VRGIO(1,JRT)
-C----
-C  FIRST ANNULUS CROSSING ROD
-C  COMPUTE ROD VOLUME AND ROD REGION NUMBER
-C----
+*----
+*  FIRST ANNULUS CROSSING ROD
+*  COMPUTE ROD VOLUME AND ROD REGION NUMBER
+*----
                   VOLIS=0.0
                   DO 212 ISV=1,ILSTR
                     IPOS=IPOS+1
@@ -644,9 +647,9 @@ C----
                   NRODR(JRT)=IPOS
                   VOLROD=VOLROD+XNROD*VRGIO(2,JRT)
                 ELSE IF(JPRT.EQ.2) THEN
-C----
-C  ROD OVERLAPP THIS ANNULUS AND PRECEEDING ANNULUS
-C----
+*----
+*  ROD OVERLAPP THIS ANNULUS AND PRECEEDING ANNULUS
+*----
                   VANSPI=RAN(IAN)*RAN(IAN)
                   VRPSPI=RODS(1,JRT)*RODS(1,JRT)
                   VRDSPI=RODR(ILSTR,JRT)*RODR(ILSTR,JRT)
@@ -661,9 +664,9 @@ C----
                   VRGIO(1,JRT)=VRGOU1
                   VRGIO(2,JRT)=VRGIN1
                 ELSE
-C----
-C  LAST ANNULUS CROSSING ROD
-C----
+*----
+*  LAST ANNULUS CROSSING ROD
+*----
                   VOLROD=VOLROD+XNROD*VRGIO(1,JRT)
                 ENDIF
               ENDIF
@@ -676,9 +679,9 @@ C----
         NRINFO(1,IAN)=IPOS
         VOLI=VOLF
  200  CONTINUE
-C----
-C  FINAL REGION ANALYSIS FOR RECTANGLE AND HEXAGONE
-C----
+*----
+*  FINAL REGION ANALYSIS FOR RECTANGLE AND HEXAGONE
+*----
       IF(NSOUT.EQ.6.OR.IROT.LT.-600) THEN
         IPOS=IPOS+1
         MATALB(IPOS)=MATANN(NBAN)
@@ -692,9 +695,9 @@ C----
         VOLF=RAN(NBAN)*COTE
         VOLSUR(IPOS)=VOLF-VOLI
       ENDIF
-C----
-C  PRINT GEOMETRY INFORMATION IF REQUIRED
-C----
+*----
+*  PRINT GEOMETRY INFORMATION IF REQUIRED
+*----
       IF(IPRT.GT.0) THEN
         CALL LCMINF(IPGEOM,GEONAM,TEXT12,EMPTY,ILONG,LCM)
         IF(NSOUT.EQ.6.OR.IROT.LT.-600) THEN
@@ -709,9 +712,9 @@ C----
         ENDIF
         IF (.NOT.ILK) WRITE(IOUT,'(17H INFINITE DOMAIN.)')
       ENDIF
-C----
-C  PRINT REGION VOLUME AND MATERIAL INFORMATION WHEN REQUIRED
-C----
+*----
+*  PRINT REGION VOLUME AND MATERIAL INFORMATION WHEN REQUIRED
+*----
       IF(IPRT.GT.2) THEN
         WRITE(IOUT,6000)
         IREG=0
@@ -746,9 +749,9 @@ C----
             WRITE(IOUT,6001) IAN,IREG,MATALB(IREG),VOLSUR(IREG)
           ENDIF
  610    CONTINUE
-C----
-C  LAST REGION FOR SQUARE AND HEXAGONES
-C----
+*----
+*  LAST REGION FOR SQUARE AND HEXAGONES
+*----
         IF(NSOUT.EQ.6.OR.IROT.LT.-600) THEN
           IREG=IREG+1
           WRITE(IOUT,6001) IAN,IREG,MATALB(IREG),VOLSUR(IREG)
@@ -757,15 +760,15 @@ C----
           WRITE(IOUT,6001) IAN,IREG,MATALB(IREG),VOLSUR(IREG)
         ENDIF
       ENDIF
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(VRGIO,RAD)
       DEALLOCATE(ISPLIT,MATROD,MATANN)
       RETURN
-C----
-C  GEOMETRY DESCRIPTION FORMATS
-C----
+*----
+*  GEOMETRY DESCRIPTION FORMATS
+*----
  6000 FORMAT(//1X,'CLUSTER GEOMETRICAL DESCRIPTION.'/
      >1X,'ANN',2X,'ROD',2X,'REG',9X,'MATERIAL',7X,'VOLUME')
  6001 FORMAT(1X,I3,6X,I4,3X,I10,1P,5X,E15.7)
@@ -791,8 +794,8 @@ C----
      >3X,'HEXAHONE',5X,'ROD ARRAY',
      >10X,'SIDE WIDTH',8X,'MIXTURE',1P/
      >(1X,I10,4X,I10,5X,E15.7,5X,I10))
-C----
-C  ERROR MESSAGE FORMAT
-C----
+*----
+*  ERROR MESSAGE FORMAT
+*----
  9001 FORMAT(A6,': ROD TYPE ',I10,5X,'NOT INSIDE CLUSTER')
       END

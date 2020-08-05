@@ -5,14 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for multicompo interpolation. Use global and
+* Compute TERP factors for multicompo interpolation. Use global and
 * local parameters from a fuel-map object and optional user-defined
 * values.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert, D. Sekki, R. Chambon
+*Author(s): 
+* A. Hebert, D. Sekki, R. Chambon
 *
 *Parameters: input
 * IPCPO   address of the multicompo object.

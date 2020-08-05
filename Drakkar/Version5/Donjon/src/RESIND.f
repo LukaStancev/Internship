@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* update material index, it will store the negative fuel mixtures.
+* Update material index, it will store the negative fuel mixtures.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, D. Sekki
+*Author(s): 
+* E. Varin, D. Sekki
 *
 *Parameters: input/output
 * IPMAP  pointer to fuel-map information.

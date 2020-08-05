@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on an APOLIB-XSM formatted library
+* Read depletion data on an APOLIB-XSM formatted library
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal

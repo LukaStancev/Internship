@@ -18,6 +18,7 @@
 subroutine REDGET(ityp, nitma, flott, text, dflot)
    ! read a value from input deck
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    integer :: ityp, nitma
    real :: flott
    character(len=*) :: text
@@ -39,6 +40,7 @@ end subroutine REDGET
 subroutine REDPUT(ityp, nitma, flott, text, dflot)
    ! write a value into the input deck
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    integer :: ityp, nitma
    real :: flott
    character(len=*) :: text
@@ -60,6 +62,7 @@ end subroutine REDPUT
 subroutine REDOPN(iinp1, iout1, nrec)
    ! read a value from input deck
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    type(c_ptr) :: iinp1, file
    integer :: iout1, nrec
    character(len=72) :: filename
@@ -105,6 +108,7 @@ end subroutine REDOPN
 subroutine REDCLS(iinp1, iout1, nrec)
    ! read a value from input deck
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    type(c_ptr) :: iinp1, file
    integer :: iout1, nrec, ier
    character(len=72) :: filename

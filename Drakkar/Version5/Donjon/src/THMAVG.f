@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print averaged thermalhydraulics properties over the core map.
+* Print averaged thermalhydraulics properties over the core map.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): M. Cordiez
+*Author(s): 
+* M. Cordiez
 *
 *Parameters: input
 * IPMAP   pointer to the fuelmap object.

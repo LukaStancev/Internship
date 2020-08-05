@@ -9,9 +9,10 @@
 * in the DRAG2PARCS: manual. This routine write sequentially the IPHEL
 * file, branch after branch
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of info data block
 * IPINP   file unit of the input file GENPMAXS.inp
 * IPHEL   file unit of the HELIOS.dra file

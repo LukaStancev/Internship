@@ -8,12 +8,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver of the steady-state thermal-hydraulics calculation.
+* Driver of the steady-state thermal-hydraulics calculation.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * MPTHM   directory of the THM object containing steady-state

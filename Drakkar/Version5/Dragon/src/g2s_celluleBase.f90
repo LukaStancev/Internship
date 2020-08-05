@@ -273,7 +273,7 @@ contains
        lg = lg/3
        allocate(cell%cluster(lg),clusterName(lg),stat=alloc_ok)
        if (alloc_ok /= 0) call XABORT("G2S: createCB(14) => allocation pb")
-       call LCMGET(ip,'CLUSTER     ',clusterName)
+       call LCMGTC(ip,'CLUSTER     ',12,lg,clusterName)
        do i = 1,lg
           cell%cluster(i) = createCluster(ip,clusterName(i))
        end do

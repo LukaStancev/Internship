@@ -4,7 +4,7 @@
 *----------------------------------------------------------------------*
 *                                                                      *
 *Purpose:
-* print the arrays of the linear optimization problem. 
+* Print the arrays of the linear optimization problem. 
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -13,7 +13,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
 *Parameters: input
 * GF      costs of control variables.

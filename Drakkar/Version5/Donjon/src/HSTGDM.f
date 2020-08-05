@@ -11,7 +11,8 @@
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau
+*Author(s): 
+* G. Marleau
 *
 *Parameters: input/output
 * IPRINT  print level.

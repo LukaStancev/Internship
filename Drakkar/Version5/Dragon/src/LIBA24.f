@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* temperature and dilution interpolation of self-shielded effective
+* Temperature and dilution interpolation of self-shielded effective
 * rates in the APOLIB-2 format
 *
 *Copyright:

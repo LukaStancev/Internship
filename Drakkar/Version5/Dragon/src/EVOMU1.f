@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* determination of the profile of the depletion matrix (not taking into
+* Determination of the profile of the depletion matrix (not taking into
 * account the fission yields).
 *
 *Copyright:

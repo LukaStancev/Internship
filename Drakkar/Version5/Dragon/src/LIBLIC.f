@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the useful interpolated microscopic cross section
+* Transcription of the useful interpolated microscopic cross section
 * data from various format of libraries to lcm. A two dimensional
 * interpolation in temperature and dilution is performed. Part B
 *

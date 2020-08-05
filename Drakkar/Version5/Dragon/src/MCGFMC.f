@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* addition of the regional source to the flux when the 'MOCC/MCI'
+* Addition of the regional source to the flux when the 'MOCC/MCI'
 * integration strategy is turned on for the method of characteristics
 * integration.
 *

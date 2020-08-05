@@ -7,7 +7,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* combine mixtures by volume fraction
+* Combine mixtures by volume fraction
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -21,7 +21,7 @@
 *Parameters: input/output
 * MAXMIX  maximum value of nbmix
 * MAXISO  maximum number of isotopes permitted
-* NBIS    number of isotopes before combination
+* NBISO   number of isotopes before combination
 * NEWISO  number of isotopes after combination
 * NNMIX   new mixture to create or modify
 * MIXCMB  mixture to add
@@ -37,8 +37,8 @@
 * DENISO  density of isotopes
 * TMPISO  temperature of isotopes
 * LSHI    self-shielding flag
-* SNIS    dilution cross section
-* SBIS    dilution cross section used in Livolant-Jeanpierre
+* SNISO   dilution cross section
+* SBISO   dilution cross section used in Livolant-Jeanpierre
 *         normalization
 * NTFG    number of thermal inelastic groups
 * NIR     Goldstein-Cohen flag:

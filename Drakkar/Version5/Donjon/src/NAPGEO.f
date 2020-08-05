@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* - Split geometry from homogeneous to heterogeneous assemblies
+* Split geometry from homogeneous to heterogeneous assemblies
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
 *Parameters: input/output
 * IPGNW   LCM object address of heterogeneous assembly Geometry.

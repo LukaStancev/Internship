@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the useful interpolated microscopic cross section
+* Transcription of the useful interpolated microscopic cross section
 * data from a microscopic x-section library (draglib format) to LCM
 * data structures.
 *

@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* modification of the rod data stored in the PARAM folder of a fuel map
+* Modification of the rod data stored in the PARAM folder of a fuel map
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Tixier
+*Author(s): 
+* G. Tixier
 *
 *Parameters: input
 * IPMAP   pointer to the fuel map

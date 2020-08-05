@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the double-heterogeneity (Bihet) data from the geometry
+* Recover the double-heterogeneity (Bihet) data from the geometry
 * object IPGEOM and update the tracking object IPTRK.
 *
 *Copyright:

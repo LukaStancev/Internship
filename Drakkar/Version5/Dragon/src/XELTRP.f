@@ -4,61 +4,55 @@
      >                    NSURO,  NVOLO, IDLDIM, IDLGEO, KEYTRN,
      >                    MAXDO,  MINDO, ICORDO, RMESHO, IDLREM,
      >                   INDEXO,  VOLSO, MATGEO)
-************************************************************************
-*                                                                      *
-*           NAME: XELTRP                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 97/11 (G.M.) ELIMINATE CONHERENCE TESTS              *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL PREPARE TRACKING BY PRODUCING      *
-*                 THE REQUIRED NUMBERING AND CALCULATE VOLUMES AND     *
-*                 SURFACES.                                            *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* NGIDL  / LENGHT OF GEOMETRIC NUMBERING.               /I./INT        *
-* NDIM   / # OF DIMENSIONS (2 OR 3).                    /I./INT        *
-* NGEOME / # OF GEOMETRIES.                             /I./INT        *
-* L1CELL / TO INDICATE IF THERE IS JUST 1 CELL.         /I./LOG        *
-* NEXTGE / RECTANGULAR(0)/CIRCULAR(1) BOUNDARY.         /I./INT        *
-* NTOTCO / TOT NUMBER OF CYLINDERS IN ALL GEOMETRIES.   /I./INT        *
-* MAXRO  / MAX NUMBER OF REAL MESH VALUES IN 'RMESHO'.  /I./INT        *
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* CELLG  / TO KEEP GEOMETY NAMES.                       /I./C*4(3NGEOM)*
-* NSURO  / # OF SURFACES OF EACH GEOMETRY.              /I./INT(NGEOME)*
-* NVOLO  / # OF ZONES OF EACH GEOMETRY.                 /I./INT(NGEOME)*
-* IDLDIM / POSITION OF EACH GEOMETRY IN CYLINDER #ING.  /I./INT(NGEOME)*
-* IDLGEO / POSITION OF EACH GEOMETRY IN THE             /I./INT(NGEOME)*
-*        /            GEOMETRY NUMBERING SCHEME.        /  /           *
-* KEYTRN / TURN # OF EACH GEOMETRY.                     /I./INT(NGEOME)*
-* MAXDO  / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(NTOTCO)*
-* MINDO  / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(NTOTCO)*
-* ICORDO / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /.O/INT(NTOTCO)*
-* RMESHO / REAL MESH VALUES (RECT/CYL).                 /.O/REL(MAXRO) *
-* IDLREM / POSITION OF MESH VALUES PER GEOMETRY.        /.O/INT(NGEOME)*
-* INDEXO / INDEX FOR SEARCH IN 'RMESHO'.                /.O/I(4*NGIDL) *
-* VOLSO  / VOLUMES & SURFACES FOR EACH GEOMETRY.        /.O/REL(NGIDL) *
-* MATGEO / MATERIAL #S CORRESPONDING TO GEOMETRIES.     /.O/INT(NGIDL) *
-*--------+---------------- R O U T I N E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                                *
-*--------+-------------------------------------------------------------*
-* KELRNG / TO READ THE USER NUMBERING OF ZONES.                        *
-* KELMRG / TO READ THE USER MERGING OF ZONES.                          *
-* KELSYM / TO ESTABLISH THE SURFACE SYMMETRIES.                        *
-* XELGRD / TO READ GEOMETRIC INPUT.                                    *
-* XELVOL / TO COMPUTE VOLUME IN 3D GEOMETRIES.                         *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Prepare tracking by producing the required numbering and calculate 
+* volumes and surfaces. 
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (l_geom)            
+* NGIDL   lenght of geometric numbering.              
+* NDIM    number of dimensions (2 or 3).                   
+* NGEOME  number of geometries.                            
+* L1CELL  to indicate if there is just 1 cell.        
+* NEXTGE  rectangular(0)/circular(1) boundary.        
+* NTOTCO  tot number of cylinders in all geometries.  
+* MAXRO   max number of real mesh values in 'RMESHO'. 
+* IPRT    intermediate printing level for output.     
+* CELLG   to keep geomety names.                      
+* NSURO   number of surfaces of each geometry.             
+* NVOLO   number of zones of each geometry.                
+* IDLDIM  position of each geometry in cylinder numbering. 
+* IDLGEO  position of each geometry in the            
+*                    geometry numbering scheme.       
+* KEYTRN  turn number of each geometry.                    
+*
+*Parameters: input
+* MAXDO   max index values for all axes (rect/cyl).    
+* MINDO   min index values for all axes (rect/cyl).    
+* ICORDO  principal axes direction (X/Y/Z) for meshes. 
+* RMESHO  real mesh values (rect/cyl).                 
+* IDLREM  position of mesh values per geometry.        
+* INDEXO  index for search in 'RMESHO'.                
+* VOLSO   volumes & surfaces for each geometry.        
+* MATGEO  material numbers corresponding to geometries.     
+*
+*-----------------------------------------------------------------------
+*
       USE               GANLIB
       IMPLICIT          NONE
-C
+*
       TYPE(C_PTR)       IPGEOM 
       INTEGER           NGIDL, NDIM, NGEOME, NTOTCO, NEXTGE, MAXRO, IPRT
       INTEGER           MAXDO(NTOTCO), MINDO(NTOTCO),   ICORDO(NTOTCO),
@@ -67,7 +61,7 @@ C
      >                  IDLGEO(NGEOME), IDLREM(NGEOME), KEYTRN(NGEOME),
      >                  INDEXO(4,NGIDL)
       REAL              RMESHO(MAXRO), VOLSO(NGIDL)
-C
+*
       INTEGER           NSTATE, IOUT, MAXTUR
       PARAMETER       ( NSTATE=40, IOUT=6, MAXTUR=12 )
       INTEGER           ISTATE(NSTATE)
@@ -75,24 +69,24 @@ C
      >                  NO, NSYM, MAXC, KELRNG, KELMRG, KELSYM
       LOGICAL           L1CELL
       CHARACTER         CNAMEG*12, CTURN(2*MAXTUR)*2
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: KEYSYM
-C----
-C  DATA STATEMENTS
-C----
+*----
+*  DATA STATEMENTS
+*----
       DATA       CTURN / ' A',' B',' C',' D',' E',' F',' G',' H',
      >                   ' I',' J',' K',' L',
      >                   '-A','-B','-C','-D','-E','-F','-G','-H',
      >                   '-I','-J','-K','-L' /
-C----
-C  SCRATCH STORAGE ALLOCATION
-C   KEYSYM: symmetry key giving the symmetric surface
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   KEYSYM: symmetry key giving the symmetric surface
+*----
       ALLOCATE(KEYSYM(NGIDL))
-C
-C     LOOP OVER ALL GEOMETRIES
+*
+*     LOOP OVER ALL GEOMETRIES
       NTOTRM= 0
       DO 90 NGEO= 1, NGEOME
          NTC= IDLDIM(NGEO)+1
@@ -129,19 +123,19 @@ C     LOOP OVER ALL GEOMETRIES
          ENDIF
          NCPC  = NC + 3
          NVSP1 = NVOLO(NGEO) - NSURO(NGEO) + 1
-C
-C        LOOKING TO THE GEOMETRY
+*
+*        LOOKING TO THE GEOMETRY
          CALL XELGRD( IPGEOM, IPRT, NDIM, NEXTGE, ITURN,
-     >                MAXC, RMESHO(NTOTRM+1),
+     >                MAXRO-NTOTRM, MAXC, RMESHO(NTOTRM+1),
      >                MINDO(NTC), MAXDO(NTC), ICORDO(NTC))
-C
-C        RENUMBER
+*
+*        RENUMBER
          NO=   KELRNG(IPRT, NDIM, NEXTGE, NCPC,
      >                MINDO(NTC), MAXDO(NTC), ICORDO(NTC),
      >                NSURO(NGEO), NVOLO(NGEO), IDLGEO(NGEO),
      >                MAXC, RMESHO(NTOTRM+1), MATGEO, VOLSO, INDEXO)
-C
-C        MERGE
+*
+*        MERGE
          NO= KELMRG(IPGEOM,NSURO(NGEO),NVOLO(NGEO),IDLGEO(NGEO),MATGEO)
          IF( NO.NE.NVSP1 )THEN
             IF( IPRT.GT.1 )THEN
@@ -151,12 +145,12 @@ C        MERGE
      >                       NO+NSURO(NGEO)-1
             ENDIF
          ENDIF
-C
-C        ESTABLISH NECESSARY SYMMETRIES
+*
+*        ESTABLISH NECESSARY SYMMETRIES
          NSYM= KELSYM( IPRT, NDIM, MAXDO(NTC), NSURO(NGEO), NVOLO(NGEO),
      >                 IDLGEO(NGEO), INDEXO, MATGEO,KEYSYM)
-C
-C        COMPUTE VOLUMES
+*
+*        COMPUTE VOLUMES
          CALL XELVOL( IPRT, NDIM, NEXTGE, NCPC,
      >                MINDO(NTC), MAXDO(NTC), ICORDO(NTC),
      >                NSURO(NGEO), NVOLO(NGEO), IDLGEO(NGEO),INDEXO,
@@ -168,10 +162,10 @@ C        COMPUTE VOLUMES
       IF( NTOTRM.GT.MAXRO )THEN
          CALL XABORT( 'XELTRP : INCREASE MAXREM => SEE DEVELOPPER')
       ENDIF
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(KEYSYM)
-C
+*
       RETURN
       END

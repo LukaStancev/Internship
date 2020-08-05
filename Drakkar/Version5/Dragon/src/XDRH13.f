@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the reduced collision probabilities for the She-Liu-Shi
+* Calculation of the reduced collision probabilities for the She-Liu-Shi
 * double heterogeneity model (part 1).
 *
 *Copyright:
@@ -37,24 +37,21 @@
 * MIXGR   elementary mixture indices in the micro structures.
 * RS      radius of the micro volumes.
 * FRACT   volumic fractions of the micro volumes.
+*
+*Parameters: input/output
 * SIGMA   total macroscopic cross sections in each mixture of the
 *         composite geometry.
 * SIGMS   scattering macroscopic cross sections in each mixture of the
 *         composite geometry.
 *
 *Parameters: output
-* SIGMA   equivalent total macroscopic cross section in each macro
-*         mixture.
-* SIGMS   equivalent scattering macroscopic cross section in each macro
-*         mixture.
 * P1I     non collision probability in subvolume with 1 grain type    
 * P1KI    escape probability from layer k in subvolume with 1 grain type
 * P1DI    escape probability from matrix in subvolume with 1 grain type
 *
 *Reference:
-* 1)  D. She, Z. Liu, and L. Shi, "An Equivalent Homogenization Method 
-*     for Treating the Stochastic Media", Nucl. Sci. Eng., 185, 
-*     351 - 360 (2018)
+* D. She, Z. Liu, and L. Shi, An Equivalent Homogenization Method for
+* Treating the Stochastic Media, Nucl. Sci. Eng., 185,  351-360 (2018)
 *
 *-----------------------------------------------------------------------
 *

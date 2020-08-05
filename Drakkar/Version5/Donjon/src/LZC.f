@@ -4,27 +4,47 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read specification for the liquid zone controllers; add the new data
+* Read specification for the liquid zone controllers; add the new data
 * to the existing device object.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_DEVICE);
-*         HENTRY(2): modification type(L_MATEX).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The LZC: module specification is:
+* DEVICE MATEX := LZC: [ DEVICE ] MATEX :: (desclzc) ;
+* where
+*   DEVICE : name of the \emph{device} object.
+* Note, if the rod-type devices are not present in the reactor core, then 
+* DEVICE object must appear only on the LHS (i.e. in create mode), it will 
+* contain the information only with respect to the liquid zone controllers. 
+* However, if the rod-type devices are present in the reactor core, then they 
+* must be specified first (i.e. before the liquid controllers) using the DEVINI:
+* module. In the last case, the DEVICE object must also appear on the RHS 
+* (i.e. in modification mode), it will contain the additional and separate 
+* information with respect to the liquid zone controllers.
+*   MATEX  : name of the \emph{matex} object 
+* that will be updated by the module. The lzc-devices material mixtures are
+* appended to the previous material index and the lzc-devices indices are
+* also modified, accordingly.
+*   (desclzc) : structure describing the input data to the LZC: module.
 *
 *-----------------------------------------------------------------------
 *

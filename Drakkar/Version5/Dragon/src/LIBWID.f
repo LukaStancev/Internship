@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* find isotope number associated with isotope id on WIMS-NEA and
+* Find isotope number associated with isotope id on WIMS-NEA and
 * WIMS-AECL library.
 *
 *Copyright:
@@ -18,8 +18,8 @@
 *
 *Parameters: input
 * NEL     number of isotopes on WIMSLIB.
-* IWIS    id of isotope on WIMSLIB.
-* ISOI    isotope id requested.
+* IWISO   id of isotope on WIMSLIB.
+* ISOID   isotope id requested.
 *
 *Parameters: output
 * LIBWID  isotope number associated with id  (= 0 when isotope id is

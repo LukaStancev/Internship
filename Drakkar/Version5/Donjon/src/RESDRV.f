@@ -5,13 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read and validate the fuel-map specification from the input file.
+* Read and validate the fuel-map specification from the input file.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki and V. Descotes
-*           R. Chambon (may 2014)
+*Author(s): 
+* D. Sekki and V. Descotes
+*Update(s):
+* R. Chambon (may 2014)
 *
 *Parameters: input
 * IPMAP  pointer to fuel-map information.

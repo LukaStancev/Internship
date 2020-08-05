@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the weights and base points for a principal cross-section
+* Compute the weights and base points for a principal cross-section
 * type and the partial base points for NPAR partial reactions.
 *
 *Copyright:
@@ -31,10 +31,12 @@
 * SIGERD  list of dilutions used to test the accuracy of the table.
 * SEFFER  list of reference self-shielded cross sections corresponding
 *         to each cross-section type and each dilution.
-* NOR     input order of the table if LNORAJ=.false.
+*
+*Parameters: input/output
+* NOR     input order of the table if LNORAJ=.false.and 
+*         output order of the table.
 *
 *Parameters: output
-* NOR     output order of the table.
 * PROSIG  probability table.
 *         PROSIG(inor,1): weights;
 *         PROSIG(inor,2): base points for the principal x-s;

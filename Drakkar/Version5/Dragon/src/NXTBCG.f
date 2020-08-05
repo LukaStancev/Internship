@@ -10,7 +10,11 @@
 * symmetry identification.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -21,9 +25,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *  This routine is based on the XELPRP routine written by
 *  R. Roy for the EXCELT: module.
 *
@@ -34,52 +38,40 @@
 * IPRINT  print level.
 * NDIM    problem dimensions.
 * ITYPBC  type of boundary conditions where
-*         \begin{itemize}
-*         \item \moc{ITYPBC}=0 for geometry with Cartesian
+*         =0 for geometry with Cartesian
 *         boundaries;
-*         \item \moc{ITYPBC}=1 for geometry with annular
+*         =1 for geometry with annular
 *         boundary;
-*         \item \moc{ITYPBC}=2 for geometry with hexagonal
+*         =2 for geometry with hexagonal
 *         boundary;
-*         \end{itemize}
 * IDIRG   geometry main direction
-*         \begin{itemize}
-*         \item \moc{IDIRG}=1 for $X-Y-Z$ geometry;
-*         \item \moc{IDIRG}=2 for $Y-Z-X$ geometry;
-*         \item \moc{IDIRG}=3 for $Z-X-Y$ geometry.
+*         =1 for $X-Y-Z$ geometry;
+*         =2 for $Y-Z-X$ geometry;
+*         =3 for $Z-X-Y$ geometry.
 *         boundary conditions.
-*         \end{itemize}
 * IPRISM  projection axis for prismatic tracking.
 *
 *Parameters: output
 * IDIAG   the diagonal symmetry flag where
-*         \begin{itemize}
-*         \item \moc{IDIAG}=-1 indicates X- Y+ \moc{DIAG} symmetry;
-*         \item \moc{IDIAG}= 1 indicates X+ Y- \moc{DIAG} symmetry;
-*         \item \moc{IDIAG}=0  indicates no \moc{DIAG} symmetry.
-*         \end{itemize}
+*         =-1 indicates X- DIAG symmetry;
+*         = 1 indicates X+ Y- DIAG symmetry;
+*         ==0  indicates no DIAG symmetry.
 * ISAXIS  symmetry vector for each direction.
 * IHSYM   hexagonal symmetry option where
-*         \begin{itemize}
-*         \item \moc{IHSYM}=0 geometry is not hexagonal;
-*         \item \moc{IHSYM}=1 for S30;
-*         \item \moc{IHSYM}=2 for SA60;
-*         \item \moc{IHSYM}=3 for SB60;
-*         \item \moc{IHSYM}=4 for S90;
-*         \item \moc{IHSYM}=5 for R120;
-*         \item \moc{IHSYM}=6 for R180;
-*         \item \moc{IHSYM}=7 for SA180;
-*         \item \moc{IHSYM}=8 for SB180;
-*         \item \moc{IHSYM}=9 for COMPLETE;
-*         \item \moc{IHSYM}=10 for R60.
-*         \end{itemize}
+*         = 0 geometry is not hexagonal;
+*         = 1 for S30;
+*         = 2 for SA60;
+*         = 3 for SB60;
+*         = 4 for S90;
+*         = 5 for R120;
+*         = 6 for R180;
+*         = 7 for SA180;
+*         = 8 for SB180;
+*         = 9 for COMPLETE;
+*         =10 for R60.
 * ILEAK   leakage option where:
-*         \begin{itemize}
-*         \item \moc{ILEAK}=1 indicates that there is no
-*         out of cell leakage;
-*         \item \moc{ILEAK}=0 indicates that there  no
-*         out of cell leakage.
-*         \end{itemize}
+*         =1 indicates that there is no out of cell leakage;
+*         =0 indicates that there  no out of cell leakage.
 *
 *----------
 *

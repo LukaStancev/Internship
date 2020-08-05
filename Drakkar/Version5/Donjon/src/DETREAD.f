@@ -4,14 +4,17 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  this subroutine reads detector parameters and store them
+*  This subroutine reads detector parameters and store them
 *
+*Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, E. Varin, M. Guyot
+*Author(s): 
+* J. Koclas, E. Varin, M. Guyot
 *
 *Parameters: input/output
 * IPDET   pointer to the L_DETECT object.
+* TYPE
 * NREP    number of values stored for detector response
 * IPRT    printing flag
 * LHEX    =.TRUE. if it is an hexagonal geometry

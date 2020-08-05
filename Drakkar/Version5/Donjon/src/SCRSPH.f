@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* extract a Macrolib corresponding to an elementary calculation in a
+* Extract a Macrolib corresponding to an elementary calculation in a
 * memory-resident Saphyb.
 *
 *Copyright:
@@ -15,7 +15,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMEM   pointer to the memory-resident Saphyb object.

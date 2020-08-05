@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* track merging.
+* Track merging.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -22,19 +22,18 @@
 * NSETMT  total number of segments in finalized tracks.
 * NSEG    number of segments in the track to be processed.
 * NSEG0   number of segments in the track under construction.
-* NOM     integer tracking elements for the track to be processed.
 * NOM0    integer tracking elements for the under construction.
-* WEIGHT  weight of the track to be processed.
 * WEIGHT0 weight of the under construction.
 * H       real tracking elements for the track to be processed.
-* H0      real tracking elements for the under construction.
 * LFORC   flag to force a merged track to be finalized.
 *
-*Parameters: output (if a track is finalized)
-* NTPROC  number of merged tracks for the finalized track.
+*Parameters: input/output 
 * NOM     integer tracking elements for the finalized track.
 * WEIGHT  weight of the finalized track.
 * H0      real tracking elements for the finalized track.
+*
+*Parameters: output 
+* NTPROC  number of merged tracks for the finalized track.
 *
 *-----------------------------------------------------------------------
 *

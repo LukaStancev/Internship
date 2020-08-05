@@ -50,6 +50,7 @@
 *         geometry.
 * MIN2    max index values for the different axes of the 2D projected
 *         geometry.
+* ICOR2   undefined.
 * REM2    different meshes of the 2D projected geometry.
 * VOL2    outer surfaces and volumes for the 2D projected geometry.
 * MAT2    albedo and material indexes for the 2D projected geometry.

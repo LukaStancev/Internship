@@ -11,11 +11,13 @@
 * cross sections for one branch at a fixed burnup point in the INFO
 * data block.
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPDAT   address of info data block
 * IPMIC   address of the microlib object
+* IPRINT
 * NBU     number of burnup points
 * NBMIX   number of mixturess
 * NBISO   number of isotopes
@@ -35,6 +37,9 @@
 * NPIN    number of pin on each side of the assembly
 *         (note: if NADF, NCDF, NGFF or NPIN are not defined
 *           a fake value of 1 is assigned for allocation memory issue)
+*
+*Parameters: 
+* FLUX
 *
 *-----------------------------------------------------------------------
 *

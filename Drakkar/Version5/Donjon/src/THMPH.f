@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* backwards inversion of steam tables to find water density and
+* Backwards inversion of steam tables to find water density and
 * temperature.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, P. Gallet
+*Author(s): 
+* A. Hebert, P. Gallet
 *
 *Parameters: input
 * IFLUID  type of fluid (0=H2O; 1=D2O).

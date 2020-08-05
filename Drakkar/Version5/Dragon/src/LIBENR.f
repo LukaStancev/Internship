@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on a WIMA-D4 or WIMSE formatted library
+* Read depletion data on a WIMA-D4 or WIMSE formatted library
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

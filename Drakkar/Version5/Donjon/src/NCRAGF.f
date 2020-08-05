@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build the macrolib by scanning the NCAL elementary calculations and
+* Build the macrolib by scanning the NCAL elementary calculations and
 * weighting them with TERP factors, ADF, GFF and physical albedos part.
 *
 *Copyright:
 * Copyright (C) 2015 Ecole Polytechnique de Montreal
 *
-*Author(s): R. Chambon, A. Hebert
+*Author(s): 
+* R. Chambon, A. Hebert
 *
 *Parameters: input
 * IPMAC   address of the output macrolib LCM object.
@@ -106,7 +107,7 @@
             CALL LCMGET(MPCPO,'NTYPE',NTYPE)
             IF(NTYPE.GT.0) THEN
               ALLOCATE(HADF(NTYPE))
-              CALL LCMGET(MPCPO,'HADF',HADF)
+              CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
               DO ITYPE=1,NTYPE
                 CALL LCMLEN(IPMAC,'NCR-'//HADF(ITYPE),ILONG,ITYLCM)
                 IF(ILONG.GT.0) CALL LCMDEL(IPMAC,'NCR-'//HADF(ITYPE))

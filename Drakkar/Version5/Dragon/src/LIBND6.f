@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on a NDAS formatted library
+* Read depletion data on a NDAS formatted library
 *
 *Copyright:
 * Copyright (C) 2006 Atomic Energy of Canada Limited and Ecole

@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* unfold the quarter shuffling map to full shuffling map, using
+* Unfold the quarter shuffling map to full shuffling map, using
 * rotations around the center.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): V. Salino
+*Author(s): 
+* V. Salino
 *
 *Parameters: input
 * LX      number of assemblies along the X axis.

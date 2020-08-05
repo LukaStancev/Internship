@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform temperature interpolation for WIMS-E P1 scattering matrices
+* Perform temperature interpolation for WIMS-E P1 scattering matrices
 *
 *Copyright:
 * Copyright (C) 2016 Ecole Polytechnique de Montreal

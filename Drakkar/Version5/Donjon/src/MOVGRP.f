@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* move a group of rod-devices to a new position in the reactor core.
+* Move a group of rod-devices to a new position in the reactor core.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * IPDEV  pointer to device information.

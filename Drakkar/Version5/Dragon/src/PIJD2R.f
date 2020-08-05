@@ -1,5 +1,5 @@
 *DECK PIJD2R
-      SUBROUTINE PIJD2R(NREG,NSOUT,PROB,FACTOR,LPIJK,NELPIJ,PIJ)
+      SUBROUTINE PIJD2R(NREG,NSOUT,PROB,FACTOR,LPIJK,NELPIJ,N2PROB,PIJ)
 C
 C-------------------------    PIJD2R    -------------------------------
 C
@@ -18,6 +18,7 @@ C               NPLEN=(NREG+NSOUT+2)*(NREG+NSOUT+1)/2
 C     FACTOR  : ONE OVER TOTAL XS                      R(NREG)
 C     LPIJK   : PIJK FLAG                              L
 C     NELPIJ  : NUMBER OF TERMS IN PIJ                 I
+C     N2PROB  : NUMBER OF TERMS IN PROB                I
 C
 C  OUTPUT
 C     PIJ     : SYMMETRIC PROBABILITY MATRIX           R(NELPIJ)
@@ -28,8 +29,8 @@ C
 C----
 C VARIABLES
 C----
-      INTEGER          NREG,NSOUT,NELPIJ,IUN,JUN,KPRB,IVV
-      DOUBLE PRECISION PROB(((NSOUT+NREG+2)*(NSOUT+NREG+1))/2)
+      INTEGER          NREG,NSOUT,NELPIJ,N2PROB,IUN,JUN,KPRB,IVV
+      DOUBLE PRECISION PROB(N2PROB)
       REAL             FACTOR(NREG),PIJ(NELPIJ),COEF
       LOGICAL          LPIJK
 C----

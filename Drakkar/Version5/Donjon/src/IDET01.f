@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute detector integrated response on Cartesian geometry
+* Compute detector integrated response on Cartesian geometry
 *
 *Copyright:
 * Copyright (C) 2019 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPTRK   pointer to the tracking.

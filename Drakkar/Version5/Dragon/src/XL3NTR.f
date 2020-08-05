@@ -2,44 +2,41 @@
       SUBROUTINE XL3NTR(  IPRT,   NDIM,   ISPEC, NS, NV, NORE,
      >                   VOLIN,  MRGIN,   MATIN,
      >                   NANGL, VOLTRK,  DENSTY )
-************************************************************************
-*                                                                      *
-*           NAME: XL3NTR                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 2 (CALLED BY 'EXCELT')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 91/07                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL COMPUTE RENORMALIZED TRACKS        *
-*                 TO OBTAIN TRUE VOLUME VALUES. THE FILE "IFOLD"       *
-*                 CONTAINS THE OLD TRACKS; THE FILE "IFTRAK" WILL      *
-*                 CONTAIN THE NORMALIZED TRACKS.                       *
-*                                                                      *
-*           NOTE: THE FILES "IFOLD" AND "IFTRAK" ARE SUPPOSED TO BE:   *
-*                 1) CONNECTED AND OPENED;                             *
-*                 2) PLACED FOR ACCESSING THE FIRST RECORD (REWIND).   *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR PRINOUT.     /I./INT        *
-* NDIM   / # OF DIMENSIONS (2D OR 3D).                  /I./INT        *
-* ISPEC  / KIND OF TRACKING (0:ISOTROPIC;1:SPECULAR)    /I./INT        *
-* NS     / # OF SURFACES BEFORE MERGING.                /I./INT        *
-* NV     / # OF ZONES BEFORE MERGING.                   /I./INT        *
-* NORE   / TRACK NORMALIZATION (-1:YES 1:NO)            /I./I          *
-* VOLIN  / VOLUMES & SURFACES BEFORE MERGING.           /I./REL(-NS:NV)*
-* MRGIN  / MERGING INDEX.                               /I./INT(-NS:NV)*
-* MATIN  / MATERIAL #S BEFORE MERGING.                  /I./INT(-NS:NV)*
-* NANGL  / # OF ANGLES TO RENORMALIZE TRACKS BY ANGLE.  /I./INT        *
-* VOLTRK / VOLUMES & SURFACES AS COMPUTED BY TRACKING.  /../R*8(-NS:NV,*
-*        /                                              /../   0:NANGL)*
-* DENSTY / WEIGHTS BY ANGLE.                            /../REL(NANGL) *
-************************************************************************
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Compute renormalized tracks to obtain true volume values. the file 
+* IFOLD contains the old tracks; the file IFTRAK will
+* contain the normalized tracks.
+*
+*Copyright:
+* Copyright (C) 1991 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPRT    intermediate printing level for prinout.     
+* NDIM    number of dimensions (2d or 3d).                  
+* ISPEC   kind of tracking (0:isotropic;1:specular)    
+* NS      number of surfaces before merging.                
+* NV      number of zones before merging.                   
+* NORE    track normalization (-1:yes 1:no)            
+* VOLIN   volumes and surfaces before merging.           
+* MRGIN   merging index.                               
+* MATIN   material numbers before merging.                  
+* NANGL   number of angles to renormalize tracks by angle.  
+* DENSTY  weights by angle.                            
+* VOLTRK  volumes and surfaces as computed by tracking.  
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT           NONE
-C
+*
       INTEGER            NDIM,NS,NV,NANGL,IPRT,IANG,IP,IR,ISPEC,ITGEO,
      >                   IVS,IVSC,MNSUR,MXVOL,NANG2,IOUT,NORE,
      >                   NSURC,NSURM,NVOLC,NVOLM,MRGIN(-NS:NV),
@@ -59,7 +56,7 @@ C
      >               ' Z+ ',' Z- ','****','****',' R+ ','****',
      >               ' Z+ ',' Z- ','****','****','****','HBC ',
      >               ' Z+ ',' Z- ',' Y+ ',' Y- ',' X+ ',' X- ' /
-C
+*
       FACVOL= TWO
       FACSUR= ONE
       IF( ISPEC.EQ.0 )THEN
@@ -80,16 +77,16 @@ C
            VOLTRK(IVS,0)= VOLTRK(IVS,0) + VOLTRK(IVS,IANG)
            VOLTRK(IVS,IANG)= VOLTRK(IVS,IANG)*DENSTY(IANG)
            IF( VOLTRK(IVS,IANG).NE.ZERO )THEN
-C
-C             CONVERT INTO NORMALIZATION FACTORS
+*
+*             CONVERT INTO NORMALIZATION FACTORS
               VOLTRK(IVS,IANG)= VOLIN(IVS)/VOLTRK(IVS,IANG)
            ELSE
               VOLTRK(IVS,IANG)= ONE
            ENDIF
    46   CONTINUE
    47 CONTINUE
-C
-C     COMPUTE ERRORS FOR CONSERVATION LAWS
+*
+*     COMPUTE ERRORS FOR CONSERVATION LAWS
       TOTSUR=ZERO
       APRSUR=ZERO
       TOTVOL=ZERO
@@ -208,7 +205,7 @@ C     COMPUTE ERRORS FOR CONSERVATION LAWS
          WRITE(IOUT,*) ' USE FINER TRACKING'
          CALL XABORT( 'XL3NTR: CHECK NUMBERING OR USE FINER TRACKING')
       ENDIF
-C
+*
       RETURN
  7000 FORMAT(/' TRACKING ERRORS ON SURFACE   AVERAGE ERROR: ',F10.4,
      >        ' % ',5X,'MAXIMUM ERROR: ',F10.4,' % (BEFORE MERGE)')

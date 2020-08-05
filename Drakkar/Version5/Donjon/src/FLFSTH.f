@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* update the fuel average fluxes and the channel and bundle powers
+* Update the fuel average fluxes and the channel and bundle powers
 * over the fuel lattice using FTSH
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): M. Guyot
+*Author(s): 
+* M. Guyot
 *
 *Parameters: input
 * PTOT   total power in MW
@@ -23,7 +24,7 @@
 * NCH    number of reactor channels.
 * NB     number of fuel bundles per channel.
 * NEL    total number of finite elements.
-* FTSH   thermal to fission ratio power
+* FSTH   thermal to fission ratio power
 * FLUB   average fluxers per bundles
 *
 *-----------------------------------------------------------------------

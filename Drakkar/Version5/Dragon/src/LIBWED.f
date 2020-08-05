@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create /depletion/ records in /microlib/
+* Create /depletion/ records in /microlib/
 * 
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -29,13 +29,13 @@
 *         capture isotopes)
 * NOTHER  number of other isotopes (depleting isotopes + decay +
 *         capture isotopes)
-* NREA    maximum number of depletion reaction in the depletion chain
+* NREAC   maximum number of depletion reaction in the depletion chain
 * NPAR    maximum number of parent isopopes from decay and capture
 * ITNAM   reactive isotope names in chain
 * ITZEA   6-digit nuclide identifier
 *         atomic number z*10000 (digits) + mass number a*10 +
 *         energy state (0 = ground state, 1 = first state, etc.)
-* MATN    reaction material index
+* MATNO   reaction material index
 * KPAX    complete reaction type matrix
 * BPAX    complete branching ratio matrix
 *

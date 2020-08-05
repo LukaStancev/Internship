@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute burnup limits over the fuel lattice for the time-average
+* Compute burnup limits over the fuel lattice for the time-average
 * integration, based on the axial power shape over each channel.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal
 *
-*Author(s): D. Sekki, R. Chambon
+*Author(s): 
+* D. Sekki, R. Chambon
 *
 *Parameters: input/output
 * IPMAP   pointer to fuel-map information.

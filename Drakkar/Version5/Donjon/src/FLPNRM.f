@@ -5,14 +5,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover element-ordered fluxes associated with each mesh-splitted
+* Recover element-ordered fluxes associated with each mesh-splitted
 * volume over the whole reactor core, normalize fluxes to a given
 * total reactor power.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * IPFLX  pointer to flux information.

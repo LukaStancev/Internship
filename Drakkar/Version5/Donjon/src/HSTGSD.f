@@ -9,7 +9,8 @@
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau
+*Author(s): 
+* G. Marleau
 *
 *Parameters: input
 * IPHST   address of the \dds{history} data structure.
@@ -17,17 +18,15 @@
 *
 *Parameters: input/output
 * IOK     processing option where:
-*         \begin{itemize}
-*         \item on input, a negative value indicates 
+*         --> on input, a negative value indicates 
 *         that the information is to be extracted 
 *         from the \dds{history} data structure and a 
 *         positive value indicates that the information is to be
 *         stored on the \dds{history} data structure;              
-*         \item on output, a value of 0 indicates that 
+*         --> on output, a value of 0 indicates that 
 *         the required processing took place
 *         successfully while a negative value indicates 
 *         a failure of the processing.
-*         \end{itemize}            
 * DENI    isotopic concentration.
 * FDEN    average fuel density and weight.
 * IOK     status of read. 

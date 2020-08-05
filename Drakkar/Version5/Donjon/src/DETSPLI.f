@@ -1,5 +1,14 @@
 *DECK DETSPLI
       SUBROUTINE DETSPLI(X,Y,N,YP1,YPN,Y2)
+*
+*Parameters: 
+* X     
+* Y     
+* N     
+* YP1   
+* YPN   
+* Y2    
+*     
       PARAMETER (NMAX=100)
       DIMENSION X(N),Y(N),Y2(N),U(NMAX)
       IF (YP1.GT..99E30) THEN

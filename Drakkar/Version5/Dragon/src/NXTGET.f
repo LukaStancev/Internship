@@ -8,7 +8,11 @@
 * To read from the input file the NXT: module processing options.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau
@@ -19,9 +23,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * NSTATE  dimensions of tracking state vectors.
@@ -30,55 +34,50 @@
 * IPRINT  print level.
 * TITLE   execution title.
 * ISTATU  integer parameters for tracking:
-*         \begin{itemize} 
-*         \item \moc{ISTATU}( 1) is the number of regions;
-*         \item \moc{ISTATU}( 2) is the number of unknown;
-*         \item \moc{ISTATU}( 3) is the leakage flag;
-*         \item \moc{ISTATU}( 4) is the maximum number of mixture used;
-*         \item \moc{ISTATU}( 5) is the number of outer surfaces;
-*         \item \moc{ISTATU}( 6) is the flux anisotropy order;
-*         \item \moc{ISTATU}( 7) is the tracking option used;
-*         \item \moc{ISTATU}( 8) is the track normalization option;
-*         \item \moc{ISTATU}( 9) is the type of tracks considered;
-*         \item \moc{ISTATU}(10) is the CP calculation option;
-*         \item \moc{ISTATU}(11) is the azimuthal quadrature level;
-*         \item \moc{ISTATU}(12) is the symmetry option;
-*         \item \moc{ISTATU}(13) is the polar quadrature type;
-*         \item \moc{ISTATU}(14) is the polar quadrature level;
-*         \item \moc{ISTATU}(15) is the azimuthal quadrature type;
-*         \item \moc{ISTATU}(16) is the number of dimensions;
-*         \item \moc{ISTATU}(17) is the number of tracking points per
-*                                line;
-*         \item \moc{ISTATU}(18) is the maximum length of a track;
-*         \item \moc{ISTATU}(19) is the total number of tracks;
-*         \item \moc{ISTATU}(20) is the number of tracks directions;
-*         \item \moc{ISTATU}(21) line format. By default a short 
+*         ISTATU( 1) is the number of regions;
+*         ISTATU( 2) is the number of unknown;
+*         ISTATU( 3) is the leakage flag;
+*         ISTATU( 4) is the maximum number of mixture used;
+*         ISTATU( 5) is the number of outer surfaces;
+*         ISTATU( 6) is the flux anisotropy order;
+*         ISTATU( 7) is the tracking option used;
+*         ISTATU( 8) is the track normalization option;
+*         ISTATU( 9) is the type of tracks considered;
+*         ISTATU(10) is the CP calculation option;
+*         ISTATU(11) is the azimuthal quadrature level;
+*         ISTATU(12) is the symmetry option;
+*         ISTATU(13) is the polar quadrature type;
+*         ISTATU(14) is the polar quadrature level;
+*         ISTATU(15) is the azimuthal quadrature type;
+*         ISTATU(16) is the number of dimensions;
+*         ISTATU(17) is the number of tracking points per ine;
+*         ISTATU(18) is the maximum length of a track;
+*         ISTATU(19) is the total number of tracks;
+*         ISTATU(20) is the number of tracks directions;
+*         ISTATU(21) line format. By default a short 
 *         format is considered but the complete format for TLM:
 *         can be generated using the keyword LONG;
-*         \item \moc{ISTATU}(22) is the vectorization option
-*         \item \moc{ISTATU}(23) is the tracking flag (-1: MC; 0: NOTR;
+*         ISTATU(22) is the vectorization option
+*         ISTATU(23) is the tracking flag (-1: MC; 0: NOTR;
 *               1: tracking available);
-*         \end{itemize} 
 * RSTATU  real parameters for tracking:
-*         \begin{itemize}
-*         \item \moc{RSTATU}(1) is the track length cutoff for
+*         RSTATU( 1) is the track length cutoff for
 *               exponential functions;
-*         \item \moc{RSTATU}(2) is the 1D line or 2D plane
+*         RSTATU( 2) is the 1D line or 2D plane
 *               quadrature line density;
-*         \item \moc{RSTATU}(3) is the corner identification cutoff;
-*         \item \moc{RSTATU}(4) is the axial quadrature line density;
-*         \item \moc{RSTATU}(5) contains the linear track spacing
+*         RSTATU( 3) is the corner identification cutoff;
+*         RSTATU( 4) is the axial quadrature line density;
+*         RSTATU( 5) contains the linear track spacing
 *         for general 2--D geometry and for 3--D Cartesian and
 *         geometries;
-*         \item \moc{RSTATU}(6) is the $X$ cell center;
-*         \item \moc{RSTATU}(7) is the $y$ cell center;
-*         \item \moc{RSTATU}(8) is the $Z$ cell center;
-*         \item \moc{RSTATU}(11) is the spatial cutoff factor for
+*         RSTATU( 6) is the $X$ cell center;
+*         RSTATU( 7) is the $y$ cell center;
+*         RSTATU( 8) is the $Z$ cell center;
+*         RSTATU(11) is the spatial cutoff factor for
 *               tracking ;
-*         \item \moc{RSTATU}(39) is the minimum volume fraction of the
+*         RSTATU(39) is the minimum volume fraction of the
 *               grain in the representative volume for She-Liu-Shi 
 *               model; 
-*         \end{itemize}
 * NBSLIN  maximum number of segments in a single tracking line.
 *         computed by default in NXTTCG but limited to 100000
 *         elements. This default value can be bypassed using
@@ -87,8 +86,6 @@
 * IBIHET  type of double-heterogeneity method (=1: Sanchez-Pomraning
 *         model; =2: Hebert model; =3: She-Liu-Shi model (no shadow);
 *         =4: She-Liu-Shi model (with shadow)).
-* FRTM    minimum volume fraction of the grain in the representative 
-*         volume for She-Liu-Shi model.
 *
 *Comments:
 * Input data is of the form:
@@ -108,6 +105,8 @@
 *    [ { SYMM isymm | NOSY } ]
 *    [ { NOTR | MC } ]
 *    [ [ QUAB iqua10 ] [ { SAPO | HEBE | SLSI [frtm] | SLSS [frtm] } ] ]
+*    with frtm minimum volume fraction of the grain in the  
+*    representative volume for She-Liu-Shi model.
 *
 *----------
 *

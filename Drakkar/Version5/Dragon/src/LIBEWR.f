@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on a WIMA-AECL formatted library
+* Read depletion data on a WIMA-AECL formatted library
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solves a linear optimization problem with quadratic constraint using
+* Solves a linear optimization problem with quadratic constraint using
 * the method of approximation programming (MAP). 
 * PLMAP1 = Linear Programmation MAP1
 *
@@ -21,7 +21,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input
 * N0      number of control variables.

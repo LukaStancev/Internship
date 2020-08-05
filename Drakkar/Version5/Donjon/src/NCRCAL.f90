@@ -9,7 +9,8 @@ RECURSIVE INTEGER FUNCTION NCRCAL(II,NVP,NPTOT,DEBARB,ARBVAL,MUPLET) RESULT(ICAL
 !Copyright:
 ! Copyright (C) 2012 Ecole Polytechnique de Montreal
 !
-!Author(s): A. Hebert
+!Author(s): 
+! A. Hebert
 !
 !Parameters: input
 ! II      position in DEBARB. Must be set to 1 in the first call.

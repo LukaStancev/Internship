@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* generate a macrolib using the AFM feedback model
+* Generate a macrolib using the AFM feedback model
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -13,28 +13,41 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s):  M.T. Sissaoui
-*  Modified  E. Varin, B. Dionne
+*Author(s):  
+* M.T. Sissaoui
+*Update(s):
+*  E. Varin, B. Dionne
 *
-*Parameters: input/output
-* NENTRY  number of linked lists or files used by the module
-* HENTRY  character*12 name of each linked list or file
-* IENTRY  =1 linked list; =2 xsm file; =3 sequential binary file;
-*         =4 sequential ascii file
-* JENTRY  =0 the linked list or file is created
-*         =1 the linked list or file is open for modifications;
-*         =2 the linked list or file is open in read-only mode
-* KENTRY  =file unit number; =linked list address otherwise
-*         kentry(nentry)
-* LINKED LIST / XSM FILE
-* HENTRY(1)  create or modification type(L_MACROLIB)
-* HENTRY(2)  read only type(reactor_xsdb)
-* HENTRY(3)  read only type(L_MAP)
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
 *
 *Reference:
 * M. T. Sissaoui, G. Marleau and D. Rozon, "CANDU Reactor Simulations
 * Using the Feedback Model with Actinide Burnup History," Nucl.
 * Technology, 125, 197 (1999).
+*
+*Comments:
+* The AFM: calling specifications are:
+* MACRO := AFM: [ MACRO ] DBASE [ MAPFL ] :: (descafm) ;
+* where
+*   MACRO : name of the extended \emph{macrolib}
+*   DBASE : name of the \emph{database} object containing fuel properties with 
+*     respect to local parameters.
+*   MAPFL : name of the \emph{map} object containing fuel regions description 
+*     and burnupinformations. This file is only required when a \emph{MACRO is 
+*     created for fuel area.
+*   (descafm) : structure containing the data to module AFM:.
 *
 *-----------------------------------------------------------------------
 *

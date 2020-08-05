@@ -11,13 +11,6 @@
 *
 *Author(s): R. Roy
 *
-*Reference:
-* R. Roy, G. Marleau, A. H\'{e}bert and D. Rozon,
-* ``A Cyclic Tracking Procedure for Collision Probability Calculations
-* in 2-D Lattices'', in
-* \textsl{Advances in Mathematics, Computations and Reactor Physics},
-* Pittsburgh, PA, April 28 - May 2 (1991).
-*
 *Parameters: input
 * ABSC   multidimensional width of the cell.
 * NANGLE number of angles.
@@ -25,6 +18,12 @@
 *
 *Parameters: output
 * WGTANG integration weights.
+*
+*Reference:
+* R. Roy, G. Marleau, A. Hebert and D. Rozon,
+* A Cyclic Tracking Procedure for Collision Probability Calculations
+* in 2-D Lattices, Advances in Mathematics, Computations and 
+* Reactor Physics, Pittsburgh, PA, April 28 - May 2 (1991).
 *
 *-----------------------------------------------------------------------
 *

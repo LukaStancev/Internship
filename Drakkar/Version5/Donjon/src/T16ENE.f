@@ -3,54 +3,61 @@
      >                  NGCCPO,
      >                  IFGCPO,IFGCND,IFGMTR,IFGEDI,ENECPO,ENET16,
      >                  VELT16,VELMTR,VELEDI)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16ENE
-C      USE      : GENERATE AND ANALYZE ENERGY STRUCTURE
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/22
-C      REF      : EPM  IGE-244 REV.1
-C                 EACL RC-1176 (COG-94-52)
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/22 G.M.    | GENERATE AND ANALYZE
-C      |                    | ENERGY STRUCTURE
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IPRINT : PRINT LEVEL                              I
-C      MXGRP  : MAXIMUM NUMBER OF GROUPS PERMITTED       I
-C      NG     : NUMBER OF GROUP IN LIBRARY               I
-C      NGCOND : NUMBER OF CONDENSED GROUPS               I
-C      NGMTR  : NUMBER OF MAIN TRANSPORT GROUP           I
-C      NGREAC : NUMBER OF EDIT GROUPS                    I
-C    INPUT/OUTPUT
-C      NGCCPO : NUMBER OF CPO GROUPS                     I
-C      IFGCPO : CPO FEW GROUP IDENTIFIER                 I(MXGRP)
-C               (I) CPO WITH RESPECT TO T16 GROUPS
-C               (O) CPO WITH RESPECT TO T16 GROUPS
-C      IFGCND : CONDENSATION FEW GROUP IDENTIFIER        I(MXGRP)
-C               (I) CND WITH RESPECT TO T16 GROUPS
-C      IFGMTR : MAIN TRANSPORT  FEW GROUP IDENTIFIER     I(MXGRP)
-C               (I) MTR WITH RESPECT TO T16 GROUPS
-C               (O) CPO WITH RESPECT TO MTR GROUPS
-C      IFGEDI : EDIT FEW GROUP IDENTIFIER                I(MXGRP)
-C               (I) EDI WITH RESPECT TO T16 GROUP
-C               (O) CPO WITH RESPECT TO EDI GROUP
-C      ENECPO : FINAL ENERGY GROUP STRUCTURE             R(MXGRP+1)
-C    OUTPUT
-C      ENET16 : INITIAL ENERGY GROUP STRUCTURE           R(MXGRP+1)
-C      VELT16 : AVERAGE VELOCITY IN INITIAL GROUPS       R(MXGRP)
-C      VELMTR : AVERAGE VELOCITY IN MAIN GROUPS          R(MXGRP)
-C      VELEDI : AVERAGE VELOCITY IN EDIT GROUPS          R(MXGRP)
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16ENE
+*
+*Purpose:
+*  GENERATE AND ANALYZE ENERGY STRUCTURE
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/22
+*      REF      : EPM  IGE-244 REV.1
+*                 EACL RC-1176 (COG-94-52)
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/22 G.M.    | GENERATE AND ANALYZE
+*      |                    | ENERGY STRUCTURE
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IPRINT  PRINT LEVEL                              I
+* MXGRP   MAXIMUM NUMBER OF GROUPS PERMITTED       I
+* NG      NUMBER OF GROUP IN LIBRARY               I
+* NGCOND  NUMBER OF CONDENSED GROUPS               I
+* NGMTR   NUMBER OF MAIN TRANSPORT GROUP           I
+* NGREAC  NUMBER OF EDIT GROUPS                    I
+*
+*Parameters: input/output
+* NGCCPO  NUMBER OF CPO GROUPS                     I
+* IFGCPO  CPO FEW GROUP IDENTIFIER                 I(MXGRP)
+*         (I) CPO WITH RESPECT TO T16 GROUPS
+*         (O) CPO WITH RESPECT TO T16 GROUPS
+* IFGCND  CONDENSATION FEW GROUP IDENTIFIER        I(MXGRP)
+*         (I) CND WITH RESPECT TO T16 GROUPS
+* IFGMTR  MAIN TRANSPORT  FEW GROUP IDENTIFIER     I(MXGRP)
+*         (I) MTR WITH RESPECT TO T16 GROUPS
+*         (O) CPO WITH RESPECT TO MTR GROUPS
+* IFGEDI  EDIT FEW GROUP IDENTIFIER                I(MXGRP)
+*         (I) EDI WITH RESPECT TO T16 GROUP
+*         (O) CPO WITH RESPECT TO EDI GROUP
+* ENECPO  FINAL ENERGY GROUP STRUCTURE             R(MXGRP+1)
+*
+*Parameters: output
+* ENET16  INITIAL ENERGY GROUP STRUCTURE           R(MXGRP+1)
+* VELT16  AVERAGE VELOCITY IN INITIAL GROUPS       R(MXGRP)
+* VELMTR  AVERAGE VELOCITY IN MAIN GROUPS          R(MXGRP)
+* VELEDI  AVERAGE VELOCITY IN EDIT GROUPS          R(MXGRP)
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IPRINT,MXGRP,NG,NGCOND,NGMTR,NGREAC,NGCCPO
       INTEGER          IFGCPO(MXGRP),IFGCND(MXGRP),IFGMTR(MXGRP),

@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* update the macroscopic cross sections thanks to the Xenon distribution
+* Update the macroscopic cross sections thanks to the Xenon distribution
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): M. Guyot
+*Author(s): 
+* M. Guyot
 *
 *Parameters: input/output
 * IPLIB   adress of the L_LIBRARY

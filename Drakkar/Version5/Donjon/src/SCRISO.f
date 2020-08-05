@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* store an isotopic data recovered from a Saphyb into a Microlib.
+* Store an isotopic data recovered from a Saphyb into a Microlib.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
@@ -15,7 +15,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPLIB   address of the output microlib LCM object

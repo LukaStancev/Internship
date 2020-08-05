@@ -13,22 +13,65 @@
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_MACROLIB);
-*         HENTRY(I): read-only type(L_MULTICOMPO);
-*         HENTRY(NENTRY): read-only type(L_MAP).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The NAP: calling specifications are:
+* Option 1: 
+* COMPO := NAP: COMPO TRKNAM FLUNAM :: (descnap1) ;
+* Option 2: 
+* MAP := NAP: MAP TRKNAM FLUNAM MATEX MACRES :: (descnap2) ;
+* Option 3: 
+* GEONEW := NAP: GEOOLD COMPO :: (descnap3) ;
+* where
+*   COMPO : name of the \emph{multicompo} data structure (L\_COMPO signature) 
+*     where the detailed subregion properties will be stored.
+*   TRKNAM : name of the read-only \emph{tracking} data structure 
+*     (L\_TRACK signature) containing the tracking. 
+*   FLUNAM : name of the read-only \emph{fluxunk} data structure 
+*     (L\_FLUX signature) containing a transport solution.
+*   MAP : name of the \emph{map} data structure (L\_MAP signature) containing 
+*     fuel regions description, global and local parameter information (burnup, 
+*     fuel/coolant temperatures, coolant density, etc). A previous call to the 
+*     FLPOW: module is highly recommended prior to the pin-power reconstruction 
+*     to normalize the flux and compute the assembly power. If not, the 
+*     pin-power reconstruction  will be normalized using the whole core power 
+*     instead of a normalization for each assembly.
+*   MATEX : name of the read-only \emph{matex} data structure 
+*     (L\_MATEX signature). The object corresponds to the heterogeneously 
+*     splited geometry.
+*   MACRES : name of the read-only \emph{macrolib} data structure 
+*     (L\_MACROLIB signature) containing a cross section for the fuel. The 
+*     \emph{macrolib} data structure must have been created with a 
+*     \emph{multicompo} data structure with pin level properties (transport 
+*     flux, H-factor, infinite domain diffusion flux).
+*   GEONEW : name of the created \emph{geometry} data structure 
+*     (L\_GEOM signature) containing the detailed core geometry definition at 
+*     heterogeneous assembly level.
+*   GEOOLD : name of the read-only \emph{geometry} data structure 
+*     (L\_GEOM signature) containing the core geometry definition with 
+*     homogeneous assembly (only 1 mesh per assembly mandatory).
+*   (descnap1) : structure containing the input data to this module to compute 
+*     additional properties for subregions
+*   (descnap2) : structure containing the input data to this module to perform 
+*     pin power reconstruction
+*   (descnap3) : structure containing the input data to this module to 
+*     automatically define the core geometry with heterogeneous assembly
 *
 *-----------------------------------------------------------------------
 *

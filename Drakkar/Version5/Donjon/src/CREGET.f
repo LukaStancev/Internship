@@ -17,7 +17,9 @@
 * NCH     number of reactor channels.
 * NB      number of fuel bundles per channel.
 * IBTYP   type of interpolation:
-*         =0 not provided; =1 time-average; =2 instantaneous;
+*         =0 not provided;
+*         =1 time-average;
+*         =2 instantaneous;
 *         =3 derivative with respect to a single exit burnup.
 * IMPX    printing index (=0 for no print).
 * IVARTY  index of the exit burnup used to compute derivatives;

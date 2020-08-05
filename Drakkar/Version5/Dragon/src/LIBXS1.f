@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* initialize dimensions for depletion data with APOLIB-XSM
+* Initialize dimensions for depletion data with APOLIB-XSM
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal

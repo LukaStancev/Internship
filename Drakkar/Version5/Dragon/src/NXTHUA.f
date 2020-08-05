@@ -11,34 +11,36 @@
 * the assembly according to the symmetries.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPRINT  print level.
 * NDIM    problem dimensions.
 * IHSYM   hexagonal symmetry option where
-*         \begin{itemize}
-*         \item \moc{IHSYM}=0 geometry is not hexagonal;
-*         \item \moc{IHSYM}=1 for S30;
-*         \item \moc{IHSYM}=2 for SA60;
-*         \item \moc{IHSYM}=3 for SB60;
-*         \item \moc{IHSYM}=4 for S90;
-*         \item \moc{IHSYM}=5 for R120;
-*         \item \moc{IHSYM}=6 for R180;
-*         \item \moc{IHSYM}=7 for SA180;
-*         \item \moc{IHSYM}=8 for SB180;
-*         \item \moc{IHSYM}=9 for COMPLETE;
-*         \item \moc{IHSYM}=10 for R60.
-*         \end{itemize}
+*         = 0 geometry is not hexagonal;
+*         = 1 for S30;
+*         = 2 for SA60;
+*         = 3 for SB60;
+*         = 4 for S90;
+*         = 5 for R120;
+*         = 6 for R180;
+*         = 7 for SA180;
+*         = 8 for SB180;
+*         = 9 for COMPLETE;
+*         =10 for R60.
 * ISAXIS  symmetry vector for each direction.
 * NBOCEL  number of cells in original geometry.
 * NBUCEL  number of cells in unfolded geometry.
@@ -50,31 +52,27 @@
 *Parameters: output
 * ITSYM   array to identify the symmetry to test for each original
 *         cell where
-*         \begin{itemize}
-*         \item \moc{ITSYM(1,*)} identify hexagonal symmetry;
-*         \item \moc{ITSYM(2,*)} not used;
-*         \item \moc{ITSYM(3,*)} identify $Z$ symmetry;
-*         \item \moc{ITSYM(4,*)} not used.
-*         \end{itemize}
+*         ITSYM(1,*) identify hexagonal symmetry;
+*         ITSYM(2,*) not used;
+*         ITSYM(3,*) identify $Z$ symmetry;
+*         ITSYM(4,*) not used.
 *         A value of 0 indicate that the geometry does not need
 *         to be verified while a value of 1 implies a verification
 *         of the geometry.
 * IDFEX   identify faces associated with external boundary for a
 *         generating cell and number of times this cell is used. Here
-*         \begin{itemize}
-*         \item \moc{IDFEX(1,*)}  identify bottom $U$ hexagonal face;
-*         \item \moc{IDFEX(2,*)}  identify top $U$ hexagonal face;
-*         \item \moc{IDFEX(3,*)}  identify bottom $V$ hexagonal face;
-*         \item \moc{IDFEX(4,*)}  identify top $V$ hexagonal face;
-*         \item \moc{IDFEX(5,*)}  identify bottom $Z$ face;
-*         \item \moc{IDFEX(6,*)}  identify top $Z$ face;
-*         \item \moc{IDFEX(7,*)}  not used;
-*         \item \moc{IDFEX(8,*)}  not used;
-*         \item \moc{IDFEX(9,*)}  identify bottom $W$ hexagonal face;
-*         \item \moc{IDFEX(10,*)} identify top $W$ hexagonal face;
-*         \end{itemize}
+*         IDFEX( 1,*)  identify bottom $U$ hexagonal face;
+*         IDFEX( 2,*)  identify top $U$ hexagonal face;
+*         IDFEX( 3,*)  identify bottom $V$ hexagonal face;
+*         IDFEX( 4,*)  identify top $V$ hexagonal face;
+*         IDFEX( 5,*)  identify bottom $Z$ face;
+*         IDFEX( 6,*)  identify top $Z$ face;
+*         IDFEX( 7,*)  not used;
+*         IDFEX( 8,*)  not used;
+*         IDFEX (9,*)  identify bottom $W$ hexagonal face;
+*         IDFEX(10,*)  identify top $W$ hexagonal face;
 * IDFRT   identify reflection/transmission faces.
-* IUNFLD  array to identify the generating cell (\moc{IUNFLD(1,*)})
+* IUNFLD  array to identify the generating cell (IUNFLD(1,*))
 *         and the rotation associated with this region in space.
 *
 *----------

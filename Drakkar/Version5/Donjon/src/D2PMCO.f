@@ -9,11 +9,12 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the global stated variable data contained in the SAPHYB object
+* Recover the global stated variable data contained in the SAPHYB object
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input/output
+*Parameters: input/output
 * IPDAT   address of the INFO data block
 * IPSAP   address of the saphyb object
 * NCRD    number of control rod composition recovered from D2P input
@@ -68,6 +69,12 @@
 * THCK    Thickness of reflector
 * HFLX    Name of the record for the flux
 * HCUR    Name of the record for the current
+*
+*Parameters: 
+* OTHPK   
+* OTHTYP  
+* OTHVAL  
+*
 *-----------------------------------------------------------------------
 *
       USE GANLIB
@@ -684,22 +691,22 @@
          KPTH=LCMDIL(IPTH,J)
          IF(J==1) THEN
            CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(1))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LBARR)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LBARR)
          ELSE IF(J==2)THEN
            IF(LDMOD) CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(2))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LDMOD)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LDMOD)
          ELSE IF(J==3) THEN
            IF(LCBOR) CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(3))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LCBOR)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LCBOR)
          ELSE IF(J==4)THEN
            IF(LTCOM) CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(4))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LTCOM)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LTCOM)
          ELSE IF(J==5)THEN
            IF(LTMOD) CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(5))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LTMOD)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LTMOD)
          ELSE IF(J==6) THEN
            CALL LCMPTC(KPTH,'NAME',12,1,PKNAM(6))
-           CALL LCMPUT(KPTH,'LFLAG',1,1,LBURN)
+           CALL LCMPUT(KPTH,'LFLAG',1,5,LBURN)
          ENDIF
       ENDDO
       CALL LCMSIX(IPDAT,' ',0)

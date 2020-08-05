@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the GPT sources corresponding to the gradient of the RMS
+* Compute the GPT sources corresponding to the gradient of the RMS
 * absorption distribution. Case with NFUNC individual components to be
 * used with a Newtonian method.
 *
@@ -17,7 +17,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPRINT  print parameter
@@ -46,6 +47,10 @@
 *Parameters: output
 * NFUNC   number of individual components in the gradient terms.
 * RMSD    RMS error on rate distribution.
+*
+*Parameters: 
+* ITYPE
+* IELEM
 *
 * Reference:
 *  A. Hebert,"Developpement de la methode SPH: Homogeneisation de

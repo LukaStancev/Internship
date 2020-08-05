@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute average fluxes per fuel bundle and other related quantities;
+* Compute average fluxes per fuel bundle and other related quantities;
 * print bundle fluxes on file.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * IPMTX  pointer to matex information.

@@ -5,12 +5,28 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver for the spline interpolation.
+* Driver for the spline interpolation.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin
+*Author(s): 
+* E. Varin
+*
+*Parameters: 
+* NXMAX     
+* NYMAX     
+* NZMAX     
+* IM        
+* FLUX      
+* FLUXIN    
+* NINT      
+* XCNTR     
+* YCNTR     
+* ZCNTR     
+* COORD     
+* IXX       
+* IPRT      
 *
 *-----------------------------------------------------------------------
 *

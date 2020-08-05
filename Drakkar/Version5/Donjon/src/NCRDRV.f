@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for multicompo interpolation. Use user-defined
+* Compute TERP factors for multicompo interpolation. Use user-defined
 * global and local parameters.
 *
 *Copyright:
 * Copyright (C) 2006 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input
 * IPCPO   address of the multicompo object.

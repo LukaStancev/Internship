@@ -4,11 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the interpolation weights FP for the Lagrange interpolation:
-* F(X) = sum for I = 1 to L of F(I+I0)*FP(I)
-* for LL.le.NXP uses an LL-point "centered" Lagrange interpolation,
-* otherwise it uses a linear interpolation formula.
-* Attention: it is assumed that XP(I+1) > XP(I) for all I
+* Compute the interpolation weights FP for the Lagrange interpolation.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -20,16 +16,23 @@
 *Author(s): A. Hebert
 *
 *Parameters: input
-* X      abscissa
-* XP     tabulated abscissa
-* NXP    number of tabulated points
-* LL     requested interpolation order
+* X       abscissa
+* XP      tabulated abscissa
+* NXP     number of tabulated points
+* LL      requested interpolation order
 *
 *Parameters: output
-* FP     weights for Lagrange interpolation
-* L      interpolation limit (number of non-zero weights)
-* IPROX  index of closest tabulated point
-* I0     number of leading zero weights
+* FP      weights for Lagrange interpolation
+* L       interpolation limit (number of non-zero weights)
+* IPROX   index of closest tabulated point
+* I0      number of leading zero weights
+*
+*Comments:
+*  Evaluation method.
+*  F(X) = sum for I = 1 to L of F(I+I0)*FP(I)
+*  for LL.le.NXP uses an LL-point "centered" Lagrange interpolation,
+*  otherwise it uses a linear interpolation formula.
+*  Attention: it is assumed that XP(I+1) > XP(I) for all I
 *
 *-----------------------------------------------------------------------
 *

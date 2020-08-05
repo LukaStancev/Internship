@@ -1,33 +1,34 @@
 *DECK SIMOUT
-      SUBROUTINE SIMOUT(IPMAP,IMPX,BURNINST,IZONE,NCH,NB,LX,LY,HHX,IHY,
+      SUBROUTINE SIMOUT(IPMAP,IMPX,BURNINS,IZONE,NCH,NB,LX,LY,HHX,IHY,
      > STATE)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print burnup distribution (3D), radial averages or axial averages
+* Print burnup distribution (3D), radial averages or axial averages
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): V. Salino
+*Author(s): 
+* V. Salino
 *
 *Parameters: input
-* IPMAP    fuel map object.
-* IMPX     print parameter.
-* BURNINST instantaneous burnups.
-* IZONE    default assembly or quart-of-assembly names as defined in
-*          the fuel map.
-* NCH      number of assemblies or number of quart-of-assemblies.
-* NB       number of axial burnup subdivisions in an assembly.
-* LX       number of assemblies along the X axis.
-* LY       number of assemblies along the Y axis.
-* LXMIN    coordinates on X axis of the first assembly.
-* LYMIN    coordinates on Y axis of the first assembly.
-* HHX      naval battle indices along X axis.
-* IHY      naval battle indices along Y axis.
-* STATE    flag indicating whether it is a beginning-of-stage print
-*          or a end-of-stage print.
+* IPMAP   fuel map object.
+* IMPX    print parameter.
+* BURNINS instantaneous burnups.
+* IZONE   default assembly or quart-of-assembly names as defined in
+*         the fuel map.
+* NCH     number of assemblies or number of quart-of-assemblies.
+* NB      number of axial burnup subdivisions in an assembly.
+* LX      number of assemblies along the X axis.
+* LY      number of assemblies along the Y axis.
+* LXMIN   coordinates on X axis of the first assembly.
+* LYMIN   coordinates on Y axis of the first assembly.
+* HHX     naval battle indices along X axis.
+* IHY     naval battle indices along Y axis.
+* STATE   flag indicating whether it is a beginning-of-stage print
+*         or a end-of-stage print.
 *
 *-----------------------------------------------------------------------
 *
@@ -38,7 +39,7 @@
       TYPE(C_PTR) IPMAP
       INTEGER IMPX,IHY(LY),NCH,NB,LX,LY
       CHARACTER HHX(LX)*1,IZONE(NCH)*4,STATE*5
-      REAL BURNINST(NCH,NB)
+      REAL BURNINS(NCH,NB)
 *----
 *  LOCAL VARIABLES
 *----
@@ -51,7 +52,7 @@
       REAL, ALLOCATABLE, DIMENSION(:) :: MEAN
 *
       IF(STATE.EQ.'BEGIN')THEN
-        CALL LCMGET(IPMAP,'BURN-INST',BURNINST)
+        CALL LCMGET(IPMAP,'BURN-INST',BURNINS)
       ENDIF
 *----
 *  RADIALLY-AVERAGED BURNUP MAP
@@ -85,7 +86,7 @@
           CALL XDRSET(MEAN,NFULL,0.0)
           DO K=1,NFULL
             DO IB=1,NB
-              MEAN(K)=MEAN(K)+BURNINST(ICH-1-NFULL+K,IB)/NB
+              MEAN(K)=MEAN(K)+BURNINS(ICH-1-NFULL+K,IB)/NB
             ENDDO
           ENDDO
           WRITE(6,115,ADVANCE='NO') IHY(I)
@@ -109,7 +110,7 @@
         DO IB=1,NB
           MEANR=0.0
           DO ICH=1,NCH
-            MEANR=MEANR+BURNINST(ICH,IB)/NCH
+            MEANR=MEANR+BURNINS(ICH,IB)/NCH
           ENDDO
           WRITE(6,140) NINT(MEANR)
         ENDDO
@@ -126,11 +127,11 @@
         ENDIF
         DO ICH=1,NCH
           WRITE(6,160) IZONE(ICH)
-          WRITE(6,170) (BURNINST(ICH,IB),IB=1,NB)
+          WRITE(6,170) (BURNINS(ICH,IB),IB=1,NB)
         ENDDO
       ENDIF
 *
-      IF(STATE.EQ.'BEGIN') CALL XDRSET(BURNINST,NCH*NB,0.0)
+      IF(STATE.EQ.'BEGIN') CALL XDRSET(BURNINS,NCH*NB,0.0)
       RETURN
 *
   100 FORMAT(' SIM: BEGINNING-OF-STAGE BURNUP MAP (MW*D/TONNE), ',

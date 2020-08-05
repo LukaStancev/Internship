@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the reduced collision probabilities for the Sanchez-
+* Calculation of the reduced collision probabilities for the Sanchez-
 * Pomraning double heterogeneity model (part 1).
 *
 *Copyright:
@@ -36,6 +36,8 @@
 * RS      radius of the micro volumes.
 * FRACT   volumic fractions of the micro volumes.
 * VOLK    volumic fractions of the tubes or shells in the micro volumes.
+*
+*Parameters: input/output
 * SIGMA   total macroscopic cross sections in each mixture of the
 *         composite geometry.
 * SIGMS   scattering macroscopic cross sections in each mixture of the
@@ -43,10 +45,6 @@
 *
 *Parameters: output
 * NCO     number of volumes in each composite mixture.
-* SIGMA   equivalent total macroscopic cross section in each macro
-*         mixture.
-* SIGMS   equivalent scattering macroscopic cross section in each macro
-*         mixture.
 * RRRR    information used by XDRH20, XDRH23, XDRH30 and XDRH33.
 * QKOLD   information used by XDRH20, XDRH23, XDRH30 and XDRH33.
 * QKDEL   information used by XDRH20, XDRH23, XDRH30 and XDRH33.
@@ -54,14 +52,12 @@
 * COEF    information used by XDRH20, XDRH23, XDRH30 and XDRH33.
 *
 *References:
-* R. Sanchez and G. C. Pomraning, "A Statistical Analysis of the Double
-* Heterogeneity Problem", Ann. Nucl. Energy, 18, 371 - 395 (1991).
-*
-* R. Sanchez and E. Masiello, "Treatment of the Double Heterogeneity
+* R. Sanchez and G. C. Pomraning, A Statistical Analysis of the Double
+* Heterogeneity Problem, Ann. Nucl. Energy, 18, 371-395 (1991).
+* R. Sanchez and E. Masiello, Treatment of the Double Heterogeneity
 * with the Method of Characteristics", PHYSOR 2002, Seoul, Korea (2002).
-*
-* R. Sanchez, "Renormalized Treatment of the Double Heterogeneity with
-* the Method of Characteristics", PHYSOR 2004, Chicago, USA (2004).
+* R. Sanchez, Renormalized Treatment of the Double Heterogeneity with
+* the Method of Characteristics, PHYSOR 2004, Chicago, USA (2004).
 * 
 *-----------------------------------------------------------------------
 *

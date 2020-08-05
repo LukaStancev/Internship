@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the correlation information between a pair of resonant
+* Compute the correlation information between a pair of resonant
 * isotopes.
 *
 *Copyright:

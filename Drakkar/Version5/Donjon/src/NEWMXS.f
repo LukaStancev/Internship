@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute nuclear properties perturbed by the device insertion.
+* Compute nuclear properties perturbed by the device insertion.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * NTOT0   flux-weighted total macroscopic x-sections.

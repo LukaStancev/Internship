@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solves the quasi-linear problem using the external penalty function.
+* Solves the quasi-linear problem using the external penalty function.
 * PLPNLT = Linear Programmation external PeNaLTy function
 *
 *Copyright:
@@ -15,7 +15,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
 *Parameters: input/ouput
 * IPOPT   pointer to the L_OPTIMIZE object.

@@ -44,6 +44,7 @@
 *         inner iterations acceleration).
 * FI      zonal scalar flux.
 * SC      macroscopic "in group" scattering cross section.
+* FIOLD   old zonal scalar flux.
 * TAB     if LTYPE,  IPERM(N) permutation array,
 *         otherwise, KEYANI(NFUNL) 'mode to l' index: l=KEYANI(nu)
 * NJJ     scattering information

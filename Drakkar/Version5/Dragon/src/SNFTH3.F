@@ -1,15 +1,15 @@
 *DECK SNFTH3
-      SUBROUTINE SNFTH3(NHEX,LZ,IELEM,ISPLH,SIDE,NMAT,NPQ,NSCT,MAT,VOL,
-     1 NCODE,ZCODE,TOTAL,QEXT,DU,DE,DZ,W,MRMZ,DC,DB,DA,PL,FLUX,XNEK,
-     2 CONNEC,IZGLOB,CONFROM)
+      SUBROUTINE SNFTH3(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,NHEX,LZ,IELEM,
+     1 ISPLH,SIDE,NMAT,NPQ,NSCT,MAT,VOL,NCODE,ZCODE,TOTAL,QEXT,DU,DE,DZ,
+     2 W,MRMZ,DC,DB,DA,PL,CONNEC,IZGLOB,CONFROM,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
 * perform one inner iteration for solving SN equations in 3D hexagonal
-* geometry for the High Order DIAMOND DIFFERENCE method. VOID boundary
-* conditions on sides, and, VOID or REFL boundary conditions on top and 
-* bottom.
+* geometry for the HODD method. VOID boundary conditions on sides, and,
+* VOID or REFL boundary conditions on top and bottom. Energy-angle
+* multithreading. Albedo boundary conditions.
 *
 *Copyright:
 * Copyright (C) 2020 Ecole Polytechnique de Montreal
@@ -21,6 +21,12 @@
 *Author(s): A. A. Calloo
 *
 *Parameters: input
+* NUN     total number of unknowns in vector FUNKNO.
+* NGRP    number of energy groups.
+* NGEFF   dimension of arrays INCONV and INGIND.
+* IMPX    print flag (equal to zero for no print).
+* INCONV  energy group convergence flag (set to .false. if converged).
+* INGIND  energy group index assign to 1:NGEFF arrays.
 * NHEX    number of hexagons in X-Y plane.
 * LZ      number of meshes along Z axis.
 * IELEM   measure of order of the spatial approximation polynomial:
@@ -29,6 +35,7 @@
 *         =2: linear - default for DG;
 *         =3: parabolic;
 *         =4: cubic - only for DG.
+* SIDE    side of an hexagon.
 * NMAT    number of material mixtures.
 * NPQ     number of SN directions in four octants (including zero-weight
 *         directions).
@@ -49,49 +56,60 @@
 * DA      diamond-scheme parameter.
 * PL      discrete values of the spherical harmonics corresponding
 *         to the 2D SN quadrature.
-* XNEI    X-directed SN boundary fluxes.
-* XNEJ    Y-directed SN boundary fluxes.
-* IZGLOB  hexagon sweep order depending on direction
 * CONNEC  connectivity matrix for flux swapping -- which lozenges is the
 *         lozenge under consideration connected to; in order to pass the
 *         flux along. This is dependent on direction
+* IZGLOB  hexagon sweep order depending on direction
 * CONFROM matrix for incoming flux -- which lozenges are feeding into
 *         the lozenge under consideration. This is dependent on
 *         direction
+* FUNKNO  Legendre components of the flux and boundary fluxes.
 *
 *Parameters: output
-* FLUX    Legendre components of the flux.
+* FUNKNO  Legendre components of the flux and boundary fluxes.
 *
 *-----------------------------------------------------------------------
 *
+#if defined(_OPENMP)
+      USE omp_lib
+#endif
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NHEX, LZ, IELEM, ISPLH, NMAT, NPQ, NSCT,IZGLOB(NHEX,6),
-     1 MAT(ISPLH,ISPLH,3,NHEX,LZ),NCODE(6),MRMZ(NPQ),
-     2 CONNEC(3,(NHEX*3)*2,6),CONFROM(2,3,6)
-      REAL SIDE,VOL(ISPLH,ISPLH,3,NHEX,LZ), ZCODE(6), TOTAL(0:NMAT),
-     1 QEXT(IELEM**3,NSCT,ISPLH,ISPLH,3,NHEX,LZ), DU(NPQ), DE(NPQ),
-     2 DZ(NPQ),W(NPQ),DC(ISPLH*ISPLH*3*NHEX,1,NPQ),
-     3 DB(ISPLH*ISPLH*3*NHEX,LZ,NPQ), DA(1,LZ,NPQ),
-     4 PL(NSCT,NPQ), FLUX(IELEM**3,NSCT,ISPLH,ISPLH,3,NHEX,LZ),
-     5 XNEK(IELEM,IELEM,ISPLH,ISPLH,3,NHEX,NPQ)
+      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),NHEX,LZ,IELEM,ISPLH,
+     1 NMAT,NPQ,NSCT,IZGLOB(NHEX,6),MAT(ISPLH,ISPLH,3,NHEX,LZ),
+     2 NCODE(6),MRMZ(NPQ),CONNEC(3,(NHEX*3)*2,6),CONFROM(2,3,6)
+      LOGICAL INCONV(NGEFF)
+      REAL SIDE,VOL(ISPLH,ISPLH,3,NHEX,LZ),ZCODE(6),TOTAL(0:NMAT,NGRP),
+     1 QEXT(NUN,NGRP),DU(NPQ),DE(NPQ),DZ(NPQ),W(NPQ),
+     2 DC(ISPLH*ISPLH*3*NHEX,1,NPQ),DB(ISPLH*ISPLH*3*NHEX,LZ,NPQ),
+     3 DA(1,LZ,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP)
 *----
 *  LOCAL VARIABLES
 *----
+      INTEGER NPQD(12),IIND(12)
       DOUBLE PRECISION Q(IELEM**3), Q2(IELEM**3,(IELEM**3)+1),
-     1   CONST0, CONST1, CONST2
-      PARAMETER(RLOG=1.0E-8,PI=3.141592654)
+     1 VT, CONST0, CONST1, CONST2
+      PARAMETER(IUNOUT=6,RLOG=1.0E-8,PI=3.141592654)
       INTEGER :: ILOZSWP(3,6), IFROMI, IFROMJ
       REAL :: JAC(2,2,3), MUH, ETAH, XIH, AAA, BBB, CCC, DDD, MUHTEMP,
      1 ETAHTEMP
-      DOUBLE PRECISION :: THETA, XNI(IELEM,IELEM,ISPLH,LZ), 
+      DOUBLE PRECISION :: THETA, XNI(IELEM,IELEM,ISPLH,LZ),
      1 XNJ(IELEM,IELEM,LZ),XNK(IELEM,IELEM),C1
-      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:,:,:,:) :: BFLUX
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: INDANG
+      DOUBLE PRECISION,ALLOCATABLE, DIMENSION(:,:,:,:,:) :: FLUX
+      DOUBLE PRECISION,ALLOCATABLE, DIMENSION(:,:,:,:,:,:) :: FLUX_G
+      DOUBLE PRECISION,ALLOCATABLE, DIMENSION(:,:,:,:,:,:) :: BFLUX
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
-      ALLOCATE(BFLUX(2,NHEX*3,ISPLH,IELEM,IELEM,LZ))
+      ALLOCATE(INDANG(NPQ,12))
+      ALLOCATE(BFLUX(2,NHEX*3,ISPLH,IELEM,IELEM,LZ),
+     1 FLUX(IELEM**3,NSCT,3*ISPLH**2,NHEX,LZ))
+      ALLOCATE(FLUX_G(IELEM**3,NSCT,3*ISPLH**2,NHEX,LZ,NGEFF))
 *----
 *  CONSTRUCT JACOBIAN MATRIX FOR EACH LOZENGE
 *----
@@ -103,6 +121,7 @@
 *----
 *  DEFINITION OF CONSTANTS.
 *----
+      L4=3*(IELEM**3)*(ISPLH**2)*NHEX*LZ*NSCT
       CONST0=2.0D0*DSQRT(3.0D0)
       CONST1=2.0D0*DSQRT(5.0D0)
       CONST2=2.0D0*DSQRT(15.0D0)
@@ -112,114 +131,143 @@
       IF((IELEM.LT.1).OR.(IELEM.GT.3))
      1   CALL XABORT('SNFTH3: INVALID IELEM (DIAM) VALUE. '
      2   //'CHECK INPUT DATA FILE.')
+      FLUX_G(:IELEM**3,:NSCT,:3*ISPLH**2,:NHEX,:LZ,:NGEFF)=0.0D0
 *----
-*  MAIN LOOP OVER SN ANGLES.
+*  SET OCTANT SWAPPING ORDER.
 *----
-      CALL XDRSET(FLUX,IELEM*IELEM*IELEM*NHEX*(3*ISPLH**2)*NSCT*LZ,0.0)
-
-      DO 210 M=1,NPQ
-      WEIGHT=W(M)
-      VU=DU(M)
-      VE=DE(M)
-      VZ=DZ(M)
-
-      IF (NCODE(5).NE.4) THEN
-         M1=MRMZ(M)
-         DO 61 IEL=1,IELEM
-         DO 60 JEL=1,IELEM
-         IF (VZ.GT.0.0) THEN
-           DO  73 I =1,NHEX
-           DO  72 J =1,3
-           DO  71 IL=1,ISPLH
-           DO  70 JL=1,ISPLH
-           E1=XNEK(IEL,JEL,IL,JL,J,I,M)
-           XNEK(IEL,JEL,IL,JL,J,I,M)=XNEK(IEL,JEL,IL,JL,J,I,M1)
-           XNEK(IEL,JEL,IL,JL,J,I,M1)=E1
-  70       CONTINUE
-  71       CONTINUE
-  72       CONTINUE
-  73       CONTINUE
-         ENDIF
-  60  CONTINUE
-  61  CONTINUE
-      ENDIF
-
-      IF(WEIGHT.EQ.0.0) GO TO 210
-*---- CALCULATE SWEEP ANGLE IN X-Y PLANE
-      THETA=0.0D0
-      IF(VE.GT.0.0)THEN
-         IF(VU.EQ.0.0)THEN
+      NPQD(:12)=0
+      INDANG(:NPQ,:12)=0
+      DO 10 M=1,NPQ
+        VU=DU(M)
+        VE=DE(M)
+        VZ=DZ(M)
+        THETA=0.0D0
+        IF(VE.GT.0.0)THEN
+          IF(VU.EQ.0.0)THEN
             THETA = PI/2
-         ELSEIF(VU.GT.0.0)THEN
+          ELSEIF(VU.GT.0.0)THEN
             THETA = ATAN(ABS(VE/VU))
-         ELSEIF(VU.LT.0.0)THEN
+          ELSEIF(VU.LT.0.0)THEN
             THETA = PI - ATAN(ABS(VE/VU))
-         ENDIF
-      ELSEIF(VE.LT.0.0)THEN
-         IF(VU.EQ.0.0)THEN
+          ENDIF
+        ELSEIF(VE.LT.0.0)THEN
+          IF(VU.EQ.0.0)THEN
             THETA = 3*PI/2
-         ELSEIF(VU.LT.0.0)THEN
+          ELSEIF(VU.LT.0.0)THEN
             THETA = PI + ATAN(ABS(VE/VU))
-         ELSEIF(VU.GT.0.0)THEN
+          ELSEIF(VU.GT.0.0)THEN
             THETA = 2.*PI - ATAN(ABS(VE/VU))
-         ENDIF
-      ENDIF
+          ENDIF
+        ENDIF
 *---- UNFOLD OCTANTS
-      IND=0
-      IND2=0
-      IF(VZ.GE.0.0)THEN
-         IF((THETA.GT.0.0).AND.(THETA.LT.(PI/3.)))THEN
+        IND=0
+        IF(VZ.GE.0.0)THEN
+          IF((THETA.GT.0.0).AND.(THETA.LT.(PI/3.)))THEN
             IND=1
-            IND2=1
-         ELSEIF((THETA.GT.(PI/3.)).AND.(THETA.LT.(2.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(PI/3.)).AND.(THETA.LT.(2.*PI/3.)))THEN
             IND=2
-            IND2=2
-         ELSEIF((THETA.GT.(2.*PI/3.)).AND.(THETA.LT.(PI)))THEN
+          ELSEIF((THETA.GT.(2.*PI/3.)).AND.(THETA.LT.(PI)))THEN
             IND=3
-            IND2=3
-         ELSEIF((THETA.GT.(PI)).AND.(THETA.LT.(4.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(PI)).AND.(THETA.LT.(4.*PI/3.)))THEN
             IND=4
-            IND2=4
-         ELSEIF((THETA.GT.(4.*PI/3.)).AND.(THETA.LT.(5.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(4.*PI/3.)).AND.(THETA.LT.(5.*PI/3.)))THEN
             IND=5
-            IND2=5
-         ELSEIF((THETA.GT.(5.*PI/3.)).AND.(THETA.LT.(2.*PI)))THEN
+          ELSEIF((THETA.GT.(5.*PI/3.)).AND.(THETA.LT.(2.*PI)))THEN
             IND=6
-            IND2=6
-         ENDIF
-      ELSEIF(VZ.LT.0.0)THEN
-         IF((THETA.GT.0.0).AND.(THETA.LT.(PI/3.)))THEN
+          ENDIF
+        ELSEIF(VZ.LT.0.0)THEN
+          IF((THETA.GT.0.0).AND.(THETA.LT.(PI/3.)))THEN
             IND=7
-            IND2=1
-         ELSEIF((THETA.GT.(PI/3.)).AND.(THETA.LT.(2.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(PI/3.)).AND.(THETA.LT.(2.*PI/3.)))THEN
             IND=8
-            IND2=2
-         ELSEIF((THETA.GT.(2.*PI/3.)).AND.(THETA.LT.(PI)))THEN
+          ELSEIF((THETA.GT.(2.*PI/3.)).AND.(THETA.LT.(PI)))THEN
             IND=9
-            IND2=3
-         ELSEIF((THETA.GT.(PI)).AND.(THETA.LT.(4.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(PI)).AND.(THETA.LT.(4.*PI/3.)))THEN
             IND=10
-            IND2=4
-         ELSEIF((THETA.GT.(4.*PI/3.)).AND.(THETA.LT.(5.*PI/3.)))THEN
+          ELSEIF((THETA.GT.(4.*PI/3.)).AND.(THETA.LT.(5.*PI/3.)))THEN
             IND=11
-            IND2=5
-         ELSEIF((THETA.GT.(5.*PI/3.)).AND.(THETA.LT.(2.*PI)))THEN
+          ELSEIF((THETA.GT.(5.*PI/3.)).AND.(THETA.LT.(2.*PI)))THEN
             IND=12
-            IND2=6
-         ENDIF
+          ENDIF
+        ENDIF
+        IIND(IND)=IND ! assume IIND(I)=I in hexagonal geometry
+        NPQD(IND)=NPQD(IND)+1
+        INDANG(NPQD(IND),IND)=M
+   10 CONTINUE
+*----
+*  MAIN LOOP OVER OCTANTS.
+*----
+      DO 310 JND=1,12
+      IND=IIND(JND)
+      IND2=MOD(IND-1,6)+1
+*----
+*  PRELIMINARY LOOPS FOR SETTING BOUNDARY CONDITIONS.
+*----
+*$OMP  PARALLEL DO
+*$OMP1 PRIVATE(M,IG,M1,E1,IOF,JOF,IEL,JEL,I,J,IL,JL)
+*$OMP2 SHARED(FUNKNO) COLLAPSE(2)
+      DO 150 IGEFF=1,NGEFF
+      DO 140 IPQD=1,NPQD(IND)
+      IF(.NOT.INCONV(IGEFF)) GO TO 140
+      M=INDANG(IPQD,IND)
+      IF((NCODE(5).NE.4).AND.(DZ(M).GT.0.0)) THEN
+        IG=INGIND(IGEFF)
+        M1=MRMZ(M)
+        DO 130 IEL=1,IELEM
+        DO 120 JEL=1,IELEM
+        DO 110 I=1,NHEX
+        DO 100 J=1,3
+        DO 90 IL=1,ISPLH
+        DO 80 JL=1,ISPLH
+        IOF=((((((M-1)*NHEX+(I-1))*3+(J-1))*ISPLH+(JL-1))*ISPLH+
+     1      (IL-1))*IELEM+(JEL-1))*IELEM+IEL
+        JOF=((((((M1-1)*NHEX+(I-1))*3+(J-1))*ISPLH+(JL-1))*ISPLH+
+     1      (IL-1))*IELEM+(JEL-1))*IELEM+IEL
+        E1=FUNKNO(L4+IOF,IG)
+        FUNKNO(L4+IOF,IG)=FUNKNO(L4+JOF,IG)
+        FUNKNO(L4+JOF,IG)=E1
+   80   CONTINUE
+   90   CONTINUE
+  100   CONTINUE
+  110   CONTINUE
+  120   CONTINUE
+  130   CONTINUE
       ENDIF
-
-      BFLUX(:,:,:,:,:,:) = 0.0D0
-*
+  140 CONTINUE
+  150 CONTINUE
+*$OMP END PARALLEL DO
+*----
+*  MAIN SWAPPING LOOPS FOR SN FLUX CALCULATION
+*----
+*$OMP  PARALLEL DO
+*$OMP1 PRIVATE(ITID,FLUX,BFLUX,M,IG,XNI,XNJ,XNK,Q,Q2,IOF,IER,II,JJ,IZ)
+*$OMP2 PRIVATE(IEL,JEL,I,J,K,IL,JL,VT,AAA,BBB,CCC,DDD,IHEXI,ILOZI,ILOZ)
+*$OMP3 PRIVATE(ISIDEI,IHEXJ,ILOZJ,ISIDEJ,IFROMI,IFROMJ,INDEXI,INDEXJ)
+*$OMP4 PRIVATE(MUHTEMP,ETAHTEMP,MUH,ETAH,XIH,I2,I3,J2,J3,K2,C1)
+*$OMP5 SHARED(FUNKNO) REDUCTION(+:FLUX_G) COLLAPSE(2)
+      DO 300 IGEFF=1,NGEFF
+      DO 290 IPQD=1,NPQD(IND)
+#if defined(_OPENMP)
+        ITID=omp_get_thread_num()
+#else
+        ITID=0
+#endif
+      IF(IMPX.GT.5) WRITE(IUNOUT,500) ITID,IGEFF,IPQD
+      IF(.NOT.INCONV(IGEFF)) GO TO 290
+      M=INDANG(IPQD,IND)
+      IG=INGIND(IGEFF)
+      FLUX(:IELEM**3,:NSCT,:3*ISPLH**2,:NHEX,:LZ)=0.0D0
+      BFLUX(:2,:NHEX*3,:ISPLH,:IELEM,:IELEM,:LZ)=0.0D0
+      IF(W(M).EQ.0.0) GO TO 290
 *----
 *  LOOP OVER X-Y PLANE AND Z-DIRECTED AXIS.
 *----
 * SECOND loop over hexagons
-      DO 190 II=1,NHEX
+      DO 280 II=1,NHEX
       I=IZGLOB(II,IND2)
 
 * THIRD loop over lozenges
-      DO 180 JJ=1,3
+      DO 270 JJ=1,3
       J=ILOZSWP(JJ,IND2)
 *
       AAA = JAC(1,1,J)
@@ -238,28 +286,26 @@
       INDEXI = ((IHEXI-1)*3)+ILOZI
       INDEXJ = ((IHEXJ-1)*3)+ILOZJ
 *
-      DO 170 IL=1,ISPLH
+      DO 260 IL=1,ISPLH
       I2=IL
-      IF(CONFROM(1,J,IND2).EQ.3) I2=ISPLH+1-IL
-
-      DO 160 JL=1,ISPLH
+      IF(CONFROM(1,J,IND2).EQ.3) I2=ISPLH+1-I2
+      DO 250 JL=1,ISPLH
       J2=JL
-      IF(CONFROM(2,J,IND2).EQ.4) J2=ISPLH+1-JL
-
+      IF(CONFROM(2,J,IND2).EQ.4) J2=ISPLH+1-J2
       DO IEL=1,IELEM
       DO JEL=1,IELEM
-         IF(IND.LT.7) THEN  
-            XNK(IEL,JEL)=XNEK(IEL,JEL,I2,J2,J,I,M)*ZCODE(5)
-         ELSE
-            XNK(IEL,JEL)=XNEK(IEL,JEL,I2,J2,J,I,M)*ZCODE(6)
-         ENDIF
-      ENDDO 
+        IOF=((((((M-1)*NHEX+(I-1))*3+(J-1))*ISPLH+(J2-1))*ISPLH+
+     1      (I2-1))*IELEM+(JEL-1))*IELEM+IEL
+        IF(IND.LT.7) THEN
+          XNK(IEL,JEL)=FUNKNO(L4+IOF,IG)*ZCODE(5)
+        ELSE
+          XNK(IEL,JEL)=FUNKNO(L4+IOF,IG)*ZCODE(6)
+        ENDIF
       ENDDO
-
-      DO 150 IZ=1,LZ
+      ENDDO
+      DO 220 IZ=1,LZ
       K2= IZ
       IF(IND.GE.7) K2=LZ+1-IZ
-
       IF(JL.EQ.1)THEN
          DO IEL=1,IELEM
             DO JEL=1,IELEM
@@ -267,7 +313,6 @@
             ENDDO
          ENDDO
       ENDIF
-
       IF(IL.EQ.1)THEN
          DO IEL=1,IELEM
             DO JEL=1,IELEM
@@ -282,47 +327,49 @@
       ETAH = (-MUHTEMP*CCC) + (ETAHTEMP*AAA)
       XIH  = DC(1,1,M)
 *
-      IF(MAT(I2,J2,J,I,K2).EQ.0) GO TO 180
+      IF(MAT(I2,J2,J,I,K2).EQ.0) GO TO 220
 
 *     -----------------------------------------------------
-      DO 111 IEL=1,IELEM**3
-      Q(IEL)=0.0
-      DO 110 K=1,NSCT
-      Q(IEL)=Q(IEL)+QEXT(IEL,K,I2,J2,J,I,K2)*PL(K,M)/(4.0*PI)
-  110 CONTINUE
-  111 CONTINUE
+      DO 170 IEL=1,IELEM**3
+      Q(IEL)=0.0D0
+      DO 160 K=1,NSCT
+      IOF=(((((((K2-1)*NHEX+(I-1))*3+(J-1))*ISPLH+(J2-1))*ISPLH+
+     1 (I2-1))*NSCT+(K-1))*IELEM**3)+IEL
+      Q(IEL)=Q(IEL)+QEXT(IOF,IG)*PL(K,M)/(4.0D0*PI)
+  160 CONTINUE
+  170 CONTINUE
 *     -----------------------------------------------------
 *
-      VT=VOL(I2,J2,J,I,K2)*TOTAL(MAT(I2,J2,J,I,K2))
+      VT=VOL(I2,J2,J,I,K2)*TOTAL(MAT(I2,J2,J,I,K2),IG)
       CALL XDDSET(Q2,(IELEM**3)*((IELEM**3)+1),0.0D0)
 *
 *     -----------------------------------------------------
       IF(IELEM.EQ.1) THEN
       Q2(1,1)=2.0D0*ABS(MUH)+2.0D0*ABS(ETAH)+
-     1        2.0D0*ABS(XIH)+VT 
+     1        2.0D0*ABS(XIH)+VT
       Q2(1,2)=2.0D0*ABS(MUH)*XNI(1,1,J2,K2)+
      1        2.0D0*ABS(ETAH)*XNJ(1,1,K2)+
-     2        2.0D0*ABS(XIH)*XNK(1,1)+VOL(I2,J2,J,I,K2)*Q(1)   
+     2        2.0D0*ABS(XIH)*XNK(1,1)+VOL(I2,J2,J,I,K2)*Q(1)
       ELSE IF(IELEM.EQ.2) THEN
       Q2(1,1)=VT
-      Q2(1,2)=CONST0*MUH 
+      Q2(1,2)=CONST0*MUH
       Q2(1,3)=CONST0*ETAH
       Q2(1,4)=CONST0*XIH
-      Q2(2,2)=-VT-6.0D0*ABS(MUH)    
+      Q2(2,2)=-VT-6.0D0*ABS(MUH)
       Q2(2,5)=-CONST0*ETAH
       Q2(2,6)=-CONST0*XIH
-      Q2(3,3)=-VT-6.0D0*ABS(ETAH)   
-      Q2(3,5)=-CONST0*MUH    
+      Q2(3,3)=-VT-6.0D0*ABS(ETAH)
+      Q2(3,5)=-CONST0*MUH
       Q2(3,7)=-CONST0*XIH
-      Q2(4,4)=-VT-6.0D0*ABS(XIH)    
+      Q2(4,4)=-VT-6.0D0*ABS(XIH)
       Q2(4,6)=-CONST0*MUH
       Q2(4,7)=-CONST0*ETAH
-      Q2(5,5)=VT+6.0D0*ABS(MUH)+6.0D0*ABS(ETAH)    
-      Q2(5,8)=CONST0*XIH 
-      Q2(6,6)=VT+6.0D0*ABS(MUH)+6.0D0*ABS(XIH)    
-      Q2(6,8)=CONST0*ETAH 
+      Q2(5,5)=VT+6.0D0*ABS(MUH)+6.0D0*ABS(ETAH)
+      Q2(5,8)=CONST0*XIH
+      Q2(6,6)=VT+6.0D0*ABS(MUH)+6.0D0*ABS(XIH)
+      Q2(6,8)=CONST0*ETAH
       Q2(7,7)=VT+6.0D0*ABS(ETAH)+6.0D0*ABS(XIH)
-      Q2(7,8)=CONST0*MUH 
+      Q2(7,8)=CONST0*MUH
       Q2(8,8)=-VT-6.0D0*ABS(MUH)-6.0D0*ABS(ETAH)
      1        -6.0D0*ABS(XIH)
 *---------------
@@ -338,11 +385,11 @@
      1       -CONST0*XIH*XNK(1,2)
       Q2(8,9)=-VOL(I2,J2,J,I,K2)*Q(8)+CONST0*MUH*XNI(2,2,J2,K2)
      1       +CONST0*ETAH*XNJ(2,2,K2)
-     2       +CONST0*XIH*XNK(2,2)  
+     2       +CONST0*XIH*XNK(2,2)
       ELSE IF(IELEM.EQ.3) THEN
 *--------------- UPPER DIAGONAL TERMS
       Q2(1,1)=-VT-2.0D0*ABS(MUH)-2.0D0*ABS(ETAH)-
-     1        2.0D0*ABS(XIH)  
+     1        2.0D0*ABS(XIH)
       Q2(1,9)=-CONST1*ABS(MUH)
       Q2(1,10)=-CONST1*ABS(ETAH)
       Q2(1,11)=-CONST1*ABS(XIH)
@@ -429,7 +476,7 @@
       Q2(26,26)=VT+1.0D1*ABS(MUH)+1.0D1*ABS(ETAH)
       Q2(26,27)=CONST2*XIH
       Q2(27,27)=-VT-1.0D1*ABS(MUH)-1.0D1*ABS(ETAH)-
-     1        1.0D1*ABS(XIH)    
+     1        1.0D1*ABS(XIH)
 
 *---------------------
       Q2(1,28)=-VOL(I2,J2,J,I,K2)*Q(1)-2.0D0*ABS(MUH)*XNI(1,1,J2,K2)-
@@ -491,23 +538,23 @@
      2        CONST1*ABS(ETAH)*XNJ(3,3,K2)-
      3        CONST1*ABS(XIH)*XNK(3,3)
       ENDIF
-      DO 121 IEL=1,IELEM**3
-      DO 120 JEL=IEL+1,IELEM**3
-      Q2(JEL,IEL)=Q2(IEL,JEL)   
-  120 CONTINUE
-  121 CONTINUE
+      DO 190 IEL=1,IELEM**3
+      DO 180 JEL=IEL+1,IELEM**3
+      Q2(JEL,IEL)=Q2(IEL,JEL)
+  180 CONTINUE
+  190 CONTINUE
 *
       CALL ALSBD(IELEM**3,1,Q2,IER,IELEM**3)
-      IF(IER.NE.0) CALL XABORT('SNFTH3: SINGULAR MATRIX.')  
+      IF(IER.NE.0) CALL XABORT('SNFTH3: SINGULAR MATRIX.')
 *
       IF(IELEM.EQ.1) THEN
          XNK(1,1)=2.0D0*Q2(1,2)-XNK(1,1)
-      ELSE IF(IELEM.EQ.2) THEN  
+      ELSE IF(IELEM.EQ.2) THEN
          XNK(1,1)=XNK(1,1)+SIGN(1.0,XIH)*CONST0*Q2(4,9)
          XNK(1,2)=XNK(1,2)+SIGN(1.0,XIH)*CONST0*Q2(7,9)
          XNK(2,1)=XNK(2,1)+SIGN(1.0,XIH)*CONST0*Q2(6,9)
-         XNK(2,2)=XNK(2,2)+SIGN(1.0,XIH)*CONST0*Q2(8,9)   
-      ELSE IF(IELEM.EQ.3) THEN  
+         XNK(2,2)=XNK(2,2)+SIGN(1.0,XIH)*CONST0*Q2(8,9)
+      ELSE IF(IELEM.EQ.3) THEN
          XNK(1,1)=2.0D0*Q2(1,28)+CONST1*Q2(11,28)-XNK(1,1)
          XNK(2,1)=2.0D0*Q2(2,28)+CONST1*Q2(16,28)-XNK(2,1)
          XNK(1,2)=2.0D0*Q2(3,28)+CONST1*Q2(15,28)-XNK(1,2)
@@ -526,7 +573,7 @@
             XNJ(1,1,K2)=XNJ(1,1,K2)+SIGN(1.0,ETAH)*CONST0*Q2(3,9)
             XNJ(1,2,K2)=XNJ(1,2,K2)+SIGN(1.0,ETAH)*CONST0*Q2(7,9)
             XNJ(2,1,K2)=XNJ(2,1,K2)+SIGN(1.0,ETAH)*CONST0*Q2(5,9)
-            XNJ(2,2,K2)=XNJ(2,2,K2)+SIGN(1.0,ETAH)*CONST0*Q2(8,9)  
+            XNJ(2,2,K2)=XNJ(2,2,K2)+SIGN(1.0,ETAH)*CONST0*Q2(8,9)
          ELSEIF(IELEM.EQ.3) THEN
             XNJ(1,1,K2)=2.0D0*Q2(1,28)+CONST1*Q2(10,28)-XNJ(1,1,K2)
             XNJ(2,1,K2)=2.0D0*Q2(2,28)+CONST1*Q2(17,28)-XNJ(2,1,K2)
@@ -555,7 +602,7 @@
             BFLUX(ISIDEJ,INDEXJ,I3,2,1,K2)=(XNJ(2,1,K2)+SIGN(1.0,ETAH)*
      1         CONST0*Q2(5,9))*C1
             BFLUX(ISIDEJ,INDEXJ,I3,2,2,K2)= XNJ(2,2,K2)+SIGN(1.0,ETAH)*
-     1         CONST0*Q2(8,9)  
+     1         CONST0*Q2(8,9)
          ELSEIF(IELEM.EQ.3) THEN
             BFLUX(ISIDEJ,INDEXJ,I3,1,1,K2)= 2.0D0*Q2(1,28)+CONST1*
      1         Q2(10,28)-XNJ(1,1,K2)
@@ -626,7 +673,7 @@
      1         SIGN(1.0,MUH)*CONST0*Q2(8,9)
          ELSEIF(IELEM.EQ.3) THEN
             BFLUX(ISIDEI,INDEXI,J3,1,1,K2)= 2.0D0*Q2(1,28)+CONST1*
-     1         Q2(9,28)-XNI(1,1,J2,K2) 
+     1         Q2(9,28)-XNI(1,1,J2,K2)
             BFLUX(ISIDEI,INDEXI,J3,2,1,K2)=(2.0D0*Q2(3,28)+CONST1*
      1         Q2(12,28)-XNI(2,1,J2,K2))*C1
             BFLUX(ISIDEI,INDEXI,J3,1,2,K2)=(2.0D0*Q2(4,28)+CONST1*
@@ -646,29 +693,43 @@
          ENDIF
       ENDIF
 *
-      DO 131 K=1,NSCT
-      DO 130 IEL=1,IELEM**3
-      FLUX(IEL,K,I2,J2,J,I,K2) = FLUX(IEL,K,I2,J2,J,I,K2) +
-     1   W(M)*REAL(Q2(IEL,IELEM**3+1))*PL(K,M)
-  130 CONTINUE
-  131 CONTINUE
-*
-  150 CONTINUE
-
-      DO 156 IEL=1,IELEM
-      DO 155 JEL=1,IELEM
-      XNEK(IEL,JEL,I2,J2,J,I,M)=REAL(XNK(IEL,JEL))
-  155 CONTINUE
-  156 CONTINUE
-
-  160 CONTINUE
-  170 CONTINUE
-  180 CONTINUE
-  190 CONTINUE
+      ILOZ=((J-1)*ISPLH+(J2-1))*ISPLH+I2
+      DO 210 K=1,NSCT
+      DO 200 IEL=1,IELEM**3
+      FLUX(IEL,K,ILOZ,I,K2) = FLUX(IEL,K,ILOZ,I,K2) +
+     1 W(M)*Q2(IEL,IELEM**3+1)*PL(K,M)
+  200 CONTINUE
   210 CONTINUE
+*
+  220 CONTINUE
+      DO 240 IEL=1,IELEM
+      DO 230 JEL=1,IELEM
+      IOF=((((((M-1)*NHEX+(I-1))*3+(J-1))*ISPLH+(J2-1))*ISPLH+
+     1    (I2-1))*IELEM+(JEL-1))*IELEM+IEL
+      FUNKNO(L4+IOF,IG)=REAL(XNK(IEL,JEL))
+  230 CONTINUE
+  240 CONTINUE
+*
+  250 CONTINUE
+  260 CONTINUE
+  270 CONTINUE
+  280 CONTINUE
+      FLUX_G(:,:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,:,IGEFF)+FLUX(:,:,:,:,:)
+  290 CONTINUE
+  300 CONTINUE
+*$OMP END PARALLEL DO
+  310 CONTINUE
+      DO 320 IGEFF=1,NGEFF
+        IF(.NOT.INCONV(IGEFF)) GO TO 320
+        IG=INGIND(IGEFF)
+        FUNKNO(:L4,IG)=
+     1  RESHAPE(REAL(FLUX_G(:IELEM**3,:NSCT,:3*ISPLH**2,:NHEX,:LZ,
+     2  IGEFF)), (/L4/))
+  320 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-      DEALLOCATE(BFLUX)
+      DEALLOCATE(FLUX_G,FLUX,BFLUX,INDANG)
       RETURN
+  500 FORMAT(16H SNFTH3: thread=,I8,12H --->(group=,I4,7H angle=,I4,1H))
       END

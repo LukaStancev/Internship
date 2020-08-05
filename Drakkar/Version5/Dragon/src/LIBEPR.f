@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print isotopic depletion chain
+* Print isotopic depletion chain
 * 
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -39,7 +39,7 @@
 * KPAR    PRODUCE-REAC matrix (production identifiers)
 * BPAR    PRODUCE-RATE matrix (branching ratios)
 * YIELD   fission product yield matrix
-* IZEA    6-digit nuclide identifier
+* IZAE    6-digit nuclide identifier
 *         atomic number z*10000 (digits) + mass number a*10 +
 *         energy state (0 = ground state, 1 = first state, etc.)
 *

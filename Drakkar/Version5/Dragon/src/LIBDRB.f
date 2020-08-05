@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read an interpolate in dilution one isotope in draglib format at a
+* Read an interpolate in dilution one isotope in draglib format at a
 * selected temperature.
 *
 *Copyright:
@@ -36,12 +36,12 @@
 * NFS     number of fine groups per coarse group.
 * BENER   energy limits of the fine groups.
 * IMPX    print flag.
+*
+*Parameters: input/output
 * NGF     number of fast groups without self-shielding.
 * NGFR    number of fast and resonance groups.
 *
 *Parameters: output
-* NGF     number of fast groups without self-shielding.
-* NGFR    number of fast and resonance groups.
 * LSCAT   scattering mask (=.true. if a given Legendre order of the
 *         scattering cross section exists).
 * LSIGF   fission mask (=.true. if the isotope can fission).

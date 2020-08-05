@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* minimize a linear problem with a quadratic constraint using a
+* Minimize a linear problem with a quadratic constraint using a
 * parametric complementarity principle.
 * PLQUAD = Linear Programmation with QUADratic constraint
 *
@@ -16,7 +16,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input
 * N0      number of control variables.

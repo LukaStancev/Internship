@@ -7,7 +7,25 @@
 *Purpose:
 * CALL to GET_SAP_ADF to recover ADF information.
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
+*
+*Parameters: 
+* IPDAT    
+* IPRINT   
+* NG       
+* NMIL     
+* ADF      
+* NSF      
+* DIFC     
+* CURRN    
+* SRFLX    
+* ZAFLX    
+* RPAR     
+* IPAR     
+* ADF_T    
+* STAIDX   
+* NVAR     
 *
 *-----------------------------------------------------------------------
 *

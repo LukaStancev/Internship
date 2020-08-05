@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute 'REF-CHAN' record in L_MAP object for history-based cases.
+* Compute 'REF-CHAN' record in L_MAP object for history-based cases.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPMAP   pointer to fuel-map information.

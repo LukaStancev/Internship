@@ -1,10 +1,10 @@
 *DECK LIBND0
-      SUBROUTINE LIBND0 (NAMFIL,NGRO,ENERG_PTR)
+      SUBROUTINE LIBND0 (NAMFIL,NGRO,IPENER)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover energy group information from a NDAS library
+* Recover energy group information from a NDAS library
 *
 *Copyright:
 * Copyright (C) 2006 Atomic Energy of Canada Limited and Ecole
@@ -16,8 +16,8 @@
 * NAMFIL  name of the NDAS file
 *
 *Parameters: output
-* NGRO       number of energy groups
-* ENERG_PTR  C_PTR pointer of the energy mesh limit array
+* NGRO    number of energy groups
+* IPENER  pointer of the energy mesh limit array
 *
 *-----------------------------------------------------------------------
 *
@@ -28,7 +28,7 @@
 *----
       INTEGER NGRO
       CHARACTER NAMFIL*(*)
-      TYPE(C_PTR) ENERG_PTR
+      TYPE(C_PTR) IPENER
 *----
 *  Local variables
 *----
@@ -42,8 +42,8 @@
       IF(IERR.NE.0) CALL XABORT('LIBND0: XSDBLD could not read library'
      > //' parameters')
       NGRO=HEADER(2)
-      ENERG_PTR=LCMARA(NGRO+1)
-      CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRO+1 /))
+      IPENER=LCMARA(NGRO+1)
+      CALL C_F_POINTER(IPENER,ENERG,(/ NGRO+1 /))
       CALL XSDBLD(5019,ENERG,IERR)
       IF(IERR.NE.0) CALL XABORT('LIBND0: XSDBLD could not read energy '
      >  //'group limits')

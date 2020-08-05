@@ -6,15 +6,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* refuel a channel according to a refuelling mode in Cartesian geometry.
+* Refuel a channel according to a refuelling mode in Cartesian geometry.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters: input/output
-*
 * IPRES  Adress of the map Linked_List or XSM file.
 * IPMIC  Adress of the L_LIBRARY in creation mode.
 * IPMIC2 Adress of the fuel-map L_LIBRARY in read-only mode.
@@ -40,15 +40,22 @@
 * KRF    Type of refueling
 * LMIC   =.true. for a micro-refueling
 *
+*Parameters:
+* WINT    
+* BS      
+* PS      
+* ISFT    
+* NSS     
+*
 *-----------------------------------------------------------------------
 *
       USE GANLIB
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      TYPE(C_PTR) IPRES
+      TYPE(C_PTR) IPRES,IPMIC,IPMIC2,IPMIC3
       INTEGER     NCH,NK,NX,NY,NZ,NS,NREG,ILONG,ITYP,IX,IY,IPRT,MS,IS,
-     1            MAXS,KS,NSS(NCH),NNS,IPMIC,IPMIC2,IPMIC3
+     1            MAXS,KS,NSS(NCH),NNS
       REAL        WINT(NCH,NK),BS(NCH,NK,MS),PS(NCH,NK,MS),POW(NCH,NK)
       CHARACTER   XNAM*4,YNAM*4,NAMCHA*4,TEXT4*4
       INTEGER     MIX(NREG),IXN(NX),IYN(NY),ISFT(NCH,NK),IND(*)
@@ -77,24 +84,27 @@
       CALL LCMLEN(IPRES,'ISHIFT',ILS,ITYLCM)
       IF(ILS.NE.0) THEN
         CALL LCMGET(IPRES,'ISHIFT',ISFT(1,1))
-        DO 17 I=1,NK
+        DO 18 I=1,NK
          DO 17 J=1,NCH
             MAXS=MAX(MAXS,ISFT(J,I))
- 17     CONTINUE
+ 17      CONTINUE
+ 18     CONTINUE
       ELSE
         MAXS=0
-        DO 15 I=1,NK
+        DO 115 I=1,NK
           DO 15 J=1,NCH
             ISFT(J,I) = 0
- 15     CONTINUE
+ 15       CONTINUE
+115     CONTINUE
       ENDIF
       DO 1 I=1,NK
-       DO 1 J=1,NCH
+       DO 2 J=1,NCH
          WINT(J,I) = 0.0
-         DO 2 K=1,MS
+         DO 3 K=1,MS
            BS(J,I,K)=0.0
            PS(J,I,K)=0.0
-  2      CONTINUE
+  3      CONTINUE
+  2    CONTINUE
   1   CONTINUE
 *----
 *  RECOVER FUEL BURNUPS
@@ -128,7 +138,7 @@
       CALL LCMGET(IPRES,'BMIX',MIX)
       CALL XDISET(ICHMAP,NX*NY,0)
       ICH=0
-      DO 25 IY=1,NY
+      DO 26 IY=1,NY
       DO 25 IX=1,NX
       IEL=(IY-1)*NX+IX
       DO 23 IZ=1,NZ
@@ -138,6 +148,7 @@
   24  ICH=ICH+1
       ICHMAP(IX,IY)=ICH
   25  CONTINUE
+  26  CONTINUE
       IF(ICH.NE.NCH) CALL XABORT('@TINREF: INVALID NUMBER OF CHANNELS')
 *----
 *  SEARCH FOR THE CHANNEL NUMBER FROM ITS NAME
@@ -252,10 +263,11 @@
   40  CONTINUE
 
       MAXS=0
-      DO 12 I=1,NK
+      DO 112 I=1,NK
         DO 12 J=1,NCH
           MAXS=MAX(MAXS,ISFT(J,I))
-  12  CONTINUE
+  12    CONTINUE
+ 112  CONTINUE
 *----
 * CALL THE SUBROUTINE FOR A MICROSCOPIC REFUEL
 *----

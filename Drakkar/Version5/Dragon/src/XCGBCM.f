@@ -1,41 +1,44 @@
 *DECK XCGBCM
       SUBROUTINE XCGBCM(IPTRK,NSOUT,NCODE,MATRT)
-C
-C----------------------------------------------------------------------
-C
-C 1-  SUBROUTINE STATISTICS:
-C
-C          NAME      -> XCGBCM
-C          USE       -> BUILT BOUNDARY CONDITION MATRIX FOR
-C                       REFLECTION AND TRANSMISSION
-C          DATE      -> 16-02-1998
-C          AUTHOR    -> G. MARLEAU
-C
-C 2-  PARAMETERS:
-C
-C INPUT
-C  IPTRK   : POINTER TO THE TRACKING FILE                I
-C  NSOUT   : NUMBER OF OUTER SURFACE                     I
-C  NCODE   : ALBEDO TYPE                                 I(6)
-C OUTPUT
-C  MATRT   : BC MATRIX FOR REFLECTION/TRANSMISSION       I(NSOUT)
-C
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Built boundary condition matrix for reflection and transmission
+*
+*Copyright:
+* Copyright (C) 1998 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G.Marleau
+*
+*Parameters: input
+* IPTRK   pointer to the tracking file
+* NSOUT   number of outer surface
+* NCODE   albedo type
+*
+*Parameters: output
+* MATRT   BC matrix for reflection/transmission
+*
+*----------------------------------------------------------------------
+*
       USE GANLIB
       PARAMETER (NMCOD=6)
       TYPE(C_PTR) IPTRK
       INTEGER NSOUT,NCODE(NMCOD),MATRT(NSOUT),ISOUT
-C----
-C  INITIALIZE MATRT TO REFLECTION
-C----
+*----
+*  INITIALIZE MATRT TO REFLECTION
+*----
       DO 100 ISOUT=1,NSOUT
         MATRT(ISOUT)=ISOUT
  100  CONTINUE
-C----
-C  FOR CARTESIAN CELL LOOK AT PERIODIC BOUNDARY CONDITIONS
-C  AND SET TRANSMISSION MATRIX
-C----
+*----
+*  FOR CARTESIAN CELL LOOK AT PERIODIC BOUNDARY CONDITIONS
+*  AND SET TRANSMISSION MATRIX
+*----
       IF(NSOUT.EQ.4) THEN
         IF((NCODE(1) .EQ. 4) .AND. (NCODE(2) .EQ.4)) THEN
           MATRT(1)=3

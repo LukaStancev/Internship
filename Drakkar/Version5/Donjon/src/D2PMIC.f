@@ -1,6 +1,7 @@
 *DECK D2PMIC
       SUBROUTINE D2PMIC(  IPDAT, IPMIC , IPRINT,    NGP, NBMIX, NBISO,
-     >                     NVAR, STAIDX,   LXES,   LDET,  LCOR,  FLUX)
+     >                      NED,   NVAR, STAIDX,   LXES,  LDET,  LCOR,
+     >                     FLUX)
 *
 *-----------------------------------------------------------------------
 *
@@ -9,16 +10,26 @@
 * cross sections for one branch at a fixed burnup point in the INFO
 * data block
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
-* IPDAT       address of info data block
-* IPMIC       address of the microlib object
-* NBMIX       number of mixturess
-* NBISO       number of isotopes
-* NGP         number of energy groups
-* NVAR        number of state variables
-* STAIDX      table of states index order
+*Parameters: input
+* IPDAT   address of info data block
+* IPMIC   address of the microlib object
+* NBMIX   number of mixturess
+* NBISO   number of isotopes
+* NED     number of P0 additional XS
+* NGP     number of energy groups
+* NVAR    number of state variables
+* STAIDX  table of states index order
+*
+*Parameters: 
+* IPRINT   
+* NGP      
+* LXES     
+* LDET     
+* LCOR     
+* FLUX     
 *
 *-----------------------------------------------------------------------
 *
@@ -27,7 +38,7 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) IPDAT,IPMIC
-      INTEGER NBMIX,NBISO,NGP,NVAR
+      INTEGER NBMIX,NBISO,NED,NGP,NVAR
       INTEGER STAIDX(NVAR)
       REAL FLUX(NGP)
       LOGICAL LDET,LXES,LCOR
@@ -69,12 +80,15 @@
       IF(NBMIX.NE.1) THEN
         CALL XABORT('@D2P: MORE THAN ONE MIXTRURE IN SAPHYB')
       ENDIF
-
+      IF(NED.GT.12) THEN
+        CALL XABORT('@D2P: MORE THAN 12 ADDITIONAL ISOTOPES')
+      ENDIF
+      
       CALL LCMSIX(IPMIC,' ',0)
       CALL LCMGET(IPMIC,'ISOTOPESDENS',DEN)
       CALL LCMGTC(IPMIC,'ISOTOPESUSED',12,NBISO,HUSE)
       CALL LCMGTC(IPMIC,'ISOTOPERNAME',12,NBISO,ISOTNAME)
-      CALL LCMGET(IPMIC,'ADDXSNAME-P0',XSNAM)
+      CALL LCMGTC(IPMIC,'ADDXSNAME-P0',8,NED,XSNAM)
 
       DO I=1,NBISO
          IF(INDEX(HUSE(I),ISOTOPES(1))>0) iXE=I

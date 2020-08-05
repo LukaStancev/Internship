@@ -1,63 +1,64 @@
 *DECK XELPSI
       FUNCTION XELPSI(ITYP,RANN2,XYPOS,XYPOS2,SPXY)
-C
-C--------------------------    XELPSI    -------------------------------
-C
-C 1- PROGRAMME STATISTICS:
-C           NAME: XELPSI
-C      COMPONENT: EXCELL GEOMETRY ANALYSIS
-C      CALLED BY: XELCRN
-C        CALLING: ------
-C        VERSION: 1.0
-C       CREATION: 97/10/31
-C         AUTHOR: G. MARLEAU
-c            USE: COMPUTE INTERSECTION SURFACE BETWEEN
-C                 PART OF ANNULAR REGION TO THE LEFT OF X-PLANE
-C                 AND EITHER THE PART OF THE ANNULAR REGION
-C                 ABOVE Y-PLANER THE PART BELOW THE Y-PLANE
-C 2- INPUT
-C   ITYP   : TYPE OF CALCULATION                            I
-C            =1 -> ABOVE Y-PLANE
-C            =2 -> BELOW Y-PLANE
-C   RANN2  : PIN RADIUS SQUARED                             D
-C   XYPOS  : CARTESIAN PLANE LOCATION                       D(2,2)
-C            (1,1)  LEFT   X-PLANE
-C            (1,2)  RIGHT  X-PLANE
-C            (2,1)  BOTTOM Y-PLANE
-C            (2,2)  TOP    Y-PLANE
-C   XYPOS2 : CARTESIAN MESH SQUARED                         D(2,2)
-C            SAME NOTATION AS ABOVE
-C   SPXY   : ANNULAR SURFACE OUTSIDE OF PLANES              D(2,2)
-C            SAME NOTATION AS ABOVE
-C 3- OUTPUT
-C   XELPSI : INTERSECTION SURFACE                           D
-C 5- INTERNAL PARAMETERS
-C   PI     : VALUE OF PI = 3.14159265358979323846           D
-C
-C--------------------------    XELPSI    -------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Compute intersection surface between part of annular region to the 
+* left of X-plane and either the part of the annular region above 
+* Y-plane or the part below the Y-plane
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G. Marleau
+*
+*Parameters: input
+* ITYP    type of calculation:
+*         =1 -> above y-plane;
+*         =2 -> below y-plane.
+* RANN2   pin radius squared.
+* XYPOS   cartesian plane location:
+*         (1,1)  left   x-plane;
+*         (1,2)  right  x-plane;
+*         (2,1)  bottom y-plane;
+*         (2,2)  top    y-plane.
+* XYPOS2  cartesian mesh squared
+*         same notation as above.
+* SPXY    annular surface outside of planes
+*         same notation as abov.e
+*
+*Parameters: output
+* XELPSI  intersection surface.
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT     NONE
       INTEGER      ITYP
       DOUBLE PRECISION XELPSI,RANN2,XYPOS(2,2),XYPOS2(2,2),SPXY(2,2)
-C----
-C  LOCAL PARAMETERS
-C----
+*----
+*  LOCAL PARAMETERS
+*----
       DOUBLE PRECISION   PI,DZERO
       PARAMETER         (PI=3.14159265358979323846D0,DZERO=0.0D0)
       DOUBLE PRECISION   SQANN,YFC,XFC
-C----
-C  TEST IF POINT OF INTEREST IS LOCATED INSIDE
-C  ANNULAR REGION
-C----
+*----
+*  TEST IF POINT OF INTEREST IS LOCATED INSIDE
+*  ANNULAR REGION
+*----
       XELPSI=0.0D0
       IF(XYPOS2(2,ITYP)+XYPOS2(1,1).LT.RANN2) THEN
-C----
-C  FOR POINT INSIDE ANNULAR REGION
-C  1) (SUM OF ANNULAR INTERSECTION SURFACES)/2
-C     -INTERSECTION SURFACE
-C     +(INTERNAL REGION CARTESIAN SURFACE)/4
-C     =(ANNULAR SURFACE)/4
-C----
+*----
+*  FOR POINT INSIDE ANNULAR REGION
+*  1) (SUM OF ANNULAR INTERSECTION SURFACES)/2
+*     -INTERSECTION SURFACE
+*     +(INTERNAL REGION CARTESIAN SURFACE)/4
+*     =(ANNULAR SURFACE)/4
+*----
         SQANN=0.25D0*PI*RANN2
         YFC=-XYPOS(2,ITYP)
         IF(ITYP.EQ.1) THEN

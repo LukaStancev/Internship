@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solves a linear problem using the revisited simplex method. 
+* Solves a linear problem using the revisited simplex method. 
 * PLSLPX = Linear Programmation SimPLeX
 *
 *Copyright:
@@ -15,7 +15,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and R. Chambon
+*Author(s): 
+* A. Hebert and R. Chambon
 *
 *Parameters: input/ouput
 * N       number of control variables.

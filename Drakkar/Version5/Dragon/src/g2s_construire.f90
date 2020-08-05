@@ -832,7 +832,7 @@ contains
     double precision,intent(in)           :: cx,cy,sd,offcx,offcy
     double precision,dimension(:),intent(in) :: radius
     integer,intent(in)                    :: turn,secori,secorj
-    integer,dimension(:), allocatable     :: mix
+    integer,dimension(:)                  :: mix
     type(t_cluster),dimension(:),pointer  :: cluster
     integer,intent(inout)                 :: szSA
 
@@ -876,6 +876,7 @@ contains
     if(secori/=S_not) call majSectori(keepSz,szSA,secori,tHex,cx,cy)
     !creation des anneaux
   end subroutine construit_hexcel
+
   subroutine construit_tri2d(cx,cy,sd,turn,split,mix,szSA)
     double precision,intent(in)  :: cx,cy,sd
     integer,intent(in)           :: turn,split

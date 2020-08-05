@@ -7,9 +7,9 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* 1) get a Dragon tracking file to compute "pij";
-* 2) normalize a tracking file to Dragon format;
-* 3) produce a new tracking file in Dragon format.
+* Read a Dragon tracking file to compute pij, normalize a tracking 
+* file to Dragon format and produce a new tracking file in Dragon 
+* format.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

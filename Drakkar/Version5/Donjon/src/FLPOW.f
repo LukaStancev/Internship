@@ -9,30 +9,66 @@
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
-*
-*  Modified 15/07/10 : Creation of L_FLUX object to be used by
-*  module DETECT:, M. Guyot
+*Author(s): 
+* D. Sekki
+*Update(s):
+*  M. Guyot 15/07/10 : Creation of L_FLUX object to be used by
+*  module DETECT:, 
 *  
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create type(L_POWER);
-*         HENTRY(2): optional read-only type(L_POWER);
-*         HENTRY(3): read-only type(L_FLUX) or type(L_KINET) ;
-*         HENTRY(4): read-only type(L_TRACK);
-*         HENTRY(5): optional read-only type(L_MAP);
-*         HENTRY(6): optional read-only type(L_MATEX);
-*         HENTRY(7): optional read-only type(L_MACROLIB).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The FLPOW: module specifications are:
+* Option 1
+* POWER [ NRMFLUX ] [ FMAP ] := FLPOW:  [ POWOLD ] FMAP
+*  { FLUX | KINET } TRACK MATEX [ MACRO ] :: (descflpow} ;
+* Option 2
+* POWER := FLPOW:  [ POWOLD ] { FLUX | KINET }  TRACK MACRO :: (descflpow) ;
+* where
+*   POWER   : name of the \emph{power} object that will be created by the 
+*     module. It will contain the information related to the reactor fluxes 
+*     and powers.
+*   NRMFLUX : name of the \emph{flux} object, in creation mode. According to 
+*     the chosen option, this object contains either the fluxes normalized to 
+*     the given total reactor power or the fluxes per bundle. Is it useful if 
+*     you want to compute the detectors readings with the DETECT: module.
+*   POWOLD  : name of the read-only \emph{power} object. It must contain the 
+*     previously computed flux normalization factor, which corresponds to the 
+*     reactor nominal or equilibrium conditions.
+*   FMAP    : name of the \emph{fmap} object containing the fuel lattice 
+*     specification. When FMAP is specified on the RHS, the fluxes and powers 
+*     calculations are performed over the fuel lattice as well as over the 
+*     whole reactor geometry. If FMAP is specified on the LHS, its records 
+*     'BUND-PW' and 'FLUX-AV' will be set according to the information present 
+*     in POWER.
+*   FLUX    : name of the \emph{flux} object, previously created by the 
+*     FLUD: module. The numerical flux solution contained in FLUX is 
+*     recovered and all flux are normalized to the given total reactor power.
+*   KINET   : name of the \emph{kinet} object, previously created by the 
+*     KINSOL: module. The numerical flux solution contained in KINET is 
+*     recovered.
+*   TRACK   : name of the \emph{track} object, created by the TRIVAT: module. 
+*     The information stored in TRACK is recovered and used for the average 
+*     flux calculation.
+*   MATEX   : name of the \emph{matex} object, containing the reactor material 
+*     index and the h-factors that will be recovered and used for the power 
+*     calculation.
+*   MACRO name of the \emph{macrolib} object, containing the h-factors that 
+*     will be recovered and used for the power calculation.
+*   (descflpow) : structure describing the input data to the FLPOW: module .
 *
 *-----------------------------------------------------------------------
 *

@@ -4,17 +4,18 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read the specification for a given liquid zone controller.
+* Read the specification for a given liquid zone controller.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * KPDEV  pointer to DEV_LZC directory for lzc information.
-* NMIX   old maximum number of material mixtures.
 * NTOT   old total number of all mixtures.
+* NMIX   old maximum number of material mixtures.
 * NTOT2  new total number of all mixtures.
 * MIX    new mixture index of all mixtures.
 * ID     current lzc identification number.

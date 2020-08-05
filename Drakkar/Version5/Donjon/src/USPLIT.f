@@ -4,28 +4,44 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* provide a link between the material index and reactor geometry;
+* Provide a link between the material index and reactor geometry;
 * create a matex object.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, D. Sekki, V. Descotes
+*Author(s): 
+* J. Koclas, D. Sekki, V. Descotes
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_GEOM);
-*         HENTRY(2): create type(L_MATEX);
-*         HENTRY(3): optional read-only type(L_GEOM).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The USPLIT: module specification is: 
+* GEOM MATEX := USPLIT: { GEOM | GEOMOLD } :: (desclink) ;
+* where
+*   GEOM : name of a \emph{geometry} object. This object is defined in creation 
+*     (appears only on LHS) or modification (appears on both LHS and RHS) 
+*     mode. An existing geometry previously created in the GEO: module is 
+*     modified. Only 3-D Cartesian or 3-D Hexagonal reactor geometries are 
+*     allowed.
+*   MATEX name of a \emph{matex} object to be created by the module.
+*   GEOMOLD : name of a \emph{geometry} object previously created in the GEO: 
+*     module. This object must be specified in read-only mode (appears only on 
+*     RHS). It is copied into GEOM at the beginning of USPLIT: module. Only 3-D 
+*     Cartesian or 3-D Hexagonal reactor geometries are allowed.
+*   (desclink) : structure describing the input data to the USPLIT: module.
 *
 *-----------------------------------------------------------------------
 *

@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver for the module DETECT:
+* Driver for the module DETECT:
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters:
 * IPDET  pointer to the library object
@@ -20,6 +21,9 @@
 * NX     number of x mesh-splitted elements 
 * NY     number of y mesh-splitted elements 
 * NZ     number of z mesh-splitted elements
+* MESHX  
+* MESHY  
+* MESHZ  
 * KEYF   keyflux recover from L_TRACk object
 * FLUX   flux for each mesh-splitted elements
 * IPRT   printing index

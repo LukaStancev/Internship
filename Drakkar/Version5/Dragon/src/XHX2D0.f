@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute DP0 collision, leakage and transmission probabilities for
+* Compute DP0 collision, leakage and transmission probabilities for
 * hexagonal 2D geometries.
 *
 *Copyright:
@@ -30,7 +30,8 @@
 * PSS     transmission probability. PSS(i,j) -> side i to side j
 *         (i=1,6; j=1,6).
 *
-*-----------------------------------------------------------------------
+*Comments:
+* Faces identification for hexagon
 *
 *                   side 4
 *                  xxxxxxxx
@@ -43,6 +44,7 @@
 *                 x        x
 *                  xxxxxxxx
 *                   side 1
+*
 *----
 *  SUBROUTINE ARGUMENTS
 *----

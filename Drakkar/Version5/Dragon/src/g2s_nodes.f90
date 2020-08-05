@@ -971,7 +971,12 @@ contains
        if(cluster==0) then
           allocate(neutronicMix(size(tcb%mix)),mrg(size(tcb%merge)),stat=alloc_ok)
           if (alloc_ok /= 0) call XABORT("G2S: getGigogneData(2) => allocation pb")
-          neutronicMix(:size(tcb%mix)) = tcb%mix
+          if((typCell == G_Hex).and.(tcb%name == '/')) then
+            if(size(tcb%mix) /= nbNode) call XABORT("G2S: getGigogneData=> invalid size")
+            neutronicMix(1) = tcb%mix(tabNodeGigSect(i)%indTabCellPlac)
+          else
+            neutronicMix(:size(tcb%mix)) = tcb%mix
+          endif
           mrg(:size(tcb%merge)) = tcb%merge
        else
           lg = size(tcb%mix)

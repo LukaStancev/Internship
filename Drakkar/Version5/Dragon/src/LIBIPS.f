@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* construct the pointer array towards microlib isotopes.
+* Construct the pointer array towards microlib isotopes.
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal

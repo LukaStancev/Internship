@@ -6,12 +6,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* interpolate l_compo for a given burnup value.
+* Interpolate l_compo for a given burnup value.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPCPO   pointer to l_compo information.
@@ -45,6 +46,7 @@
 * H       h-factors (kappa*fission macroscopic x-sections).
 * SCAT    scattering macroscopic x-sections.
 * FLUX    integrated flux.
+* UPS
 *
 *-----------------------------------------------------------------------
 *

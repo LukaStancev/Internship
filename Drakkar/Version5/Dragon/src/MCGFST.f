@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* addition of the contribution to the flux of the regional source
+* Addition of the contribution to the flux of the regional source
 * when the 'source term isolation' option is turned on for the 
 * method of characteristics integration.
 *

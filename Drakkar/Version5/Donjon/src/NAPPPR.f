@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform the Pin Power Reconstruction for core with
+* Perform the Pin Power Reconstruction for core with
 * heterogeneous mixture
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): R. Chambon (EPM) and R. Nguyen Van Ho (URANUS)
+*Author(s): 
+* R. Chambon (EPM) and R. Nguyen Van Ho (URANUS)
 *
 *Parameters: input/output
 * IPMAP   LCM object address of Map.
@@ -174,8 +175,8 @@ C
       ALLOCATE(AZONE(NCH))
       ALLOCATE(NAMX(NAX),NAMY(NAY))
       CALL LCMGET(IPMAP,'A-ZONE',AZONE)
-      CALL LCMGET(IPMAP,'AXNAME',NAMX)
-      CALL LCMGET(IPMAP,'AYNAME',NAMY)
+      CALL LCMGTC(IPMAP,'AXNAME',4,NAX,NAMX)
+      CALL LCMGTC(IPMAP,'AYNAME',4,NAY,NAMY)
       CALL LCMSIX(IPMAP,'GEOMAP',1)
       CALL LCMGET(IPMAP,'STATE-VECTOR',ISTATE)
       NXM=ISTATE(3)
@@ -735,7 +736,7 @@ C       end IG
         WRITE(LABEL,'(A4,A4)') NAMY(JAX),NAMX(IBAX(JAX)+IAX-1)
         IF(IMPX.GE.5) THEN
           WRITE(6,*) 'Reaction rates for assembly #',IASS,' Label:',
-     1     label
+     1     LABEL
         ENDIF
         DO K=1,NZASS
         IF(IMPX.GE.5) WRITE(6,*) 'Plane #',K
@@ -761,7 +762,7 @@ C       end IG
         ENDDO
 *
         KPMAP=LCMDIL(JPMAP,IASS)
-        CALL LCMPUT(KPMAP,'LABEL',2,3,LABEL)
+        CALL LCMPTC(KPMAP,'LABEL',8,1,LABEL)
         CALL LCMPUT(KPMAP,'PIN-POWER',NPIN*NPIN*NZASS,2,HFA)
         CALL LCMPUT(KPMAP,'FLUX',NPIN*NPIN*NZASS*NG,2,
      1              FLXP(1,1,1,1,IASS))

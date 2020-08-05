@@ -5,80 +5,84 @@
      >                   MAXDIM,ICOORD,INCR,ICUR,TRKBEG,CONV,TRKDIR,
      >                   LENGHT,NUMERO,NPIJ,NGRP,SIGTAL,SWVOID,NORE,
      >                   NRMV,VOLTRK,KEYMRG,NSOUT,NREG,NPSYS,DBLPIJ )
-************************************************************************
-*                                                                      *
-*           NAME: XL3TI3                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XL3TRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 96/09 (R.R.)                                         *
-*       MODIFIED: 98/06 (G.M.) COMPRESS TRACKING FILE TO TAKE INTO     *
-*                              ACCOUNT SUCCESSIVE IDENTICAL REGIONS    *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL CONSTRUCT THE SEQUENTIAL TAPE      *
-*                 THAT WILL CONTAIN TRACKS FOR ISOTROPIC B.C.          *
-*                 3-D CALCULATIONS.                                    *
-*      REFERENCE: 'A TRANSPORT METHOD FOR TREATING 3-D LATTICES OF     *
-*                  HETEROGENEOUS CELLS', R.ROY, A.HEBERT AND G.MARLEAU,*
-*                  NUCLEAR SCIENCE & ENGINEERING, V 101, P 217 (1989). *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* NANGLE / # OF ANGLES USED IN THE TRACKING PROCESS.    /I./INT        *
-* DENUSR / DENSITY OF TRACKS IN THE PLANE PERPENDICULAR /I./REL        *
-*        /      TO THE TRACKING ANGLES.                 /  /           *
-* ISYMM  / FLAG FOR SYMETRY.  (1/0 for on/off)          /I./I          *
-*          ISYMM = 2 -> reflection plane normal to X axis
-*          ISYMM = 4 -> reflection plane normal to Y axis
-*          ISYMM = 8  -> reflection plane normal to X and Y axis  
-*          ISYMM =16 -> reflection plane normal to Z axis
-*          ISYMM =18 -> reflection plane normal to X and Z axis
-*          ISYMM =20 -> reflection plane normal to Y and Z axis
-*          ISYMM =24 -> reflection plane normal to X, Y and Z axis  
-* ANGLES / 3D ANGLE VALUES.                             /I./R(3*NSOLAN)*
-* DENSTY / DENSITY OF TRACKS ANGLE BY ANGLE.            /I./REL(NSOLAN)*
-* NTOTCL / # OF CYLINDRES OF A TYPE + 3.                /I./INT        *
-* NEXTGE / FOR TUBEZ, NEXTGE=1                          /I./INT        *
-* MAXR   / MAX NUMBER OF REAL MESH VALUES IN "REMESH".  /I./INT        *
-* REMESH / REAL MESH VALUES (RECT/CYL).                 /I./REL(MAXR  )*
-* LINMAX / MAX. # OF TRACK SEGMENTS IN A SINGLE TRACK.  /I./INT        *
-* RCUTOF / CUTOF FOR CORNER TRACKING( 0.25 SUGGESTED )  /I./REL        *
-* NSUR   / # OF SURFACES.                               /I./INT        *
-* NVOL   / # OF ZONES.                                  /I./INT        *
-* INDEL  / #ING OF SURFACES & ZONES.                    /I./INT(4*NVS) *
-* MINDIM / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NTOTCL)*
-* MAXDIM / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NTOTCL)*
-* ICOORD / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /I./INT(NTOTCL)*
-*   ICUR / CURRENT ZONAL LOCATION FOR A TRACK SEGMENT.  /../INT(NTOTCL)*
-*   INCR / INCREMENT DIRECTION FOR NEXT TRACK SEGMENT.  /../INT(NTOTCL)*
-* TRKBEG / POSITION WHERE A TRACK BEGINS.               /../REL(NTOTCL)*
-*   CONV / SEGMENTS OF TRACKS.                          /../REL(NTOTCL)*
-* TRKDIR / DIRECTION OF A TRACK IN ALL AXES.            /../REL(NTOTCL)*
-* LENGHT / RELATIVE LENGHT OF EACH SEGMENT IN A TRACK.  /../DBL(LINMAX)*
-* NUMERO / MATERIAL IDENTIFICATION OF EACH TRACK SEGMENT/../INT(LINMAX)*
-* NPIJ   / NUMBER OF PROBABILITIES IN ONE GROUP         /I./I          *
-* NORE   / TRACK NORMALIZATION (-1:YES 1:NO)            /I./I          *
-* NRMV   / VOLUME FACTORS ONLY (0:NO,1:YES).            /I./INT        *
-* VOLTRK / VOLUME FACTORS                               /.O/DBL(...   )*
-*--------+--------------- R O U T I N E S --------------+--+-----------*
-*  NAME  /                  DESCRIPTION                                *
-*--------+-------------------------------------------------------------*
-* XELEQN / TO SELECT 'EQN' ANGLES.                                     *
-* XELLSR / TO FIND BEGINNING/ENDING SURFACES OF A TRACK.               *
-* XELLIN / TO COMPUTE TRACKS LENGTHS OF A TRACK.                       *
-* QIJI3D / TO COMPUTE CP MATRICES.                                     *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Construct the sequential tape that will contain tracks for 
+* isotropic B.C. 3-D calculations.
+*
+*Copyright:
+* Copyright (C) 1996 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPRT    intermediate printing level for output.      
+* NANGLE  number of angles used in the tracking process.    
+* DENUSR  density of tracks in the plane perpendicular 
+*              to the tracking angles.                 
+* ISYMM   flag for symetry.  (1/0 for on/off)          
+*         = 2 -> reflection plane normal to X axis
+*         = 4 -> reflection plane normal to Y axis
+*         = 8 -> reflection plane normal to X and Y axis  
+*         =16 -> reflection plane normal to Z axis
+*         =18 -> reflection plane normal to X and Z axis
+*         =20 -> reflection plane normal to Y and Z axis
+*         =24 -> reflection plane normal to X, Y and Z axis  
+* ANGLES  3D angle values.                             
+* DENSTY  density of tracks angle by angle.            
+* NTOTCL  number of cylindres of a type + 3.                
+* NEXTGE  for tubez, nextge=1                          
+* MAXR    max number of real mesh values in "remesh".  
+* REMESH  real mesh values (rect/cyl).                 
+* LINMAX  max. number of track segments in a single track.  
+* RCUTOF  cutof for corner tracking( 0.25 suggested )  
+* NSUR    number of surfaces.                               
+* NVOL    number of zones.                                  
+* INDEL   numbering of surfaces and zones.                    
+* MINDIM  min index values for all axes (rect/cyl).    
+* MAXDIM  max index values for all axes (rect/cyl).    
+* ICOORD  principal axes direction (X/Y/Z) for meshes. 
+* ICUR    current zonal location for a track segment.  
+* INCR    increment direction for next track segment.  
+* TRKBEG  position where a track begins.               
+* CONV  s  egments of tracks.                          
+* TRKDIR  direction of a track in all axes.            
+* LENGHT  relative lenght of each segment in a track.  
+* NUMERO  material identification of each track segment
+* NPIJ    number of probabilities in one group         
+* NORE    track normalization (-1:yes 1:no)            
+* NRMV    volume factors only (0:no,1:yes).            
+* NGRP    number of groups.
+* SIGTAL  total XS.
+* SWVOID  flag for void regions.
+* KEYMRG  merge keys.
+* NSOUT   number of outer surfaces.
+* NREG    number ofregions.
+* NPSYS   undefined.
+* DBLPIJ  collision probabilities.
+*
+*Parameters: output
+* VOLTRK  volume factors.
+*
+*Reference:
+* R.Roy, A. Hebert AND G. Marleau
+* A transport method for treating 3-d lattices of heterogeneous cells,
+* Nuclear Science and Engineering, 101, 217 (1989). 
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT      NONE
-C
+*
       INTEGER       IPRT,NANGLE,NTOTCL,NEXTGE,MAXR,LINMAX,
      >              NSUR,NVOL,NPIJ,NGRP,NORE,NRMV,NSOUT,NREG
       REAL          DENUSR
-C
+*
       REAL          TRKBEG(NTOTCL), TRKDIR(NTOTCL), CONV(NTOTCL),
      >              REMESH(MAXR), DENSTY(*), RCUTOF, TRKEND(3),
      >              TRKORI(3), TRKOR2(3), PROJC2(3), ANGEQN(3,3),
@@ -99,7 +103,7 @@ C
       INTEGER       NPAN, IOUT
       DOUBLE PRECISION DZERO
       PARAMETER   ( NPAN=3, IOUT=6, DZERO=0.0D0 )
-C
+*
       INTEGER       NDIM, NSOUTM, I, J, NPOINT, NPO2, NCUTOF, LINM2,
      >              NOTRAK, NSOLAN, IVS, IANG, IGRP, ISB,
      >              NANGLS, IPAN, NESTIM, JANG, IX, IY, IREF1, I2, I3,
@@ -109,19 +113,19 @@ C
      >              VOLTOT, WEIGHT, DEPART, X, Y, ANN, ODDNXT, TOTLEN,
      >              TOTXXX, DDENST
       DOUBLE PRECISION FCUTOF
-C
-C
+*
+*
       ANORM2( A, B ) = A*A + B*B
       NDIM= 3
       NSOUTM= -NSOUT
       NSOLMX= 0
-C
-C     ONE WEIGHT FOR ALL TRACKS
-C     DENLIN= # OF TRACKS / CM
+*
+*     ONE WEIGHT FOR ALL TRACKS
+*     DENLIN= # OF TRACKS / CM
       DENLIN= SQRT(DENUSR)
-C
-C     COMPUTE THE CIRCUMSCRIBED RADIUS AND
-C             THE  COORDINATES FOR THE TRUE CENTER OF THE CELL
+*
+*     COMPUTE THE CIRCUMSCRIBED RADIUS AND
+*             THE  COORDINATES FOR THE TRUE CENTER OF THE CELL
       R2CIRC= 0.0
       DO 10 I = 1, 3
          BARY(I)= 0.5 * (REMESH(MAXDIM(I)) + REMESH(MINDIM(I)))
@@ -134,19 +138,19 @@ C             THE  COORDINATES FOR THE TRUE CENTER OF THE CELL
    10 CONTINUE
       R2CIRC= 0.25 * R2CIRC
       RCIRC = SQRT(R2CIRC)
-C
-C     NPOINT= # OF TRACKS ALONG ONE PERPENDICULAR AXIS
+*
+*     NPOINT= # OF TRACKS ALONG ONE PERPENDICULAR AXIS
       NPOINT= INT( 2. * RCIRC * DENLIN )
 ***** BEWARE ***** BEWARE ***** BEWARE ***** BEWARE ***** BEWARE *****
 ***** CHANGE THIS "NPOINT" PARAMETER HAS TREMENDOUS EFFECTS ON TRACKING
 ***** BEWARE ***** BEWARE ***** BEWARE ***** BEWARE ***** BEWARE *****
-C
-C     OTHER POSSIBLE CHOICES (EXPLORED WITHOUT SUCCESS) ARE ==>
-C1-)  NPOINT=  INT( 2. * RCIRC * DENLIN ) + 1
-C2-)  NPOINT= NINT( 2. * RCIRC * DENLIN )
-C3-)  NPOINT= NINT( 2. * RCIRC * DENLIN ) + 1
-C
-C     KEEP "NPOINT" ODD & CORRECT DENSITY
+*
+*     OTHER POSSIBLE CHOICES (EXPLORED WITHOUT SUCCESS) ARE ==>
+*1-)  NPOINT=  INT( 2. * RCIRC * DENLIN ) + 1
+*2-)  NPOINT= NINT( 2. * RCIRC * DENLIN )
+*3-)  NPOINT= NINT( 2. * RCIRC * DENLIN ) + 1
+*
+*     KEEP "NPOINT" ODD & CORRECT DENSITY
       NPO2  = NPOINT / 2
       NPOINT= 2 * NPO2 + 1
       DP    = 2. * RCIRC / NPOINT
@@ -190,8 +194,8 @@ C     KEEP "NPOINT" ODD & CORRECT DENSITY
           NSOLAN= (NANGLE * (NANGLE + 2)) / 2
         ENDIF
       ENDIF
-C
-C     INITIALIZE NORMALIZED FACTORS
+*
+*     INITIALIZE NORMALIZED FACTORS
       IF( NRMV.EQ.1 )THEN
          DO 12 IVS= NSUR, NVOL
            DO 11 IANG= 0, NSOLAN
@@ -220,16 +224,16 @@ C     INITIALIZE NORMALIZED FACTORS
          ANGLES(2,IANG)= ANGEQN(2,1)
          ANGLES(3,IANG)= ANGEQN(3,1)
    15 CONTINUE
-C
-C     TO REINITIATE THE EQN ANGLES
+*
+*     TO REINITIATE THE EQN ANGLES
       CALL XELEQN( 3, 0, ANGEQN )
       IF( NEXTGE.EQ.1 )THEN
          DDENST= 12.0*DDENST
       ENDIF
       WEIGHT= 0.5*DDENST/REAL(NSOLAN)
       IF( IPRT.GT.1 )THEN
-C
-C        PREPARE & PRINT THE ESTIMATED NUMBER OF TRACKS
+*
+*        PREPARE & PRINT THE ESTIMATED NUMBER OF TRACKS
          NESTIM= 0
          DEPART= - (NPO2+1) * DP
          X     = DEPART
@@ -250,8 +254,8 @@ C        PREPARE & PRINT THE ESTIMATED NUMBER OF TRACKS
      >                                                ODDNXT**2
       WRITE(IOUT,'( 8H ECHO = ,28H ESTIMATED NUMBER OF TRACKS=  ,I8 )')
      >                                                           NESTIM
-C
-C        PREPARE PRINTING WITH VARIABLE FORMAT
+*
+*        PREPARE PRINTING WITH VARIABLE FORMAT
          WRITE(IOUT,'(1H )')
          WRITE(IOUT,'( 8H0ECHO = ,I3,27H SOLID ANGLES TO BE TRACKED )')
      >                   NSOLAN
@@ -269,14 +273,14 @@ C        PREPARE PRINTING WITH VARIABLE FORMAT
          IANG=IANG+1
          LANGLE= .FALSE.
          IF(IQUART(MOD(IANG-1,4)+1).NE.1)THEN
-C----
-C  Do not track this angle because of the problem symmetry
-C----
+*----
+*  Do not track this angle because of the problem symmetry
+*----
            LANGLE= .FALSE. 
          ELSE
-C----
-C  Track this angle
-C----
+*----
+*  Track this angle
+*----
            IANG0= IANG0+1
            LANGLE=.TRUE.
          ENDIF
@@ -289,8 +293,8 @@ C----
      >          (MOD(IZZ,10),IZZ=NDEBS,NSOLMX)
            WRITE(IOUT,'( 2H 0)')
          ENDIF
-C
-C     NPAN AXES DESCRIPTION (X=0.0, Y=0.0 & Z=0.0)
+*
+*     NPAN AXES DESCRIPTION (X=0.0, Y=0.0 & Z=0.0)
       DO 250 IPAN= 1, NPAN
          CALL    XELEQN( 3, NANGLE, ANGEQN )
          IF(.NOT.LANGLE) GO TO 250
@@ -302,8 +306,8 @@ C     NPAN AXES DESCRIPTION (X=0.0, Y=0.0 & Z=0.0)
             TRKDIR(N)= ANGEQN(N,1)
             INCR(I)= +1
             IF( TRKDIR(N) .LT. 0.0 ) INCR(I)= -1
-C
-C           MODIFY ANGLES TO TAKE INTO ACCOUNT DP
+*
+*           MODIFY ANGLES TO TAKE INTO ACCOUNT DP
             ANGLE2(I)= DP * ANGLE2(I)
             ANGLE3(I)= DP * ANGLE3(I)
             IF( NCUTOF.NE.1 )THEN
@@ -312,8 +316,8 @@ C           MODIFY ANGLES TO TAKE INTO ACCOUNT DP
                TCUTOF(I,3)= -TCUTOF(I,2)
                TCUTOF(I,4)= -TCUTOF(I,1)
             ENDIF
-C
-C           DETERMINE THE ORIGIN OF ALL TRACKS
+*
+*           DETERMINE THE ORIGIN OF ALL TRACKS
             TRKOR2(I)= BARY(I) - (NPO2+1)*(ANGLE2(I)+ANGLE3(I))
    30    CONTINUE
          DO 45 I   = 1, 3
@@ -323,8 +327,8 @@ C           DETERMINE THE ORIGIN OF ALL TRACKS
                PROJC2(I)= PROJC2(I) + TRKDIR(J) * TRKDIR(J)
    40       CONTINUE
    45    CONTINUE
-C
-C        SCAN ALL TRACKS IN THE PERPENDICULAR PLANE
+*
+*        SCAN ALL TRACKS IN THE PERPENDICULAR PLANE
          DO 180 I2  = 1, NPOINT
             DO 50 J   = 1, 3
                TRKOR2(J)= TRKOR2(J) + ANGLE2(J)
@@ -336,21 +340,21 @@ C        SCAN ALL TRACKS IN THE PERPENDICULAR PLANE
                   TRKORI(J)= TRKORI(J) + ANGLE3(J)
                   ANN= ANN + (TRKORI(J)-BARY(J))**2
    60          CONTINUE
-C
-C              ELIMINATE TRACKS OUTSIDE CIRCUMSCRIBED CIRCLE
+*
+*              ELIMINATE TRACKS OUTSIDE CIRCUMSCRIBED CIRCLE
                IF( ANN.GT.R2CIRC ) GO TO 170
 *
 *              WRITE(IOUT,7002) I2,I3,(TRKORI(JJ),JJ=1,3)
 *7002          FORMAT(' ORIGINE MESH:',I10,5X,I10,5X,3(F11.5))
-C
-C              WHICH EXTERNAL SURFACES DO THIS TRACK CROSS ?
+*
+*              WHICH EXTERNAL SURFACES DO THIS TRACK CROSS ?
                NTTRK=NTTRK+1
                CALL XELLSR(  NDIM, NTOTCL, NSUR, MAXR, REMESH,
      >                      INDEL, MINDIM, MAXDIM, ICOORD, ICUR, INCR,
      >                      TRKORI, TRKDIR, TRKCUT, NSCUT, NCROS,
      >                      TOTLEN)
-C
-C              WHEN NOT SURFACES ARE CROSSED, ELIMINATE THE TRACK
+*
+*              WHEN NOT SURFACES ARE CROSSED, ELIMINATE THE TRACK
                IF(NCROS.LT.2) GO TO 170
                DO 70 K= 1, NDIM
                   TRKBEG(K)= TRKCUT(K,1)
@@ -379,7 +383,7 @@ C              WHEN NOT SURFACES ARE CROSSED, ELIMINATE THE TRACK
      >              PROJC2, TOTLEN,   CONV,  LINM2,
      >              LENGHT(NCUTOF+1), NUMERO(NCUTOF+1), LINE)
                NOTRAK= NOTRAK+1
-C
+*
                DO 78 ISB=1,NCUTOF
                   NUMERO(ISB)= NSBEG(ISB)
                   LENGHT(ISB)= FCUTOF
@@ -411,10 +415,10 @@ C
                   DO 303 I= 1, LINE
                      NUMERO(I)= KEYMRG(NUMERO(I))
   303             CONTINUE
-C
-C                 START MODIFICATIONS 98/06 (G.M.)
-C                 COMPRESS TRACKING FILE FOR
-C                          SUCCESSIVE IDENTICAL REGIONS
+*
+*                 START MODIFICATIONS 98/06 (G.M.)
+*                 COMPRESS TRACKING FILE FOR
+*                          SUCCESSIVE IDENTICAL REGIONS
                   NOLDS=NUMERO(1)
                   NCSEG=1
                   DO 304 IL = 2, LINE
@@ -431,14 +435,14 @@ C                          SUCCESSIVE IDENTICAL REGIONS
                   CALL QIJI3D(NREG,NSOUTM,NPIJ,NGRP,LINMAX,NCUTOF,
      >                  SWVOID,NCSEG,WEIGHT,NUMERO,LENGHT,
      >                  SIGTAL,NPSYS,DBLPIJ)
-C                 END MODIFICATIONS 98/06 (G.M.)
-C
+*                 END MODIFICATIONS 98/06 (G.M.)
+*
                ENDIF
   170       CONTINUE
   180    CONTINUE
   250 CONTINUE
   290 CONTINUE
-C
+*
       IF( IPRT.GT.1 )THEN
          WRITE(IOUT,'(1H )')
          WRITE(IOUT,'(27H0ECHO = TRACKING PROPERTIES )')
@@ -449,9 +453,9 @@ C
      >                             27H TRACKS NOT STORED ON TAPE /)')
      >                         NOTRAK,NTTRK
       ENDIF
-C
+*
       RETURN
-C
+*
  6001 FORMAT(' #',I8,1P,' B',I1,'(',2(E10.2,','),E10.2,')',
      >                  ' E',I1,'(',2(E10.2,','),E10.2,')',
      >                  ' D(',2(E10.2,','),E10.2,')' )

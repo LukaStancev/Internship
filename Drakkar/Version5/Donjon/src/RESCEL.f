@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute fuel bundle burnups from the age pattern ALCH between 
+* Compute fuel bundle burnups from the age pattern ALCH between 
 * begin-of-cyle burnups BINI and end-of-cycle burnups BFIN
 *
 *Copyright:
@@ -14,7 +14,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): routine partly recovered from OPTEX-4 (coef3e)
+*Author(s): 
+* routine partly recovered from OPTEX-4 (coef3e)
 *
 *Parameters: input
 * IPMAP  address of the MAP linked list or xsm file

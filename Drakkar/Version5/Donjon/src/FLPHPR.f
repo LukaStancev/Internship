@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print the bundle and channel powers over the fuel lattice. Adapted
+* Print the bundle and channel powers over the fuel lattice. Adapted
 * from FLPRNT.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): V. Descotes
+*Author(s): 
+* V. Descotes
 *
 *Parameters: input/output
 * IPMAP  pointer to fuel-map information.

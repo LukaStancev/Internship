@@ -10,32 +10,33 @@
 * using the NXT tracking procedure.
 *
 *Copyright:
-* Copyright (C) 2010 Ecole Polytechnique de Montreal.
+* Copyright (C) 2010 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s): G. Marleau.
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260,
-*  \'{E}cole Polytechnique de Montr\'{e}al, Montr\'{e}al,
-*  2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * IPRINT  print level.
 * ITST    type of tracking, where
-*         \begin{itemize}
-*         \item \moc{ITST}=-1 means that only the exact geometry
+*         =-1 means that only the exact geometry
 *               is considered taking into account the
 *               submesh in each direction.
-*         \item \moc{ITST}=0 means that only the global geometry
+*         = 0 means that only the global geometry
 *               is considered without taking into account the
 *               submesh in each direction.
-*         \item \moc{ITST}=1 means that both the global
+*         = 1 means that both the global
 *               geometry (as a first step) and the exact geometry
 *               are considered taking into account the
 *               submesh in each direction.
-*         \end{itemize}
 * NDIM    dimension of problem.
 * MXMESH  maximum number of spatial subdivision in
 *         $X$, $Y$ or $Z$.

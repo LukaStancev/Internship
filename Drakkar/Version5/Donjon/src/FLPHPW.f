@@ -5,14 +5,16 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute and print a power distribution over the whole reactor core
+* Compute and print a power distribution over the whole reactor core
 * in hexagonal geometry.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
-* Adapted : 5/06/2010 V. Descotes
+*Author(s): 
+* D. Sekki
+*Update(s):
+* V. Descotes 5/06/2010
 *
 *Parameters: input
 * NMIX   maximum number of material mixtures.

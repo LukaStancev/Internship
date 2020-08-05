@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* add the missing isotopes from the depletion chain
+* Add the missing isotopes from the depletion chain
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

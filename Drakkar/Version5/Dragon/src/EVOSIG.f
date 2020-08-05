@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute and normalize the microscopic depletion reaction rates.
+* Compute and normalize the microscopic depletion reaction rates.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

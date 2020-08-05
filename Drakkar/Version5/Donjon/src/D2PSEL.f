@@ -9,19 +9,30 @@
 * Select the next branch calculation . This routine determines also
 * when to stop the calculation and updates the INFO data block.
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
-* IPDAT      address of info data block
-* IPINP      file unit of the GENPMAXS input file
-* JOBOPT     array for JOBOPT configuration
-* NGP        number of energy groups
-* BRANCH     nature of the current branch ( CR, DC, CB, TC, TM etc )
-* ITBRAN     index of the current branch
-* STAIDX     array of state variables index
-* NVAR       number of state variables
-* STAVEC     various parameters associated with the IPDAT structure
-* DEB        flag for D2PGEN
+*Parameters: input
+* IPDAT   address of info data block
+* IPINP   file unit of the GENPMAXS input file
+* JOBOPT  array for JOBOPT configuration
+* NGP     number of energy groups
+* BRANCH  nature of the current branch ( CR, DC, CB, TC, TM etc )
+* ITBRAN  index of the current branch
+* STAIDX  array of state variables index
+* NVAR    number of state variables
+* STAVEC  various parameters associated with the IPDAT structure
+* DEB     flag for D2PGEN
+*
+*Parameters: 
+* FC1     
+* FC2     
+* FC3     
+* FC4     
+* XSC     
+* IPRINT  
+* X       
+* 
 *-----------------------------------------------------------------------
 *
       USE GANLIB
@@ -364,7 +375,7 @@
         CALL LCMPUT(IPDAT,'PRINT',1,1,1)
       ENDIF
 
-      CALL LCMPUT(IPDAT,'BRANCH',1,3,BRANCH)
+      CALL LCMPTC(IPDAT,'BRANCH',4,1,BRANCH)
       CALL LCMPUT(IPDAT,'BRANCH_IT',1,1,ITBRAN)
       CALL LCMPUT(IPDAT,'STATE',NVAR,2,STATE)
       CALL LCMPUT(IPDAT,'STATE_INDEX',NVAR,1,STAIDX)

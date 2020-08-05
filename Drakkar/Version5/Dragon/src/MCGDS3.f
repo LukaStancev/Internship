@@ -5,9 +5,8 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Adding of capture and
-* (if PACA.GE.2) calculation of ILU0 preconditioner for BICGSTAB
-* iterations to solve the precontioning system.
+* Adding of capture and when PACA>=2 calculation of ILU0 preconditioner 
+* for BICGSTAB iterations to solve the precontioning system.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -35,14 +34,16 @@
 * MCU0    used in ILU0-ACA acceleration.
 * DIAGF   diagonal contribution for D (Double Precision).
 * CF      non diagonal contribution for left hand-side matrix D.
-* DIAGQ   diagonal contribution for right hand-side matrix.
+*
+*Parameters: input/output
+* DIAGQ   diagonal contribution for right hand-side matrix
+*         used in CDD acceleration.
 *
 *Parameters: output
-* DIAGQ   used in CDD acceleration.
 * DIAGFR  diagonal contribution for D.
 * CFR     non diagonal contribution for D.
-* LUDF   diagonal contribution for ilu0 decomposition of D.
-* LUCF   non diagonal contribution for ilu0 decomposition of D.
+* LUDF    diagonal contribution for ilu0 decomposition of D.
+* LUCF    non diagonal contribution for ilu0 decomposition of D.
 *
 *-----------------------------------------------------------------------
 *

@@ -1,45 +1,48 @@
 *DECK XELGRD
-      SUBROUTINE XELGRD( IPGEOM,   IPRT,   NDIM, NEXTGE,  ITURN,   MAXC,
-     >                   RMESHO,  MINDO,  MAXDO, ICORDO)
-************************************************************************
-*                                                                      *
-*           NAME: XELGRD                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELTRP' )                              *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 97/11 (G.M.) INTRODUCE OFFCENTER VARIATION           *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL READ THE GEOMETRIC INPUT FOR A     *
-*                 SPECIFIC TYPE OF CELL.                               *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* NDIM   / # OF DIMENSIONS (2D OR 3D).                  /I./INT        *
-* NEXTGE / RECTANGULAR(0)/CIRCULAR(1) BOUNDARY          /I./INT        *
-* ITURN  / TURN INDEX FOR THE GEOMETRY (FROM 1 TO 16).  /I./INT        *
-* MAXC   / # OF REAL MESHES TO STOCK IN 'RMESHO'.       /.O/INT        *
-* RMESHO / REAL MESH VALUES (RECT/CYL).                 /.O/REL(*     )*
-* MINDO  / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(*     )*
-* MAXDO  / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /.O/INT(*     )*
-* ICORDO / PRINCIPAL AXES DIRECTION (X/Y/Z) FOR MESHES. /.O/INT(*     )*
-************************************************************************
-C
+      SUBROUTINE XELGRD( IPGEOM,   IPRT,   NDIM, NEXTGE,  ITURN, DMESHO,
+     >                     MAXC, RMESHO,  MINDO,  MAXDO, ICORDO)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Read the geometric input for a specific type of cell.
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (L_GEOM)             
+* IPRT    intermediate printing level for output.      
+* NDIM    number of dimensions.                  
+* NEXTGE  rectangular(0)/circular(1) boundary          
+* ITURN   turn index for the geometry (from 1 to 16).  
+* DMESHO  dimension of array rmesho                    
+*
+*Parameters: output
+* MAXC    number of real meshes to stock in 'rmesho'.       
+* RMESHO  real mesh values (rect/cyl).                 
+* MINDO   min index values for all axes (rect/cyl).    
+* MAXDO   max index values for all axes (rect/cyl).    
+* ICORDO  principal axes direction (X/Y/Z) for meshes. 
+*
+*-----------------------------------------------------------------------
+*
       USE                GANLIB
       IMPLICIT           NONE
-C
-C     DECLARE DUMMY ARGUMENTS
+*
+*     DECLARE DUMMY ARGUMENTS
       TYPE(C_PTR)        IPGEOM 
-      INTEGER            IPRT, NDIM, NEXTGE, ITURN, MAXC
-      REAL               RMESHO(*)
+      INTEGER            IPRT, NDIM, NEXTGE, ITURN, DMESHO, MAXC
+      REAL               RMESHO(DMESHO)
       INTEGER            MAXDO(*),MINDO(*),ICORDO(*)
-C
-C     DECLARE LOCAL VARIABLES
+*
+*     DECLARE LOCAL VARIABLES
       INTEGER            NSTATE, IOUT, MAXTUR
       PARAMETER        ( NSTATE=40, IOUT=6, MAXTUR=12 )
       REAL               RGAR,CENTER(3),DCENT,RMAX
@@ -51,32 +54,32 @@ C     DECLARE LOCAL VARIABLES
      >                   I, J, K, ISS, ITYPE, ICI, IDIMEN, ICTYPE
       DOUBLE PRECISION   PI,PIO2,FACT
       PARAMETER        ( PI = 3.14159265358979323846D0, PIO2= 0.5D0*PI)
-C
-C     ALLOCATABLE ARRAYS
+*
+*     ALLOCATABLE ARRAYS
       INTEGER, ALLOCATABLE, DIMENSION(:) :: ISPLT
-C
-C     DATA STATEMENTS
+*
+*     DATA STATEMENTS
       SAVE               TEMESH,ITMIX,ITXYZ
       DATA      TEMESH / 'X','Y','Z','C' /
-C                        'X'-AXIS AND ITS SIGN
+*                        'X'-AXIS AND ITS SIGN
       DATA      ITMIX  /  1,-2,-1, 2,-1, 2, 1,-2, 0, 0, 0, 0,
      >                    1,-2,-1, 2,-1, 2, 1,-2, 0, 0, 0, 0,
-C                        'Y'-AXIS AND ITS SIGN
+*                        'Y'-AXIS AND ITS SIGN
      >                    2, 1,-2,-1, 2, 1,-2,-1, 0, 0, 0, 0,
      >                    2, 1,-2,-1, 2, 1,-2,-1, 0, 0, 0, 0,
-C                        'Z'-AXIS AND ITS SIGN
+*                        'Z'-AXIS AND ITS SIGN
      >                    3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0,
      >                   -3,-3,-3,-3,-3,-3,-3,-3, 0, 0, 0, 0 /
-C
+*
       DATA      ITXYZ  /  1, 2,-1,-2,-1, 2, 1,-2, 0, 0, 0, 0,
      >                    1, 2,-1,-2,-1, 2, 1,-2, 0, 0, 0, 0,
-C                        'Y'-AXIS AND ITS SIGN
+*                        'Y'-AXIS AND ITS SIGN
      >                    2,-1,-2, 1, 2, 1,-2,-1, 0, 0, 0, 0,
      >                    2,-1,-2, 1, 2, 1,-2,-1, 0, 0, 0, 0,
-C                        'Z'-AXIS AND ITS SIGN
+*                        'Z'-AXIS AND ITS SIGN
      >                    3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0,
      >                   -3,-3,-3,-3,-3,-3,-3,-3, 0, 0, 0, 0 /
-C
+*
       IF( IPRT.GT.1 )THEN
          WRITE(IOUT,'(1H )')
          WRITE(IOUT,'(/24H           CELL MESHING     )')
@@ -92,8 +95,8 @@ C
       IF( ITYPE.EQ.3 .OR. ITYPE.EQ.6 )THEN
          IF( NEXTGE.NE.1 ) CALL XABORT( 'XELGRD: TYPE IS NOT '//
      >                     'COMPATIBLE WITH CIRCULAR B.C.' )
-C        GET MAXIMUM RADIUS &
-C        INSCRIBE CIRCULAR REGION IN A SQUARE MESH WITH VOLUME=SURFACE
+*        GET MAXIMUM RADIUS &
+*        INSCRIBE CIRCULAR REGION IN A SQUARE MESH WITH VOLUME=SURFACE
          TEDATA= 'RADIUS'
          CALL LCMLEN(IPGEOM,TEDATA, ILEN, ITYLCM)
          IF(ILEN.GT.0) THEN
@@ -170,8 +173,8 @@ C        INSCRIBE CIRCULAR REGION IN A SQUARE MESH WITH VOLUME=SURFACE
          MAXDO(I)= IDIMEN
          IBEGIN= IDIMEN + 1
    10 CONTINUE
-C
-C     DETERMINATE COORDINATES OF CENTER
+*
+*     DETERMINATE COORDINATES OF CENTER
       IF( ITYPE.GE.20.OR.NEXTGE.EQ.1 )THEN
          IF( NEXTGE.EQ.1 )THEN
             ICTYPE= 3
@@ -179,8 +182,8 @@ C     DETERMINATE COORDINATES OF CENTER
             ICTYPE= ITYPE-20
             IF( ICTYPE.EQ.0 ) ICTYPE= 3
          ENDIF
-C
-C        GET OFFCENTER VARIATION
+*
+*        GET OFFCENTER VARIATION
          TEDATA= 'OFFCENTER'
          CALL LCMLEN(IPGEOM,TEDATA, ILEN, ITYLCM)
          IF( ILEN .EQ. 0 )THEN
@@ -190,8 +193,8 @@ C        GET OFFCENTER VARIATION
          ELSE
             CALL LCMGET(IPGEOM,TEDATA,CENTER)
          ENDIF
-C
-C        GET RADIUS, THE FIRST ONE MUST BE 0.0
+*
+*        GET RADIUS, THE FIRST ONE MUST BE 0.0
          TEDATA= 'RADIUS'
          CALL LCMLEN(IPGEOM,TEDATA, ILEN, ITYLCM)
          IF(ILEN.EQ.0) THEN
@@ -278,6 +281,6 @@ C        GET RADIUS, THE FIRST ONE MUST BE 0.0
    40    CONTINUE
       ENDIF
       MAXC= IDIMEN
-C
+*
       RETURN
       END

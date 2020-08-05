@@ -1,40 +1,42 @@
 *DECK XELPRC
       SUBROUTINE XELPRC (IPGEOM,GEONAM,NDIM,NNCYL,NNSUR,NNVOL,NAXREM)
-************************************************************************
-*                                                                      *
-*           NAME: XELPRC                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELDCL')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 89/12                                                *
-*       MODIFIED: 97/11 (G.M.) ELIMINATE SPLIT>2 ABORT                 *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE READS A CELL GEOMETRY ON LCM AND        *
-*                 CHECK IF THE GEOMETRY IS ACCEPTABLE FOR "EXCELL".    *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* GEONAM / GEOMETRY NAME                                /I./CAR*12     *
-* NDIM   / # OF DIMENSIONS ( 2 OR 3)                    /I./INT        *
-* NNCYL  / # OF CYLINDERS IN THE GEOMETRY               /.O/INT        *
-* NNSUR  / # OF SURFACES                                /.O/INT        *
-* NNVOL  / # OF VOLUMES                                 /.O/INT        *
-* NAXREM / MAX # OF COORDINATES TO SPECIFY THAT CELL    /.O/INT        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Reads a cell geometry on lcm and check if acceptable for EXCELL.
+*
+*Copyright:
+* Copyright (C) 1989 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (L_GEOM)             
+* GEONAM  geometry name                                
+* NDIM    number of dimensions (2 or 3)                    
+*
+*Parameters: output
+* NNCYL   number of cylinders in the geometry               
+* NNSUR   number of surfaces                                
+* NNVOL   number of volumes                                 
+* NAXREM  max number of coordinates to specify that cell    
+*
+*-----------------------------------------------------------------------
+*
       USE          GANLIB
       IMPLICIT     NONE
-C
-C     DECLARE      DUMMY ARGUMENTS
+*
+*     DECLARE      DUMMY ARGUMENTS
       TYPE(C_PTR)  IPGEOM 
       INTEGER      NDIM, NNCYL, NNSUR, NNVOL, NAXREM
       CHARACTER*12 GEONAM
-C
-C     DECLARE      LOCAL VARIABLES
+*
+*     DECLARE      LOCAL VARIABLES
       INTEGER      NLCM, NIXS, NIST, NSTATE, MAXSPL
       PARAMETER  ( NLCM=26, NIXS=11, NIST=2, NSTATE=40, MAXSPL=100 )
       CHARACTER*12 LCMNM(NLCM)
@@ -42,7 +44,7 @@ C     DECLARE      LOCAL VARIABLES
      >             ISTATE(NSTATE),ISPLT(MAXSPL)
       INTEGER      ILCM, IIXS, IIST, ITYPE, LR, LX, LY, LZ, ISPLIT,
      >             JX, JY, JZ, JR, JL, ILEN, ITYLCM
-C
+*
       DATA INVLCM/  6, 11, 12, 14,        16, 17, 18, 19,
      >             20, 21, 22 /
       DATA INVSTA/ 8, 12 /
@@ -52,12 +54,12 @@ C
      >             'NPIN',   'RPIN',   'APIN',   'BIHET',  'POURCE',
      >           'PROCEL',   'IHEX',  'NCODE',   'ZCODE',   'ICODE',
      >           'CENTER'/
-C
+*
       DO 10 ILCM= 1, NLCM
          CALL LCMLEN(IPGEOM,LCMNM(ILCM),LNLCM(ILCM),ITYLCM)
    10 CONTINUE
-C
-C     ELIMINATES THE INVALID OPTIONS
+*
+*     ELIMINATES THE INVALID OPTIONS
       DO 20 IIXS= 1, NIXS
         IF( LNLCM(INVLCM(IIXS)).NE.0 )
      >     CALL XABORT( 'XELPRC:*'//GEONAM//'* IS '//
@@ -72,7 +74,7 @@ C     ELIMINATES THE INVALID OPTIONS
         IF( ISTATE(INVSTA(IIST)).NE.0 )
      >     CALL XABORT( 'XELPRC: INVALID GEOMETRY FOR EXCELL')
    30 CONTINUE
-C
+*
       ITYPE=  ISTATE(1)
       LR=     ISTATE(2)
       LX=     MAX(1,ISTATE(3))
@@ -80,8 +82,8 @@ C
       LZ=     MAX(1,ISTATE(5))
       NNVOL=  ISTATE(6)
       ISPLIT= ISTATE(11)
-C
-C     GET THE SPLITTING INFORMATION, AND COMPUTE JR, JX, JY, JZ VALUES
+*
+*     GET THE SPLITTING INFORMATION, AND COMPUTE JR, JX, JY, JZ VALUES
       IF( ISPLIT.GT.0 )THEN
          JR= 0
          JX= 0
@@ -148,10 +150,10 @@ C     GET THE SPLITTING INFORMATION, AND COMPUTE JR, JX, JY, JZ VALUES
          JY= LY
          JZ= LZ
       ENDIF
-C
+*
       IF( ITYPE.EQ.0 )THEN
-C
-C        VIRTUAL ELEMENT
+*
+*        VIRTUAL ELEMENT
          NNVOL= 0
          NNCYL= 0
          NNSUR= 0
@@ -161,30 +163,30 @@ C        VIRTUAL ELEMENT
             NNSUR= 2 * (JX+JY)
             NNVOL=  JX*JY
             IF( ITYPE.EQ.5 )THEN
-C              FOR *CAR2D* GEOMETRY
-C
+*              FOR *CAR2D* GEOMETRY
+*
                NNCYL=  0
-C
-C              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2
+*
+*              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2
                NAXREM= JX+JY+4
             ELSEIF( ITYPE.EQ.3 )THEN
-C              FOR *TUBE* GEOMETRY
-C
+*              FOR *TUBE* GEOMETRY
+*
                NNCYL=  1
                IF( JX.NE.1 .OR. JY.NE.1 )THEN
                   CALL XABORT( 'XELPRC: FOR TUBE, PLEASE NO XY SPLIT')
                ENDIF
                NNVOL=  NNVOL+JX*JY*JR
-C
-C              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2, R-AXIS:JR+3
+*
+*              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2, R-AXIS:JR+3
                NAXREM= JX+JY+JR+7
             ELSEIF( ITYPE.EQ.20 )THEN
-C              FOR *CARCEL* GEOMETRY
-C
+*              FOR *CARCEL* GEOMETRY
+*
                NNCYL=  1
                NNVOL=  NNVOL+JX*JY*JR
-C
-C              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2, R-AXIS:JR+3
+*
+*              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2, R-AXIS:JR+3
                NAXREM= JX+JY+JR+7
             ELSE
                CALL XABORT('XELPRC: INVALID CELL GEOMETRY FOR EXCELL=>'
@@ -194,16 +196,16 @@ C              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:2, R-AXIS:JR+3
             NNSUR=  2 * (JX*JY+JX*JZ+JY*JZ )
             NNVOL=  JX*JY*JZ
             IF( ITYPE.EQ.7 )THEN
-C              FOR *CAR3D* GEOMETRY
-C
+*              FOR *CAR3D* GEOMETRY
+*
                NNCYL=  0
-C
-C              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:JZ+1
+*
+*              X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:JZ+1
                NAXREM= JX+JY+JZ+3
             ELSEIF( ITYPE.EQ. 6 .OR. ITYPE.EQ.21 .OR.
      >              ITYPE.EQ.22 .OR. ITYPE.EQ.23 )THEN
-C              FOR *TUBEZ*, *CARCELX*, *CARCELY* OR *CARCELZ* GEOMETRY
-C
+*              FOR *TUBEZ*, *CARCELX*, *CARCELY* OR *CARCELZ* GEOMETRY
+*
               NNCYL= 1
               IF( ITYPE.EQ.6 )THEN
                  IF( JX.NE.1 .OR. JY.NE.1 ) THEN
@@ -217,8 +219,8 @@ C
                  NNSUR= NNSUR+2*JR*JY*JZ
               ENDIF
               NNVOL= NNVOL+JR*JX*JY*JZ
-C
-C             X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:JZ+1, R-AXIS:JR+3
+*
+*             X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:JZ+1, R-AXIS:JR+3
               NAXREM= JX+JY+JZ+JR+6
             ELSE
             CALL XABORT( 'XELPRC: INVALID CELL GEOMETRY FOR EXCELL=>'//
@@ -226,6 +228,6 @@ C             X-AXIS:JX+1, Y-AXIS:JY+1, Z-AXIS:JZ+1, R-AXIS:JR+3
             ENDIF
          ENDIF
       ENDIF
-C
+*
       RETURN
       END

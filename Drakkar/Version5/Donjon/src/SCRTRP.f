@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the TERP interpolation/derivation/integration factors using
+* Compute the TERP interpolation/derivation/integration factors using
 * table-of-content information of the Saphyb.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPSAP   address of the multidimensional Saphyb object.

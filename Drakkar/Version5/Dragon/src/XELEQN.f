@@ -1,31 +1,33 @@
 *DECK XELEQN
       SUBROUTINE XELEQN( NDIM, NANGLE, ANGEQN )
-************************************************************************
-*                                                                      *
-*           NAME: XELEQN                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELTI2' & 'XELTI3')                    *
-*        VERSION: 1.0                                                  *
-*       CREATION: 89/01                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL COPY GENERATED ANGLES ACCORDING    *
-*                 TO THE "EQN" STANDARD.                               *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NDIM   / # OF DIMENSIONS (2 OR 3).                    /I./INT        *
-* NANGLE / # OF ANGLES.                                 /I./INT        *
-* ANGEQN / BASIS FOR ANGLES IN 2D.                      /.O/REL(2,2) OR*
-*        /                  OR 3D.                      /  /REL(3,3)   *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Copy generated  angles according to the EQN standard.
+*
+*Copyright:
+* Copyright (C) 1989 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NDIM    number of dimensions (2 or 3).                    
+* NANGLE  number of angles.                                 
+*
+*Parameters: output
+* ANGEQN  basis for angles in 2D or 3D.                      
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT   NONE
-C
+*
       INTEGER    NDIM, NANGLE
-C
+*
       REAL       SN2 ( 1), SN4 ( 2), SN6 ( 4), SN8 ( 6), SN10( 8),
      >           SN12(11), SN14(14), SN16(17), SNT (63),
      >           ANGEQN( NDIM, NDIM), THETA, DTHETA
@@ -54,11 +56,11 @@ C
       REAL        PI
       PARAMETER ( PI = 3.1415926535 )
       SAVE
-C
+*
       DATA  NANG,  NO2LIM / -1,  8  /
       DATA  INSN/  0,  1,  3,  7, 13, 21, 32, 46, 63/
       DATA  JNMU/  0,  1,  4, 10, 20, 35, 56, 84,120/
-C
+*
       DATA  SN2 /  .577350269/
       DATA  SN4 /  .350021174,  .868890300/
       DATA  SN6 /  .2561429  ,  .9320846  ,
@@ -90,7 +92,7 @@ C
      >             .3332906  ,  .5107319  ,  .7925089  ,
      >                          .6666774  ,
      >             .5215431  ,  .6752671  /
-C
+*
       DATA  MU2 /  1/
       DATA  MU4 /  1,  1,  2/
       DATA  MU6 /  1,  3,  1,  4,  4,  2/
@@ -107,7 +109,7 @@ C
      >            12, 12, 12, 10,  4,  6, 13, 16, 16, 13,
      >             6,  8, 15, 17, 15,  8,  9, 14, 14,  9,
      >             7, 11,  7,  5,  5,  2/
-C
+*
       DATA  ET2 /  1/
       DATA  ET4 /  1,  2,  1/
       DATA  ET6 /  1,  4,  2,  3,  4,  1/
@@ -124,7 +126,7 @@ C
      >            13, 15, 14, 11,  5,  3, 12, 16, 17, 14,
      >             7,  3, 12, 16, 15,  9,  3, 12, 13,  8,
      >             3, 10,  6,  3,  4,  1/
-C
+*
       DATA  XH2 /  1/
       DATA  XH4 /  2,  1,  1/
       DATA  XH6 /  2,  4,  1,  4,  3,  1/
@@ -141,7 +143,7 @@ C
      >            14, 15, 13, 10,  3,  7, 14, 17, 16, 12,
      >             3,  9, 15, 16, 12,  3,  8, 13, 12,  3,
      >             6, 10,  3,  4,  3,  1/
-C
+*
       IF( NDIM.EQ.3 )THEN
          IF( NANGLE.NE.NANG )THEN
             NANG  = NANGLE
@@ -185,47 +187,47 @@ C
             XOSUPX=  X  / SUPX
             YOSUPY=  Y  / SUPY
             ZOSUPZ=  Z  / SUPZ
-C
-C           SOLID ANGLE DIRECTION
+*
+*           SOLID ANGLE DIRECTION
             ANGEQN( 1, 1 )= X
             ANGEQN( 2, 1 )= Y
             ANGEQN( 3, 1 )= Z
-C
-C           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
+*
+*           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
             ANGEQN( 1, 2 )= -Y * OOSUPZ
             ANGEQN( 2, 2 )=  X * OOSUPZ
             ANGEQN( 3, 2 )=         0.0
-C
+*
             ANGEQN( 1, 3 )=  X * ZOSUPZ
             ANGEQN( 2, 3 )=  Y * ZOSUPZ
             ANGEQN( 3, 3 )=      - SUPZ
          ELSEIF( MOD(INDEL, 3).EQ.2 )THEN
-C
-C           SOLID ANGLE DIRECTION
+*
+*           SOLID ANGLE DIRECTION
             ANGEQN( 1, 1 )= X
             ANGEQN( 2, 1 )= Y
             ANGEQN( 3, 1 )= Z
-C
-C           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
+*
+*           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
             ANGEQN( 1, 2 )= -Z * OOSUPY
             ANGEQN( 2, 2 )=         0.0
             ANGEQN( 3, 2 )=  X * OOSUPY
-C
+*
             ANGEQN( 1, 3 )=  X * YOSUPY
             ANGEQN( 2, 3 )=      - SUPY
             ANGEQN( 3, 3 )=  Z * YOSUPY
          ELSE
-C
-C           SOLID ANGLE DIRECTION
+*
+*           SOLID ANGLE DIRECTION
             ANGEQN( 1, 1 )= X
             ANGEQN( 2, 1 )= Y
             ANGEQN( 3, 1 )= Z
-C
-C           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
+*
+*           DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
             ANGEQN( 1, 2 )=         0.0
             ANGEQN( 2, 2 )= -Z * OOSUPX
             ANGEQN( 3, 2 )=  Y * OOSUPX
-C
+*
             ANGEQN( 1, 3 )=      - SUPX
             ANGEQN( 2, 3 )=  Y * XOSUPX
             ANGEQN( 3, 3 )=  Z * XOSUPX
@@ -245,12 +247,12 @@ C
          INDEL = INDEL + 1
          IF( INDEL.GT.NANG ) CALL XABORT( 'XELEQN: NO MORE ANGLES ' )
          THETA = THETA + DTHETA
-C
-C        SOLID ANGLE DIRECTION
+*
+*        SOLID ANGLE DIRECTION
          ANGEQN( 1, 1 )=  COS(THETA)
          ANGEQN( 2, 1 )=  SIN(THETA)
-C
-C        DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
+*
+*        DIRECTIONS PERPENDICULAR TO THIS SOLID ANGLE
          ANGEQN( 1, 2 )= -SIN(THETA)
          ANGEQN( 2, 2 )=  COS(THETA)
       ELSE

@@ -25,10 +25,12 @@
 !-----------------------------------------------------------------------
 !
 subroutine LCMGTC(iplcm,name,leng,nlin,carr)
+   use GANLIB
    !----
    !  Subroutine arguments
    !----
-   integer :: iplcm,leng,nlin
+   type(c_ptr) iplcm
+   integer :: leng,nlin
    character*(*) :: name,carr(nlin)
    !----
    !  Local variables

@@ -2,69 +2,74 @@
       SUBROUTINE LIBWRE(NTYP,IPRINT,ITLIB ,NGROUP,NL,IGRF,IGRL,NGR,
      >                  SCAT,SIGS,TOTAL,XSNG,SIGF,XSFI,XNU,DELTA,
      >                  DIL,DLJ,XSOUT,XSCOR,DSIGPL)
-C
-C-------------------------- LIBWRE   ----------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBWRE
-C     ENTRY    : LIBWRE
-C     USE      : RESONANCE INTEGRAL TEMP AND DIL INTERPOLATION
-C     MODIFIED : 93-08-17
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C     NTYP   : TYPES OF SELF SHIELDING RATES        I
-C              = 1 ONLY ABSORPTION
-C              = 2 ABSORPTION+FISSION
-C              = 3 ABSORPTION+FISSION+SCATT
-C     IPRINT : PRINT FLAG                           I
-C     ITLIB  : TYPES OF LIBRARY                     I
-C              = 1 WIMS-AECL
-C              = 2 WIMS-D4
-C     NGROUP : NUMBER OF GROUPS                     I
-C     NL     : NUMBER OF LEGENDRE SCATTERING ORDER  I
-C     IGRF   : FIRST RESONANCE GROUP TO TREAT       I
-C     IGRL   : LAST RESONANCE GROUP TO TREAT        I
-C     NGR    : NUMBER OF RESONANCE GROUPS           I
-C     SCAT   : COMPLETE SCATTERING MATRIX           R(NGROUP,
-C              SCAT(JG,IG) IS FROM IG TO JG          NGROUP,NL)
-C     SIGS   : TOTAL SCATTERING OUT OF GROUP        R(NGROUP)
-C     TOTAL  : TOTAL XS                             R(NGROUP)
-C     XSNG   : NG XS                                R(NGROUP)
-C     SIGF   : NU*FISSION XS                        R(NGROUP)
-C     XSFI   : FISSION XS                           R(NGROUP)
-C     XNU    : 1/NU                                 R(NGROUP)
-C     DELTA  : LETHARGY                             R(NGROUP)
-C     DIL    : STANDARD DILUTION                    R(NGROUP)
-C     DLJ    : LIVOLANT-JEANPIERRE DILUTION         R(NGROUP)
-C     XSOUT  : RESONNANCES INTEGRALS                R(NGROUP,7)
-C     XSCOR  : TOTAL CORRECTION                     R(4)
-C     DSIGPL : POTENTIAL XS TIMES G-C PARAMETERS    R(NGR)
-C
-C-------------------------- LIBWRE   ----------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Resonance integral temperature and dilution interpolation.
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* NTYP    types of self shielding rates 
+*         = 1 only absorption
+*         = 2 absorption+fission
+*         = 3 absorption+fission+scattering
+* IPRINT  print flag
+* ITLIB   types of library
+*         = 1 WIMS-AECL
+*         = 2 WIMS-D4
+* NGROUP  number of groups
+* NL      number of Legendre scattering order
+* IGRF    first resonance group to treat
+* IGRL    last resonance group to treat
+* NGR     number of resonance groups
+* SCAT    complete scattering matrix
+*         SCAT(JG,IG) is from IG to JG          
+* SIGS    total scattering out of group
+* TOTAL   TOTAL XS
+* XSNG    NG XS
+* SIGF    NU*FISSION XS
+* XSFI    FISSION XS
+* XNU     1/NU
+* DELTA   lethargy
+* DIL     standard dilution
+* DLJ     Livolant-Jeanpierre dilution
+* XSOUT   resonnances integrals
+* XSCOR   total correction
+* DSIGPL  potential XS times G-C parameters
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
       INTEGER     IOUT
       CHARACTER   NAMSBR*6
       PARAMETER  (IOUT=6,NAMSBR='LIBWRE')
-C----
-C INTEFACE VRAIABLES
-C----
+*----
+* INTEFACE VRAIABLES
+*----
       INTEGER    NTYP,IPRINT,ITLIB,NGROUP,NL,IGRF,IGRL,NGR
       REAL       SCAT(NGROUP,NGROUP,NL),SIGS(NGROUP,NL),TOTAL(NGROUP),
      1           XSNG(NGROUP),SIGF(NGROUP),XSFI(NGROUP),
      2           XNU(NGROUP),DELTA(NGROUP),DIL(NGROUP),
      3           DLJ(NGROUP),XSOUT(NGROUP,7),XSCOR(4),DSIGPL(NGR)
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER          IGRR,JG,IG1,IG2,IL
       REAL             XSF,DDIL,DDLJ
       DOUBLE PRECISION XNUMER,XDENOM
-C
-C-----
-C
+*
+*-----
+*
       IF(ABS(IPRINT) .GE. 100) THEN
         WRITE(IOUT,6000) NAMSBR 
       ENDIF
@@ -75,10 +80,10 @@ C
           WRITE(IOUT,*) 'Potential XS*GC parameter ',DSIGPL(IGRR-IGRF+1)
         ENDIF
         IF(NTYP.EQ.3.AND.XSCOR(3).GT.0.0) THEN
-C----
-C  COMPUTE FLUX
-C  SCATTERING IS SELF-SHIELDED
-C----
+*----
+*  COMPUTE FLUX
+*  SCATTERING IS SELF-SHIELDED
+*----
           IF(IGRR .EQ. IGRF) THEN
             IF(ABS(IPRINT) .GE. 100) THEN
               WRITE(IOUT,6020)  
@@ -118,10 +123,10 @@ C----
           ENDIF
           XSOUT(IGRR,1)=XSOUT(IGRR,1)+XSOUT(IGRR,3)
         ELSE IF(XSCOR(1).GT.0.0) THEN
-C----
-C  COMPUTE FLUX AND DRAGLIB FLUX
-C  SCATTERING IS NOT SELF-SHIELDED
-C----
+*----
+*  COMPUTE FLUX AND DRAGLIB FLUX
+*  SCATTERING IS NOT SELF-SHIELDED
+*----
           IF(IGRR .EQ. IGRF) THEN
             IF(ABS(IPRINT) .GE. 100) THEN
               WRITE(IOUT,6021)  
@@ -246,13 +251,13 @@ C----
         XSFI(IG1)=XSOUT(IG1,6)/XSOUT(IG1,4)
         XSNG(IG1)=XSOUT(IG1,7)/XSOUT(IG1,4)
  150  CONTINUE
-C----
-C  RETURN LIBWRE
-C----
+*----
+*  RETURN LIBWRE
+*----
       RETURN
-C----
-C  FORMAT
-C----
+*----
+*  FORMAT
+*----
  6000 FORMAT('(* Output from --',A6,'-- follows ')
  6001 FORMAT('   Output from --',A6,'-- completed *)')
  6010 FORMAT('   Record  = ',A16)

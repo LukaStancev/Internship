@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* modify rod insertion (second call)
+* Modify rod insertion (second call)
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Tixier
+*Author(s): 
+* G. Tixier
 *
 *Parameters: input
 * IPMAP   pointer to the fuel map

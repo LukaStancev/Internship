@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover the tabulated functions required by the flux solution.
+* Recover the tabulated functions required by the flux solution.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read depletion data on an APOLIB-2 formatted library
+* Read depletion data on an APOLIB-2 formatted library
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the PJJ and PSJ.
+* Calculation of the PJJ and PSJ.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -49,8 +49,8 @@
 * MODST   starting angular mode index.
 *
 *Parameters: input/output
-* PJJ
-* PSJ
+* PJJ     collision probabilities.
+* PSJ     escape probabilities.
 *
 *-----------------------------------------------------------------------
 *

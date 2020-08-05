@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the flux distributions and ratios over the whole reactor core;
+* Compute the flux distributions and ratios over the whole reactor core;
 * print the normalized fluxes on files.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input
 * NGRP   total number of energy groups.

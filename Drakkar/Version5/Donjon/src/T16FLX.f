@@ -3,68 +3,75 @@
      >                  IFGMTR,VELMTR,MXFGET,IMIREG,VOLUME,B2CRI ,
      >                  FLXINT,FLXDIS,OVERV ,KMSPEC,MATMSH,VQLE  ,
      >                  PHI   )
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16FLX
-C      USE      : READ MAIN TRANSPORT GROUP FLUX AND COMPUTE
-C                 INTEGRATED FLUX, FLUX DISADVANTAGE FACTOR
-C                 AND I/V CROSS SECTION
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/21 G.M.    | READ MAIN TRANSPORT GROUP FLUX
-C      |                    | COMPUTE INTEGRATED FLUX,
-C      |                    | FLUX DISADVANTAGE FACTOR
-C      |                    | AND I/V CROSS SECTION
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C      IPRINT : PRINT LEVEL                              I
-C               =   0 NO PRINT
-C               >=  1 PRINT PROCESSING OPTIONS READ
-C      NGCCPO : NUMBER OF FINAL CONDENSED GROUPS         I
-C      NGMTR  : NUMBER OF MAIN TRANSPORT GROUP           I
-C      NMATZ  : NUMBER OF MIXTURES                       I
-C      MTRMSH : NUMBER OF MAIN TRANSPORT MESH POINTS     I
-C      IFGMTR : CPO FEW GROUP IDENTIFIER                 I(NGCCPO)
-C               WITH RESPECT TO MTR GROUPS
-C      VELMTR : AVERAGE VELOCITY IN MAIN GROUPS          R(NGMTR)
-C      MXFGET : MAXIMUM DIMENSION OF FLUX VECTOR         I
-C      IMIREG : MIXTURE UPDATE IDENTIFIER                I
-C               =  0 DO NOT UPDATE
-C               = -1 UPDATE USING CELLAV INFORMATION
-C               >  0 UPDATE USING SPECIFIED REGION NUMBER
-C    OUTPUT
-C      VOLUME : TOTAL VOLUME                             R
-C      B2CRI  : CRITICAL BUCKLINGS                       R(3)
-C      FLXINT : VOLUME INTEGRATED FLUX                   R(NGCCPO)
-C      FLXDIS : FLUX DISADVANTAGE FACTOR                 R(NGCCPO)
-C      OVERV  : 1/V CROSS SECTION                        R(NGCCPO)
-C    WORK
-C      KMSPEC : MATERIAL TYPE                            I(NMATZ)
-C      MATMSH : MATERIAL AT EACH MESH POINT              I(MTRMSH)
-C      VQLE   : VOLUME OF EACH MESH POINT                R(MTRMSH)
-C      PHI    : MULTIGROUP FLUX AT EACH MESH POINT       R(MXFGET)
-C
-C  3- ROUTINES CALLED
-C    SPECIFIC T16CPO ROUTINES
-C      T16FND : FIND A TAPE16 RECORD
-C               EQUIVALENT TO FIND FUNCTION
-C               IN APPENDIX E OF EACL RC-1176
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C      XDRSET : VECTOR INITIALIZATION ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16FLX
+*
+*Purpose:
+*  READ MAIN TRANSPORT GROUP FLUX AND COMPUTE
+*                 INTEGRATED FLUX, FLUX DISADVANTAGE FACTOR
+*                 AND I/V CROSS SECTION
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/21 G.M.    | READ MAIN TRANSPORT GROUP FLUX
+*      |                    | COMPUTE INTEGRATED FLUX,
+*      |                    | FLUX DISADVANTAGE FACTOR
+*      |                    | AND I/V CROSS SECTION
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+* IPRINT  PRINT LEVEL                              I
+*         =   0 NO PRINT
+*         >=  1 PRINT PROCESSING OPTIONS READ
+* NGCCPO  NUMBER OF FINAL CONDENSED GROUPS         I
+* NGMTR   NUMBER OF MAIN TRANSPORT GROUP           I
+* NMATZ   NUMBER OF MIXTURES                       I
+* MTRMSH  NUMBER OF MAIN TRANSPORT MESH POINTS     I
+* IFGMTR  CPO FEW GROUP IDENTIFIER                 I(NGCCPO)
+*         WITH RESPECT TO MTR GROUPS
+* VELMTR  AVERAGE VELOCITY IN MAIN GROUPS          R(NGMTR)
+* MXFGET  MAXIMUM DIMENSION OF FLUX VECTOR         I
+* IMIREG  MIXTURE UPDATE IDENTIFIER                I
+*         =  0 DO NOT UPDATE
+*         = -1 UPDATE USING CELLAV INFORMATION
+*         >  0 UPDATE USING SPECIFIED REGION NUMBER
+*
+*Parameters: output
+* VOLUME  TOTAL VOLUME                             R
+* B2CRI   CRITICAL BUCKLINGS                       R(3)
+* FLXINT  VOLUME INTEGRATED FLUX                   R(NGCCPO)
+* FLXDIS  FLUX DISADVANTAGE FACTOR                 R(NGCCPO)
+* OVERV   1/V CROSS SECTION                        R(NGCCPO)
+*
+*Parameters: work
+* KMSPEC  MATERIAL TYPE                            I(NMATZ)
+* MATMSH  MATERIAL AT EACH MESH POINT              I(MTRMSH)
+* VQLE    VOLUME OF EACH MESH POINT                R(MTRMSH)
+* PHI     MULTIGROUP FLUX AT EACH MESH POINT       R(MXFGET)
+*
+*  3- ROUTINES CALLED
+*    SPECIFIC T16CPO ROUTINES
+*      T16FND : FIND A TAPE16 RECORD
+*               EQUIVALENT TO FIND FUNCTION
+*               IN APPENDIX E OF EACL RC-1176
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*      XDRSET : VECTOR INITIALIZATION ROUTINE
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16,IPRINT,NGCCPO,NGMTR,NMATZ,MTRMSH,
      >                 MXFGET,IMIREG

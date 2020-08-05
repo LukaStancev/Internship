@@ -1,27 +1,40 @@
 *DECK TINSHH
-      SUBROUTINE TINSHH(IPRES,NCH,NK,NH,NZ,NREG,MS,NAMCHA,NAMCHA2,
+      SUBROUTINE TINSHH(IPRES,NCH,NK,NH,NZ,NREG,MS,NAMCHA,NAMCH2,
      + WINT,MIX,BS,PS,ISFT,IHN,IPRT)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute new burnup values per channel after shuffling of two
+* Compute new burnup values per channel after shuffling of two
 * channels in hexagonal geometry.
 *
 *Copyright:
 * Copyright (C) 2015 Ecole Polytechnique de Montreal
 *
-*Author(s): E. Varin, M. Guyot and A. Hebert
+*Author(s): 
+* E. Varin, M. Guyot and A. Hebert
 *
 *Parameters: input/output
+* IPRES  ßAdress of the map Linked_List or XSM file.
+* NAMCHA Name of the channel to refuel
+* NAMCH2 Name of the channel to refuel
+* NS     Number of bundles inserted
+* MIX    Fuel map bundle index
+* MS     Maximum number of power shift
 *
-* IPRES   Adress of the map Linked_List or XSM file.
-* NAMCHA  Name of the channel to refuel
-* NAMCHA2 Name of the channel to refuel
-* NS      Number of bundles inserted
-* MIX     Fuel map bundle index
-* MS      Maximum number of power shift
-*
+*Parameters:
+* NCH      
+* NK       
+* NH       
+* NZ       
+* NREG     
+* WINT     
+* BS       
+* PS       
+* ISFT     
+* IHN      
+* IPRT     
+*      
 *-----------------------------------------------------------------------
 *
       USE GANLIB
@@ -34,7 +47,7 @@
      1            ITYLCM,IS,MAXS,MS
       REAL        WINT(NCH,NK),BS(NCH,NK,MS),PS(NCH,NK,MS)
       INTEGER     MIX(NREG),IHN(2,NH),ISFT(NCH,NK)
-      CHARACTER   NAMCHA*8,NAMCHA2*8
+      CHARACTER   NAMCHA*8,NAMCH2*8
 *----
 *  LOCAL VARIABLES
 *----
@@ -145,11 +158,11 @@
 *----
 *  SEARCH FOR CHANNEL NUMBER WHERE TO MOVE
 *----
-      IF(NAMCHA2.NE.'POOL') THEN
+      IF(NAMCH2.NE.'POOL') THEN
         IH = 0
         DO 40 I=1,NH
           WRITE(HNAM,'(2A4)') IHN(1,I),IHN(2,I)
-          IF (HNAM.EQ.NAMCHA2) THEN
+          IF (HNAM.EQ.NAMCH2) THEN
              IH = I
              GOTO 41
           ENDIF
@@ -162,8 +175,8 @@
         IF(ICH2.EQ.0) CALL XABORT('@TINSHH: WRONG CHANNEL NAME')
         IF(IPRT.GT.3) THEN
           WRITE(6,*)
-          WRITE(6,*) ' SHUFFLING CHANNEL ',NAMCHA2,ICH2
-          WRITE(6,*) ' BEFORE ',NAMCHA2,(WINT(ICH2,I),I=1,NK)
+          WRITE(6,*) ' SHUFFLING CHANNEL ',NAMCH2,ICH2
+          WRITE(6,*) ' BEFORE ',NAMCH2,(WINT(ICH2,I),I=1,NK)
         ENDIF
 *----
 *  SHUFFLING
@@ -190,7 +203,7 @@
   50    CONTINUE
         IF(IPRT.GT.3) THEN
           WRITE(6,*)
-          WRITE(6,*) ' AFTER ',NAMCHA2,(WINT(ICH2,I),I=1,NK)
+          WRITE(6,*) ' AFTER ',NAMCH2,(WINT(ICH2,I),I=1,NK)
         ENDIF
       ELSE
         WRITE(6,*) ' CHANNEL TO POOL '

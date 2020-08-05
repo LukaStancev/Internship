@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* one-speed net surfacic current calculation in 3D mixed-dual finite
+* One-speed net surfacic current calculation in 3D mixed-dual finite
 * element approximation.
 *
 *Copyright:
@@ -15,7 +15,8 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * ITYPE   type of geometry: =5/7 (Cartesian); =8/9 (hexagonal).

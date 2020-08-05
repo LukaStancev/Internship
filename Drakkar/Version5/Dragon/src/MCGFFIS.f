@@ -46,7 +46,7 @@
 * F       vector containing the zonal scalar flux
 *
 *Parameters: scratch
-* B
+* B       undefined.
 *
 *-----------------------------------------------------------------------
 *

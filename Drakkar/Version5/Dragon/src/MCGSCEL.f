@@ -4,11 +4,9 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculate coefficients of a track for the characteristics 
-* integration.
-* Linear-Discontinuous-Characteristics scheme with exact exponential
-* calls.
-* 'source term isolation' option turned off.
+* Calculate coefficients of a track for the characteristics 
+* integration. Linear-Discontinuous-Characteristics scheme with 
+* exact exponential calls. Source term isolation option turned off.
 *
 *Copyright:
 * Copyright (C) 2015 Ecole Polytechnique de Montreal

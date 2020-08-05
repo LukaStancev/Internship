@@ -1,43 +1,49 @@
 *DECK LIBWSC
       SUBROUTINE LIBWSC(NGROUP,NGD,NGF,NSCT,CSCAT,XSCAT,SIGS)
-C
-C-------------------------- LIBWSC   ----------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBWSC
-C     ENTRY    : LIBWSC
-C     USE      : EXPAND WIMS FORMAT SCATTERING XS
-C     MODIFIED : 93-08-17
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C      NGROUP : NUMBER OF GROUPS                         I
-C      NGD    : STARTING GROUP NUMBER                    I
-C      NGF    : FINISHING GROUP NUMBER                   I
-C      NSCT   : NUMBER OF ELEMENTS IN CSCAT              I
-C      CSCAT  : WIMS CONDENSE SCATTERING AT INPUT        R(NSCT)
-C   OUTPUT
-C      XSCAT  : DRAGON FORMAT EXPANDED SCATTERING        R(NGROUP,
-C               SCAT(JG,IG) IS FROM IG TO JG              NGROUP)
-C      SIGS   : TOTAL SCATTERING OUT OF GROUP            R(NGROUP)
-C
-C-------------------------- LIBWSC   ----------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Expand WIMS format scattering cross sections
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* NGROUP  number of groups                         
+* NGD     starting group number                    
+* NGF     finishing group number                   
+* NSCT    number of elements in CSCAT              
+* CSCAT   WIMS condense scattering at input        
+*
+*Parameters: output
+* XSCAT   DRAGON format expanded scattering        
+*         SCAT(JG,IG) is from IG to JG              
+* SIGS    total scattering out of group            
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
-C----
-C INTERFACE VARIABLES
-C----
+*----
+* INTERFACE VARIABLES
+*----
       INTEGER  NGROUP,NGD,NGF,NSCT
       REAL     CSCAT(NSCT),XSCAT(NGROUP,NGROUP),SIGS(NGROUP)
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER          LG,IG1,IG2,N2,IGG
       DOUBLE PRECISION SUMSCT
-C
-C----
-C
+*
+*----
+*
       LG=0
       DO 100 IG1=NGD,NGF
         CALL XDRSET(XSCAT(1,IG1),NGROUP,0.0)
@@ -60,8 +66,8 @@ C
         SIGS(IG1)=REAL(SUMSCT)
  100  CONTINUE
       IF(LG.NE.NSCT) CALL XABORT('LIBWSC: INVALID COUNT')
-C----
-C  RETURN LIBWSC
-C----
+*----
+*  RETURN LIBWSC
+*----
       RETURN
       END

@@ -2,50 +2,49 @@
       SUBROUTINE XELVOL(   IPRT,   NDIM, NEXTGE,   NCPC,  MINDO,  MAXDO,
      >                   ICORDO,  NSURO,  NVOLO, IDLGEO, INDEXO,
      >                     MAXC, REMESH, MATGEO, VOLSO )
-************************************************************************
-*                                                                      *
-*           NAME: XELVOL                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 4 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL COMPUTE VOLUMES & SURFACES         *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* NDIM   / # OF DIMENSIONS (2 OR 3).                    /I./INT        *
-* NEXTGE / RECTANGULAR(0)/CIRCULAR(1) BOUNDARY.         /I./INT        *
-* NCPC   / DIMENSION FOR *MINDO*...                     /I./INT        *
-* MINDO  / MIN INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NCPC)  *
-* MAXDO  / MAX INDEX VALUES FOR ALL AXES (RECT/CYL).    /I./INT(NCPC)  *
-* ICORDO / PRINCIPAL AXIS DIRECTIONS (X/Y/Z) FOR MESHES./I./INT(NCPC)  *
-* NSURO  / # OF SURFACE OF THE GEOMETRY.                /I./INT        *
-* NVOLO  / MAX. # OF TRACK SEGMENTS IN A SINGLE TRACK.  /I./INT        *
-* IDLGEO / RELATIVE INDEX OF GEOMETRY IN VOLSO.         /I./INT        *
-* INDEXO / TO RETRIEVE ZONES IN GEOMETRY.               /I./INT(*)     *
-* MAXC   / DIMENSION OF REMESH().                       /I./INT        *
-* REMESH / REAL MESHES VALUES (RECT/CYL).               /I./REL(MAXC  )*
-* MATGEO / MATERIAL #S USED IN THE GEOMETRY.            /I./INT(*)     *
-* VOLSO  / VOLUMES & SURFACES FOR EACH GEOMETRY.        /.O/REL(NGIDL) *
-*--------+--------------- R O U T I N E S --------------+--+-----------*
-*  NAME  /                  DESCRIPTION                                *
-*--------+-------------------------------------------------------------*
-* LELCRN / TO DECIDE CROWN/RECTANGLE INTERSECTION.                     *
-* XELCRN / TO CALCULATE CYLINDER/RECTANGLE INTERSECTION.               *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Compute volumes and surfaces.
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPRT    intermediate printing level for output.      
+* NDIM    number of dimensions (2 or 3).                    
+* NEXTGE  rectangular(0)/circular(1) boundary.         
+* NCPC    dimension for *mindo*...                     
+* MINDO   min index values for all axes (rect/cyl).    
+* MAXDO   max index values for all axes (rect/cyl).    
+* ICORDO  principal axis directions (X/Y/Z) for meshes.
+* NSURO   number of surface of the geometry.                
+* NVOLO   max. number of track segments in a single track.  
+* IDLGEO  relative index of geometry in volso.         
+* INDEXO  to retrieve zones in geometry.               
+* MAXC    dimension of remesh().                       
+* REMESH  real meshes values (rect/cyl).               
+* MATGEO  material numbers used in the geometry.            
+*
+*Parameters: output
+* VOLSO  / volumes and surfaces for each geometry.
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT           NONE
-C
+*
       INTEGER            IPRT,NDIM,NEXTGE,NCPC,NSURO,NVOLO,IDLGEO,MAXC
       REAL               VOLSO(*),REMESH(MAXC)
       INTEGER            MINDO(NCPC), MAXDO(NCPC), ICORDO(NCPC),
      >                   INDEXO(4,*), MATGEO(*)
-C
+*
       DOUBLE PRECISION   PI, PIO2
       PARAMETER        ( PI=3.14159265358979323846D0,PIO2= 0.5D0*PI)
       INTEGER            IOUT
@@ -60,13 +59,13 @@ C
       LOGICAL            LELCRN, SWZCYL
       CHARACTER*4        CORIEN(-6:0)
       SAVE               CORIEN
-C
+*
       DATA    CORIEN  
      >       / ' Z+ ',' Z- ',' Y+ ',' Y- ',' X+ ',' X- ','    ' /
-C
+*
       IND(I)= IDLGEO + I
-C
-C     VOL & SURF CALCULATION (CARTESIAN MESHES)
+*
+*     VOL & SURF CALCULATION (CARTESIAN MESHES)
       RAYONC(1)= 0.0D0
       KSUR= MOD(NDIM+1,3)
       DO 50 JX  = MINDO(1)-1, MAXDO(1)
@@ -182,7 +181,7 @@ C     VOL & SURF CALCULATION (CARTESIAN MESHES)
   710       CONTINUE
   720    CONTINUE
       ENDIF
-C
+*
       IF( IPRT.GT.1 )THEN
          NSUNN = NSURO-NESUR-NEVOL
          NSURC = -1
@@ -218,11 +217,11 @@ C
      >           CALL XABORT( 'XELVOL: '//
      >                        'CIRCULAR ZONES INCORRECTLY DEFINED' )
       ENDIF
-C
+*
       RETURN
-C----
-C  Formats
-C----
+*----
+*  Formats
+*----
  8000 FORMAT(1X,'****** WARNING IN XELVOL ******'/
      >       1X,'AT LEAST ONE REGION WITH NEGATIVE VOLUME'/
      >       1X,'THIS VOLUME IS RESET TO 0.0')

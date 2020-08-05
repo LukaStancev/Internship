@@ -18,10 +18,8 @@
 *Parameters: input
 * NAMMOD  name of DRAGON module.
 * IBEAF   flag for beginning or finishing module where
-*         \begin{itemize} 
-*         \item IBEAF=1  before module execution;
-*         \item IBEAF=-1 after module execution.
-*         \end{itemize} 
+*         =1  before module execution;
+*         =-1 after module execution.
 *
 *-----------------------------------------------------------------------
 *

@@ -4,16 +4,16 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* produce the useful vector for refuelling, according
+* Produce the useful vector for refuelling, according
 * to a given refuelling-scheme
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters: input/output
-*
 * NNS    Number corresponding to the refuelling type
 * NW     Vector corresponding to the refuelling type
 *           NW > 0  : Position of the bundle before refuelling     

@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* modification of the data stored in the PARAM folder of a fuel map
+* Modification of the data stored in the PARAM folder of a fuel map
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal.
 *
-*Author(s): M. Cordiez
+*Author(s): 
+* M. Cordiez
 *
 *Parameters: input
 * IMPX    printing index (=0 for no print).

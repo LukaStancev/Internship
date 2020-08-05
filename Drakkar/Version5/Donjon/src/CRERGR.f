@@ -7,12 +7,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform interpolation of fuel properties over the fuel lattice.
+* Perform interpolation of fuel properties over the fuel lattice.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert, D. Sekki
+*Author(s): 
+* A. Hebert, D. Sekki
 *
 *Parameters: input
 * IPCPO   pointer to L_COMPO information.
@@ -55,6 +56,10 @@
 * DIFFZ   z-directed diffusion coefficients.
 * H       h-factors (kappa*fission macroscopic x-sections).
 * SCAT    scattering macroscopic x-sections.
+*
+*Parameters: 
+* IJJ
+* NJJ
 *
 *-----------------------------------------------------------------------
 *

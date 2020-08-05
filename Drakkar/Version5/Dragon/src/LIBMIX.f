@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transformation of the isotope ordered microscopic cross sections to
+* Transformation of the isotope ordered microscopic cross sections to
 * group ordered macroscopic cross sections (part 1).
 *
 *Copyright:

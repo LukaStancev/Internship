@@ -3,53 +3,61 @@
      >                  NAMDXS,ITYXS ,
      >                  FLXINT,FLXDIS,OVERV ,RECXSV,IDRXSM,RECXSM,
      >                  RECSCA)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16WDS
-C      USE      : WRITE PROPERTIES TO CPO DATA STRUCTURE
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/21 G.M.    | WRITE PROPERTIES TO CPO DATA STRUCTURE
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IPCPO  : POINTER TO THE CPO STRUCTURE             I
-C      NGCCPO : NUMBER OF FINAL CONDENSED GROUPS         I
-C      NVXSR  : NUMBER OF VECTORIAL XS                   I
-C      NMXSR  : NUMBER OF MATRIX XS                      I
-C      IBURN  : BURNUP STEP                              I
-C      EFJ    : ENERGY PER FISSION IN JOULES             R
-C      NAMDXS : VECTOR CROSS SECTION NAMES               C(NVXSR+
-C                                                          NMXSR)*12
-C      ITYXS  : TYPE OF XS SAVED                         R
-C      FLXINT : VOLUME INTEGRATED FLUX                   R(NGCCPO)
-C      FLXDIS : FLUX DISADVANTAGE FACTOR                 R(NGCCPO)
-C      OVERV  : 1/V CROSS SECTION                        R(NGCCPO)
-C      RECXSV : VECTOR CROSS SECTIONS RECORDS            R(NGCCPO,
-C                                                     NVXSR+NMXSR)
-C      IDRXSM : COMPRESSION VECTOR FOR MATRIX            R(NGCCPO,2)
-C      RECXSM : MATRIX CROSS SECTIONS RECORDS            R(NGCCPO,
-C                                                    NGCCPO,NMXSR)
-C    WORK
-C      RECSCA : SCATT CROSS SECTIONS RECORDS             R(NGCCPO*
-C                                                          NGCCPO)
-C  3- ROUTINES CALLED
-C    UTILITIES ROUTINES
-C      LCMPUT : DATA STRUCTURE WRITE ROUTINE
-C      LCMSIX : DATA STRUCTURE CHANGE DIRECTORY ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16WDS
+*
+*Purpose:
+*  WRITE PROPERTIES TO CPO DATA STRUCTURE
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/21 G.M.    | WRITE PROPERTIES TO CPO DATA STRUCTURE
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IPCPO   POINTER TO THE CPO STRUCTURE             I
+* NGCCPO  NUMBER OF FINAL CONDENSED GROUPS         I
+* NVXSR   NUMBER OF VECTORIAL XS                   I
+* NMXSR   NUMBER OF MATRIX XS                      I
+* IBURN   BURNUP STEP                              I
+* EFJ     ENERGY PER FISSION IN JOULES             R
+* NAMDXS  VECTOR CROSS SECTION NAMES               C(NVXSR+
+*                                                    NMXSR)*12
+* ITYXS   TYPE OF XS SAVED                         R
+* FLXINT  VOLUME INTEGRATED FLUX                   R(NGCCPO)
+* FLXDIS  FLUX DISADVANTAGE FACTOR                 R(NGCCPO)
+* OVERV   1/V CROSS SECTION                        R(NGCCPO)
+* RECXSV  VECTOR CROSS SECTIONS RECORDS            R(NGCCPO,
+*                                               NVXSR+NMXSR)
+* IDRXSM  COMPRESSION VECTOR FOR MATRIX            R(NGCCPO,2)
+* RECXSM  MATRIX CROSS SECTIONS RECORDS            R(NGCCPO,
+*                                              NGCCPO,NMXSR)
+*
+*Parameters: work
+* RECSCA  SCATT CROSS SECTIONS RECORDS             R(NGCCPO*
+*                                                          NGCCPO)
+*  3- ROUTINES CALLED
+*    UTILITIES ROUTINES
+*      LCMPUT : DATA STRUCTURE WRITE ROUTINE
+*      LCMSIX : DATA STRUCTURE CHANGE DIRECTORY ROUTINE
+*
+*----
+*
+      USE              GANLIB
       IMPLICIT         NONE
-      INTEGER          IPCPO,NGCCPO,NVXSR,NMXSR,IBURN
+      TYPE(C_PTR)      IPCPO
+      INTEGER          NGCCPO,NVXSR,NMXSR,IBURN
       CHARACTER        NAMDXS(NVXSR+NMXSR)*12
       INTEGER          IDRXSM(NGCCPO,2),ITYXS(NVXSR+NMXSR)
       REAL             EFJ,FLXINT(NGCCPO),

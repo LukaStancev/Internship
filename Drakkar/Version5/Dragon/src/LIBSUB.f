@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* production of an internal library with subgroups.
+* Production of an internal library with subgroups.
 *
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal

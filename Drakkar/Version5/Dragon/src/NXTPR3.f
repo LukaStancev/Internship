@@ -7,7 +7,7 @@
 * To analyse a 3D prismatic geometry from a general 3D geometry analysis.
 *
 *Copyright:
-* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* Copyright (C) 2006 Ecole Polytechnique de Montreal
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either

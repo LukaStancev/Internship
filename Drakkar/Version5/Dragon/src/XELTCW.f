@@ -4,17 +4,12 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the integration weights for cyclic tracking.
+* Compute the integration weights for cyclic tracking.
 *
 *Copyright:
 * Copyright (C) 1994 Ecole Polytechnique de Montreal.
 *
 *Author(s): A. Hebert
-*
-*Reference:
-* M.J.Halsall, Cactus, a characteritics solution to the neutron
-* transport equations in complicated geometries, UK Atomic Energy
-* Authority, 1980.
 *
 *Parameters: input
 * NANGLE number of angles.
@@ -22,6 +17,11 @@
 *
 *Parameters: output
 * WGTANG integration weights.
+*
+*Reference:
+* M.J.Halsall, Cactus, a characteritics solution to the neutron
+* transport equations in complicated geometries, UK Atomic Energy
+* Authority, 1980.
 *
 *-----------------------------------------------------------------------
 *

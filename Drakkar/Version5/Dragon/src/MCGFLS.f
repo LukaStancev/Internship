@@ -35,7 +35,7 @@
 * KEYFLX  position of flux elements in FIMEM vector.
 * KEYCUR  position of current elements in FIMEM vector.
 * NGIND   index of the groups to process.
-* NGIND   index of the groups to process.
+* KPSYS   pointer to system groups.
 * NCONV   array of convergence flag for each group.
 * EPSI    stopping criterion for BICGSTAB in ACA resolution.
 * MAXI    maximum number of iterations allowed for BICGSTAB in ACA

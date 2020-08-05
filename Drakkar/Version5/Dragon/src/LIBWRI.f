@@ -1,36 +1,40 @@
 *DECK LIBWRI
       SUBROUTINE LIBWRI(NTMPR,NDILR,TMPISO,DILISO,TMPT,DILT,REST,RIT,
      >                  XSOUT,XSCOR)
-C
-C-------------------------- LIBWRI   ----------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBWRI
-C     ENTRY    : LIBWRI
-C     USE      : RESONANCE INTEGRAL TEMP AND DIL INTERPOLATION
-C     MODIFIED : 93-08-17
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C      NTMPR  : NUMBER OF TEMPERATURE TABLES             I
-C      NDILR  : NUMBER OF DILUTION TABLES                I
-C      TMPISO : TEMPERATURE OF ISOTOPE                   R
-C      DILISO : DILUTION OF ISOTOPE                      R
-C      TMPT   : SQRT(TEMPERATURE) IN TABLE               R(NTMPR)
-C      DILT   : SQRT(DILUTION) IN TABLE                  R(NDILR)
-C      REST   : RESONANCE RATES INPUT                    R(NDILR,
-C                                                          NTMPR)
-C   WORK
-C      RIT    : DUMMY VECTRO                             R(NDILR)
-C   OUTPUT
-C      XSOUT  : OUTPUT RESONANCE INTEGRALS               R
-C   INTERNAL PARAMETER
-C      EPSRI  : AIKINT INTERPOLATION PARAMETER = 0.0005  R
-C      SQDILI : SQRT INFINITE DILUTION = 1.0E+5          R
-C
-C-------------------------- LIBWRI   ----------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Resonance integral temperature and dilution interpolation
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* NTMPR   number of temperature tables             
+* NDILR   number of dilution tables                
+* TMPISO  temperature of isotope                   
+* DILISO  dilution of isotope                      
+* TMPT    sqrt(temperature) in table               
+* DILT    sqrt(dilution) in table                  
+* REST    resonance rates input                    
+*
+*Parameters: output
+* XSOUT   resonance integrals               
+* XSCOR   resonance integrals correction              
+*
+*Parameters: scratch
+* RIT     dummy vector                             
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT   NONE
       REAL       EPSRI,SQDILI
       PARAMETER (EPSRI=0.0005,SQDILI=1.0E+5)
@@ -39,9 +43,9 @@ C
      >           REST(NDILR,NTMPR),RIT(NDILR),XSOUT,XSCOR
       INTEGER    IDIL,NDILE,JDEPT,JFINT,IR,JD
       REAL       SQTD,SQTT,ALPHA,AIKINT,ASLOPE
-C----
-C  SIMPLE LINEAR INTERFOLATION IN SQRT(TMP)
-C----
+*----
+*  SIMPLE LINEAR INTERFOLATION IN SQRT(TMP)
+*----
       SQTD=SQRT(DILISO)
       XSOUT=0.0
       DO 110 IDIL=NDILR,1,-1
@@ -70,16 +74,16 @@ C----
      >           ALPHA*REST(JD,JFINT)
  120  CONTINUE
       IF(SQTD .GT. DILT(NDILE)) THEN
-C----
-C  INTERPOLATE LINEARLY BETWEEN LAST DILUTION IN TABLE
-C  AND INFINITE DILUTION
-C----
+*----
+*  INTERPOLATE LINEARLY BETWEEN LAST DILUTION IN TABLE
+*  AND INFINITE DILUTION
+*----
         ASLOPE=(DILT(NDILE)/SQTD)**2
         XSOUT=ASLOPE*RIT(NDILE)+(1.0-ASLOPE)*RIT(NDILR)
       ELSE
-C----
-C  AIKINT INTERPOLATION FOR DILUTION
-C----
+*----
+*  AIKINT INTERPOLATION FOR DILUTION
+*----
         XSOUT=AIKINT(SQTD,DILT,RIT,NDILE,EPSRI)
       ENDIF
       XSCOR=XSCOR+XSOUT

@@ -16,9 +16,10 @@
 *Copyright:
 * Copyright (C) 2015 IRSN
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input/output
+*Parameters: input/output
 * IPSAP   address of saphyb or multicompo object
 * IPDAT   address of data structure INFO
 * NCRD    number of control rod composition recovered from D2P
@@ -72,6 +73,13 @@
 * THCK    Thickness of reflector
 * HFLX    Name of the record for the flux
 * HCUR    Name of the record for the current
+*
+*Parameters: 
+* OTHPK   
+* OTHTYP  
+* OTHVAL  
+* OTHVAR  
+*
 *-----------------------------------------------------------------------
 *
       USE GANLIB

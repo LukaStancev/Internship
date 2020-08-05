@@ -4,25 +4,36 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  reads detector information and stores them 
+*  Reads detector information and stores them 
 *
+*Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, E. Varin, M. Guyot
+*Author(s): 
+* J. Koclas, E. Varin, M. Guyot
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): modification type(L_MAP);
-*         HENTRY(2): read-only type(L_POWER).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The DETINI: module specification is:
+* DETECT := DETINI: [ DETECT ] :: (descdet) ;
+* where
+*   DETECT : name of the \emph{detect} object that will be created by the 
+*     module; it will contain the detector informations. If \emph{detect} 
+*     appear on RHS, it is updated, otherwise, it is created.
+*   (descdev) : structure describing the input data to the DETINI: module.
 *
 *-----------------------------------------------------------------------
 *

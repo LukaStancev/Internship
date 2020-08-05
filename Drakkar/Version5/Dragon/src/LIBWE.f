@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the interpolated microscopic xs read from a
+* Transcription of the interpolated microscopic xs read from a
 * microscopic xs library in WIMS-E format to LCM data structures
 *
 *Copyright:

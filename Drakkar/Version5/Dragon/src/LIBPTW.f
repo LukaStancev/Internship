@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build a temperature-independant draglib (IPROC=2) on the internal
+* Build a temperature-independant draglib (IPROC=2) on the internal
 * library or write the probability table information (IPROC=3/4).
 *
 *Copyright:

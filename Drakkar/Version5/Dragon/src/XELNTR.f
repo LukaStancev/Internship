@@ -4,61 +4,58 @@
      >                    MRGIN,  NSOUT,  NVOUT, VOLOUT, MATOUT,
      >                   CUTOFX,  ITGEO,  ICODE, ALBEDO,  NANGL,
      >                      KIN,    LIN)
-************************************************************************
-*                                                                      *
-*           NAME: XELNTR                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 2 (CALLED BY 'EXCELT')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 91/07                                                *
-*       MODIFIED: 98/06 (G.M.) COMPRESS TRACKING FILE TO TAKE INTO     *
-*                              ACCOUNT SUCCESSIVE IDENTICAL REGIONS    *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL COMPUTE RENORMALIZED TRACKS        *
-*                 TO OBTAIN TRUE VOLUME VALUES. THE FILE "IFOLD"       *
-*                 CONTAINS THE OLD TRACKS; THE FILE "IFTRAK" WILL      *
-*                 CONTAIN THE NORMALIZED TRACKS.                       *
-*                                                                      *
-*           NOTE: THE FILES "IFOLD" AND "IFTRAK" ARE SUPPOSED TO BE:   *
-*                 1) CONNECTED AND OPENED;                             *
-*                 2) PLACED FOR ACCESSING THE FIRST RECORD (REWIND).   *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* NDIM   / # OF DIMENSIONS (2D OR 3D).                  /I./INT        *
-* IFOLD  / UNNORMALIZED TRACKING FILE # (AT INPUT).     /I./INT        *
-* IFTRAK /   NORMALIZED TRACKING FILE # (AT OUTPUT).    /I./INT        *
-* NORE   / INTEGER FLAG FOR NORMALIZATION               /I./INT        *
-*        / -1 -> NORMALIZE TO VOLUME (angle dependent)  /  /           *
-*        /  0 -> NORMALIZE TO VOLUME (angle independent)/  /           *
-*        /  1 -> DO NOT NORMALIZE                       /  /           *
-* LMERG  / SECOND INTEGER FLAG FOR NORMALIZATION        /I./INT        *
-*        /  0 -> PRESERVE VOLUMES OF FINE REGIONS       /  /           *
-*        /  1 -> PRESERVE VOLUMES OF MERGED REGIONS     /  /           *
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR PRINOUT.     /I./INT        *
-* NS     / # OF SURFACES BEFORE MERGING.                /I./INT        *
-* NV     / # OF ZONES BEFORE MERGING.                   /I./INT        *
-* VOLIN  / VOLUMES & SURFACES BEFORE MERGING.           /I./REL(-NS:NV)*
-* MATIN  / MATERIAL #S BEFORE MERGING.                  /I./INT(-NS:NV)*
-* MRGIN  / MERGING INDEX.                               /I./INT(-NS:NV)*
-* NSOUT  / # OF SURFACES AFTER  MERGING.                /I./INT        *
-* NVOUT  / # OF ZONES AFTER  MERGING.                   /I./INT        *
-* VOLOUT / VOLUMES & SURFACES AFTER  MERGING.           /I./REL(*)     *
-* MATOUT / MATERIAL #S BEFORE MERGING.                  /I./INT(*)     *
-* CUTOFX / CUTOFF FACTOR.                               /I./REL        *
-* ITGEO  / KIND OF GEOMETRY.                            /I./INT        *
-* ICODE  / INDEX OF BOUNDARY CONDITIONS.                /I./INT(6)     *
-* ALBEDO / GEOMETRIC ALBEDOS ON EXTERNAL FACES.         /.O/REL(6)     *
-* NANGL  / # OF ANGLES TO RENORMALIZE TRACKS BY ANGLE.  /I./INT        *
-* KIN    / MAX. # OF SUBTRACKS IN A SINGLE TRACK.       /I./INT        *
-* LIN    / MAX. # OF TRACK SEGMENTS IN A SINGLE TRACK.  /I./INT        *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Compute renormalized tracks to obtain true volume values. the file 
+* IFOLD contains the old tracks; the file IFTRAK will contain the 
+* normalized tracks.
+*
+*Copyright:
+* Copyright (C) 1991 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* NDIM    number of dimensions.                  
+* IFOLD   unnormalized tracking file number (at input).     
+* IFTRAK  normalized tracking file number (at output).    
+* NORE    integer flag for normalization               
+*         -1 -> normalize to volume (angle dependent)  
+*          0 -> normalize to volume (angle independent)
+*          1 -> do not normalize                       
+* LMERG   second integer flag for normalization        
+*          0 -> preserve volumes of fine regions       
+*          1 -> preserve volumes of merged regions     
+* IPRT    intermediate printing level for prinout.     
+* NS      number of surfaces before merging.                
+* NV      number of zones before merging.                   
+* VOLIN   volumes and surfaces before merging.           
+* MATIN   material numbers before merging.                  
+* MRGIN   merging index.                               
+* NSOUT   number of surfaces after  merging.                
+* NVOUT   number of zones after  merging.                   
+* VOLOUT  volumes and surfaces after  merging.           
+* MATOUT  material numbers before merging.                  
+* CUTOFX  cutoff factor.                               
+* ITGEO   kind of geometry.                            
+* ICODE   index of boundary conditions.                
+* NANGL   number of angles to renormalize tracks by angle.  
+* KIN     max. number of subtracks in a single track.       
+* LIN     max. number of track segments in a single track.  
+*
+*Parameters: output
+* ALBEDO  geometric albedos on external faces.         
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT           NONE
-C
+*
       INTEGER            NDIM,IFOLD,IFTRAK,NORE,LMERG,IPRT,NS,NV,
      >                   MATIN(-NS:NV),MRGIN(-NS:NV),NSOUT,NVOUT,
      >                   MATOUT(-NSOUT:NVOUT),ITGEO,ICODE(6),NANGL,
@@ -90,19 +87,19 @@ C
      >         ' Z+ ',' Z- ','****','****',' R+ ','****','    ',
      >         ' Z+ ',' Z- ','****','****','****','HBC ','    ',
      >         ' Z+ ',' Z- ',' Y+ ',' Y- ',' X+ ',' X- ','    '/
-C----
-C  SCRATCH STORAGE ALLOCATION
-C   VOLTRK: volumes & surfaces as computed by tracking.
-C   ANGLES: x,y,z components of angles.
-C   DENSTY: weights by angle.
-C   PATH  : relative path of each segment in a track.
-C   NRSEG : material identification in a track.
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   VOLTRK: volumes & surfaces as computed by tracking.
+*   ANGLES: x,y,z components of angles.
+*   DENSTY: weights by angle.
+*   PATH  : relative path of each segment in a track.
+*   NRSEG : material identification in a track.
+*----
       ALLOCATE(KANGL(KIN),NRSEG(LIN))
       ALLOCATE(ANGLES(3,NANGL),DENSTY(NANGL),PATH(LIN))
       ALLOCATE(VOLTRK(-NS:NV,0:NANGL))
-C
-C     READ FIRST RECORDS OF THE TRACKING FILE
+*
+*     READ FIRST RECORDS OF THE TRACKING FILE
       READ (IFOLD ) CTRK,NCOMNT,NSCRP,NSCRP
       DO 5 IC= 1, NCOMNT
          READ (IFOLD ) COMENT
@@ -118,7 +115,7 @@ C     READ FIRST RECORDS OF THE TRACKING FILE
       READ (IFOLD )  (ALBEDO(IR),IR=1,NALBG)
       READ (IFOLD ) ((ANGLES(IR,JR),IR=1,NDIM),JR=1,NANGL)
       READ (IFOLD )  (DENSTY(JR),JR=1,NANGL)
-C
+*
       FACSUR= 0.0D0
       FACVOL= TWO
       IF( ISPEC.EQ.0 )THEN
@@ -134,13 +131,13 @@ C
             FACSUR= ONE
          ENDIF
       ENDIF
-C
-C     INITIALIZE NORMALIZED FACTORS
-C     NORE = -1 -> ANGLE DEPENDENT NORMALIZATION
-C          =  0 -> ANGLE INDEPENDENT NORMALIZATION
-C          =  1 -> NO NORMALIZE BUT FIND TRACK ERROR ON MERGED VOLUME
-C     LMERG = 0 -> NORMALIZATION PRESERVE FINE VOLUMES
-C           = 1 -> NORMALIZATION PRESERVE MERGED VOLUMES FROM KEYMRG
+*
+*     INITIALIZE NORMALIZED FACTORS
+*     NORE = -1 -> ANGLE DEPENDENT NORMALIZATION
+*          =  0 -> ANGLE INDEPENDENT NORMALIZATION
+*          =  1 -> NO NORMALIZE BUT FIND TRACK ERROR ON MERGED VOLUME
+*     LMERG = 0 -> NORMALIZATION PRESERVE FINE VOLUMES
+*           = 1 -> NORMALIZATION PRESERVE MERGED VOLUMES FROM KEYMRG
       NSREN=NSOUT
       NVREN=NVOUT
       IF(LMERG.EQ.0) THEN
@@ -152,8 +149,8 @@ C           = 1 -> NORMALIZATION PRESERVE MERGED VOLUMES FROM KEYMRG
            VOLTRK(IVS,IANG)= ZERO
    11 CONTINUE
    10 CONTINUE
-C
-C     COMPUTE CUTOFF FOR LINE RELATIVE TO MERGED VOLUME
+*
+*     COMPUTE CUTOFF FOR LINE RELATIVE TO MERGED VOLUME
       VOLMIN=VOLOUT(1)
       DO 12 IVS= 2, NVOUT
         VOLMIN= MIN(VOLMIN,VOLOUT(IVS))
@@ -163,9 +160,9 @@ C     COMPUTE CUTOFF FOR LINE RELATIVE TO MERGED VOLUME
          WRITE(IOUT,'(11X,A32,F20.15)')
      >      'CUTOFF FACTOR FOR LINES    =    ',RCUT
       ENDIF
-C
-C     LOOP OVER TRACKING (UNNORMALIZED TRACKS)
-C     AND COMPUTE VOLUME OF TRACK
+*
+*     LOOP OVER TRACKING (UNNORMALIZED TRACKS)
+*     AND COMPUTE VOLUME OF TRACK
       NBTRK= 0
       MXSUB= 0
       MXSEG= 0
@@ -236,8 +233,8 @@ C     AND COMPUTE VOLUME OF TRACK
      >       (PATH(JL),NRSEG(JL),MRGIN(NRSEG(JL)),JL=1,LINE)
       ENDIF
       GO TO 20
-C
-C     COMPUTE TRACK NORMALIZATION FACTOR
+*
+*     COMPUTE TRACK NORMALIZATION FACTOR
    40 CONTINUE
       DO 47 IVS=  -NSREN, NVREN
         IF(LMERG.EQ.0) THEN
@@ -263,8 +260,8 @@ C     COMPUTE TRACK NORMALIZATION FACTOR
    44     CONTINUE
    48   CONTINUE
       ENDIF
-C
-C     COMPUTE ERRORS ON VOLUMES
+*
+*     COMPUTE ERRORS ON VOLUMES
       TOTSUR=ZERO
       APRSUR=ZERO
       TOTVOL=ZERO
@@ -322,8 +319,8 @@ C     COMPUTE ERRORS ON VOLUMES
    50 CONTINUE
       ERRSUR=100.*(1.0-REAL(APRSUR/TOTSUR))
       ERRVOL=100.*(1.0-REAL(APRVOL/TOTVOL))
-C
-C     CONSTRUCT THE NEW TRACKING FILE
+*
+*     CONSTRUCT THE NEW TRACKING FILE
       REWIND IFOLD
       READ (IFOLD ) CTRK,NSCRP,NSCRP,IFMT
       WRITE(IFTRAK) CTRK,NCOMNT,NBTRK,IFMT
@@ -375,10 +372,10 @@ C     CONSTRUCT THE NEW TRACKING FILE
                GO TO 23
    25       CONTINUE
          ENDIF
-C
-C        RENORMALIZE TRACK LENGHTS
+*
+*        RENORMALIZE TRACK LENGHTS
          IF((NORE.EQ.-1) .AND. (NSUB.GT.1) ) THEN
-C          ANGULAR-DEPENDENT NORMALIZATION OF A CYCLIC MULTI-TRACK
+*          ANGULAR-DEPENDENT NORMALIZATION OF A CYCLIC MULTI-TRACK
            IND=0
            LNEW=.TRUE.
            DO 56 IL=1,LINE
@@ -414,14 +411,14 @@ C          ANGULAR-DEPENDENT NORMALIZATION OF A CYCLIC MULTI-TRACK
                ENDIF
    60       CONTINUE
          ENDIF
-C
-C        CHANGE #ING ACCORDING TO MERGES
+*
+*        CHANGE #ING ACCORDING TO MERGES
          DO 65 IL  = 1, LINE
              NRSEG(IL)= MRGIN(NRSEG(IL))
    65    CONTINUE
-C
-C        START MODIFICATIONS 98/06/02
-C        COMPRESS TRACKING FILE FOR SUCCESSIVE IDENTICAL REGIONS
+*
+*        START MODIFICATIONS 98/06/02
+*        COMPRESS TRACKING FILE FOR SUCCESSIVE IDENTICAL REGIONS
          NOLDS=NRSEG(1)
          NCSEG=1
          DO 66 IL = 2, LINE
@@ -445,8 +442,8 @@ C        COMPRESS TRACKING FILE FOR SUCCESSIVE IDENTICAL REGIONS
               WRITE(IOUT,'(1P,(1X,E15.6,1X,I8))' )
      >                 (PATH(JL),NRSEG(JL),JL=1,NCSEG)
          ENDIF
-C       END MODIFICATIONS 98/06/02
-C
+*       END MODIFICATIONS 98/06/02
+*
    70 CONTINUE
       IF(IPRT .GE. 5) THEN
          MNSUR = -NSREN
@@ -571,14 +568,14 @@ C
          WRITE(IOUT,9020)
          CALL XABORT( 'XELNTR: CHECK NUMBERING OR USE FINER TRACKING')
       ENDIF
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(VOLTRK,NRSEG,KANGL,PATH,DENSTY,ANGLES)
       RETURN
-C----
-C  Formats
-C----
+*----
+*  Formats
+*----
  6100 FORMAT(1X,'TRACK # ',I8,3X,'ANGLE ',I8,
      >       1X,'WITH ',I8,1X,'SEGMENTS',
      >       3X,'TOTAL WEIGHT =',1P,E15.6,3X,'VOLUME WEIGHT =',E15.6)
@@ -603,7 +600,7 @@ C----
  7121 FORMAT(' MIXTURE  ',10(A4,1X,I7))
  7130 FORMAT(' ANG ',I4,1X,1P,10E12.4)
  7131 FORMAT(10X,1P,10E12.4)
-C
+*
  9000 FORMAT(' *** WARNING - ORIGINAL VOLUME  # ',I10,' NOT TRACKED ')
  9001 FORMAT(' *** WARNING - MERGED VOLUME    # ',I10,' NOT TRACKED ')
  9010 FORMAT(' *** WARNING - ORIGINAL SURFACE # ',I10,' NOT TRACKED ')

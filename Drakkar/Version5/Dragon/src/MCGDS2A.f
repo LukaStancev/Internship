@@ -22,14 +22,15 @@
 * NFI     total number of volumes and surfaces for which specific values
 *         of the neutron flux and reactions rates are required.
 * NOM     integer tracking elements.
+* NZON    zone number
 * H       tracking widths.
 * XST     total cross sections array.
 * XSW     scattering cross sections array.
 *
 *Parameters: output
-* DINV
-* B
-* A
+* DINV    undefined.
+* B       undefined.
+* A       undefined.
 *
 *-----------------------------------------------------------------------
 *

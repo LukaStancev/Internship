@@ -7,13 +7,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solution of the discretized thermal conduction equations in a single
+* Solution of the discretized thermal conduction equations in a single
 * fuel rod in an axial slice of the fuel channel.
 *
 *Copyright:
 * Copyright (C) 2018 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IMPX    print parameter.

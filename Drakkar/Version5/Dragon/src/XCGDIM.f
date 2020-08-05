@@ -1,69 +1,73 @@
 *DECK XCGDIM
       SUBROUTINE XCGDIM(IPGEOM,MREGIO,NSOUT,IROT,IAPP,MAXJ,NVOL,
      >                  NBAN,MNAN,NRT,MSROD,MAROD,NSURF)
-C
-C----------------------------------------------------------------------
-C
-C 1-  SUBROUTINE STATISTICS:
-C
-C          NAME      -> XCGDIM
-C          USE       -> INITIALIZE DIMENSION FOR 2-D CLUSTER GEOMETRY
-C          DATE      -> 14-06-1990
-C          AUTHOR    -> G. MARLEAU
-C
-C 2-  PARAMETERS:
-C
-C INPUT
-C  IPGEOM  : POINTER TO THE GEOMETRY                       I
-C  MREGIO  : MAXIMUM NUMBER OF REGIONS                     I
-C  NSOUT   : NUMBER OF SURFACE FOR OUTER REGION            I
-C  IROT    : TYPE OF PIJ RECONSTRUCTION                    I
-C            IROT = 0 -> CP CALCULATIONS
-C            IROT = 1 -> DIRECT JPM RECONSTRUCTION
-C            IROT=  2 -> ROT2 TYPE RECONSTRUCTION
-C  IAPP    : TYPE OF SURFACE CONDITIONS                    I
-C            LEVEL OF DP APPROXIMATION FOR JPM
-C            IAPP = 1 -> DP0 ALL
-C            IAPP = 2 -> DP1 ALL (DEFAULT)
-C            IAPP = 3 -> DP1 INSIDE DP0 OUTSIDE
-C            SYMMETRY CONDITIONS FOR CP
-C  MAXJ    : MAXIMUM NUMBER OF CURRENTS                    I
-C            UNUSED FOR CP CALCULATIONS
-C OUTPUT
-C  NVOL    : NUMBER OF REGIONS                             I
-C  NBAN    : NUMBER OF CONCENTRIC REGIONS                  I
-C  MNAN    : MAXIMUM NUNBER OF RADIUS TO READ              I
-C  NRT     : NUMBER OF ROD TYPES                           I
-C  MSROD   : MAXIMUM NUMBER OF SUBRODS PER RODS            I
-C  MAROD   : MAXIMUM NUMBER OF RODS AN ANNULUS             I
-C  NSURF   : MAXIMUM NUMBER REAL SURFACES                  I
-C            UNUSED FOR CP CALCULATION
-C
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Initialize dimension for 2-D cluster geometry
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G. Marleau
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry
+* MREGIO  maximum number of regions
+* NSOUT   number of surface for outer region
+* IROT    type of PIJ reconstruction
+*         = 0 -> CP calculations
+*         = 1 -> direct JPM reconstruction
+*         = 2 -> rot2 type reconstruction
+* IAPP    type of surface conditions
+*         level of dp approximation for jpm
+*         = 1 -> DP0 all
+*         = 2 -> DP1 all (default)
+*         = 3 -> DP1 inside DP0 outside
+*         symmetry conditions for CP
+* MAXJ    maximum number of currents
+*         unused for CP calculations
+*
+*Parameters: output
+* NVOL    number of regions
+* NBAN    number of concentric regions
+* MNAN    maximum nunber of radius to read
+* NRT     number of rod types
+* MSROD   maximum number of subrods per rods
+* MAROD   maximum number of rods an annulus
+* NSURF   maximum number real surfaces
+*         unused for CP calculation
+*
+*----------------------------------------------------------------------
+*
       USE         GANLIB
       PARAMETER  (NSTATE=40)
       TYPE(C_PTR) IPGEOM
       INTEGER     MREGIO,NSOUT,IROT,IAPP,MAXJ,NVOL,
      >            NBAN,MNAN,NRT,MSROD,MAROD,NSURF,ISTATE(NSTATE)
       CHARACTER   CMSG*131,TEXT12*12
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: JSPLIT,JGEOM
-C----
-C  CHECK FOR VALID IROT AND GEOMETRY
-C----
+*----
+*  CHECK FOR VALID IROT AND GEOMETRY
+*----
       IF(IROT.GT.2.OR.IROT.LT.0)
      >  CALL XABORT('XCGDIM: UNABLE TO PROCESS THE GEOMETRY.')
       CALL XDRSET(ISTATE,NSTATE,0)
       CALL LCMGET(IPGEOM,'STATE-VECTOR',ISTATE)
-C----
-C  CHECK FOR INVALID GEOMETRY OPTIONS
-C  ISTATE( 8) -> CELL IS INVALID
-C  ISTATE(10) -> MERGE IS INVALID
-C  ISTATE(11) -> SPLIT IS INVALID FOR CLUSTER ANNULUS
-C----
+*----
+*  CHECK FOR INVALID GEOMETRY OPTIONS
+*  ISTATE( 8) -> CELL IS INVALID
+*  ISTATE(10) -> MERGE IS INVALID
+*  ISTATE(11) -> SPLIT IS INVALID FOR CLUSTER ANNULUS
+*----
       IF ( (ISTATE(8).NE.0).OR.(ISTATE(10).NE.0) )
      >     CALL XABORT('XCGDIM: UNABLE TO PROCESS THE GEOMETRY.')
       IF(ISTATE(11).EQ.0) THEN
@@ -96,9 +100,9 @@ C----
       ELSE
         NSURF=2*NVOL-1
       ENDIF
-C----
-C  COUNT NUMBER OF ROD TYPES IN CLUSTER
-C----
+*----
+*  COUNT NUMBER OF ROD TYPES IN CLUSTER
+*----
       CALL LCMLEN(IPGEOM,'CLUSTER',ILONG,ITYPE)
       IF(ITYPE.NE.3)
      >   CALL XABORT('XCGDIM: CLUSTER RECORD ON LCM IS NOT CHARACTER')
@@ -112,9 +116,9 @@ C----
       MSROD=1
       MAROD=1
       CALL LCMGET(IPGEOM,'CLUSTER',JGEOM)
-C----
-C  FOR EACH ROD TYPE FIND NUMBER OF SUBRODS AND NUMBER OF PINS
-C----
+*----
+*  FOR EACH ROD TYPE FIND NUMBER OF SUBRODS AND NUMBER OF PINS
+*----
       DO 120 IRT=1,NRT
         WRITE(TEXT12(1:4),'(A4)')  JGEOM(IPOS)
         WRITE(TEXT12(5:8),'(A4)')  JGEOM(IPOS+1)
@@ -158,9 +162,9 @@ C----
  120  CONTINUE
       MNAN=MAX(MNAN,MSROD+1)
       DEALLOCATE(JGEOM)
-C----
-C  CHECK IF NUMBER OF REGIONS IS ADEQUATE
-C----
+*----
+*  CHECK IF NUMBER OF REGIONS IS ADEQUATE
+*----
       IF (NVOL.GT.MREGIO) THEN
         WRITE(CMSG,9003) MREGIO,NVOL
         CALL XABORT(CMSG)
@@ -194,9 +198,9 @@ C----
         ENDIF
       ENDIF
       RETURN
-C----
-C  ERROR MESSAGES FORMATS
-C----
+*----
+*  ERROR MESSAGES FORMATS
+*----
  9001 FORMAT('XCGDIM: ONLY ',I10,5X,'SUB GEOMETRIES ON LCM WHILE ',5X,
      >       I10,5X,'SUB GEOMETRIES ARE REQUIRED BY CLUSTER')
  9002 FORMAT('XCGDIM: ',I10,5X,'IS AN ILLEGAL GEOMETRY INSIDE CLUSTER')

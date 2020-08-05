@@ -7,7 +7,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read burnup input options.
+* Read burnup input options.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

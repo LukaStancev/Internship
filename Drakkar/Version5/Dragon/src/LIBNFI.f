@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the maximum number of fissionable isotopes in a mixture
+* Compute the maximum number of fissionable isotopes in a mixture
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

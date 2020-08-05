@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the PRI array for various Legendre orders using Gaussian
+* Compute the PRI array for various Legendre orders using Gaussian
 * integration.
 *
 *Copyright:

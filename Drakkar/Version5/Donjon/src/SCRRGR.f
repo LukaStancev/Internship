@@ -6,13 +6,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for Saphyb interpolation. Use global parameters
+* Compute TERP factors for Saphyb interpolation. Use global parameters
 * from a fuel-map object and optional user-defined values.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPSAP   address of the Saphyb object.

@@ -10,7 +10,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform one inner iteration of the characteristics method.
+* Perform one inner iteration of the characteristics method.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -46,6 +46,7 @@
 * N2MAX   maximum number of elements in a track.
 * NANGL   number of tracking angles in the plan.
 * NREG    number of volumes.
+* NSOUT   number of outer surfaces.
 * NG      number of groups.
 * NGEFF   number of groups to process.
 * NGIND   index of the groups to process.

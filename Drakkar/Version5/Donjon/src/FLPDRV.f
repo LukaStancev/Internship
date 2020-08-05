@@ -6,15 +6,17 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver for the powers and fluxes computations.
+* Driver for the powers and fluxes computations.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki, M. Guyot
+*Author(s): 
+* D. Sekki, M. Guyot
 *
 *Parameters: input/output
 * IPPOW  pointer to power information.
+* IPNFX  pointer to normalized flux information.
 * IPFLX  pointer to flux information.
 * IPKIN  pointer to kinetics information.
 * IPTRK  pointer to tracking information.

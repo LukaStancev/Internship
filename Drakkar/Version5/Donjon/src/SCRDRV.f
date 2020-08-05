@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute TERP factors for Saphyb interpolation. Use user-defined
+* Compute TERP factors for Saphyb interpolation. Use user-defined
 * global parameters.
 *
 *Copyright:
 * Copyright (C) 2012 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPSAP   address of the Saphyb object.

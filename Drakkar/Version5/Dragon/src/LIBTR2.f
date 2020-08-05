@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the usefull interpolated microscopic cross section
+* Transcription of the usefull interpolated microscopic cross section
 * data from matxs to lcm data structures. Use matxs format from NJOY-91
 *
 *Copyright:

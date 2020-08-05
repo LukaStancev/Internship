@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of connection matrices.
+* Calculation of connection matrices.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -23,8 +23,8 @@
 * LMXMCU  real dimension of MCUW MCUI.
 *
 *Parameters: input/output
-* MCUW
-* MCUI
+* MCUW    cell connection matrix
+* MCUI    cell connection matrix
 *
 *-----------------------------------------------------------------------
 *

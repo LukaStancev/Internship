@@ -7,15 +7,16 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create the GENPMAXS input file GENPMAXS.inp at phase 1
+* Create the GENPMAXS input file GENPMAXS.inp at phase 1
 * WARNING: 04/2014: the format of this file respects the GENPMAXS format
 * (it can't be changed)
 * The information is recovered from the input file (.x2m) and stored in
 * the INFO DATA block. The user can change any values in the input file
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPINP   file unit of GENPMAXS.inp file
 * IPDAT   address of info data block
 * VERS    version of PARCS to be used
@@ -41,6 +42,14 @@
 *         like file and PMAXS
 * XESM    option for comparing k-inf in GenPMAX (1: using Pm/Sm data; 
 *         2: using I/Xe data; 3: using I/Xe/Pm/Sm data)
+*
+*Parameters: 
+* FC1     
+* FC2     
+* FC3     
+* FC4     
+* XSC     
+* IPRINT  
 *
 *-----------------------------------------------------------------------
 *
@@ -81,10 +90,10 @@
       ! DATA SOURCE INFORMATION (CF GENPMAXS MANUAL)
       REAL DATSRC(5),LOCYLD(5),THCK
       REAL STATE(STAVEC(2)),HISTORY(STAVEC(2)-1), BU(STAVEC(4))
-      CHARACTER (len=12) STATE_VAR(STAVEC(2))
+      CHARACTER(len=12) STATE_VAR(STAVEC(2))
       CHARACTER(len=4) STAVAR(STAVEC(2))
       INTEGER PKIDX(STAVEC(2))
-      CHARACTER JOBOPT(16)
+      CHARACTER*1 JOBOPT(16)
       CHARACTER*4 BR
       CHARACTER*3 ADF_T
       CHARACTER*12,DIMENSION(6) :: PKNAM
@@ -158,7 +167,7 @@
 
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'SAPHYB_INFO',1)
-      CALL LCMPUT(IPDAT,'IDEVAR',STVARN,3,STAVAR)
+      CALL LCMPTC(IPDAT,'IDEVAR',4,STVARN,STAVAR)
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'GENPMAXS_INP',1)
 
@@ -237,15 +246,15 @@
         ENDIF
 
         ! RECOVER INFORMATION FROM GENPMAXS_INP
-        CALL LCMPUT(IPDAT,'JOB_TIT',4,3,JOBTIT)
-        CALL LCMPUT(IPDAT,'DERIVATIVE',1,3,DER)
-        CALL LCMPUT(IPDAT,'JOB_OPT',4,3,JOBOPT(1:16))
+        CALL LCMPTC(IPDAT,'JOB_TIT',16,1,JOBTIT)
+        CALL LCMPTC(IPDAT,'DERIVATIVE',1,1,DER)
+        CALL LCMPTC(IPDAT,'JOB_OPT',1,16,JOBOPT(:16))
         CALL LCMPUT(IPDAT,'IUPS',1,1,IUPS)
         CALL LCMPUT(IPDAT,'XESMOPT',1,1,XESM)
         CALL LCMPUT(IPDAT,'DAT_SRC',5,2,DATSRC)
-        CALL LCMPUT(IPDAT,'COMMENT',10,3,COM)
+        CALL LCMPTC(IPDAT,'COMMENT',40,1,COM)
         CALL LCMPUT(IPDAT,'VERSION',1,2,VERS)
-        CALL LCMPUT(IPDAT,'FILE_NAME',3,3,FILNAM)
+        CALL LCMPTC(IPDAT,'FILE_NAME',12,1,FILNAM)
 
         CALL LCMSIX(IPDAT,' ',0)
         CALL LCMSIX(IPDAT,'HELIOS_HEAD',1)

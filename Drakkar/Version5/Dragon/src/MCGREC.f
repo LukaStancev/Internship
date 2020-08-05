@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* reform connection matrices.
+* Reform connection matrices.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -18,15 +18,15 @@
 *Parameters: input
 * NFI     total number of volumes and surfaces for which specific values
 *         of the neutron flux and reactions rates are required.
-* MCUW
-* MCUI
+* MCUW    undefined.
+* MCUI    undefined.
 * LMCU    dimension (used) of MCUW.
 * LMXMCU  real dimension of MCUW MCUI.
 * IPRINT  print level flag.
 *
 *Parameters: output
 * KM      connection matrices.
-* MCU
+* MCU     undefined.
 *
 *-----------------------------------------------------------------------
 *

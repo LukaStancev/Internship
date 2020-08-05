@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* move a control rod over a fuel channel.
+* Move a control rod over a fuel channel.
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * NB      number of fuel bundles per channel.

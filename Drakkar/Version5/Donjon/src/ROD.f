@@ -4,26 +4,38 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* control rod management module based on SAPHYB or MULTICOMPO
+* Control rod management module based on SAPHYB or MULTICOMPO
 * interpolation.
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Tixier
+*Author(s): 
+* G. Tixier
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): modification type(L_MAP);
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The ROD: module specifications are:
+* FLMAP := ROD: FLMAP :: (descrod1) ;
+* where
+*   FLMAP  :name of the \emph{MAP} object that will contain the 3-D rod file. 
+*     The FLMAP has to be modified for the module and must appear on both LHS 
+*     and RHS.
+*   (descrod1) : structure describing the main input data to the ROD: module. 
+*     Note that this input data is mandatory and must be specified.
 *
 *-----------------------------------------------------------------------
 *
@@ -42,7 +54,7 @@
       INTEGER MAXMIX,NGRP,RODSIZE,NASS,RODINFO,NCALL
       REAL INI,INSS
       LOGICAL :: EXISTENCE=.FALSE.
-      CHARACTER HSIGN*12,TEXT*40,PAR1*40,PNAME*12
+      CHARACTER HSIGN*12,TEXT*40,PAR1*12,PNAME*12
       DOUBLE PRECISION DFLOT
       TYPE(C_PTR) IPMAP,JPMAP,KPMAP,MPMAP
 *----
@@ -94,7 +106,7 @@
         EXISTENCE=.FALSE.
         DO IPAR=1,NPARAM,1
           KPMAP=LCMGIL(JPMAP,IPAR)
-          CALL LCMGET(KPMAP,'P-NAME',PNAME)
+          CALL LCMGTC(KPMAP,'P-NAME',12,1,PNAME)
           IF(PNAME.EQ.PAR1) THEN
             EXISTENCE=.TRUE.
             EXIT  
@@ -105,8 +117,8 @@
           NPARAM=NPARAM+1
           JPMAP=LCMLID(IPMAP,'PARAM',NPARAM)
           KPMAP=LCMDIL(JPMAP,NPARAM)
-          CALL LCMPUT(KPMAP,'P-NAME',3,3,PAR1)
-          CALL LCMPUT(KPMAP,'PARKEY',3,3,PAR1)
+          CALL LCMPTC(KPMAP,'P-NAME',12,1,PAR1)
+          CALL LCMPTC(KPMAP,'PARKEY',12,1,PAR1)
           IPTYP=2 
           CALL LCMPUT(KPMAP,'P-TYPE',1,1,IPTYP)
           RODINFO=4

@@ -8,7 +8,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the PJJ and PSJ as well as directional values for
+* Calculation of the PJJ and PSJ as well as directional values for
 * TIBERE.
 *
 *Copyright:
@@ -54,10 +54,17 @@
 * PHI2    second cosine of the tracking azimuthal angle.
 *
 *Parameters: input/output
-* PJJ     collision probabilities
-* PJJX,PJJY,PJJZ,PJJXI,PJJYI,PJJZI collision probabilities for TIBERE
-* PSJ     escape probabilities
-* PSJX,PSJY,PSJZ escape probabilities for TIBERE
+* PJJ     collision probabilities.
+* PJJX    collision probabilities for TIBERE.
+* PJJY    collision probabilities for TIBERE.
+* PJJZ    collision probabilities for TIBERE.
+* PJJXI   collision probabilities for TIBERE.
+* PJJYI   collision probabilities for TIBERE.
+* PJJZI   collision probabilities for TIBERE.
+* PSJ     escape probabilities.
+* PSJX    escape probabilities for TIBERE.
+* PSJY    escape probabilities for TIBERE.
+* PSJZ    escape probabilities for TIBERE.
 *
 *-----------------------------------------------------------------------
 *

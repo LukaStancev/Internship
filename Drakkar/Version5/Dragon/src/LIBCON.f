@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* convert weight percent to atomic density
+* Convert weight percent to atomic density
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -20,16 +20,15 @@
 * IMX     mixture index to process
 * NBISO   number of isotopes present in the calculation domain
 * ISOMIX  mix number of each isotope
-* DENISO  density of each isotope
-* DENMIX  mixture density in g*cm**(-3)
 * IN      type of conversion:
 *         =1 conversion of wgt% to nb atoms with denmix;
 *         =2 conversion of nb atoms to wgt% and denmix
 *
-*Parameters: output
+*Parameters: input/output
 * DENISO  number density (if IN=1) or weight percent (if IN=2) for
-*         isotopes present in mixture IMX
-* DENMIX  mixture density (if IN=2)
+*         isotopes present in mixture IMX on input. On optput, 
+*         number density.
+* DENMIX  mixture density g*cm**(-3) (if IN=2)
 *
 *-----------------------------------------------------------------------
 *

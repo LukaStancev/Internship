@@ -8,15 +8,18 @@
 * Saphyb, attribute to each value of control rod the corresponding value
 * in GENMAPXS formalism
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
-* IPDAT      address of the INFO data block
+*Parameters: input
+* IPDAT   address of the INFO data block
 * VALPAR  vector of values for each state variable
-* IND        index of the control rod parameter
-* NPAR       number of state variables
-* NVAL       number of values for control rod parameter
-* IPRINT     control the printing on screen
+* IND     index of the control rod parameter
+* NPAR    number of state variables
+* NVAL    number of values for control rod parameter
+* IPRINT  control the printing on screen
+*
+*Parameters: 
 *
 *-----------------------------------------------------------------------
 *

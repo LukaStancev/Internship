@@ -5,20 +5,21 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* microscopic refueling to update the microlib (micro-depletion)
+* Microscopic refueling to update the microlib (micro-depletion)
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): M. Guyot
+*Author(s): 
+* M. Guyot
 *
 *Parameters: input/output
-*
 * IPMIC   Adress of the L_LIBRARY in creation mode.
 * IPMIC2  Adress of the fuel-map L_LIBRARY in read-only mode.
 * IPMIC3  Adress of the L_LIBRARY in read-only mode, containing new
 *         fuel properties.
 * NB      Number of bundles
+* NCH     Number of channels
 * NW      Vector containing new index for the refuelling
 * ICH     Number of the channel to refuel
 * NISO    Number of isotopes in the fuel-map microlib

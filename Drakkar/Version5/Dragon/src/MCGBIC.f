@@ -11,7 +11,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solve the linear system obtained by the characteristics formalism
+* Solve the linear system obtained by the characteristics formalism
 * with BiCGSTAB iterative approach.
 *
 *Copyright:
@@ -26,7 +26,7 @@
 *Parameters:
 * SUBFFI  flux integration subroutine with isotropic source.
 * SUBFFA  flux integration subroutine with anisotropic source.
-* SUBLDC  flux integration subroutine with linear-discontinuous source.
+* SUBDLC  flux integration subroutine with linear-discontinuous source.
 * SUBSCH  track coefficients calculation subroutine.
 * CYCLIC  cyclic tracking flag.
 * KPSYS   pointer array for each group properties.
@@ -49,7 +49,6 @@
 * NANGL   number of tracking angles in the plan.
 * NREG    number of regions (volumes).
 * NSOUT   number of outer surfaces.
-* PHIANG  scratch.
 * SOUR    scratch.
 * IAAC    no acceleration / CDD acceleration of inner iterations (0/1).
 * ISCR    no acceleration / SCR acceleration of inner iterations (0/1).

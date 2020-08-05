@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* print the fuel-type indices per bundle for each reactor channel.
+* Print the fuel-type indices per bundle for each reactor channel.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * IPMAP   pointer to fuel-map information.

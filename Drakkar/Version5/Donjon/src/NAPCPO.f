@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* construct an 'enriched' multicompo with additional information  
+* Construct an 'enriched' multicompo with additional information  
 * needed by Pin Power Reconstruction.
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
 *Parameters: input/output
 * IPCPO   LCM object address of Multicompo.

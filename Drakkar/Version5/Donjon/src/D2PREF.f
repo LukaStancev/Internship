@@ -8,14 +8,17 @@
 * Select the reference state. This routine determine the reference state
 * for all cases of meshing
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
-* IPDAT      address of info data block
-* NVAR       number of state variables
-* CRDINF     control rod compostition array
-* NCRD       number of crontrol rod comosition
-* GRID       type of griddind for branching calculation
+*Parameters: input
+* IPDAT   address of info data block
+* NVAR    number of state variables
+* CRDINF  control rod compostition array
+* NCRD    number of crontrol rod comosition
+* GRID    type of griddind for branching calculation
+*
+*Parameters: 
 *
 *-----------------------------------------------------------------------
 *
@@ -111,7 +114,7 @@
          ! WITH THE INITIAL MESHING FROMSAPHYB
          CALL LCMSIX(IPDAT,' ',0)
          CALL LCMSIX(IPDAT,'BRANCH_INFO',1)
-         CALL LCMPUT(IPDAT,'BRANCH',3,3,BARNAM)
+         CALL LCMPTC(IPDAT,'BRANCH',12,1,BARNAM)
          CALL LCMPUT(IPDAT,'BRANCH_IT',1,1,1)
          CALL LCMPUT(IPDAT,'REF_STATE',NVAR-1,2,REFSTA)
          CALL LCMPUT(IPDAT,'HST_STATE',NVAR-1,2,REFSTA)

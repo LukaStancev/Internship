@@ -105,8 +105,9 @@ subroutine ALBEIGS(atv,n,blsz,K_org,maxit,tol,impx,iter,V,D,iptrk,ipsys,ipflux)
 
   ! Check for input errors in the structure array.
   if(K <= 0)    call XABORT('ALBEIGS: K must be a positive value.')
-  if(K > n)     call XABORT('ALBEIGS: K is too large. Use eig(full(A))!')
+  if(K > n)     call XABORT('ALBEIGS: K is too large.')
   if(blsz <= 0) call XABORT('ALBEIGS: blsz must be a positive value.')
+  if(blsz > K_org)  call XABORT('ALBEIGS: blsz <= K_org expected.')
 
   ! Automatically adjust Krylov subspace to accommodate larger values of K.
   if(blsz*(nbls-1) - blsz - K - 1 < 0) then

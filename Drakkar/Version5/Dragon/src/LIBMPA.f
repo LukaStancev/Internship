@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute a set of partial base points preserving NOR partial moments
+* Compute a set of partial base points preserving NOR partial moments
 * of a function using the modified Ribon approach.
 *
 *Copyright:

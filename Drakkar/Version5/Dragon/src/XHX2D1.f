@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute DP1 collision, leakage and transmission probabilities for
+* Compute DP1 collision, leakage and transmission probabilities for
 * hexagonal 2D geometries.
 *
 *Copyright:
@@ -31,10 +31,10 @@
 * PSS     transmission probability. PSS(i,j) -> side i to side j.
 *
 *Parameters: scratch
-* P
+* P       undefined.
 *
-*-----------------------------------------------------------------------
-*
+*Comments:
+*  Faces identification for hexagon
 *                                         side a,b,c
 *                  side 4,5,6             dir a -> isotropic
 *                   xxxxxxxx              dir c -> tangent to surface
@@ -47,6 +47,7 @@
 *                  x        x
 *                   xxxxxxxx
 *                side 13,14,15
+*
 *----
 *  SUBROUTINE ARGUMENTS
 *----

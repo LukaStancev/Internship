@@ -4,14 +4,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* - Perform a projection of second geometry on first one to compute 
+* Perform a projection of second geometry on first one to compute 
 *     fraction of region of the first geometry occupied by the second 
 *     geometry regions
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal.
 *
-*Author(s): R. Chambon
+*Author(s): 
+* R. Chambon
 *
 *Parameters: input/output
 *    for core with heterogeneous mixture

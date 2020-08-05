@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* write the incremental x-s data on a temperature-independant Draglib.
+* Write the incremental x-s data on a temperature-independant Draglib.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

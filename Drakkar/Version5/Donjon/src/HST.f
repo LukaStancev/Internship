@@ -10,33 +10,67 @@
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau, E. Varin
+*Author(s): 
+* G. Marleau, E. Varin
 *
 *Parameters: input
 * NENTRY  number of data structures transfered to this module.
 * HENTRY  name of the data structures.
 * IENTRY  data structure type where:
-*         \begin{itemize} 
-*         \item IENTRY=1 for LCM memory object; 
-*         \item IENTRY=2 for XSM file; 
-*         \item IENTRY=3 for sequential binary file;
-*         \item IENTRY=4 for sequential ASCII file.  
-*         \end{itemize}
-*JENTRY   access permission for the data structure where:
-*         \begin{itemize} 
-*         \item JENTRY=0 for a data structure in creation mode;
-*         \item JENTRY=1 for a data structure in modifications mode;
-*         \item JENTRY=2 for a data structure in read-only mode.
-*         \end{itemize} 
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
 * KENTRY  data structure pointer.
-* 
-*Data structures used
-* History structures: in create, modification or read-only mode
-*                    (signature L_HISTORY) 
-* Burnup structures : in create, modification or read-only mode
-*                    (signature L_BURNUP)
-* Reseau structures : in read-only mode
-*                    (signature L_MAP)
+*
+*Comments:
+* For HST:, the possible calling specifications  are:
+* Option 1: Updating an \emph{history} structure using a \emph{map} structure
+* history := HST: [ history ]  map [ :: [ (hstdim) ]  [ GET (hstpar) ] ] ;
+* Option 2: Updating an \emph{history} structure using a \emph{burnup} structure
+* history := HST: [ history ]  [ burnup ] [ :: [ (hstdim) ]
+*   [ GET (hstpar) ] [ CELLID icha ibun [ idfuel ] [ GET (hstpar) ] ] ] ; 
+* Option 3: Updating a \emph{burnup} structure using an \emph{history} structure
+* burnup := HST: history [ :: [ (hstdim ] 
+*    [ PUT (hstpar) ]
+*    CELLID icha ibun
+*    [ PUT { BREFL  (hstbrn) (hstpar) AREFL (hstbrn) (hstpar) 
+*            | [ AREFL ] (hstbrn) (hstpar) } ] ] ;
+* Option 4: Updating a \emph{map} data structure from the information available 
+*   on an \emph{history} data structure:
+* map := HST:  map  history ;
+* where
+*   history : name of an \emph{history} data structure. 
+*   burnup  : name of a \emph{burnup} data structure. 
+*   map     : name of a \emph{map} data structure. 
+*   (hstdim) : structure containing the dimensions for the \emph{history} 
+*     data structure.
+*   CELLID  : keyword to identify the cell for which history information is 
+*     to be processed.
+*   icha    : channel number for which history information is to be processed. 
+*   ibun    : bundle number for which history information is to be processed. 
+*   idfuel  : fuel type number associated with this cell. One can associate to 
+*     each fuel cell a different fuel type. By default a single fuel type is
+*     defined and it fills every fuel cell. Only the initial properties of each
+*     fuel type are saved. These properties are used for refueling. 
+*   GET     : keyword to specify that the values of the parameters selected in 
+*     (brnpar will be read from the input stream or CLE-2000 local variables
+*     and stored on the \emph{history data structure.
+*   PUT     : keyword to specify that the values of the parameters selected in
+*     (brnpar will be read from the \emph{history data structure and
+*      transferred to local CLE-2000 variables.
+*   BREFL   : to specify that the information to extract from the \emph{history}
+*     data structure is related to the properties of the cell before refueling 
+*     takes place.
+*   AREFL   : to specify that the information to extract from the \emph{history}
+*     data base is related to the properties of the cell after refueling took
+*     place.
+*   (hstbrn) : structure containing the burnup options.
+*   (hstpar) : structure containing the local parameters options.
 *
 *-----------------------------------------------------------------------
 *

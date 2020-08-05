@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* copy a Saphyb into memory taking care to keep only required
+* Copy a Saphyb into memory taking care to keep only required
 * calculations and mixtures.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPSAP   address of the Saphyb object.

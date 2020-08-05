@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* identify the depleting isotopes by type and reorder them (recompute
+* Identify the depleting isotopes by type and reorder them (recompute
 * the KPAX and BPAX matrices)
 *
 *Copyright:
@@ -30,9 +30,6 @@
 *Parameters: output
 * ISTATE  state vector containing the library parameters
 * MATNO   reaction material indices
-* ITZEA   6-digit nuclide identifier
-*         atomic number z*10000 (digits) + mass number a*10 +
-*         energy state (0 = ground state, 1 = first state, etc.)
 *
 *Parameters: input/output
 * KPAX    complete reaction type matrix

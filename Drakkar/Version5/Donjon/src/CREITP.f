@@ -6,13 +6,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* interpolate burnup dependent table for a given burnup value or
+* Interpolate burnup dependent table for a given burnup value or
 * time-average or derivatives.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * NGRP    number of energy groups.

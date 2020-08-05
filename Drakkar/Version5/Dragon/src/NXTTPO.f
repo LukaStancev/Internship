@@ -8,7 +8,11 @@
 * To test that cluster pins do not overlapp.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau.
@@ -19,9 +23,9 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *  This routine is based on the XELDCL routine written by
 *  R. Roy for the EXCELT: module. It contains an additional
 *  level for cluster subgeometry analysis.
@@ -30,14 +34,9 @@
 * IPGEO   pointer to the GEOMETRY data structure.
 * IPRINT  print level.
 * ITYPBC  type of boundary conditions where
-*         \begin{itemize}
-*         \item \moc{ITYPBC}=0 for geometry with all Cartesian
-*         boundaries;
-*         \item \moc{ITYPBC}=1 for geometry with one annular
-*         boundary;
-*         \item \moc{ITYPBC}=2 for geometry with one hexagonal
-*         boundary;
-*         \end{itemize}
+*         =0 for geometry with Cartesianb oundaries;
+*         =1 for geometry with annular boundary;
+*         =2 for geometry with hexagonal boundary.
 * NBGCLS  number of cluster sets.
 * NTPIN   total number of pins.
 * MAXMSH  maximum mesh dimension.

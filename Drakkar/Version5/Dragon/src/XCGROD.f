@@ -1,48 +1,51 @@
 *DECK XCGROD
       SUBROUTINE XCGROD(NRT,MSROD,NRODS,RODS,MATROD,RODR)
-C
-C----------------------------------------------------------------------
-C
-C 1-  SUBROUTINE STATISTICS:
-C
-C          NAME      -> XCGROD
-C          USE       -> CHECK GEOMETRY AND REORDER ROD CLUSTERS IF
-C                       NECESSARY
-C          DATE      -> 13-01-1994
-C          AUTHOR    -> G. MARLEAU
-C
-C 2-  PARAMETERS:
-C
-C INPUT
-C  NRT     : NUMBER OF ROD TYPES                         I
-C  MSROD   : MAXIMUM NUMBER OF SUBRODS PER RODS          I
-C INPUT/OUTPUT
-C  NRODS   : INTEGER DESCRIPTION OF ROD OF A GIVEN TYPE  I(3,NRT)
-C            NRODS(1,IRT) = NUMBER OF ROD
-C            NRODS(2,IRT) = NUMBER OF SUBRODS IN ROD
-C            NRODS(3,IRT) = FIRST CONCENTRIC REGION
-C  RODS    : REAL DESCRIPTION OF ROD OF A GIVEN TYPE     R(2,NRT)
-C            RODS(1,IRT) = ROD CENTER RADIUS
-C            RODS(2,IRT) = ANGULAR POSITION OF FIRST ROD
-C  MATROD  : TYPE OF MATERIAL FOR EACH SUBROD            I(MSROD,NRT)
-C  RODR    : SUBROD RADIUS                               R(MSROD,NRT)
-C
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Check geometry and reorder rod clusters if necessary.
+*
+*Copyright:
+* Copyright (C) 1994 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G. Marleau
+*
+*Parameters: input
+* NRT     number of rod types.
+* MSROD   maximum number of subrods per rods.
+*
+*Parameters: input/output
+* NRODS   integer description of rod of a given type:
+*         NRODS(1,IRT) = number of rod;
+*         NRODS(2,IRT) = number of subrods in rod;
+*         NRODS(3,IRT) = first concentric region.
+* RODS    real description of rod of a given type:
+*         RODS(1,IRT) = rod center radius
+*         RODS(2,IRT) = angular position of first rod
+* MATROD  type of material for each subrod.
+* RODR    subrod radius.
+*
+*----------------------------------------------------------------------
+*
       INTEGER    IOUT
       REAL       PI
       PARAMETER (IOUT=6,PI=3.1415926535898)
       INTEGER    NRT,NRODS(3,NRT),MATROD(MSROD,NRT)
       REAL       RODS(2,NRT),RODR(MSROD,NRT)
       INTEGER, ALLOCATABLE, DIMENSION(:) :: IORD
-C----
-C  SCRATCH STORAGE ALLOCATION
-C   IORD    : NEW ROD CLUSTER ORDER                       I(NRT)
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   IORD    : NEW ROD CLUSTER ORDER                       I(NRT)
+*----
       ALLOCATE(IORD(NRT))
-C----
-C  CLASSIFY ROD CLUSTER BY INCREASING DISTANCE OF CENTER AND ANGLE
-C----
+*----
+*  CLASSIFY ROD CLUSTER BY INCREASING DISTANCE OF CENTER AND ANGLE
+*----
       DO 100 IRT=1,NRT
         IORD(IRT)=IRT
  100  CONTINUE
@@ -87,9 +90,9 @@ C----
           IORD(LRT+1)=-IPOS
         ENDIF
  110  CONTINUE
-C----
-C  REORDER REMAINING VECTORS NRODS,MATROD,RODR
-C----
+*----
+*  REORDER REMAINING VECTORS NRODS,MATROD,RODR
+*----
       DO 140 IRT=1,NRT
         JRT=IORD(IRT)
         IF(JRT.NE.IRT) THEN
@@ -116,9 +119,9 @@ C----
  144      CONTINUE
         ENDIF
  140  CONTINUE
-C----
-C  FIND IF ROD OVERLAPP
-C----
+*----
+*  FIND IF ROD OVERLAPP
+*----
       DO 150 IRT=1,NRT
         NRDB=NRODS(1,IRT)
         NSBRB=NRODS(2,IRT)
@@ -128,9 +131,9 @@ C----
         XBOT=RDPB-RODRB
         DANGB=2.*PI/FLOAT(NRDB)
         ANGB=RODS(2,IRT)
-C----
-C  CHECK FOR ROD OVERLAPP INSIDE EACH CLUSTER
-C----
+*----
+*  CHECK FOR ROD OVERLAPP INSIDE EACH CLUSTER
+*----
         IF(NRDB.GT.1) THEN
           IF(RODRB.GT.RDPB) THEN
             WRITE(IOUT,'(1X,24HROD OVERLAP IN CLUSTER =,I10)') IRT
@@ -143,9 +146,9 @@ C----
             ENDIF
           ENDIF
         ENDIF
-C----
-C  CHECK FOR ROD OVERLAPP BETWEEN DIFFERENT CLUSTERS
-C----
+*----
+*  CHECK FOR ROD OVERLAPP BETWEEN DIFFERENT CLUSTERS
+*----
         DO 151 JRT=IRT-1,1,-1
           NRDT=NRODS(1,JRT)
           NSBRT=NRODS(2,JRT)
@@ -155,18 +158,18 @@ C----
           XTOP=RDPT+RODRT
           DANGT=2.*PI/FLOAT(NRDT)
           ANGT=RODS(2,JRT)
-C----
-C  NO OVERLAPP
-C----
+*----
+*  NO OVERLAPP
+*----
           IF(XTOP.LT.XBOT) GO TO 152
-C----
-C  SOME OVERLAPP POSSIBLE TEST FOR INTERSECTION
-C----
+*----
+*  SOME OVERLAPP POSSIBLE TEST FOR INTERSECTION
+*----
           ANG1=ANGB
           DO 160 IA1=1,NRDB
-C----
-C  FIND POSITION OF ROD (X0,Y0)
-C----
+*----
+*  FIND POSITION OF ROD (X0,Y0)
+*----
             X01=RDPB*COS(ANG1)
             Y01=RDPB*SIN(ANG1)
             RRX=RODRB2-X01*X01
@@ -178,9 +181,9 @@ C----
               X02=RDPT*COS(ANG2)
               Y02=RDPT*SIN(ANG2)
               RR2=(RODRT2-X02*X02-Y02*Y02)
-C----
-C  CHECK FOR ROD INSIDE ROD
-C----
+*----
+*  CHECK FOR ROD INSIDE ROD
+*----
               DELX=X02-X01
               DELY=Y02-Y01
               DIST=SQRT(DELX**2+DELY**2)
@@ -189,12 +192,12 @@ C----
      >                 IRT,JRT
                 CALL XABORT('XCGROD: ROD OVERLAP IN 2 CLUSTERS')
               ENDIF
-C----
-C  FIND IF CIRCLES
-C  (X-X01)**2+(Y-Y01)**2=RODRB*2
-C  (X-X02)**2+(Y-Y02)**2=RODRT*2
-C  INTERSECT
-C----
+*----
+*  FIND IF CIRCLES
+*  (X-X01)**2+(Y-Y01)**2=RODRB*2
+*  (X-X02)**2+(Y-Y02)**2=RODRT*2
+*  INTERSECT
+*----
               IF(X02.NE.X01) THEN
                 CCR=1./DELX
                 BBR=-DELY*CCR
@@ -220,12 +223,12 @@ C----
  151    CONTINUE
  152    CONTINUE
  150  CONTINUE
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(IORD)
-C----
-C  RETURN
-C----
+*----
+*  RETURN
+*----
       RETURN
       END

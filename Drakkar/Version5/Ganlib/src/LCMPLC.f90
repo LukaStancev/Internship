@@ -23,10 +23,12 @@
 !-----------------------------------------------------------------------
 !
 subroutine LCMPLC(iplcm,ipos,leng,nlin,carr)
+   use GANLIB
    !----
    !  Subroutine arguments
    !----
-   integer :: iplcm,ipos,leng,nlin
+   type(c_ptr) iplcm
+   integer :: ipos,leng,nlin
    character*(*) :: carr(nlin)
    !----
    !  Local variables

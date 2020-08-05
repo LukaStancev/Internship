@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* normalisation of the scattering-reduced cp matrix to force neutron
+* Normalisation of the scattering-reduced cp matrix to force neutron
 * conservation (no leakage).
 *
 *Copyright:

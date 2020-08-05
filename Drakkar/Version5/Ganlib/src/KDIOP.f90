@@ -18,6 +18,7 @@
 function KDIOP(name, iactio)
    ! open a KDI file
    use, intrinsic :: iso_c_binding
+   use LCMAUX
    type(c_ptr) KDIOP
    character(len=*) :: name
    integer :: iactio

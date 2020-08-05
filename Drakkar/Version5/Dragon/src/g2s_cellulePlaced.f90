@@ -95,7 +95,7 @@ contains
        tcp = tabCellulePlaced(i)
        tcb = tabCelluleBase(tcp%indice)
        keepSzSA = szSA
-        select case(tcb%sv(1))
+       select case(tcb%sv(1))
        case(G_Car2d)
           sx = tcb%meshx(size(tcb%meshx))
           sy = tcb%meshy(size(tcb%meshy))
@@ -179,7 +179,7 @@ contains
           deallocate(mix)
           !nullify(mix)
        case default
-          call XABORT("G2S: Type of geometry not supported")
+          call XABORT("G2S: splitCells --> Type of geometry not supported")
        end select
        !ajout du numero de la cellulePlaced dont sont issus les segArcs 
        do j = keepSzSA+1,szSA

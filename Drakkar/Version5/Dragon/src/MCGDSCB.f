@@ -35,8 +35,6 @@
 *         of the neutron flux and reactions rates are required.
 * NREG    number of volumes for which specific values
 *         of the neutron flux and reactions rates are required.
-* LEXAC   type of exponential function calculation (=.false. to compute
-*         exponential functions using tables).
 * IMU     polar angle index.
 * NMU     order of the polar quadrature set.
 * NFUNL   number of moments of the flux (in 2D : NFUNL=NANI*(NANI+1)/2).
@@ -51,13 +49,20 @@
 *         Omega for 2D geometry
 *
 *Parameters: input/output
-* PJJ     collision probabilities
-* PJJX,PJJY,PJJZ,PJJXI,PJJYI,PJJZI collision probabilities for TIBERE
-* PSJ     escape probabilities
-* PSJX,PSJY,PSJZ escape probabilities for TIBERE
+* PJJ     collision probabilities.
+* PJJX    collision probabilities for TIBERE.
+* PJJY    collision probabilities for TIBERE.
+* PJJZ    collision probabilities for TIBERE.
+* PJJXI   collision probabilities for TIBERE.
+* PJJYI   collision probabilities for TIBERE.
+* PJJZI   collision probabilities for TIBERE.
+* PSJ     escape probabilities.
+* PSJX    escape probabilities for TIBERE.
+* PSJY    escape probabilities for TIBERE.
+* PSJZ    escape probabilities for TIBERE.
 *
 *Parameters: scratch
-* H
+* H       undefined.
 *
 *-----------------------------------------------------------------------
 *

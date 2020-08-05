@@ -31,7 +31,7 @@
 *         and step characteristics (SC).
 *
 *Parameters: output
-* B
+* B       undefined.
 *
 *-----------------------------------------------------------------------
 *

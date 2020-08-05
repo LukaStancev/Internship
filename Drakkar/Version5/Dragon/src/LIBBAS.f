@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* scattering kernel based on the free gas model of Brown and St. John
+* Scattering kernel based on the free gas model of Brown and St. John
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -16,26 +16,26 @@
 *Author(s): A. Hebert
 *
 *Parameters: input
-* NISO   number of terms in the model:
-*        NISO=1 : pure free gas model;
-*        NISO=2 : Brown and St. John model
-* AT     potential microscopic cross section
-* AKT    exponential constant in the model. Equal to zero for the
-*        pure free gas model
-* AMT    isotope mass divided by neutron mass
-* T      absolute temperature divided by 293.6K
-* IX     number of thermal groups
-* V      neutron velocities
-* DV     used to transform velocity to energy
-* NDTE   first dimension of matrix P
+* NISO    number of terms in the model:
+*         NISO=1 : pure free gas model;
+*         NISO=2 : Brown and St. John model
+* AT      potential microscopic cross section
+* AKT     exponential constant in the model. Equal to zero for the
+*         pure free gas model
+* AMT     isotope mass divided by neutron mass
+* T       absolute temperature divided by 293.6K
+* IX      number of thermal groups
+* V       neutron velocities
+* DV      used to transform velocity to energy
+* NDTE    first dimension of matrix P
 *
 *Parameters: output
-* P      scattering kernel. The first index is for secondary neutrons
-* XS     scattering microscopic cross section
+* P       scattering kernel. The first index is for secondary neutrons
+* XS      scattering microscopic cross section
 *
 *Parameters: scratch
-* X
-* E
+* X       temporary storage
+* E       temporary storage
 *
 *Reference:
 * H. C. Honeck, 'The distribution of thermal neutrons in space and

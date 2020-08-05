@@ -6,12 +6,29 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* perform spline interpolation.
+* Perform spline interpolation.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin
+*Author(s): 
+* E. Varin
+*
+*Parameters: 
+* XCNTR    
+* YCNTR    
+* NXMAX    
+* NYMAX    
+* FXY      
+* FP1      
+* FP2      
+* F2X      
+* F2Y      
+* FDUMMY   
+* XINT     
+* YINT     
+* FYINT    
+* FXYINT   
 *
 *-----------------------------------------------------------------------
 *

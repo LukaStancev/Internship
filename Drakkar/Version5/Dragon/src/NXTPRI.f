@@ -12,7 +12,7 @@
 * 3D prismatic treatment and generate corresponding 2D cell/pin.
 *
 *Copyright:
-* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* Copyright (C) 2006 Ecole Polytechnique de Montreal
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
@@ -42,7 +42,6 @@
 * NSURC   number of surfaces for the cells/pins.
 * NREGC   number of regions for the cells/pins.
 * IDIRC   cylinders orientations.
-* NTPIN   number of pins within the cells/pins.
 * DEPS    comparison criterion for double precision values.
 * DCMESH  cells/pins meshing vector.
 * LFIRST  first cell/pin processed flag.

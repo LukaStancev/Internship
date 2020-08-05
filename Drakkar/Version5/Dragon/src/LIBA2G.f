@@ -1,10 +1,10 @@
 *DECK LIBA2G
-      SUBROUTINE LIBA2G (NAMFIL,NGRO,ENERG_PTR)
+      SUBROUTINE LIBA2G (NAMFIL,NGRO,IPENER)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover energy group information from an APOLIB2 library
+* Recover energy group information from an APOLIB2 library
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -19,8 +19,8 @@
 * NAMFIL  name of the APOLIB2 file
 *
 *Parameters: output
-* NGRO       number of energy groups
-* ENERG_PTR  C_PTR pointer of the energy mesh limit array
+* NGRO    number of energy groups
+* IPENER  pointer of the energy mesh limit array
 *
 *-----------------------------------------------------------------------
 *
@@ -30,7 +30,7 @@
 *----
       INTEGER NGRO
       CHARACTER NAMFIL*(*)
-      TYPE(C_PTR) ENERG_PTR
+      TYPE(C_PTR) IPENER
 *----
 *  Local variables
 *----
@@ -105,8 +105,8 @@
                 CALL C_F_POINTER(ICHDKL_PTR,ICHDKL,(/ NBRTYP /))
                 CALL AEXGNV(3,RTSEGM,ICHDIM,ICHTYP,ICHDKL,IDK,NV)
                 NGRO=NV-1
-                ENERG_PTR=LCMARA(NGRO+1)
-                CALL C_F_POINTER(ENERG_PTR,ENERG,(/ NGRO+1 /))
+                IPENER=LCMARA(NGRO+1)
+                CALL C_F_POINTER(IPENER,ENERG,(/ NGRO+1 /))
                 DO 130 IG=1,NV
   130           ENERG(IG)=RTSEGM(IDK+IG-1)*1.0E6
                 CALL LCMDRD(ICHDIM_PTR)

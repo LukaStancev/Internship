@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* time average calculation using different approximation.
+* Time average calculation using different approximation.
 *
 *Copyright:
 * Copyright (C) 1996 Ecole Polytechnique de Montreal
@@ -13,18 +13,21 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): M.T. Sissaoui
+*Author(s): 
+* M.T. Sissaoui
 *
 *Parameters: input
-*  NBURN  total number of steps.
-*  ITM    type of the approximation (1-Lagrange;  2-spline; 3-Hermite)
-*  XBMAX  highest value.
-*  XBMIN  lower value.
-*  YS     parameter to be integrated
-*  XB     steps
+* NBURN  total number of steps.
+* ITM    type of the approximation (1-Lagrange;  2-spline; 3-Hermite)
+* XBMAX  highest value.
+* XBMIN  lower value.
+* YS     parameter to be integrated
+* NBMIN   
+* NBMAX   
+* XB     steps
 *
 *Parameters: output
-* SIGAV   average value of YS
+* SIGAV  average value of YS
 *
 *-----------------------------------------------------------------------
 *

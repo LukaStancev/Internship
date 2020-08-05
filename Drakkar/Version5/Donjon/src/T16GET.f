@@ -2,81 +2,88 @@
       SUBROUTINE T16GET(MAXMIX,MNLOCP,MNCPLP,MNPERT,NALOCP,IDLCPL,
      >                  NCMIXS,MNBURN,
      >                  NAMMIX,MIXRCI,PARRCI,MIXPER,PARPER,MIXREG)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16GET
-C      USE      : READ FROM INPUT T16CPO PROCESSING OPTIONS
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/21 G.M.    | READ FROM INPUT T16CPO
-C      |                    | PROCESSING OPTIONS
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      MAXMIX : MAXIMUM NUMBER OF MIXTURE PERMITTED      I
-C      MNLOCP : MAXIMUM NUMBER OF LOCAL PARAMETERS       I
-C      MNCPLP : MAXIMUM NUMBER OF COUPLED  PARAMETERS    I
-C      MNPERT : MAXIMUM NUMBER OF PERTURBATION PER       I
-C               LOCAL PARAMETERS
-C      NALOCP : LOCAL PARAMETER NAMES PERMITTED          C(MNLOCP
-C                                                        +MNCPLP)*4
-C      IDLCPL : LOCAL PARAMETER ID FOR PERTURBATION      I(2,MNLOCP
-C               PARAMETER                                  +MNCPLP)
-C    INPUT/OUTPUT
-C      NCMIXS : NUMBER OF CURRENT MIXTURES SAVED         I
-C               (I) OLD MIXTURE ALREADY SAVED
-C               (O) TOTAL NUMBER OF MIXTURE SAVED
-C      MNBURN : MAXIMUNM NUMBER OF BURNUP STEPS          I
-C               (I) OLD MAXIMUM
-C               (O) NEW MAXIMUM
-C      NAMMIX : NAME OF MIXTURE                          I(2,MAXMIX)
-C               (I) OLD MIXTURE NAMES ALREADY SAVED
-C               (O) ALL MIXTURE NAMES TO SAVE
-C               CONTAINS VARIABLE CHARACTER*6 NAME
-C               READ(NAME,'(A4,A2)') (NAMMIX(J,*),J=1,2)
-C      MIXRCI : REFERENCE INFORMATION FOR A MIXTURE      I(2+MNLOCP+
-C               (I) = 0 NO INFORMATION FOR MIXTURE  MNCPLP,MAXMIX)
-C                   > 0 INFORMATION FOR MIXTURE
-C               (O) = 0 NO INFORMATION FOR MIXTURE
-C                   > 0 INFORMATION NOT UPDATED
-C                   < 0 INFORMATION TO BE UPDATED
-C      PARRCI : REFERENCE LOCAL PARAMETERS FOR A         R(MNLOCP,
-C               MIXTURE                                    MAXMIX)
-C      MIXPER : PERTUBATION INFORMATION FOR A MIXTURE    I(MNPERT,
-C                                            MNLOCP+MNCPLP,MAXMIX)
-C      PARPER : PERTURBATION PARAMETERS FOR A            R(MNPERT,2,
-C               MIXTURE                      MNLOCP+MNCPLP,MAXMIX)
-C    OUTPUT
-C      MIXREG : MIXTURE UPDATE IDENTIFIER                I(MAXMIX)
-C               =  0 DO NOT UPDATE
-C               = -1 UPDATE USING CELLAV INFORMATION
-C               >  0 UPDATE USING SPECIFIED REGION NUMBER
-C
-C  3- ROUTINES CALLED
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C      REDGET : FREE FORMAT READ
-C  4- INPUT REQUIREMENTS
-C    INPUT FORMAT
-C    [[ MIXNAM [ { CELLAV | REGION noreg } ]
-C    [ RC [ nburn ] frstrec ]
-C    [[ NAMPER valref npert
-C       (valper(i),frstrec(i),i=1,npert)]]
-C    ]]
-C    [ MTMD [ valreft valrefd ] npert
-C       (valpert(i), valperd(i), frstrec(i),i=1,npert)]]
-C    ]
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16GET
+*
+*Purpose:
+*  READ FROM INPUT T16CPO PROCESSING OPTIONS
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/21 G.M.    | READ FROM INPUT T16CPO
+*      |                    | PROCESSING OPTIONS
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* MAXMIX  MAXIMUM NUMBER OF MIXTURE PERMITTED      I
+* MNLOCP  MAXIMUM NUMBER OF LOCAL PARAMETERS       I
+* MNCPLP  MAXIMUM NUMBER OF COUPLED  PARAMETERS    I
+* MNPERT  MAXIMUM NUMBER OF PERTURBATION PER       I
+*         LOCAL PARAMETERS
+* NALOCP  LOCAL PARAMETER NAMES PERMITTED          C(MNLOCP
+*                                                  +MNCPLP)*4
+* IDLCPL  LOCAL PARAMETER ID FOR PERTURBATION      I(2,MNLOCP
+*         PARAMETER                                  +MNCPLP)
+*
+*Parameters: input/output
+* NCMIXS  NUMBER OF CURRENT MIXTURES SAVED         I
+*         (I) OLD MIXTURE ALREADY SAVED
+*         (O) TOTAL NUMBER OF MIXTURE SAVED
+* MNBURN  MAXIMUNM NUMBER OF BURNUP STEPS          I
+*         (I) OLD MAXIMUM
+*         (O) NEW MAXIMUM
+* NAMMIX  NAME OF MIXTURE                          I(2,MAXMIX)
+*         (I) OLD MIXTURE NAMES ALREADY SAVED
+*         (O) ALL MIXTURE NAMES TO SAVE
+*         CONTAINS VARIABLE CHARACTER*6 NAME
+*         READ(NAME,'(A4,A2)') (NAMMIX(J,*),J=1,2)
+* MIXRCI  REFERENCE INFORMATION FOR A MIXTURE      I(2+MNLOCP+
+*         (I) = 0 NO INFORMATION FOR MIXTURE  MNCPLP,MAXMIX)
+*             > 0 INFORMATION FOR MIXTURE
+*         (O) = 0 NO INFORMATION FOR MIXTURE
+*             > 0 INFORMATION NOT UPDATED
+*             < 0 INFORMATION TO BE UPDATED
+* PARRCI  REFERENCE LOCAL PARAMETERS FOR A         R(MNLOCP,
+*         MIXTURE                                    MAXMIX)
+* MIXPER  PERTUBATION INFORMATION FOR A MIXTURE    I(MNPERT,
+*                                      MNLOCP+MNCPLP,MAXMIX)
+* PARPER  PERTURBATION PARAMETERS FOR A            R(MNPERT,2,
+*         MIXTURE                      MNLOCP+MNCPLP,MAXMIX)
+*
+*Parameters: output
+* MIXREG  MIXTURE UPDATE IDENTIFIER                I(MAXMIX)
+*         =  0 DO NOT UPDATE
+*         = -1 UPDATE USING CELLAV INFORMATION
+*         >  0 UPDATE USING SPECIFIED REGION NUMBER
+*
+*  3- ROUTINES CALLED
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*      REDGET : FREE FORMAT READ
+*  4- INPUT REQUIREMENTS
+*    INPUT FORMAT
+*    [[ MIXNAM [ { CELLAV | REGION noreg } ]
+*    [ RC [ nburn ] frstrec ]
+*    [[ NAMPER valref npert
+*       (valper(i),frstrec(i),i=1,npert)]]
+*    ]]
+*    [ MTMD [ valreft valrefd ] npert
+*       (valpert(i), valperd(i), frstrec(i),i=1,npert)]]
+*    ]
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          MAXMIX,MNLOCP,MNCPLP,MNPERT,NCMIXS,MNBURN
       CHARACTER        NALOCP(MNLOCP+MNCPLP)*4

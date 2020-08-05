@@ -3,7 +3,8 @@
 *
 *-----------------------------------------------------------------------
 *
-* solve the point kinetic equations and apply global feedback.
+*Purpose:
+* Solve the point kinetic equations and apply global feedback.
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal
@@ -12,20 +13,31 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): modification type(L_MAP).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The PKINS: module specification is:
+* [ MAPFL := ] PKINS: MAPFL :: (descpkins) ;
+* where
+*   MAPFL : name of the \emph{map} object containing fuel regions description 
+*     and global parameter informations. This object is declared in read-only 
+*     mode if and only if keyword PICKR is set.
+*   (descpkins) : structure describing the input data to the PKINS: module. 
 *
 *-----------------------------------------------------------------------
 *
@@ -281,7 +293,7 @@
           CALL XABORT('PKINS: GLOBAL PARAMETER NOT FOUND.')
    40     CALL LCMPUT(KPPAR,'P-VALUE',1,2,PARAMB(IAL))
           ITYPE=1
-          CALL LCMPUT(KPPAR,'P-TYPE',1,2,ITYPE)
+          CALL LCMPUT(KPPAR,'P-TYPE',1,1,ITYPE)
           IF(IMPX.GT.0) WRITE(6,120) IAL,HPNAME,PARAMB(IAL)
         ENDDO
       ENDIF

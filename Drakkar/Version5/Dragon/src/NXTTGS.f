@@ -13,7 +13,11 @@
 * the collision probability matrix without tracking file.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau
@@ -57,14 +61,9 @@
 * MAXPIN  maximum number of pins in a cell.
 * LINMAX  maximum number of segments in a track.
 * ITYPBC  type of boundary conditions where
-*         \begin{itemize}
-*         \item \moc{ITYPBC}=0 for geometry with Cartesian
-*         boundaries;
-*         \item \moc{ITYPBC}=1 for geometry with annular
-*         boundary;
-*         \item \moc{ITYPBC}=2 for geometry with hexagonal
-*         boundary;
-*         \end{itemize}
+*         =0 for geometry with Cartesian boundaries;
+*         =1 for geometry with annular boundary;
+*         =2 for geometry with hexagonal boundary.
 * IUNFLD  description of unfolded geometry.
 * MATALB  global mixture/albedo identification vector.
 * SURVOL  global surface volume vector.

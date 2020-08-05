@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* interpolation of nuclear properties in an internal library.
+* Interpolation of nuclear properties in an internal library.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

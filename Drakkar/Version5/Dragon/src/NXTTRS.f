@@ -8,7 +8,11 @@
 * is applied on an old DRAGON TURN factor.
 *
 *Copyright:
-* Copyright (C) 2004 Ecole Polytechnique de Montreal.
+* Copyright (C) 2004 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s): G. Marleau.
 *
@@ -17,14 +21,12 @@
 *
 *Parameters: input
 * ITRCUR  initial turn factor.
-* ISYMM   symmetry to consider where
-*         \begin{itemize}
-*         \item \verb|ISYMM|=-1 indicates $Z$ reflection symmetry;
-*         \item \verb|ISYMM|=1 indicates $X$ reflection symmetry;
-*         \item \verb|ISYMM|=2 indicates $X=Y$ diagonal symmetry;
-*         \item \verb|ISYMM|=3 indicates $Y$ reflection symmetry;
-*         \item \verb|ISYMM|=4 indicates $X=-Y$ diagonal symmetry.
-*         \end{itemize}
+* ISYM    symmetry to consider where
+*         =-1 indicates $Z$ reflection symmetry;
+*         = 1 indicates $X$ reflection symmetry;
+*         = 2 indicates $X=Y$ diagonal symmetry;
+*         = 3 indicates $Y$ reflection symmetry;
+*         = 4 indicates $X=-Y$ diagonal symmetry.
 *
 *Parameters: output
 * NXTTRS  turn factor after symmetry is applied.

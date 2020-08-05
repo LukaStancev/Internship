@@ -4,26 +4,51 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* construct or modify a fuel-map object.
+* Construct or modify a fuel-map object.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki and V. Descotes
+*Author(s): 
+* D. Sekki and V. Descotes
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_MAP);
-*         HENTRY(2): modification type(L_MATEX).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The RESINI: module specifications are:
+* Option 1
+* FLMAP MATEX := RESINI: MATEX [COMPO] :: (descresini1) ;
+* Option 2
+* FLMAP := RESINI: FLMAP [FLMAP2] :: (descresini2) ;
+* where
+*   FLMAP : name of the \emph{resini} object that will contain the fuel-lattice 
+*     information. If FLMAP appears on both LHS and RHS, it will be updated; 
+*     otherwise, it is created.
+* 
+*   MATEX : name of the \emph{matex} object specified in the modification mode. 
+*     MATEX is required only when FLMAP is created.
+*   COMPO : name of the \emph{multicompo} data structure (L\_COMPO signature) 
+*     where the detailed subregion geometry at assembly level is stored.
+*   FLMAP2 : name of the \emph{resini} object that contains the fuel-lattice 
+*     information to recover from.
+*   (descresini1) : structure describing the main input data to
+*     the RESINI: module. Note that this input data is mandatory and
+*     must be specified only when FLMAP is created.
+*   (descresini2) : structure describing the input data for global and local 
+*     parameters. This data is permitted to be modified in the subsequent calls 
+*     to the RESINI: module.
 *
 *-----------------------------------------------------------------------
 *

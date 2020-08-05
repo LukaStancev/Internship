@@ -3,54 +3,57 @@
      >                   MAROD, NANGL,  DENS,IFTEMP,  IPRT, NCODE,
      >                  SWZERO,NRINFO,   RAN,  COTE, NRODS,  RODS,
      >                   NRODR,  RODR, MXSUB, MXSEG,  NXRI,   IMS)
-C
-C-------------------------    XCWSCL    -------------------------------
-C
-C 1- SUBROUTINE STATISTICS:
-C     NAME     : XCWSCL
-C     USE      : PERFORM SPECULAR TRACKING FOR 2-D SQUARE CLUSTER
-C     AUTHOR   : G. MARLEAU
-C
-C 2- PARAMETERS:
-C  INPUT
-C     NDIM     : DIMENSION OF PROBLEM                   I
-C     NSURX    : NUMBER OF INITIAL SURFACE              I
-C     NVOL     : TOTAL NUMBER OF REGIONS                I
-C     NBAN     : NUMBER OF CONCENTRIC REGIONS           I
-C     NRT      : NUMBER OF ROD TYPES                    I
-C     MSROD    : MAXIMUM NUMBER OF SUBROD PER RODS      I
-C     MAROD    : MAXIMUM NUMBER OF ROD IN ANY CLUSTER   I
-C     NANGL    : NUMBER OF INTEGRATION ANGLES           I
-C     DENS     : MINIMUM PARALLEL LINE TRAK DENSITY     R
-C     IFTEMP   : TEMPORARY TRACKING FILE UNIT           I
-C     SWZERO   : LOGICAL FOR SPECULAR TRACKING          L
-C     IPRT     : PRINT LEVEL                            I
-C     NCODE    : BOUNDARY TYPE                          I(6)
-C     NRINFO   : TYPE OF CONCENTRIC REGION              I(2,NBAN)
-C                NRINFO(1,IAN) = NEW REGION NUMBER
-C                NRINFO(2,IAN) = ASSOCIATED CLUSTER
-C                              = 0 NO CLUSTER
-C     RAN      : RADIUS/LATTICE SIDE OF REGION          R(NBAN)
-C     COTE     : Y DIMENSION FOR RECTANGLE              R
-C     NRODS    : INTEGER DESCRIPTION OF ROD  TYPE       I(3,NRT)
-C                NRODS(1,IRT) = NUMBER OF ROD
-C                NRODS(2,IRT) = NUMBER OF SUBRODS IN ROD
-C                NRODS(3,IRT) = ASSOCIATED REGION
-C     RODS     : DESCRIPTION OF ROD OF A GIVEN TYPE     R(2,NRT)
-C                RODS(1,IRT) = ROD CENTER RADIUS
-C                RODS(2,IRT) = ANGLE POSITION OF ONE ROD
-C     NRODR    : SUBROD REGION                          I(NRT)
-C     RODR     : SUBROD RADIUS                          R(MSROD,NRT)
-C     MXSUB    : CURRENT MAXIMUM NUMBER OF SUBTRACKS    I
-C     MXSEG    : CURRENT MAXIMUM TRACK LENGTH           I
-C     NXRI     : ANNULAR REGION CONTENT MULTI-ROD       I(NRT,NBAN)
-C     IMS      : SURFACE MERGE                          I(6)
-C
-C  3-INTERNAL PARAMETERS
-C     IUNOUT   : OUT UNIT NUMBER = 6
-C     PI       : NUMERICAL VALUE OF PI
-C----------------------------------------------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Perform specular tracking for 2-D square cluster.
+*
+*Copyright:
+* Copyright (C) 1990 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): G.Marleau
+*
+*Parameters: input
+* NDIM    dimension of problem.
+* NSURX   number of initial surface.
+* NVOL    total number of regions.
+* NBAN    number of concentric regions.
+* NRT     number of rod types.
+* MSROD   maximum number of subrod per rods.
+* MAROD   maximum number of rod in any cluster.
+* NANGL   number of integration angles.
+* DENS    minimum parallel line trak density.
+* IFTEMP  temporary tracking file unit.
+* SWZERO  logical for specular tracking.
+* IPRT    print level.
+* NCODE   boundary type.
+* NRINFO  type of concentric region:
+*         NRINFO(1,IAN) = new region number;
+*         NRINFO(2,IAN) = associated cluster;
+*                       = 0 no cluster.
+* RAN     radius/lattice side of region.
+* COTE    Y dimension for rectangle.
+* NRODS   integer description of rod  type:
+*         NRODS(1,IRT) = number of rod;
+*         NRODS(2,IRT) = number of subrods in rod;
+*         NRODS(3,IRT) = associated region.
+* RODS    description of rod of a given type:
+*         RODS(1,IRT) = rod center radius;
+*         RODS(2,IRT) = angle position of one rod.
+* NRODR   subrod region.
+* RODR    subrod radius.
+* MXSUB   current maximum number of subtracks.
+* MXSEG   current maximum track length.
+* NXRI    annular region content multi-rod.
+* IMS     surface merge.
+*
+*----------------------------------------------------------------------
+*
       PARAMETER       (IUNOUT=6,PI=3.1415926535897932,EPS=1.E-5)
       CHARACTER        TEDATA*13
       INTEGER          NDIM,NSURX,NVOL,NBAN,NRT,MSROD,MAROD,NANGL,
@@ -63,34 +66,34 @@ C
      >                 PROJ,PMAX,PMIN,DEPART,TRKPOS(2,2),ROTPOS(2,2),
      >                 TRKBEG(2,2),DIRBEG(2),RONEPS,ANGD,ANGC,RADC,
      >                 RADC2,WEIGHT,XPO
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: NRSEG,NNSEG,KANGL
       REAL, ALLOCATABLE, DIMENSION(:) :: ATOP
       REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: RODP
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: SEGLEN,WGTANG,
      > DNSANG,PTSANG
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:) :: DANGLE
-C----
-C  SCRATCH STORAGE ALLOCATION
-C   NRSEG : region crossed by track
-C   NNSEG : region crossed by track (left)
-C   SEGLEN: length of track
-C   RODP  : rod position in cartesian geometry
-C   ATOP  : number of rod between origin and rod1
-C   DANGLE: integration angles
-C   WGTANG: integration weight
-C   DNSANG: integration densities
-C   PTSANG: principal integration angles
-C----
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   NRSEG : region crossed by track
+*   NNSEG : region crossed by track (left)
+*   SEGLEN: length of track
+*   RODP  : rod position in cartesian geometry
+*   ATOP  : number of rod between origin and rod1
+*   DANGLE: integration angles
+*   WGTANG: integration weight
+*   DNSANG: integration densities
+*   PTSANG: principal integration angles
+*----
       ALLOCATE(NRSEG(MXSEG),NNSEG(MXSEG),KANGL(MXSUB))
       ALLOCATE(SEGLEN(MXSEG),RODP(2,MAROD,NRT,2),ATOP(NRT))
       ALLOCATE(DANGLE(NDIM,2,4*NANGL),WGTANG(4*NANGL),DNSANG(NANGL),
      > PTSANG(NANGL))
-C----
-C  DETERMINE INTEGRATION LIMITS FOR CLUSTER REGIONS
-C----
+*----
+*  DETERMINE INTEGRATION LIMITS FOR CLUSTER REGIONS
+*----
       IF(IPRT.GE.1) THEN
         WRITE(IUNOUT,'(//1X,A20)') 'SPECULAR TRACKING   '
       ENDIF
@@ -111,14 +114,14 @@ C----
      >                      NRODS(3,II),II=1,NRT)
         WRITE(IUNOUT,6003) NANGL,DENS
       ENDIF
-C----
-C  SET FLAG FOR SURFACE CROSSING
-C    IPER(1) = X-PERIOD
-C    IPER(2) = Y-PERIOD
-C  VALUES ARE
-C    IPER(I) = 1 FOR PERIODIC BC
-C    IPER(I) = 2 FOR OTHER BC
-C----
+*----
+*  SET FLAG FOR SURFACE CROSSING
+*    IPER(1) = X-PERIOD
+*    IPER(2) = Y-PERIOD
+*  VALUES ARE
+*    IPER(I) = 1 FOR PERIODIC BC
+*    IPER(I) = 2 FOR OTHER BC
+*----
       IPER(1)=2
       IPER(2)=2
       IF( (NCODE(1) .EQ. 4) .AND. (NCODE(2) .EQ. 4) ) THEN
@@ -144,9 +147,9 @@ C----
         INDS(2)=ITY
         IANG= IANG+1
         CALL XELTSA( NDIM, SIDE, INDS, DENSP, DANGLE(1,1,IANG))
-C----
-C  CHANGE DENLIN FOR HORIZONTAL & VERTICAL ANGLES
-C----
+*----
+*  CHANGE DENLIN FOR HORIZONTAL & VERTICAL ANGLES
+*----
         IF( (ITX .EQ. 0) .OR. (ITY .EQ. 0) )THEN
           DNSANG(IANG)=DBLE(DENS)
         ELSE
@@ -154,9 +157,9 @@ C----
           NTRAC=MAX(1,INT(DBLE(DENS)/DENLIN+0.5D0))
           DNSANG(IANG)= DBLE(NTRAC) * DENLIN
         ENDIF
-C----
-C  COMPUTE NTRAK AND CHANGE DENS ACCORDING TO INPUT
-C----
+*----
+*  COMPUTE NTRAK AND CHANGE DENS ACCORDING TO INPUT
+*----
         PTSANG(IANG)= DANGLE(1,1,IANG)
  100  CONTINUE
       CALL XELTSW(SIDE,NANGL,PTSANG,WGTANG)
@@ -166,9 +169,9 @@ C----
      >                     DNSANG(IANG),WGTANG(IANG)/DNSANG(IANG)
   110   CONTINUE
        ENDIF
-C----
-C  LOCALIZE CENTER OF REFERENCE ROD WITH RESPECT TO X-Y AXIS
-C----
+*----
+*  LOCALIZE CENTER OF REFERENCE ROD WITH RESPECT TO X-Y AXIS
+*----
       DO 120 IRT=1,NRT
         IF(NRODS(3,IRT).GT.0) THEN
           NBROD=NRODS(2,IRT)
@@ -183,9 +186,9 @@ C----
  120  CONTINUE
       SIDE(1)=DBLE(RAN(NBAN))
       SIDE(2)=DBLE(COTE)
-C----
-C  COPY ANGLES AND DENSITIES ON TEMPORARY TRACKING FILE
-C----
+*----
+*  COPY ANGLES AND DENSITIES ON TEMPORARY TRACKING FILE
+*----
       DO 125 IANG=1,NANGL
         DANGLE(1,1,2*NANGL-IANG+1)=-DANGLE(1,1,IANG)
         DANGLE(2,1,2*NANGL-IANG+1)=DANGLE(2,1,IANG)
@@ -198,9 +201,9 @@ C----
  126  CONTINUE
       WRITE(IFTEMP) ((DANGLE(IDIM,1,IANG),IDIM=1,NDIM),IANG=1,4*NANGL)
       WRITE(IFTEMP) (2.0D0/WGTANG(IANG),IANG=1,4*NANGL)
-C----
-C  PRINT TRACKING INFORMATION IF REQUIRED
-C----
+*----
+*  PRINT TRACKING INFORMATION IF REQUIRED
+*----
       NSOLMX=0
       IF((IPRT.GT.1).AND.(IPRT.LT.100))THEN
         WRITE(IUNOUT,'(/8H0ECHO = ,I3,27H SOLID ANGLES TO BE TRACKED)')
@@ -213,18 +216,18 @@ C----
         TEDATA='(1H+,TXXX,I1)'
       ENDIF
       NOTRAK= 0
-C----
-C  ANGULAR TRACK SWEEP
-C----
+*----
+*  ANGULAR TRACK SWEEP
+*----
       IXYN=0
       IXYR=0
       N0LSEG=0
       DO 130 IANG=1,NANGL
         DENLIN = DNSANG(IANG)
         DENSP   = 1.D0 / DENLIN
-C----
-C  PRINT TRACKING INFORMATION IF REQUIRED
-C----
+*----
+*  PRINT TRACKING INFORMATION IF REQUIRED
+*----
         IF((IPRT.GT.1).AND.(IPRT.LT.100))THEN
           IF( MOD(IANG,100) .EQ. 0 )THEN
             IREF1=IREF1+1
@@ -239,10 +242,10 @@ C----
             WRITE(IUNOUT,TEDATA) MOD(IANG,10)
           ENDIF
         ENDIF
-C----
-C  LOCALIZE ROD POSITIONS WITH RESPECT TO 2 DIFFERENT ANGLES
-C  POSSIBLE (+-COS(THETA),SIN(THETA))
-C----
+*----
+*  LOCALIZE ROD POSITIONS WITH RESPECT TO 2 DIFFERENT ANGLES
+*  POSSIBLE (+-COS(THETA),SIN(THETA))
+*----
         ANGD=ATAN2(DANGLE(2,1,IANG),DANGLE(1,1,IANG))
         DO 300 IA=1,2
           DO 310 IRT=1,NRT
@@ -264,11 +267,11 @@ C----
  310      CONTINUE
           ANGD=PI-ANGD
  300    CONTINUE
-C----
-C  PROJECT THE 4 CORNERS OF SQUARE LOCATED AT
-C  -SIDE(1)/2 < X < SIDE(1)/2 AND -SIDE(2)/2 < Y < SIDE(2)/2
-C  ON LINE NORMAL TO TRACK DIRECTION
-C----
+*----
+*  PROJECT THE 4 CORNERS OF SQUARE LOCATED AT
+*  -SIDE(1)/2 < X < SIDE(1)/2 AND -SIDE(2)/2 < Y < SIDE(2)/2
+*  ON LINE NORMAL TO TRACK DIRECTION
+*----
         PMIN = +1.0D+50
         PMAX = -1.0D+50
         DFACX=1.0D0
@@ -283,9 +286,9 @@ C----
  160      CONTINUE
           DFACX=-1.0D0*DFACX
  150    CONTINUE
-C----
-C  FIND NUMBER OF PARALLEL TRACK: NEAREST INTEGER +1 FOR SECURITY
-C----
+*----
+*  FIND NUMBER OF PARALLEL TRACK: NEAREST INTEGER +1 FOR SECURITY
+*----
         NPOINT =NINT((PMAX-PMIN)*DENLIN)+1
         DEPART =0.5D0*(PMAX+PMIN-DBLE(NPOINT)*DENSP)
         DO 170 J = 1, 2
@@ -293,10 +296,10 @@ C----
           DANGLE(J,2,IANG)= DANGLE(J,2,IANG)*DENSP
  170    CONTINUE
         LNEWP=.TRUE.
-C----
-C  TRACK OVER 2*NPOINT PARALLEL TRACK FOR DIRECTION
-C  TRACK AND REFLECTION
-C----
+*----
+*  TRACK OVER 2*NPOINT PARALLEL TRACK FOR DIRECTION
+*  TRACK AND REFLECTION
+*----
         IXYF=0
         DO 180 IPOINT = 1,2*NPOINT
           NRIN=0
@@ -324,28 +327,28 @@ C----
  182      CONTINUE
           NLSEG=N0LSEG
           NFSEG=N0FSEG
-C----
-C  FIND EXTERNAL SURFACES CROSSED BY THIS TRACK
-C----
+*----
+*  FIND EXTERNAL SURFACES CROSSED BY THIS TRACK
+*----
           CALL XCWREC(DANGLE(1,1,IANG),SIDE,TRKPOS,LINTER,ROTPOS,
      >                INDS,IMS)
-C----
-C REJECT TRACK IF LINTER IS FALSE
-C----
+*----
+* REJECT TRACK IF LINTER IS FALSE
+*----
           IF(.NOT.LINTER) GO TO 183
-C----
-C  KEEP THE TRACK IF LINTER IS TRUE
-C  A) SAVE INITIAL AND FINAL SURFACE INFORMATION
-C----
+*----
+*  KEEP THE TRACK IF LINTER IS TRUE
+*  A) SAVE INITIAL AND FINAL SURFACE INFORMATION
+*----
           NRSEG(NFSEG)=-INDS(1)
           SEGLEN(NFSEG)=0.5D0
           NRSEG(NLSEG)=-INDS(2)
           SEGLEN(NLSEG)=0.5D0
           NFSEG=NFSEG+1
           NLSEG=NLSEG-1
-C----
-C  SAVE INFORMATION FOR INITIAL AND FINAL ANNULAR TRACKING
-C----
+*----
+*  SAVE INFORMATION FOR INITIAL AND FINAL ANNULAR TRACKING
+*----
           NRSEG(NFSEG)=NRINFO(1,NBAN)
           NNSEG(NFSEG)=NRIN
           SEGLEN(NFSEG)=ROTPOS(1,1)
@@ -355,16 +358,16 @@ C----
           NLSEG=NLSEG-1
           NFSEG=NFSEG+1
           NRIN=NRINFO(1,NBAN)
-C----
-C  TRACK INSIDE ANNULAR REGIONS
-C----
+*----
+*  TRACK INSIDE ANNULAR REGIONS
+*----
           RADC=ABS(ROTPOS(2,1))
           RADC2=RADC**2
           DO 210 IAN=NTAN,1,-1
             IF(RADC.GE.RAN(IAN)) GO TO 211
-C----
-C  LINE INTERSECT ANNULUS IAN
-C----
+*----
+*  LINE INTERSECT ANNULUS IAN
+*----
             XPO=SQRT(RAN(IAN)**2-RADC2)
             NRSEG(NLSEG)=NRIN
             NNSEG(NFSEG+1)=NRIN
@@ -376,9 +379,9 @@ C----
             NNSEG(NLSEG+1)=NRIN
             SEGLEN(NFSEG)=-XPO
             IF(NRINFO(2,IAN).NE.0) THEN
-C----
-C  TRACK INSIDE RODS
-C----
+*----
+*  TRACK INSIDE RODS
+*----
               DO 146 KRT=1,NRT
                 JRT=NXRI(KRT,IAN)
                 LRT=MOD(JRT,1000000)
@@ -400,9 +403,9 @@ C----
                   NXTR=NRODR(IRT)
                   DO 144 IRD=NRODS(2,IRT),1,-1
                     IF(RADC.GT.RODR(IRD,IRT)) GO TO 211
-C----
-C  LINE INTERSECT CENTERED ROD IRD
-C----
+*----
+*  LINE INTERSECT CENTERED ROD IRD
+*----
                     XPO=SQRT(RODR(IRD,IRT)*RODR(IRD,IRT)-RADC2)
                     NRSEG(NLSEG)=NRIN
                     NNSEG(NFSEG+1)=NRIN
@@ -446,9 +449,9 @@ C----
           NSUB=NSUB+1
           IF(NSUB.GT.MXSUB) CALL XABORT('XCWSCL: MXSUB OVERFLOW.')
           KANGL(NSUB)=IANG
-C----
-C  COMPRESS AND SORT TRACK VECTOR
-C----
+*----
+*  COMPRESS AND SORT TRACK VECTOR
+*----
           ISRT=N0FSEG+1
           NSRT=MLSEG-2
           CALL XCWSRT(IPRT,NSRT,SEGLEN(ISRT),NRSEG(ISRT),
@@ -459,9 +462,9 @@ C----
      >        (SEGLEN(IIJJ),NRSEG(IIJJ),IIJJ=NSEG+2,NOSEG),
      >         SEGLEN(N0LSEG),NRSEG(N0LSEG)
           ENDIF
-C----
-C  CONVERT SEGMENT DIVISION TO SEGMENT LENGTH
-C----
+*----
+*  CONVERT SEGMENT DIVISION TO SEGMENT LENGTH
+*----
           DO 240 ISEG=NSEG+2,NOSEG-1
             SEGLEN(ISEG)=SEGLEN(ISEG+1)-SEGLEN(ISEG)
  240      CONTINUE
@@ -473,10 +476,10 @@ C----
           ENDIF
           NSEG=NOSEG
           N0LSEG=NSEG
-C----
-C  FOR TRANSLATION -> CHANGE TRACK STARTUP POINT
-C  FOR REFLECTION  -> CHANGE TRACK DIRECTION
-C----
+*----
+*  FOR TRANSLATION -> CHANGE TRACK STARTUP POINT
+*  FOR REFLECTION  -> CHANGE TRACK DIRECTION
+*----
           JINT=MOD(INDS(2)+1,2)+1
           KINT=MOD(INDS(2),2)+1
           IF(IPER(JINT) .EQ. 1)  THEN
@@ -493,9 +496,9 @@ C----
  260      CONTINUE
           LNEWP= RONEPS.LT.EPS
           IF(LNEWP)THEN
-C----
-C  NOW, WRITE THE TRACK
-C----
+*----
+*  NOW, WRITE THE TRACK
+*----
             WEIGHT= 0.25*WGTANG(IANG)/DNSANG(IANG)
             WRITE(IFTEMP) NSUB,NSEG, WEIGHT,
      >                   (KANGL(I),I=1,NSUB),
@@ -541,16 +544,16 @@ C----
   183     CONTINUE
   180   CONTINUE
   130 CONTINUE
-C----
-C  SCRATCH STORAGE DEALLOCATION
-C----
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
       DEALLOCATE(PTSANG,DNSANG,WGTANG,DANGLE)
       DEALLOCATE(ATOP,RODP,SEGLEN)
       DEALLOCATE(KANGL,NNSEG,NRSEG)
       RETURN
-C----
-C  FORMATS
-C----
+*----
+*  FORMATS
+*----
  6000 FORMAT(1X,'          TOTAL NUMBER OF REGIONS =',I10/
      >       1X,'       NUMBER OF INITIAL SURFACES =',I10/
      >       1X,'        NUMBER OF ANNULAR REGIONS =',I10/

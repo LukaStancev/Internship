@@ -3,9 +3,25 @@
 *
 *----------------------------------------------------------------------
 *Purpose:
-* function performing the parabolic interpolation at X.
+* Function performing the parabolic interpolation at X.
 *
-*Author(s): M. Beaudet
+*Author(s): 
+* M. Beaudet
+*
+*Parameters: 
+* DETPOL   
+* VECT     
+* IXX      
+* JJJ      
+* K0       
+* I1       
+* I2       
+* I3       
+* X1       
+* X2       
+* X3       
+* X        
+*
 *----------------------------------------------------------------------
 *
       INTEGER*4    IXX(*)

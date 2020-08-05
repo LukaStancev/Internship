@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver for an isotopic depletion calculation.
+* Driver for an isotopic depletion calculation.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

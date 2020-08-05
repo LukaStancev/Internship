@@ -5,13 +5,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the TERP interpolation/derivation/integration factors using
+* Compute the TERP interpolation/derivation/integration factors using
 * table-of-content information of the PMAXS file.
 *
 *Copyright:
 * Copyright (C) 2018 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * LCUB2   interpolation type for each parameter (=.TRUE.: cubic Ceschino

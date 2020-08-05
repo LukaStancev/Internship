@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* store rod parameters in the fuelmap
+* Store rod parameters in the fuelmap
 *
 *Copyright:
 * Copyright (C) 2017 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Tixier
+*Author(s): 
+* G. Tixier
 *
 *Parameters: input
 * IPMAP   pointer to the fuel map

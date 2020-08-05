@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the useful interpolated microscopic cross section
+* Transcription of the useful interpolated microscopic cross section
 * data from APOLIB-2 to LCM data structures
 *
 *Copyright:
@@ -45,10 +45,10 @@
 * NDEL    number of precursor groups for delayed neutrons
 *
 *Reference:
-* A. Hebert, P. Bellier, M. Coste, R. Sanchez, Z. Stankovski et
-* I. Zmijarevic, "APOLLO2: Notice informatique Version 2.4",
-* Commissariat a l'Energie Atomique, Rapport SERMA/LENR/RT/98-2477/A,
-* 1998.
+*   A. Hebert, P. Bellier, M. Coste, R. Sanchez, Z. Stankovski et
+*   I. Zmijarevic, "APOLLO2: Notice informatique Version 2.4",
+*   Commissariat a l'Energie Atomique, 
+*   Rapport SERMA/LENR/RT/98-2477/A, 1998.
 *
 *-----------------------------------------------------------------------
 *

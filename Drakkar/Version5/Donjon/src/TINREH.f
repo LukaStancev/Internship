@@ -6,16 +6,16 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* refuel a channel according to a refuelling mode in hexagonal
+* Refuel a channel according to a refuelling mode in hexagonal
 * geometry.
 *
 *Copyright:
 * Copyright (C) 2015 Ecole Polytechnique de Montreal
 *
-*Author(s): E. Varin, M. Guyot and A. Hebert
+*Author(s): 
+* E. Varin, M. Guyot and A. Hebert
 *
 *Parameters: input/output
-*
 * IPRES  Adress of the map Linked_List or XSM file.
 * IPMIC  Adress of the L_LIBRARY in creation mode.
 * IPMIC2 Adress of the fuel-map L_LIBRARY in read-only mode.
@@ -39,15 +39,22 @@
 * KRF    Type of refueling
 * LMIC   =.true. for a micro-refueling
 *
+*Parameters:
+* WINT   
+* BS     
+* PS     
+* ISFT   
+* NSS    
+*
 *-----------------------------------------------------------------------
 *
       USE GANLIB
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      TYPE(C_PTR) IPRES
+      TYPE(C_PTR) IPRES,IPMIC,IPMIC2,IPMIC3
       INTEGER     NCH,NK,NH,NZ,NS,NREG,ILONG,ITYP,IH,IPRT,MS,IS,MAXS,
-     1            KS,NSS(NCH),NNS,IPMIC,IPMIC2,IPMIC3
+     1            KS,NSS(NCH),NNS
       REAL        WINT(NCH,NK),BS(NCH,NK,MS),PS(NCH,NK,MS),POW(NCH,NK)
       INTEGER     MIX(NREG),IHN(2,NH),ISFT(NCH,NK),IND(*)
       LOGICAL     LMIC
@@ -77,24 +84,27 @@
       CALL LCMLEN(IPRES,'ISHIFT',ILS,ITYLCM)
       IF(ILS.NE.0) THEN
         CALL LCMGET(IPRES,'ISHIFT',ISFT(1,1))
-        DO 17 I=1,NK
+        DO 18 I=1,NK
          DO 17 J=1,NCH
             MAXS=MAX(MAXS,ISFT(J,I))
- 17     CONTINUE
+ 17      CONTINUE
+ 18     CONTINUE
       ELSE
         MAXS=0
-        DO 15 I=1,NK
+        DO 115 I=1,NK
           DO 15 J=1,NCH
             ISFT(J,I) = 0
- 15     CONTINUE
+ 15       CONTINUE
+115     CONTINUE
       ENDIF
       DO 1 I=1,NK
-       DO 1 J=1,NCH
+       DO 2 J=1,NCH
          WINT(J,I) = 0.0
-         DO 2 K=1,MS
+         DO 3 K=1,MS
            BS(J,I,K)=0.0
            PS(J,I,K)=0.0
-  2      CONTINUE
+  3      CONTINUE
+  2    CONTINUE
   1   CONTINUE
 *----
 *  RECOVER FUEL BURNUPS
@@ -238,10 +248,11 @@
   40  CONTINUE
 
       MAXS=0
-      DO 12 I=1,NK
+      DO 112 I=1,NK
         DO 12 J=1,NCH
           MAXS=MAX(MAXS,ISFT(J,I))
-  12  CONTINUE
+  12    CONTINUE
+ 112  CONTINUE
 *----
 * CALL THE SUBROUTINE FOR A MICROSCOPIC REFUEL
 *----

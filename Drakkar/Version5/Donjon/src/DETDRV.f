@@ -4,11 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*  driver for module DETINI:
+*  Driver for module DETINI:
 *
+*Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, E. Varin, M. Guyot
+*Author(s): 
+* J. Koclas, E. Varin, M. Guyot
 *
 *Parameters: input/output
 * IPDET   pointer to the L_DETECT object.

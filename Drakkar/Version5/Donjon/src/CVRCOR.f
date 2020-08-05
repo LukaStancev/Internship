@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* modify channels data according to the specified core-voiding pattern.
+* Modify channels data according to the specified core-voiding pattern.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
 *Parameters: input/output
 * IPMAP   pointer to the perturbed fuel-map.

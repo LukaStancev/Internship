@@ -2,63 +2,70 @@
       SUBROUTINE T16RCA(IFT16 ,IPRINT,NGCCPO,NGMTR ,IFGMTR,NVXSR ,
      >                  NMXSR ,B2CRI ,BRNIRR,
      >                  RECXSV,RECXSM,RECTMP,RECSCA)
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16RCA
-C      USE      : READ TAPE16 CELL AVERAGED CROSS SECTIONS
-C                 AT A SPECIFIC BURNUP
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/21
-C      REF      : IGE-244 REV.1
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/21 G.M.    | READ TAPE16 CELL AVERAGED
-C      |                    | CROSS SECTIONS AT A SPECIFIC BURNUP
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C      IPRINT : PRINT LEVEL                              I
-C               =   0 NO PRINT
-C               >=  1 PRINT PROCESSING OPTIONS READ
-C      NGCCPO : NUMBER OF FINAL CONDENSED GROUPS         I
-C      NGMTR  : NUMBER OF MAIN TRANSPORT GROUP           I
-C      IFGMTR : CPO FEW GROUP IDENTIFIER                 I(NGCCPO)
-C               WITH RESPECT TO MTR GROUPS
-C      NVXSR  : NUMBER OF VECTORIAL XS                   I
-C      NMXSR  : NUMBER OF MATRIX XS                      I
-C      B2CRI  : CRITICAL BUCKLINGS                       R(3)
-C    OUTPUT
-C      BRNIRR : BURNUP IRRADIATION ENERGY                R(3)
-C      RECXSV : VECTOR CROSS SECTIONS RECORDS            R(NGCCPO,
-C                                                     NVXSR+NMXSR)
-C      RECXSM : MATRIX CROSS SECTIONS RECORDS            R(NGCCPO,
-C               FORMAT OF RECXSM IS                  NGCCPO,NMXSR)
-C               RECXSM(IGTO,IGFROM,IL) REPRESENT
-C               SCATTERING CROSS SECTION
-C               FROM GROUP "IGFROM" TO GROUP "IGTO"
-C               FOR ANISOTROPY LEVEL IL
-C    WORK
-C      RECTMP : VECTOR CROSS SECTIONS RECORDS            R(NGMTR,4)
-C      RECSCA : SCATT CROSS SECTIONS RECORDS             R(NGMTR,
-C                                                          NGMTR)
-C
-C  3- ROUTINES CALLED
-C    SPECIFIC T16CPO ROUTINES
-C      T16FND : FIND A TAPE16 RECORD
-C               EQUIVALENT TO FIND FUNCTION
-C               IN APPENDIX E OF EACL RC-1176
-C    UTILITIES ROUTINES
-C      XABORT : ABORT ROUTINE
-C      XDRSET : VECTOR INITIALIZATION ROUTINE
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16RCA
+*
+*Purpose:
+*  READ TAPE16 CELL AVERAGED CROSS SECTIONS
+*                 AT A SPECIFIC BURNUP
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/21
+*      REF      : IGE-244 REV.1
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/21 G.M.    | READ TAPE16 CELL AVERAGED
+*      |                    | CROSS SECTIONS AT A SPECIFIC BURNUP
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+* IPRINT  PRINT LEVEL                              I
+*         =   0 NO PRINT
+*         >=  1 PRINT PROCESSING OPTIONS READ
+* NGCCPO  NUMBER OF FINAL CONDENSED GROUPS         I
+* NGMTR   NUMBER OF MAIN TRANSPORT GROUP           I
+* IFGMTR  CPO FEW GROUP IDENTIFIER                 I(NGCCPO)
+*         WITH RESPECT TO MTR GROUPS
+* NVXSR   NUMBER OF VECTORIAL XS                   I
+* NMXSR   NUMBER OF MATRIX XS                      I
+* B2CRI   CRITICAL BUCKLINGS                       R(3)
+*
+*Parameters: output
+* BRNIRR  BURNUP IRRADIATION ENERGY                R(3)
+* RECXSV  VECTOR CROSS SECTIONS RECORDS            R(NGCCPO,
+*                                               NVXSR+NMXSR)
+* RECXSM  MATRIX CROSS SECTIONS RECORDS            R(NGCCPO,
+*         FORMAT OF RECXSM IS                  NGCCPO,NMXSR)
+*         RECXSM(IGTO,IGFROM,IL) REPRESENT
+*         SCATTERING CROSS SECTION
+*         FROM GROUP "IGFROM" TO GROUP "IGTO"
+*         FOR ANISOTROPY LEVEL IL
+*
+*Parameters: work
+* RECTMP  VECTOR CROSS SECTIONS RECORDS            R(NGMTR,4)
+* RECSCA  SCATT CROSS SECTIONS RECORDS             R(NGMTR,
+*                                                          NGMTR)
+*
+*  3- ROUTINES CALLED
+*    SPECIFIC T16CPO ROUTINES
+*      T16FND : FIND A TAPE16 RECORD
+*               EQUIVALENT TO FIND FUNCTION
+*               IN APPENDIX E OF EACL RC-1176
+*    UTILITIES ROUTINES
+*      XABORT : ABORT ROUTINE
+*      XDRSET : VECTOR INITIALIZATION ROUTINE
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16,IPRINT,NGCCPO,NGMTR,NVXSR,NMXSR
       INTEGER          IFGMTR(NGCCPO)

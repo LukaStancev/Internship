@@ -176,5 +176,6 @@ subroutine FLDMRA(B,atv,n,ertol,nstart,maxit,impx,iptrk,ipsys,ipflux,X,iter)
   100 deallocate(s,c,h,g,v)
   return
   !
-  200 format(24h FLDMRA: outer iteration,i4,10h  L2 norm=,1p,e11.4,6h eps1=,e11.4)
+  200 format(24h FLDMRA: outer iteration,i4,10h  L2 norm=,1p,e11.4, &
+  6h eps1=,e11.4)
 end subroutine FLDMRA

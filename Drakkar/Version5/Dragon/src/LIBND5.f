@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* initialize dimensions for depletion data with NDAS library files
+* Initialize dimensions for depletion data with NDAS library files
 *
 *Copyright:
 * Copyright (C) 2006 Atomic Energy of Canada Limited and Ecole

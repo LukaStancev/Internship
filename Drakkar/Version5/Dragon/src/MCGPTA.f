@@ -10,7 +10,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* flux integration upon the tracking (3D prismatic extended tracking).
+* Flux integration upon the tracking (3D prismatic extended tracking).
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -40,7 +40,7 @@
 * KM      used in CDD acceleration.
 * IM      used in CDD acceleration.
 * MCU     used in CDD acceleration.
-* W       2D track weight.
+* W2D     2D track weight.
 * ZMU     polar quadrature set in 2D.
 * WZMU    polar quadrature set in 2D.
 * SIGAL   total cross-section and albedo array.
@@ -70,23 +70,23 @@
 * SSYM    symmetry flag.
 *
 *Parameters: input/output
-* CQ
-* CF
-* DIAGQ
-* DIAGF
+* CQ      undefined.
+* CF      undefined.
+* DIAGQ   undefined.
+* DIAGF   undefined.
 * N3TR    total number of 3D tracks generated.
 * N3TRTMT total number of 3D merged tracks.
 * N3SE    total number of segments on the 3D tracks generated.
 * N3SETMT total number of segments on the 3D merged tracks.
 *
 *Parameters: scratch
-* PREV
-* NEXT
-* WORK
-* NOM3D
-* NOM3D0
-* H3D
-* H3D0
+* PREV    undefined.
+* NEXT    undefined.
+* WORK    undefined.
+* NOM3D   undefined.
+* NOM3D0  undefined.
+* H3D     undefined.
+* H3D0    undefined.
 *
 *-----------------------------------------------------------------------
 *

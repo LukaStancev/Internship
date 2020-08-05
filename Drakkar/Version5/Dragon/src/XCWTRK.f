@@ -2,75 +2,91 @@
       SUBROUTINE XCWTRK(IPTRK ,IPGEOM,GEONAM,IDISP ,IFTEMP,IPRT  ,
      >                  NDIM  ,ITOPT ,NVOL  ,NSUR  ,NANGL ,ISYMM ,
      >                  DENS  ,PCORN ,MXSUB ,MXSEG ,ICODE ,TITREC)
-C
-C-------------------------    XCWTRK    -------------------------------
-C
-C 1- SUBROUTINE STATISTICS:
-C     NAME     : XCWTRK
-C     USE      : ANALYSE CLUSTER GEOMETRY AND PERFORM SPECULAR
-C                OR ISOTROPIC TRAKING IF REQUIRED
-C     MODIFIED : 92-02-18
-C     AUTHOR   : G. MARLEAU
-C
-C 2- PARAMETERS:
-C  INPUT
-C     IPTRK    : POINTER TO THE EXCELL TRACKING         TYPE(C_PTR)
-C     IPGEOM   : POINTER TO THE GEOMETRY                TYPE(C_PTR)
-C     GEONAM   : GEOMETRY NAME                          C*12
-C     IDISP    : TRACKING FILE DISPOSITION              I
-C                = -1 MODIFY TRACKING FILE
-C                =  0 OLD TRACKING FILE
-C                =  1 NEW TRACKING FILE
-C     IFTEMP   : TEMPORARY TRACKING FILE                I
-C     IPRT     : PRINT OPTION                           I
-C     TITREC   : TITLE FOR EXECUTION                    C*72
-C  OUTPUT
-C     IDISP    : TRACKING FILE DISPOSITION              I
-C                = -2 NO TRAKING - ONLY ANALYSE GEOMETRY
-C                     THEN ABORT (OPTION HALT)
-C                = -1 MODIFY TRACKING FILE
-C                =  0 OLD TRACKING FILE
-C                =  1 NEW TRACKING FILE
-C     NDIM     : NUMBER OF PHYSICAL DIMENSIONS          I
-C     ITOPT    : TRACKING OPTION                        I
-C                = 0 FINITE;   = 1 CYCLIC
-C     NVOL     : NUMBER OF PHYSICAL REGIONS             I
-C     NSUR     : NUMBER OF OUTER SURFACE                I
-C     NANGL    : NUMBER OF ANGLES                       I
-C     ISYMM    : SYMMETRY FACTOR                        I
-C     DENS     : TRACK DENSITY                          R
-C     PCORN    : CORNER PROXIMITY                       R
-C     MXSUB    : MAXIMUM NUMBER OF SUBTRACKS            I
-C     MXSEG    : MAXIMUM SEGMENT LENGTH                 I
-C     ICODE    : ALBEDO ASSOCIATED WITH FACE            R(6)
-C
-C-------------------------    XCWTRK    -------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Analyse cluster geometry and perform specular or isotropic 
+* traking if required
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*
+*-------------------------    XCWTRK    -------------------------------
+*
+* 1- SUBROUTINE STATISTICS:
+*     NAME     : XCWTRK
+*     USE      : 
+*     MODIFIED : 92-02-18
+*     AUTHOR   : G. MARLEAU
+*
+*Author(s): G.Marleau
+*
+*Parameters: input
+* IPTRK   pointer to the excell tracking.
+* IPGEOM  pointer to the geometry.
+* GEONAM  geometry name.
+* IFTEMP  temporary tracking file.
+* IPRT    print option.
+* TITREC  title for execution.
+*
+*Parameters: input/output
+* IDISP   tracking file disposition:
+*         = -2 no traking - only analyse geometry
+*              then abort (option halt);
+*         = -1 modify tracking file;
+*         =  0 old tracking file;
+*         =  1 new tracking file.
+*
+*Parameters: output
+* NDIM    number of physical dimensions.
+* ITOPT   tracking option:
+*         = 0 finite;   
+*         = 1 cyclic.
+* NVOL    number of physical regions.
+* NSUR    number of outer surface.
+* NANGL   number of angles.
+* ISYMM   symmetry factor.
+* DENS    track density.
+* PCORN   corner proximity.
+* MXSUB   maximum number of subtracks.
+* MXSEG   maximum segment length.
+* ICODE   albedo associated with face.
+*
+*-------------------------    XCWTRK    -------------------------------
+*
       USE          GANLIB
       IMPLICIT     NONE
       INTEGER      IOUT,NALB,NSTATE
       CHARACTER    NAMSBR*6
       PARAMETER   (IOUT=6,NALB=6,NSTATE=40,
      >             NAMSBR='XCWTRK')
-C----
-C  ROUTINE PARAMETERS
-C----
+*----
+*  ROUTINE PARAMETERS
+*----
 
       TYPE(C_PTR)  IPTRK,IPGEOM
       INTEGER      IDISP ,IFTEMP,IPRT  ,NDIM  ,ITOPT ,NVOL  ,NSUR  ,
      >             NANGL ,ISYMM ,MXSUB ,MXSEG ,ICODE(NALB)
       REAL         DENS  ,PCORN
       CHARACTER    GEONAM*12,TITREC*7
-C----
-C  REDGET VARIABLES
-C----
+*----
+*  REDGET VARIABLES
+*----
       INTEGER     ITYPLU,INTLIR
       CHARACTER   CARLIR*12
       REAL        REALIR  
       DOUBLE PRECISION DBLLIR
-C----
-C  LOCAL VARIABLES
-C---- 
+*----
+*  LOCAL VARIABLES
+*---- 
       LOGICAL      SWZERO
       CHARACTER    COMENT*80
       INTEGER      NCODE(NALB),IMS(NALB)
@@ -81,15 +97,15 @@ C----
      >             MSROD ,MAROD ,MNAN  ,NRT   ,NSURX ,NBAN ,
      >             NUNK  ,JJ    ,IHS
       REAL         COTE  ,RADMIN 
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: KEYMRG,MATALB,NRINFO,NRODS,
      > NRODR,NXRI
       REAL, ALLOCATABLE, DIMENSION(:) :: VOLSUR,RAN,RODS,RODR
-C----
-C  DEFAULT TRACKING OPTIONS:
-C----
+*----
+*  DEFAULT TRACKING OPTIONS:
+*----
       PCORN=0.0
       CALL XDISET(ISTATE,NSTATE,0)
       CALL XDRSET(EXTKOP,NSTATE,0.0)
@@ -107,9 +123,9 @@ C----
         ISYMM=ISTATE(12)
         DENS=EXTKOP(2)
       ENDIF
-C----
-C  READ THE NEW TRACKING OPTIONS.
-C----
+*----
+*  READ THE NEW TRACKING OPTIONS.
+*----
       IF(IDISP .LE. 0) GO TO 200
  100  CALL REDGET(ITYPLU,INTLIR,REALIR,CARLIR,DBLLIR)
       IF(ITYPLU .NE. 3) CALL XABORT(NAMSBR//
@@ -121,9 +137,9 @@ C----
         ELSE
           ITOPT=0
         ENDIF
-C----
-C  2-D QUADRATURE PARAMETERS (ANGLE AND SPACE).
-C----
+*----
+*  2-D QUADRATURE PARAMETERS (ANGLE AND SPACE).
+*----
         CALL REDGET(ITYPLU,INTLIR,REALIR,CARLIR,DBLLIR)
         IF(ITYPLU .EQ. 3) THEN
           IF(ITOPT .EQ. 1 .AND. CARLIR .EQ. 'MEDI') THEN
@@ -143,14 +159,14 @@ C----
      >    ': REAL DATA EXPECTED.')
         DENS=REALIR
       ELSE IF(CARLIR .EQ. 'HALT') THEN
-C----
-C  NO TRACKING OPTION
-C----
+*----
+*  NO TRACKING OPTION
+*----
         IDISP=-2
       ELSE IF(CARLIR .EQ. 'SYMM') THEN
-C----
-C  SYMMETRY FACTOR
-C----
+*----
+*  SYMMETRY FACTOR
+*----
         CALL REDGET(ITYPLU,INTLIR,REALIR,CARLIR,DBLLIR)
         IF(ITYPLU .NE. 1) CALL XABORT(NAMSBR//
      >    ': INTEGER DATA EXPECTED.')
@@ -163,9 +179,9 @@ C----
       ENDIF
       GO TO 100
  200  CONTINUE
-C----
-C  Set NANGL for specular tracking to a valid value
-C----
+*----
+*  Set NANGL for specular tracking to a valid value
+*----
       IF(ITOPT .EQ. 1) THEN
         NANGL=MIN(30,NANGL)
         IF(NANGL .GT. 24) THEN
@@ -185,9 +201,9 @@ C----
         ENDIF
         ISYMM=1
       ENDIF
-C----
-C  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
-C----
+*----
+*  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
+*----
       ISTATE(1)=NVOL
       ISTATE(5)=NSUR
       ISTATE(9)=ITOPT
@@ -196,16 +212,16 @@ C----
       CALL LCMPUT(IPTRK,'STATE-VECTOR',NSTATE,1,ISTATE)
       EXTKOP(2)=DENS
       CALL LCMPUT(IPTRK,'EXCELTRACKOP',NSTATE,2,EXTKOP)
-C----
-C  ANALYZE GEOMETRY AND STORE DESCRIPTION ON TRACKING STRUCTURE
-C---- 
+*----
+*  ANALYZE GEOMETRY AND STORE DESCRIPTION ON TRACKING STRUCTURE
+*---- 
       CALL AXGXCW(IPGEOM,IPTRK ,IPRT  ,GEONAM,ISYMM )
-C----
-C  READ TRACKING STRUCTURE
-C     KEYMRG   : INTEGER MERGE VECTOR
-C     VOLSUR   : REAL VOLUME-SURFACE VECTOR
-C     MATALB   : INTEGER MATERIAL-FACE VECTOR
-C----
+*----
+*  READ TRACKING STRUCTURE
+*     KEYMRG   : INTEGER MERGE VECTOR
+*     VOLSUR   : REAL VOLUME-SURFACE VECTOR
+*     MATALB   : INTEGER MATERIAL-FACE VECTOR
+*----
       CALL XDISET(ISTATE,NSTATE,0)
       CALL LCMSIX(IPTRK,'EXCELL      ',1)
       CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE       )
@@ -280,32 +296,32 @@ C----
         WRITE(IFTEMP) (MATALB(JJ),JJ=1,1+NSUR+NVOL)
         WRITE(IFTEMP) (ICODE(JJ),JJ=1,NALBG)
         WRITE(IFTEMP) (ALBEDO(JJ),JJ=1,NALBG)
-C----
-C  SET DEFAULT TRACKING DENSITY
-C----
+*----
+*  SET DEFAULT TRACKING DENSITY
+*----
         IF(DENS .EQ. 0.0) DENS=5.0/RADMIN
         IF(ITOPT .EQ. 1) THEN
-C----
-C  SPECULAR TRACKING
-C----
+*----
+*  SPECULAR TRACKING
+*----
           CALL XCWSCL(NDIM  ,NSURX ,NVOL  ,NBAN  ,NRT   ,MSROD ,MAROD ,
      >                NANGL ,DENS  ,IFTEMP,IPRT  ,NCODE ,SWZERO,NRINFO,
      >                RAN   ,COTE  ,NRODS ,RODS  ,NRODR ,RODR  ,MXSUB ,
      >                MXSEG ,NXRI  ,IMS   )
           NANGL=4*NANGL
         ELSE
-C----
-C  ISOTROPIC TRACKING
-C----
+*----
+*  ISOTROPIC TRACKING
+*----
           CALL XCWICL(NDIM  ,NSURX ,NVOL  ,NBAN  ,NRT   ,MSROD ,MAROD ,
      >                NANGL ,DENS  ,ISYMM ,IFTEMP,IPRT  ,NRINFO,RAN   ,
      >                COTE  ,NRODS ,RODS  ,NRODR ,RODR  ,MXSEG ,NXRI  ,
      >                IMS)
         ENDIF
       ENDIF
-C----
-C  RELEASE BLOCKS FOR GEOMETRY
-C----
+*----
+*  RELEASE BLOCKS FOR GEOMETRY
+*----
       DEALLOCATE(RODR,RODS,RAN)
       DEALLOCATE(NXRI,NRODR,NRODS,NRINFO)
       DEALLOCATE(MATALB,VOLSUR,KEYMRG)

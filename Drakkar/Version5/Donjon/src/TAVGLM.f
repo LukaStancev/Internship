@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the burnup integration limits for a given channel.
+* Compute the burnup integration limits for a given channel.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal
 *
-*Author(s): D.Rozon, M.Beaudet, D.Sekki
+*Author(s): 
+* D.Rozon, M.Beaudet, D.Sekki
 *
 *Parameters: input
 * NB     number of fuel bundles.

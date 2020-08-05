@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transcription of the useful microscopic cross section data from a
+* Transcription of the useful microscopic cross section data from a
 * microlib to LCM data structures.
 *
 *Copyright:

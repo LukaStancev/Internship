@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transform dilution dependent total and partial self-shielded cross
+* Transform dilution dependent total and partial self-shielded cross
 * section into probability tables.
 *
 *Copyright:

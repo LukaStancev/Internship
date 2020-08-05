@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute and set the new rod position and insertion level for the
+* Compute and set the new rod position and insertion level for the
 * fading or moving rod.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki and A. Hebert
+*Author(s): 
+* D. Sekki and A. Hebert
 *
 *Parameters: input
 * IMPX    printing index (=0 for no print).

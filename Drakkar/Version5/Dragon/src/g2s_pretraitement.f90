@@ -703,7 +703,7 @@ contains
           end do
        end if
        if (.not.(flag1 .or. flag2)) then
-          !il ne s'est rien passe au cour des 2 tentatives
+          !il ne s'est rien passe au cours des 2 tentatives
           !precedentes => on abandonne si une valeur est non resolue
           saveSideName = sideName
           do !boucle sur toutes les donnees du dico
@@ -1577,7 +1577,8 @@ contains
     type(c_ptr),intent(in)    :: geoIp
     integer,intent(inout) :: szB,szP
     
-    integer,dimension(:),allocatable :: txx,tyy,turn,mix,merg
+    real,dimension(:),allocatable :: txx,tyy
+    integer,dimension(:),allocatable :: turn,mix,merg
     character*12,dimension(:),allocatable :: cells
     real                  :: side
     double precision      :: sdX,sdY
@@ -1599,13 +1600,13 @@ contains
     call LCMSIX(ip,'NEW-DATA    ',2)
     !placement des cellules
     call LCMGET(ip,'STATE-VECTOR',sv)
-    if (sv(8)==0) then !pas de sous-cellules
-       call chargerNewData(geoIp,szB,szP)
-       return !on sort
-    end if
-    nbC=sv(9)
     nbH=sv(3)
-    allocate(txx(nbH),tyy(nbH),turn(nbH),mix(nbH),merg(nbH),cells(nbC))
+    nbC=sv(9)
+    if ((sv(8)==0).and.(nbH==1)) then !pas de sous-cellules
+       call chargerNewData(geoIp,szB,szP)
+       return
+    end if
+    allocate(txx(nbH),tyy(nbH),turn(nbH),mix(nbH),merg(nbH))
     call LCMGET(ip,'MIX         ',mix)
     call LCMLEN(ip,'TURN        ',lg,typ)
     if (lg/=0) then
@@ -1617,7 +1618,7 @@ contains
     if (lg/=0) then
        call LCMGET(ip,'MERGE       ',merg)
     else
-       merg = (/(i,i=1,nbH)/)
+       merg(:nbH) = (/(i,i=1,nbH)/)
     end if
     call LCMGET(ip,'IHEX        ',iHex)
     lgSide = 0 
@@ -1756,34 +1757,49 @@ contains
     call giveSide(ip,szB,side)
     sdX = side*1.5d0 ; sdY = side*0.5d0*sqrt(3.d0)
     bCData%sidexy(1) = side ; bCData%sidexy(2) = lgSide * sdY
-    call LCMGTC(ip,'CELL        ',12,nbC,cells)
-    do i = 1,szB
-       ind = 0
-       do j = 1,szB
-          if (cells(i)==tabCelluleBase(j)%name) then
-             ind = j
-             exit
-          end if
-       end do
-       if (ind==0) call XABORT("G2S: internal error in function&
-            & creerEtChargerNewDataHex")
+    if (sv(8)==0) then !no sub-geometries
        do j = 1,nbH
-          if (mix(j)==-i) then
-             !on va creer une cellule placee d'indice ind en position j
-             szP = szP + 1
-!!$             allocate(tabCellulePlaced(szP)%p)
-             tabCellulePlaced(szP)%indice  = ind
-             tabCellulePlaced(szP)%xcenter = txx(j)*sdX
-             tabCellulePlaced(szP)%ycenter = tyy(j)*sdY
-             tabCellulePlaced(szP)%turn    = turn(j)
-             allocate(tabCellulePlaced(szP)%gig(1))
-             tabCellulePlaced(szP)%gig(1) = j
-             allocate(tabCellulePlaced(szP)%mrg(1))
-             tabCellulePlaced(szP)%mrg(1) = merg(j)
-          end if
+          szP = szP + 1
+          tabCellulePlaced(szP)%indice  = 1
+          tabCellulePlaced(szP)%xcenter = txx(j)*sdX
+          tabCellulePlaced(szP)%ycenter = tyy(j)*sdY
+          tabCellulePlaced(szP)%turn    = turn(j)
+          allocate(tabCellulePlaced(szP)%gig(1))
+          tabCellulePlaced(szP)%gig(1) = j
+          allocate(tabCellulePlaced(szP)%mrg(1))
+          tabCellulePlaced(szP)%mrg(1) = merg(j)
+       enddo
+    else
+       allocate(cells(nbC))
+       call LCMGTC(ip,'CELL        ',12,nbC,cells)
+       do i = 1,szB
+          ind = 0
+          do j = 1,szB
+             if (cells(i)==tabCelluleBase(j)%name) then
+                ind = j
+                exit
+             end if
+          end do
+          if (ind==0) call XABORT("G2S: internal error in function&
+               & creerEtChargerNewDataHex")
+          do j = 1,nbH
+             if (mix(j)==-i) then
+                !on va creer une cellule placee d'indice ind en position j
+                szP = szP + 1
+                tabCellulePlaced(szP)%indice  = ind
+                tabCellulePlaced(szP)%xcenter = txx(j)*sdX
+                tabCellulePlaced(szP)%ycenter = tyy(j)*sdY
+                tabCellulePlaced(szP)%turn    = turn(j)
+                allocate(tabCellulePlaced(szP)%gig(1))
+                tabCellulePlaced(szP)%gig(1) = j
+                allocate(tabCellulePlaced(szP)%mrg(1))
+                tabCellulePlaced(szP)%mrg(1) = merg(j)
+             end if
+          end do
        end do
-    end do
-    deallocate(txx,tyy,turn,mix,merg,cells)
+       deallocate(cells)
+    endif
+    deallocate(txx,tyy,turn,mix,merg)
   end subroutine creerEtChargerNewDataHex
 
   subroutine giveSide(ip,szB,side)

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of source for collision at iteration iter.
+* Calculation of source for collision at iteration iter.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -33,7 +33,6 @@
 * KEYFLX  position of flux elements in FI vector.
 * KEYCUR  position of current elements in FI.
 * IBC     index for boundary condition to connect a surface to another.
-* ALBEDO  albedo array.
 * STIS    integration strategy flag.
 * SIGAL   total cross-section and albedo array.
 *

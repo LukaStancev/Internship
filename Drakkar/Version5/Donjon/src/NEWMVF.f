@@ -6,12 +6,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover material regions affected by the device insertion.
+* Recover material regions affected by the device insertion.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): J. Koclas, D. Sekki
+*Author(s): 
+* J. Koclas, D. Sekki
 *
 *Parameters: input/output
 * INDX    index number of each material volume (=0 for virtual regions).

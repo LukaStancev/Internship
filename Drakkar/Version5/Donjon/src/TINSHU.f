@@ -1,26 +1,41 @@
 *DECK TINSHU
-      SUBROUTINE TINSHU(IPRES,NCH,NK,NX,NY,NZ,NREG,MS,NAMCHA,NAMCHA2,
+      SUBROUTINE TINSHU(IPRES,NCH,NK,NX,NY,NZ,NREG,MS,NAMCHA,NAMCH2,
      + WINT,MIX,BS,PS,ISFT,IXN,IYN,IPRT)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute new burnup values per channel after shuffling of two
+* Compute new burnup values per channel after shuffling of two
 * channels
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters: input/output
+* IPRES  Adress of the map Linked_List or XSM file.
+* NAMCHA Name of the channel to refuel
+* NAMCH2 Name of the channel to refuel
+* NS     Number of bundles inserted
+* MIX    Fuel map bundle index
+* MS     Maximum number of power shift
 *
-* IPRES   Adress of the map Linked_List or XSM file.
-* NAMCHA  Name of the channel to refuel
-* NAMCHA2 Name of the channel to refuel
-* NS      Number of bundles inserted
-* MIX     Fuel map bundle index
-* MS      Maximum number of power shift
+*Parameters: 
+* NCH       
+* NK        
+* NX        
+* NY        
+* NZ        
+* NREG      
+* WINT      
+* BS        
+* PS        
+* ISFT      
+* IXN       
+* IYN       
+* IPRT
 *
 *-----------------------------------------------------------------------
 *
@@ -33,7 +48,7 @@
       INTEGER     NCH,NK,NX,NY,NZ,NREG,ILONG,ITYP,IX,IY,IPRT,
      1            ICH1,ICH2,ILS,ITYLCM,IS,MAXS,MS
       REAL        WINT(NCH,NK),BS(NCH,NK,MS),PS(NCH,NK,MS)
-      CHARACTER   XNAM*4,YNAM*4,NAMCHA*4,NAMCHA2*4,TEXT4*4,CS*2
+      CHARACTER   XNAM*4,YNAM*4,NAMCHA*4,NAMCH2*4,TEXT4*4,CS*2
       INTEGER     MIX(NREG),IXN(NX),IYN(NY),ISFT(NCH,NK)
 *----
 *  LOCAL VARIABLES
@@ -160,8 +175,8 @@
 *----
 *  SEARCH FOR CHANNEL NUMBER WHERE TO MOVE
 *----
-      IF(NAMCHA2.NE.'POOL') THEN
-        TEXT4 = NAMCHA2(2:3)
+      IF(NAMCH2.NE.'POOL') THEN
+        TEXT4 = NAMCH2(2:3)
         IX = 1
         IY = 1
         DO 30 I=1,NX
@@ -174,7 +189,7 @@
         WRITE(HSMG,'(26H@TINSHU: NO CHANNEL NAMED ,A4,12H IN FUELMAP.)')
      +  NAMCHA
         CALL XABORT(HSMG)
-  31    TEXT4 = NAMCHA2(1:1)
+  31    TEXT4 = NAMCH2(1:1)
         DO 40 I=1,NY
           WRITE(YNAM,'(A4)') IYN(I)
           IF (YNAM.EQ.TEXT4) THEN
@@ -190,8 +205,8 @@
         IF(ICH2.EQ.0) CALL XABORT('@TINSHU: WRONG CHANNEL NAME')
         IF(IPRT.GT.3) THEN
           WRITE(6,*)
-          WRITE(6,*) ' SHUFFLING CHANNEL ',NAMCHA2,ICH2
-          WRITE(6,*) ' BEFORE ',NAMCHA2,(WINT(ICH2,I),I=1,NK)
+          WRITE(6,*) ' SHUFFLING CHANNEL ',NAMCH2,ICH2
+          WRITE(6,*) ' BEFORE ',NAMCH2,(WINT(ICH2,I),I=1,NK)
         ENDIF
 *----
 *  SHUFFLING
@@ -218,7 +233,7 @@
   50    CONTINUE
         IF(IPRT.GT.3) THEN
           WRITE(6,*)
-          WRITE(6,*) ' AFTER ',NAMCHA2,(WINT(ICH2,I),I=1,NK)
+          WRITE(6,*) ' AFTER ',NAMCH2,(WINT(ICH2,I),I=1,NK)
         ENDIF
       ELSE
         WRITE(6,*) ' CHANNEL TO POOL '

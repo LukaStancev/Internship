@@ -5,14 +5,16 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* add the microscopic x-sections of the extracted isotopes to the
+* Add the microscopic x-sections of the extracted isotopes to the
 * macroscopic residual.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
-*Changes  : E. Varin (2010/01/26)
+*Author(s): 
+* A. Hebert
+*Update(s):
+* E. Varin (2010/01/26)
 *
 *Parameters: input
 * IPCPO   pointer to l_compo information.

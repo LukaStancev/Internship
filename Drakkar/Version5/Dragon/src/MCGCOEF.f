@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* find MOC coefficients for DD1 approximation up to P3 scattering order
+* Find MOC coefficients for DD1 approximation up to P3 scattering order
 * using a Gauss-Chebyshev or Leonard-McDaniel-Chebyshev quadrature.
 *
 *Copyright:

@@ -12,7 +12,8 @@
 *Copyright:
 * Copyright (C) 2003 Ecole Polytechnique de Montreal.
 *
-*Author(s): G. Marleau, E. Varin
+*Author(s): 
+* G. Marleau, E. Varin
 *
 *Parameters: input
 * IPMAP   address of the \dds{map} data structure.

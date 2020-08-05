@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* add MC: specific geometry analysis info to NXTRecords.
+* Add MC: specific geometry analysis info to NXTRecords.
 *
 *Copyright:
 * Copyright (C) 2008 Ecole Polytechnique de Montreal

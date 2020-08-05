@@ -1,5 +1,31 @@
 *DECK XELCTR
       SUBROUTINE XELCTR(IFOLD,IFTRK,MXSUBO,MXSEGO,CUTOFX,ALBEDO)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* EXCELL prismatic tracking.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IFOLD   unnormalized tracking file number (at input).     
+* IFTRK   normalized tracking file number (at output).    
+* MXSUBO  undefined.                                   
+* MXSEGO  undefined.                                   
+* CUTOFX  cutoff factor.                               
+* ALBEDO  geometric albedos on external faces.         
+*
+*-----------------------------------------------------------------------
+*
+
 
       IMPLICIT NONE
 

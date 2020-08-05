@@ -11,7 +11,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* solve the linear system obtained by the characteristics formalism
+* Solve the linear system obtained by the characteristics formalism
 * with GMRES iterative approach.
 *
 *Copyright:
@@ -49,8 +49,7 @@
 * NANGL   number of tracking angles in the plan.
 * NREG    number of regions (volumes).
 * NSOUT   number of outer surfaces.
-* PHIANG  scratch.
-* SOUR    scratch.
+* SOUR    undefined.
 * IAAC    no acceleration / CDD acceleration of inner iterations (0/1).
 * ISCR    no acceleration / SCR acceleration of inner iterations (0/1).
 * LC      dimension of profiled matrices MCU and CQ.
@@ -72,7 +71,7 @@
 *         as soon as ( ||.|| is the euclidean norm):
 *         ||Phi(n+1)-Phi(n)||/||Phi(n)|| <= EPS.
 * REPSI   array containing precision of each iteration.
-* IKRYL   size of Krylov subspace.
+* NSTART  undefined.
 * SIGAL   total cross-section and albedo array.
 * LPS     used in scr acceleration.
 * NGROUP  number of groups.
@@ -84,7 +83,7 @@
 * NFUNL   number of moments of the flux (in 2D: NFUNL=NANI*(NANI+1)/2).
 * KEYFLX  position of flux elements in PHIOUT vector.
 * KEYCUR  position of current elements in PHIOUT vector.
-* STIS    'Source term isolation' option for flux integration.
+* STIS    Source term isolation option for flux integration.
 * NPJJM   number of pjj modes to store for STIS option.
 * REBFLG  ACA or SCR rebalancing flag.
 * LPRISM  3D prismatic extended tracking flag.

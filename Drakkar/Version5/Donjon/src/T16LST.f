@@ -1,33 +1,39 @@
 *DECK T16LST
       SUBROUTINE T16LST(IFT16 )
-C
-C----
-C  1- PROGRAMME STATISTICS:
-C      NAME     : T16DIM
-C      USE      : PRINT TAPE16 CONTENTS
-C      AUTHOR   : G.MARLEAU
-C      CREATED  : 1999/10/22
-C      REF      : EPM  IGE-244 REV.1
-C                 EACL RC-1176 (COG-94-52)
-C
-C      MODIFICATION LOG
-C      --------------------------------------------------------------
-C      | DATE AND INITIALS  | MOTIVATIONS
-C      --------------------------------------------------------------
-C      | 1999/10/22 G.M.    | LIST THE CONTENTS OF A TAPE16 FILE
-C      --------------------------------------------------------------
-C
-C  2- ROUTINE PARAMETERS:
-C    INPUT
-C      IFT16  : TAPE16 FILE UNIT                         I
-C  3- ROUTINES CALLED
-C    SPECIFIC T16CPO ROUTINES
-C      T16FND : FIND A TAPE16 RECORD
-C               EQUIVALENT TO FIND FUNCTION
-C               IN APPENDIX E OF EACL RC-1176
-C
-C----
-C
+*
+*----
+*  1- PROGRAMME STATISTICS:
+*      NAME     : T16DIM
+*
+*Purpose:
+*  PRINT TAPE16 CONTENTS
+*
+*Author(s): 
+* G.MARLEAU
+*
+*      CREATED  : 1999/10/22
+*      REF      : EPM  IGE-244 REV.1
+*                 EACL RC-1176 (COG-94-52)
+*
+*      MODIFICATION LOG
+*      --------------------------------------------------------------
+*      | DATE AND INITIALS  | MOTIVATIONS
+*      --------------------------------------------------------------
+*      | 1999/10/22 G.M.    | LIST THE CONTENTS OF A TAPE16 FILE
+*      --------------------------------------------------------------
+*
+*  2- ROUTINE PARAMETERS:
+*Parameters: input
+* IFT16   TAPE16 FILE UNIT                         I
+*
+*  3- ROUTINES CALLED
+*    SPECIFIC T16CPO ROUTINES
+*      T16FND : FIND A TAPE16 RECORD
+*               EQUIVALENT TO FIND FUNCTION
+*               IN APPENDIX E OF EACL RC-1176
+*
+*----
+*
       IMPLICIT         NONE
       INTEGER          IFT16
 C----

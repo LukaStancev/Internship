@@ -18,7 +18,7 @@
 *Parameters: input
 * DBLE1   first double precision value.
 * DBLE2   second double precision value.
-* DESP    comparison criterion.
+* DEPS    comparison criterion.
 *
 *Parameters: output
 * XDDCOM  comparison flag.

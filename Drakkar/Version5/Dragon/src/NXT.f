@@ -4,11 +4,15 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* To analyze and track a geometry data structure using the
-* new EXCELL type procedure.
+* Module used to analyze and track a geometry data structure based 
+* on the new EXCELL type procedure.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * G. Marleau
@@ -18,26 +22,22 @@
 *
 *Reference:
 *  G. Marleau,
-*  \textsl{New Geometries Processing in DRAGON: The NXT: Module},
-*  Report IGE-260, \'{E}cole Polytechnique de Montr\'{e}al,
-*  Montr\'{e}al, 2005.
+*  New Geometries Processing in DRAGON: The NXT: Module,
+*  Report IGE-260, Polytechnique Montreal,
+*  Montreal, 2005.
 *
 *Parameters: input
 * NENTRY  number of data structures transfered to this module.
 * HENTRY  name of the data structures.
 * IENTRY  data structure type where:
-*         \begin{itemize}
-*         \item IENTRY=1 for LCM memory object;
-*         \item IENTRY=2 for XSM file;
-*         \item IENTRY=3 for sequential binary file;
-*         \item IENTRY=4 for sequential ASCII file.
-*         \end{itemize}
-*JENTRY   access permission for the data structure where:
-*         \begin{itemize}
-*         \item JENTRY=0 for a data structure in creation mode;
-*         \item JENTRY=1 for a data structure in modifications mode;
-*         \item JENTRY=2 for a data structure in read-only mode.
-*         \end{itemize}
+*         =1 for LCM memory object;
+*         =2 for XSM file;
+*         =3 for sequential binary file;
+*         =4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         =0 for a data structure in creation mode;
+*         =1 for a data structure in modifications mode;
+*         =2 for a data structure in read-only mode.
 * KENTRY  data structure pointer.
 *
 *Comments:

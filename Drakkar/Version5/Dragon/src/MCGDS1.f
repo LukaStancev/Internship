@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the contributions in preconditionning matrices 
+* Calculation of the contributions in preconditionning matrices 
 * of a 2D-track
 *
 *Copyright:
@@ -43,14 +43,15 @@
 * XSW     scattering cross sections array.
 *
 *Parameters: input/output
-* CQ
-* CF
-* DIAGQ
-* DIAGF
+* CQ      undefined.
+* CF      undefined.
+* DIAGQ   undefined.
+* DIAGF   undefined.
 *
 *Parameters: scratch
-* PREV
-* NEXT
+* PREV    undefined.
+* NEXT    undefined.
+* WORK    undefined.
 *
 *-----------------------------------------------------------------------
 *

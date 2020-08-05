@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* lumping of the depletion matrix, fission yields, sources and initial
+* Lumping of the depletion matrix, fission yields, sources and initial
 * conditions to take into account the saturation of depleting nuclides.
 *
 *Copyright:
@@ -28,7 +28,6 @@
 * NSAT    number of saturating nuclides.
 * NVAR    number of nuclides in the complete depletion chain.
 * KSAT    position in chain of the saturating nuclides.
-* YST1    number densities for all isotopes.
 * NFISS   number of fissile isotopes producing fission products.
 * IDIRAC  saturation model flag (=1 to use Dirac function contributions
 *         in the saturating nuclide number densities.
@@ -40,9 +39,12 @@
 * ADPL    depletion matrix.
 * BDPL    depletion source.
 *
+*Parameters: input/output
+* YST1    number densities for all isotopes as input and of
+*         the non-saturated isotopes as output.
+*
 *Parameters: output
 * NSUPFG  number of lumped depleting fission products.
-* YST1    number densities of the non-saturated isotopes.
 * YSAT    number densities of the saturating isotopes.
 *
 *-----------------------------------------------------------------------

@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* add transport correction and Goldstein-Cohen data to a /microlib/
+* Add transport correction and Goldstein-Cohen data to a /microlib/
 * directory.
 *
 *Copyright:

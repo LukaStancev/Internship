@@ -38,13 +38,16 @@
 * IM      connection matrix.
 * MCU     connection matrix.
 * JU      used for ilu0 preconditioner.
-* XIN    
+* XIN     undefined.
 * LC0     used in ILU0-ACA acceleration.
 * IM0     used in ILU0-ACA acceleration.
 * MCU0    used in ILU0-ACA acceleration.
 *
 *Parameters: output
-* XOUT
+* XOUT    undefined.
+*
+*Parameters: scratch
+* TEMP    preconditioning coefficients
 *
 *-----------------------------------------------------------------------
 *

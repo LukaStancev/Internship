@@ -4,16 +4,17 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* store the header of HELIOS.dra file - (independant data compared with
+* Store the header of HELIOS.dra file - (independant data compared with
 * branching calculation) at phase 1
 * WARNING: 04/2014 : the format of this file respect the HELIOS format
 * (it cannot be changed)
 * The information is recovered from the input file (.x2m) and stored in
 * the INFO DATA block. The user can change any values in the input file
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-*parameters: input
+*Parameters: input
 * IPHEL   file unit of HELIOS like file
 * IPDAT   adress of info data block
 * STAVEC  various parameters associated with the IPDAT structure
@@ -23,6 +24,11 @@
 * FC4     FILE_CONT_4 recovered from D2P: input
 * XSC     XS_CONT     recovered from D2P: input
 * IPRINT  control the printing on screen
+*
+*Parameters: 
+* IPMIC   
+* IPINP   
+* JOBOPT  
 *
 *-----------------------------------------------------------------------
 *
@@ -63,7 +69,7 @@
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'SAPHYB_INFO',1)
 
-      CALL LCMGET(IPDAT,'IDEVAR',STAVAR)
+      CALL LCMGTC(IPDAT,'IDEVAR',4,NPAR,STAVAR)
       CALL LCMSIX(IPDAT,' ',0)
       CALL LCMSIX(IPDAT,'GENPMAXS_INP',1)
       CALL LCMGET(IPDAT,'DAT_SRC',DATSRC)

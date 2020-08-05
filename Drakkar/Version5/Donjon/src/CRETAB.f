@@ -6,12 +6,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create burnup dependent table with the extracted isotope.
+* Create burnup dependent table with the extracted isotope.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPCPO   pointer to l_compo information.

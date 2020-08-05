@@ -9,7 +9,11 @@
 * quadrature angles.
 *
 *Copyright:
-* Copyright (C) 2005 Ecole Polytechnique de Montreal.
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
 *
 *Author(s):
 * M. Hampartzounian
@@ -21,7 +25,7 @@
 * R. Sanchez, L. Mao, S. Santandrea
 * Treatment of boundary conditions in trajectory-based deterministic
 * transport methods,
-* Nucl. Sci. Eng. \textbf{140}, 23-50 (2002),
+* Nucl. Sci. Eng. 140, 23-50 (2002),
 *
 *Parameters: input
 * NDIM    number of dimensions for geometry.
@@ -33,6 +37,7 @@
 *Parameters: output
 * DANGLT  director cosines of angles.
 * DDENWT  angular density for each angle.
+*
 *----------
 *
       IMPLICIT   NONE

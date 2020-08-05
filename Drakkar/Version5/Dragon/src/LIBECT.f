@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* build the elastic scattering law for neutrons with secondary energy
+* Build the elastic scattering law for neutrons with secondary energy
 * in group LLL.
 *
 *Copyright:

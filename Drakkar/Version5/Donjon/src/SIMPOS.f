@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* set the correspondance between assembly indices during refuelling.
+* Set the correspondance between assembly indices during refuelling.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input/output
 * LX      number of assemblies along the X axis.

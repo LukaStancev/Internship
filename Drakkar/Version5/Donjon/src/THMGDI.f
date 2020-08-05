@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the average thermal conductivity of the cladding
+* Compute the average thermal conductivity of the cladding
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet, V. Salino
+*Author(s): 
+* P. Gallet, V. Salino
 *
 *Parameters: input
 * T2K     final temperature in Kelvin.

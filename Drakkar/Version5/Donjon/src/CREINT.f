@@ -6,13 +6,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover and interpolate l_compo information according to burnup and
+* Recover and interpolate l_compo information according to burnup and
 * extracted isotope density.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): A. Hebert
+*Author(s): 
+* A. Hebert
 *
 *Parameters: input
 * IPCPO   pointer to l_compo information.
@@ -34,6 +35,7 @@
 * ITY     =0: do not process the isotope; =1: use number density
 *         stored in conc(i); =2: use number density stored in compo.
 * CONC    user defined number density.
+* ILEAK
 *
 *Parameters: output
 * TOTAL   total macroscopic x-sections.

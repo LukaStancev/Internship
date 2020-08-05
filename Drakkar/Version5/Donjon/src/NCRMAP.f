@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* recover global parameter values from the fuel-map object.
+* rRcover global parameter values from the fuel-map object.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki, R. Chambon
+*Author(s): 
+* D. Sekki, R. Chambon
 *
 *Parameters: input
 * IPMAP   pointer to the fuel-map information.
@@ -19,7 +20,7 @@
 * HPARM   names of these global parameters.
 * NCH     number of reactor channels.
 * NB      number of fuel bundles per channel.
-* IBTYP    type of interpolation:
+* IBTYP   type of interpolation:
 *         =0 not provided; =1 time-average; =2 instantaneous;
 *         =3 derivative with respect to a single exit burnup.
 * IMPX    printing index (=0 for no print).

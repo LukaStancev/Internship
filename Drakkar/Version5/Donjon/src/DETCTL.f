@@ -5,12 +5,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* call the subroutines that perform the parabolic interpolation.
+* Call the subroutines that perform the parabolic interpolation.
 *
 *Copyright:
 * Copyright (C) 2010 Ecole Polytechnique de Montreal.
 *
-*Author(s): E. Varin, M. Guyot
+*Author(s): 
+* E. Varin, M. Guyot
 *
 *Parameters:
 * NX     number of x mesh-splitted elements 

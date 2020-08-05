@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute a set of comoments ((SIGA**P)*(SIGT**Q)).
+* Compute a set of comoments ((SIGA**P)*(SIGT**Q)).
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

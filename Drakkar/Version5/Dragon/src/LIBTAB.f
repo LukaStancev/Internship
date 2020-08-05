@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* transform dilution dependent information into probability tables.
+* Transform dilution dependent information into probability tables.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal

@@ -4,57 +4,57 @@
      >                   NGEOME,   NTYP,  NGIDL,  NTIDL,  NUNKO,  CELLG,
      >                    NSURO,  NVOLO, IDLDIM, IDLGEO, KEYTRN, KEYGEO,
      >                   IDLTYP, KEYTYP, MRGCEL, IDLBLK)
-************************************************************************
-*                                                                      *
-*           NAME: XELDCL                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 3 (CALLED BY 'XELTRK')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 87/01                                                *
-*       MODIFIED: 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE WILL ASSOCIATE ALL BLOCKS OF A PROBLEM  *
-*                 TO THEIR BLOCK TYPES & WILL GENERATE ALMOST ALL      *
-*                 USEFUL INTEGER VALUES THAT WILL DESCRIBE THE PROBLEM.*
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./INT        *
-* GEONAM / GEOMETRY NAME                                /I./CAR*12     *
-* NDIM   / # OF DIMENSIONS.                             /I./INT        *
-* MAXGRI / # OF GRID CELL IN X/Y/Z DIRECTIONS           /I./INT(3)     *
-* LCLSYM / SYMMETRY FLAGS (0:NO,-1/+1:SYME,,-2/+2:SSYM) /I./INT(3)     *
-* NBLOCK / # OF BLOCKS.                                 /I./INT        *
-* NTYPO  / OLD # OF TYPES.                              /I./INT        *
-* LL1    / UPPER DIAG SWITCH.                           /I./LOG        *
-* LL2    / LOWER DIAG SWITCH.                           /I./LOG        *
-* IPRT   / INTERMEDIATE PRINTING LEVEL FOR OUTPUT.      /I./INT        *
-* NTOTCO / TOT # OF CYLINDERS IN ALL GEOMETRIES         /.O/INT        *
-* MAXRO  / MAX # OF WORDS TO STOCK MESHES.              /.O/INT        *
-* NGEOME / # OF GEOMETRIES.                             /.O/INT        *
-* NTYP   / NEW # OF TYPES.                              /.O/INT        *
-* NGIDL  / LENGHT OF GEOMETRIC NUMBERING.               /.O/INT        *
-* NTIDL  / LENGHT OF TYPE NUMBERING.                    /.O/INT        *
-* NUNKO  / OLD # OF UNKNOWNS.                           /.O/INT        *
-* CELLG  / TO KEEP CELL GEOMETRY NAMES.                 /.O/C*4        *
-* NSURO  / # OF SURFACES OF EACH GEOMETRY.              /.O/INT(NBLOCK)*
-* NVOLO  / # OF ZONES OF EACH GEOMETRY.                 /.O/INT(NBLOCK)*
-* IDLDIM / POSITION OF EACH GEOEMTRY IN CYLINDERS #ING. /.O/INT(NBLOCK)*
-* IDLGEO / POSITION OF EACH GEOMETRY IN THE             /.O/INT(NBLOCK)*
-*        /            GEOMETRY NUMBERING SCHEME.        /  /           *
-* KEYTRN / TURN KEY FOR EACH BLOCK.                     /.O/INT(NBLOCK)*
-* KEYGEO / GEOMETRIC KEY FOR EACH TYPE.                 /.O/INT(NBLOCK)*
-* IDLTYP / POSITION OF EACH TYPE IN NUMBERING SCHEME.   /.O/INT(NBLOCK)*
-* KEYTYP / TYPE KEY FOR EACH BLOCK.                     /.O/INT(NBLOCK)*
-* MRGCEL / MERGING KEY OF EACH BLOCK.                   /.O/INT(NBLOCK)*
-* IDLBLK / POSITION OF EACH BLOCK IN NUMBERING SCHEME.  /.O/INT(NBLOCK)*
-*--------+---------------- R O U T I N E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                                *
-*--------+-------------------------------------------------------------*
-* XELPRC / TO GET MAIN DIMENSIONING FOR EACH CELL.                     *
-************************************************************************
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Associate all blocks of a problem to their block types and generate  
+* almost all  useful integer values that will describe the problem.
+*
+*Copyright:
+* Copyright (C) 1987 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPGEOM  pointer to the geometry (l_geom).             
+* GEONAM  geometry name.                                
+* NDIM    number of dimensions.                             
+* MAXGRI  number of grid cell in X/Y/Z directions           
+* LCLSYM  symmetry flags (0:no,-1/+1:syme,,-2/+2:ssym) 
+* NBLOCK  number of blocks.                                 
+* NTYPO   old number of types.                              
+* LL1     upper diag switch.                           
+* LL2     lower diag switch.                           
+* IPRT    intermediate printing level for output.      
+*
+*Parameters: output
+* NTOTCO  tot number of cylinders in all geometries.         
+* MAXRO   max number of words to stock meshes.              
+* NGEOME  number of geometries.                             
+* NTYP    new number of types.                              
+* NGIDL   lenght of geometric numbering.               
+* NTIDL   lenght of type numbering.                    
+* NUNKO   old number of unknowns.                           
+* CELLG   to keep cell geometry names.                 
+* NSURO   number of surfaces of each geometry.              
+* NVOLO   number of zones of each geometry.                 
+* IDLDIM  position of each geoemtry in cylinders numbering. 
+* IDLGEO  position of each geometry in the             
+*         geometry numbering scheme.        
+* KEYTRN  turn key for each block.                     
+* KEYGEO  geometric key for each type.                 
+* IDLTYP  position of each type in numbering scheme.   
+* KEYTYP  type key for each block.                     
+* MRGCEL  merging key of each block.                   
+* IDLBLK  position of each block in numbering scheme.  
+*
+*-----------------------------------------------------------------------
+*
       USE                GANLIB
       IMPLICIT           NONE
 *----
@@ -177,7 +177,7 @@
          ELSE
             CALL XABORT(NAMSBR//': MERGES ARE INCOMPATIBLE' )
          ENDIF
-C
+*
          CALL LCMLEN(IPGEOM,'TURN', NMERG3, ITYP)
          IF( NMERG3.EQ.0 )THEN
             DO 110 IMERG1= 1, NMERG1
@@ -246,8 +246,8 @@ C
      >        (CELLT(3*IB1-2),CELLT(3*IB1-1),CELLT(3*IB1),IB1=NXC,NXM)
               NXC= NXC + 10
   400       CONTINUE
-C
-C           PRINTING ASSEMBLY MAP
+*
+*           PRINTING ASSEMBLY MAP
             CPLAN= BLANC
             NLINP= 3+(MAXGRI(2)+1)*((9+MAXGRI(1))/10+1)
             DO 410 IZ=1,MAXGRI(3)
@@ -294,7 +294,7 @@ C           PRINTING ASSEMBLY MAP
             WRITE( GEOC1(1: 4),'(A4)') CELLT(3*IC1-2)
             WRITE( GEOC1(5: 8),'(A4)') CELLT(3*IC1-1)
             WRITE( GEOC1(9:12),'(A4)') CELLT(3*IC1  )
-C           SEARCH FOR SIMILAR GEOMETRIES IN PREVIOUS ONES
+*           SEARCH FOR SIMILAR GEOMETRIES IN PREVIOUS ONES
             IF( IB1.NE.1 )THEN
                DO 41 IB2= 1, IB1-1
                   IC2= KEYTYP(IB2)
@@ -485,7 +485,7 @@ C           SEARCH FOR SIMILAR GEOMETRIES IN PREVIOUS ONES
                GO TO 50
  51          CONTINUE
            ENDIF
-C          ANALYSE GEOMETRY
+*          ANALYSE GEOMETRY
            CALL XELPRC(IPGEOM,GEONAM,NDIM,NNCYL,NNSUR,NNVOL,MAXREM)
            IF( NNVOL.NE.0 )THEN
              NSURO(NGEOME)= -NNSUR

@@ -3,59 +3,55 @@
      >                  IPRT  ,NDIM  ,ITOPT ,NV    ,NS    ,NANGL ,
      >                  ISYMM ,DENUSR,RCUTOF,MXSUB ,MXSEG ,ICODE ,
      >                  TITREC,INSB  ,IZ    ,LPRISM,NPRISM)
-************************************************************************
-*                                                                      *
-*           NAME: XELTRK                                               *
-*      COMPONENT: EXCELL                                               *
-*          LEVEL: 2 (CALLED BY 'EXCELT')                               *
-*        VERSION: 1.0                                                  *
-*       CREATION: 93/04 (R.R.)                                         *
-*       MODIFIED: 97/11 (G.M.) INTRODUCE OFFCENTER VARIATION           *
-*                 00/03 (R.R.) DECLARE ALL VARIABLE TYPES              *
-*         AUTHOR: ROBERT ROY                                           *
-*                                                                      *
-*     SUBROUTINE: THIS ROUTINE IS USED TO TREAT CARTESIAN ASSEMBLIES   *
-*                 OF CELLS; THIS IS A TWO-STEP PROCESS:                *
-*                 1) STUDY THE GEOMETRY TO GET VOLUMES AND MATERIALS   *
-*                 2) PRODUCE TEMPORARY TRACKING FILE IF NECESSARY      *
-*                                                                      *
-*--------+-------------- V A R I A B L E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                 /IO/MOD(DIMENS)*
-*--------+----------------------------------------------+--+-----------*
-* IPTRK  / POINTER TO THE TRACKING (L_TRACK)            /I./TYPE(C_PTR)*
-* IPGEOM / POINTER TO THE GEOMETRY (L_GEOM)             /I./TYPE(C_PTR)*
-* GEONAM / GEOMETRY NAME                                /I./CAR*12     *
-* IDISP  / STATUS OF TRACKING FILE (NEWT:IDISP.GT.0)    /IO/INT        *
-*        /  CHANGED ONLY FOR *HALT* OPTION.             /  /           *
-* IFTEMP / UNIT NUMBER ALLOCATED TO TEMPORARY FILE      /I./INT        *
-* IPRT   / GEOMETRY PRINT LEVEL                         /I./INT        *
-* NDIM   / # OF DIMENSIONS (2.OR.3)                     /I./INT        *
-* ITOPT  / KIND OF TRACKING (0:ISOTROPIC;1:SPECULAR)    /IO/INT        *
-* NV     / # OF ZONES IN THE ASSEMBLY.                  /.O/INT        *
-* NS     / # OF SURFACES IN THE ASSEMBLY.               /.O/INT        *
-* NANGL  / # OF ANGLES USED IN TEMPORARY TRACKING FILE. /.O/INT        *
-* ISYMM  / SYMMETRY FACTOR.                             /IO/INT        *
-* DENUSR / DENSITY OF TRACKS IN THE PLANE PERPENDICULAR /IO/REL        *
-*        /      TO THE TRACKING ANGLES.                 /  /           *
-* RCUTOF / CUTOF FOR CORNER TRACKING( 0.25 SUGGESTED )  /I./REL        *
-* MXSUB  / MAXIMUM # OF SUBTRACKS IN A SINGLE TRACK.    /.O/INT        *
-* MXSEG  / MAXIMUM # OF SEGMENTS IN A SINGLE TRACK.     /.O/INT        *
-* ICODE  / INDEX FOR BOUNDARY CONDITIONS.               /.O/INT(6)     *
-* TITREC / TITLE FOR THIS CASE                          /I./C*72       *
-* INSB   / CONTROL ON VECTORIZATION                     /I./INT        *
-* IZ     / PROJECTION AXIS FOR 3D PRISMATIC GEOMETRY    /I./INT        *
-* LPRISM / FLAG FOR 3D PRISMATIC GEOMETRY               /I./LOG        *
-* NPRISM / NUMER OF PLANS FOR A 3D PRISMATIC GEOMETRY   /.O/INT        *
-*--------+---------------- R O U T I N E S -------------+--+-----------*
-*  NAME  /                  DESCRIPTION                                *
-*--------+-------------------------------------------------------------*
-* AXGXEL / TO ANALYZE GEOMETRY                                         *
-* XELGPR / TO PRINT A GEOMETRY REPRESENTATION                          *
-* XELTI2 / TO TRACK IN 2D GEOMETRIES (REGULAR TRACKS)                  *
-* XELTI3 / TO TRACK IN 3D GEOMETRIES (REGULAR TRACKS)                  *
-* XELTS2 / TO TRACK IN 2D GEOMETRIES (CYCLIC TRACKS)                   *
-************************************************************************
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* treat Cartesian assemblies of cells using a two-step process:
+* 1) study the geometry to get volumes and materials;
+* 2) produce temporary tracking file if necessary.
+*
+*Copyright:
+* Copyright (C) 1993 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): R. Roy
+*
+*Parameters: input
+* IPTRK   pointer to the tracking (l_track)            
+* IPGEOM  pointer to the geometry (l_geom)             
+* GEONAM  geometry name                                
+* IFTEMP  unit number allocated to temporary file      
+* IPRT    geometry print level                         
+* NDIM    number of dimensions (2.or.3)                     
+* RCUTOF  cutof for corner tracking( 0.25 suggested )  
+* TITREC  title for this case                          
+* INSB    control on vectorization                     
+* IZ      projection axis for 3d prismatic geometry    
+* LPRISM  flag for 3d prismatic geometry               
+*
+*Parameters: input/output
+* ITOPT   kind of tracking (0:isotropic;1:specular)    
+* IDISP   status of tracking file (newt:idisp.gt.0)    
+*         changed only for *halt* option.             
+* ISYMM   symmetry factor.                             
+* DENUSR  density of tracks in the plane perpendicular 
+*         to the tracking angles.                 
+*
+*Parameters: output
+* NV      number of zones in the assembly.                  
+* NS      number of surfaces in the assembly.               
+* NANGL   number of angles used in temporary tracking file. 
+* MXSUB   maximum number of subtracks in a single track.    
+* MXSEG   maximum number of segments in a single track.     
+* ICODE   index for boundary conditions.               
+* NPRISM  numer of plans for a 3d prismatic geometry   
+*
+*-----------------------------------------------------------------------
+*
       USE             GANLIB
       IMPLICIT        NONE
       TYPE(C_PTR)     IPTRK ,IPGEOM
@@ -65,21 +61,21 @@ C
       REAL            DENUSR,RCUTOF
       CHARACTER       GEONAM*12, TITREC*72
       INTEGER         ICODE(6)
-C
+*
       INTEGER         NSTATE, IOUT
       PARAMETER     ( NSTATE=40, IOUT=6)
-C----
-C  ALLOCATABLE ARRAYS
-C----
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: KEYMRG,MATALB,MINDIM,MAXDIM,
      > ICORD,INDEX,ICUR,INCR,NUMERO
       REAL, ALLOCATABLE, DIMENSION(:) :: VOLSUR,REMESH,CONV,TRKBEG,
      > TRKDIR
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: ANGLES,DENSTY,
      > LENGHT,DDENWT
-C----
-C  LOCAL PARAMETERS
-C---- 
+*----
+*  LOCAL PARAMETERS
+*---- 
       INTEGER         LTRK  ,NANGLE,SUBMAX,LINMAX
       INTEGER         NSUR  ,NVOL  ,NTOTCL,MAXR  ,NUNK  ,NEXTGE
       INTEGER         NTX   ,NTY   ,NTZ   ,NTR   ,ICL   ,NC    ,
@@ -92,11 +88,11 @@ C----
       CHARACTER       CTISO*8, CTSPC*8,  CCORN*8, CSYMM*8, CMEDI*8,
      >                CHALT*8, CBLAN*8, TEDATA*8, CTRK*4, COMENT*80
       INTEGER         MXANGL
-C
+*
       SAVE     CTISO, CTSPC, CCORN, CHALT, CSYMM, CMEDI, CBLAN
       DATA     CTISO, CTSPC, CCORN, CHALT, CSYMM, CMEDI, CBLAN
      >       / 'TISO','TSPC','CORN','HALT','SYMM','MEDI','    ' /
-C
+*
       SWZERO=.TRUE.
       CALL XDISET(ISTATE,NSTATE,0)
       CALL XDRSET(EXTKOP,NSTATE,0.0)
@@ -117,11 +113,11 @@ C
          RCUTOF=EXTKOP(3)
       ENDIF
       CUTOFX= 0.0
-C
-C. 1) READ ALL USER INPUT.
-C
-C     READ TRACKING PARAMETERS  LTRK= 1 : ISOTROPIC TRACKING   (TISO)
-C                               LTRK= 2 : SPECULAR TRACKING    (TSPC)
+*
+*. 1) READ ALL USER INPUT.
+*
+*     READ TRACKING PARAMETERS  LTRK= 1 : ISOTROPIC TRACKING   (TISO)
+*                               LTRK= 2 : SPECULAR TRACKING    (TSPC)
       TEDATA= CBLAN
       IF( IDISP.GT.0 )THEN
          CALL REDGET( INDLEC, NANGLE, DENUSR, TEDATA,DBLINP)
@@ -186,9 +182,9 @@ C                               LTRK= 2 : SPECULAR TRACKING    (TSPC)
          ENDIF
       ENDIF
    10 CONTINUE
-C----
-C  PROCESS THE GEOMETRY
-C----
+*----
+*  PROCESS THE GEOMETRY
+*----
       CALL AXGXEL(IPGEOM,IPTRK ,IPRT  ,GEONAM)
       IF(IPRT .GE. 1)THEN
          WRITE(IOUT,'(1H )')
@@ -196,9 +192,9 @@ C----
          WRITE(IOUT,'(26H >>> EXCELL TREATMENT <<< )')
          WRITE(IOUT,'(1H )')
       ENDIF
-C----
-C  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
-C----
+*----
+*  SAVE EXCELL SPECIFIC TRACKING INFORMATION.
+*----
       ISTATE(9)=LTRK-1
       ISTATE(11)=NANGLE
       ISTATE(12)=ISYMM
@@ -207,10 +203,10 @@ C----
       EXTKOP(2)=DENUSR
       EXTKOP(3)=RCUTOF
       CALL LCMPUT(IPTRK,'EXCELTRACKOP',NSTATE,2,EXTKOP)
-C----
-C  IF A PRISMATIC 3D TRACKING IS REQUESTED, 
-C  CREATE 2D PROJECTED GEOMETRY ANALYSIS
-C----
+*----
+*  IF A PRISMATIC 3D TRACKING IS REQUESTED, 
+*  CREATE 2D PROJECTED GEOMETRY ANALYSIS
+*----
       IF (LPRISM) THEN
          CALL XELPR3(IPTRK,IZ,NPRISM)
          CALL LCMSIX(IPTRK,'PROJECTION  ',1)
@@ -218,12 +214,12 @@ C----
       ELSE
          CALL LCMSIX(IPTRK,'EXCELL      ',1)         
       ENDIF
-C----
-C  ALLOCATE GEOMETRIC STRUCTURES (SEE COMMON CEXGEO)
-C     KEYMRG   : INTEGER MERGE VECTOR
-C     VOLSUR   : REAL VOLUME-SURFACE VECTOR
-C     MATALB   : INTEGER MATERIAL-FACE VECTOR
-C----
+*----
+*  ALLOCATE GEOMETRIC STRUCTURES (SEE COMMON CEXGEO)
+*     KEYMRG   : INTEGER MERGE VECTOR
+*     VOLSUR   : REAL VOLUME-SURFACE VECTOR
+*     MATALB   : INTEGER MATERIAL-FACE VECTOR
+*----
       CALL XDISET(ISTATE,NSTATE,0)
       CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE)
       NDIM     =ISTATE(1)
@@ -245,15 +241,15 @@ C----
       NS= -NSUR
       ITOPT=LTRK-1
       NANGL=0
-C----
-C  EXCELL-TYPE VECTORIZATION - THE TRACKING FILE IS NOT COMPUTED
-C----
+*----
+*  EXCELL-TYPE VECTORIZATION - THE TRACKING FILE IS NOT COMPUTED
+*----
       IF(INSB.EQ.2) RETURN
-C----
-C  Intrinsic symmetries used in geometry
-C  Use these to simplify tracking unless 
-C  NOSYMM tracking option activated
-C----
+*----
+*  Intrinsic symmetries used in geometry
+*  Use these to simplify tracking unless 
+*  NOSYMM tracking option activated
+*----
       LCLSYM(1) =ISTATE(8)
       LCLSYM(2) =ISTATE(9)
       LCLSYM(3) =ISTATE(10)
@@ -261,66 +257,66 @@ C----
         ISYMM=0
         IF(NDIM .EQ. 2) THEN
           IF(LCLSYM(1) .NE. 0) THEN
-C----
-C  X SYMMETRY
-C----
+*----
+*  X SYMMETRY
+*----
             ISYMM=2
           ENDIF
           IF(LCLSYM(2) .NE. 0) THEN
             IF(ISYMM .EQ. 0) THEN
-C----
-C  Y SYMMETRY
-C----
+*----
+*  Y SYMMETRY
+*----
               ISYMM=4
             ELSE
-C----
-C  X AND Y SYMMETRY
-C----
+*----
+*  X AND Y SYMMETRY
+*----
               ISYMM=8 
             ENDIF
           ENDIF
-CC          IF(ISTATE(11) .NE. 0) THEN
-CCC----
-CCC  X-Y DIAGONAL SYMMETRY
-CCC---- 
-CC            IF(ISYMM .EQ. 0) THEN
-CC              ISYMM=10
-CC            ELSE
-CC              ISYMM=12
-CC            ENDIF
-CC          ENDIF 
+*C          IF(ISTATE(11) .NE. 0) THEN
+*CC----
+*CC  X-Y DIAGONAL SYMMETRY
+*CC---- 
+*C            IF(ISYMM .EQ. 0) THEN
+*C              ISYMM=10
+*C            ELSE
+*C              ISYMM=12
+*C            ENDIF
+*C          ENDIF 
         ELSE
           IF(LCLSYM(1) .NE. 0) THEN
-C----
-C  X SYMMETRY
-C----
+*----
+*  X SYMMETRY
+*----
             ISYMM=2
           ENDIF
           IF(LCLSYM(2) .NE. 0) THEN
             IF(ISYMM .EQ. 0) THEN
-C----
-C  Y SYMMETRY
-C----
+*----
+*  Y SYMMETRY
+*----
               ISYMM=4
             ELSE
-C----
-C  X AND Y SYMMETRY
-C----
+*----
+*  X AND Y SYMMETRY
+*----
               ISYMM=8 
             ENDIF
           ENDIF 
           IF(LCLSYM(3) .NE. 0) THEN
-C----
-C  Z SYMMETRY
-C----
+*----
+*  Z SYMMETRY
+*----
             ISYMM=ISYMM+16
           ENDIF
         ENDIF
         IF(ISYMM .EQ. 0) ISYMM=1
       ENDIF
-C----
-C  READ THE GEOMETRY INFORMATION STORED ON IPTRK
-C----      
+*----
+*  READ THE GEOMETRY INFORMATION STORED ON IPTRK
+*----      
       SUBMAX= 0
       LINMAX= 0
       CALL LCMSIX(IPTRK,'EXCELL      ',1)
@@ -334,17 +330,17 @@ C----
       CALL LCMGET(IPTRK,'REMESH      ',REMESH)
       CALL LCMSIX(IPTRK,'EXCELL      ',2)
       IF (LPRISM) CALL LCMSIX(IPTRK,'PROJECTION  ',2)
-C----
-C  VERIFY SYMMETRY AND
-C  STUDY TRACKING PARAMETERS. ARE THEY BASICALLY POSSIBLE ?
-C----
+*----
+*  VERIFY SYMMETRY AND
+*  STUDY TRACKING PARAMETERS. ARE THEY BASICALLY POSSIBLE ?
+*----
       MXANGL=0
       IF(LTRK .EQ. 1)THEN
         NCOR= 1
         IF(NDIM .EQ. 2) THEN
           MXANGL=NANGLE
-CC          IF(ISYMM .EQ. 12) THEN
-CC            NANGL = NANGLE/4
+*C          IF(ISYMM .EQ. 12) THEN
+*C            NANGL = NANGLE/4
           IF(ISYMM .GE. 2) THEN
             NANGL = (NANGLE+1)/2
           ELSE 
@@ -403,10 +399,10 @@ CC            NANGL = NANGLE/4
         CUTOFX= RCUTOF
       ENDIF
       IF(IPRT .GT. 1 .AND. NEXTGE .EQ. 0)THEN
-C----
-C  IF PRINT REQUIRED AND OVERALL CARTESIAN GEOMETRY
-C  PRINT CARTESIAN REGION MAP 
-C----
+*----
+*  IF PRINT REQUIRED AND OVERALL CARTESIAN GEOMETRY
+*  PRINT CARTESIAN REGION MAP 
+*----
          NTX= MAXDIM(1)-MINDIM(1)
          NTY= MAXDIM(2)-MINDIM(2)
          NTZ= MAXDIM(3)-MINDIM(3)
@@ -417,8 +413,8 @@ C----
          CALL XELGPR(NDIM,NTX,NTY,NTZ,NTR,ISYMM,NSUR,NVOL,NTOTCL,
      >               MINDIM,MAXDIM,KEYMRG,INDEX,MATALB)
       ENDIF
-C
-C. 3) DO THE TRACKING OF THE EXACT GEOMETRY FOR *NEWT* OPTION.
+*
+*. 3) DO THE TRACKING OF THE EXACT GEOMETRY FOR *NEWT* OPTION.
       IF( IDISP.GT.0.AND.LTRK.NE.0 )THEN
          NC= NTOTCL - 3
          IF( IPRT.GE.1 )THEN
@@ -442,17 +438,17 @@ C. 3) DO THE TRACKING OF THE EXACT GEOMETRY FOR *NEWT* OPTION.
          ENDIF 
          ALLOCATE(ICUR(NTOTCL),INCR(NTOTCL))
          ALLOCATE(CONV(NTOTCL),TRKBEG(NTOTCL),TRKDIR(NTOTCL))
-C
-C  3.0)  WRITE FIRST RECORDS OF THE UNNORMALIZED TRACKING FILE
+*
+*  3.0)  WRITE FIRST RECORDS OF THE UNNORMALIZED TRACKING FILE
          IF( LTRK.EQ.1 )THEN
             SUBMAX= 1
             LINMAX= 2*NVOL + 10
          ELSE
-C
-C           REQUIRED CHANGE LINMAX FROM  2*NANGL*(2*NVOL + 8)
-C                                    TO  2*NANGL*(2*NVOL + 16)
-C           TO TAKE INTO ACCOUNT INITIAL AND FINAL SURFACE
-C           FOR PERIODIC BC
+*
+*           REQUIRED CHANGE LINMAX FROM  2*NANGL*(2*NVOL + 8)
+*                                    TO  2*NANGL*(2*NVOL + 16)
+*           TO TAKE INTO ACCOUNT INITIAL AND FINAL SURFACE
+*           FOR PERIODIC BC
             SUBMAX= NANGL
             LINMAX= 2*NANGL*(2*NVOL + 16)
          ENDIF
@@ -480,8 +476,8 @@ C           FOR PERIODIC BC
          MXSUB= SUBMAX
          MXSEG= LINMAX
          IF( LTRK.EQ.1 )THEN
-C
-C  3.1)     THE REGULAR TRACKING
+*
+*  3.1)     THE REGULAR TRACKING
             IF( NDIM.EQ.3 )THEN
                CALL XELTI3(  IPRT,IFTEMP,NANGLE,DENUSR, ISYMM,ANGLES,
      >                     DENSTY,NTOTCL,NEXTGE,  MAXR,REMESH,LINMAX,
@@ -504,8 +500,8 @@ C  3.1)     THE REGULAR TRACKING
                CALL LCMPUT(IPTRK,'TrackingSpaD',2*NANGLE,4,DENSTY)
             ENDIF
          ELSEIF( LTRK.EQ.2 )THEN
-C
-C  3.2)     THE CYCLIC TRACKING.
+*
+*  3.2)     THE CYCLIC TRACKING.
             ICUR(3)= MINDIM(3)
             CONV(3)= 1.0E+36
             CALL XELTS2(  IPRT, IFTEMP, NANGLE, DENUSR, NCODE,ANGLES,
@@ -521,11 +517,11 @@ C  3.2)     THE CYCLIC TRACKING.
      >   ICUR,DDENWT)
       ENDIF
       DEALLOCATE(REMESH,INDEX,ICORD,MAXDIM,MINDIM)
-C---
-C  IF A PRISMATIC 3D TRACKING IS REQUESTED, 
-C  ALLOCATE GEOMETRIC STRUCTURES (SEE COMMON CEXGEO) CORRESPONDING TO
-C  THE 3D INITIAL GEOMETRY
-C---
+*---
+*  IF A PRISMATIC 3D TRACKING IS REQUESTED, 
+*  ALLOCATE GEOMETRIC STRUCTURES (SEE COMMON CEXGEO) CORRESPONDING TO
+*  THE 3D INITIAL GEOMETRY
+*---
       IF (LPRISM) THEN
          CALL LCMSIX(IPTRK,'EXCELL      ',1)
          CALL XDISET(ISTATE,NSTATE,0)
@@ -541,6 +537,6 @@ C---
          NS= -NSUR
       ENDIF
       DEALLOCATE(VOLSUR,MATALB,KEYMRG)
-C
+*
       RETURN
       END

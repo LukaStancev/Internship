@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* assembly and temperature interpolation of a transfer matrix stored
+* Assembly and temperature interpolation of a transfer matrix stored
 * in the APOLIB-2 format
 *
 *Copyright:

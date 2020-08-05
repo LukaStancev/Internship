@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* reconstruct 3D track for a 3D prismatic geometry from a 2D track.
+* Reconstruct 3D track for a 3D prismatic geometry from a 2D track.
 * polar angle in [0, pi/2] case.
 *
 *Copyright:
@@ -37,7 +37,7 @@
 * I       starting/ending z plan.
 * K       starting/ending x-y tracking segment.
 * ZI      strating/ending z coordinate.
-* T       starting/ending x-y tracking coordinate.
+* TK      starting/ending x-y tracking coordinate.
 * TIN     orientation of the starting/surface.
 *
 *Parameters: output

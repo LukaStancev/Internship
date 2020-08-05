@@ -31,17 +31,17 @@
 * NFI     total number of volumes and surfaces for which specific values
 *         of the neutron flux and reactions rates are required.
 *Parameters: input/output
-* CQ
-* CF
-* DIAGQ
-* DIAGF
+* CA      undefined.
+* CQ      undefined.
+* DIAGQ   undefined.
+* DIAGF   undefined.
 *
 *Parameters: scratch
-* PREV
-* NEXT
-* DINV2
-* A2
-* B2
+* PREV    undefined.
+* NEXT    undefined.
+* DINV2   undefined.
+* A2      undefined.
+* B2      undefined.
 *
 *-----------------------------------------------------------------------
 *

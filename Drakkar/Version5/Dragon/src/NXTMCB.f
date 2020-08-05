@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* add MC: specific geometry analysis info to NXTRecords.
+* Add MC: specific geometry analysis info to NXTRecords.
 *
 *Copyright:
 * Copyright (C) 2008 Ecole Polytechnique de Montreal
@@ -21,7 +21,6 @@
 *         $X$, $Y$ and $Z$ directions.
 * MXGSUR  maximum number of surfaces for any geometry.
 * MXGREG  maximum number of region for any geometry.
-* MAXPIN  maximum number of pins in a cell.
 * MAXPIN  maximum number of pins in a cell.
 * IUNFLD  description of unfolded geometry.
 *

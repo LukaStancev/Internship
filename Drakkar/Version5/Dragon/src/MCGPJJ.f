@@ -4,11 +4,10 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute the effective number of pjj intermodes to be stored in 2D or
-* 3D and the corresponding index
-* when an expansion up to order L of the scattering cross-section
-* is considered 
-* in order to construct the source term of the scalar flux moments for
+* Compute the effective number of pjj intermodes to be stored in 2D or
+* 3D and the corresponding index when an expansion up to order L 
+* of the scattering cross-section is considered in order to
+* construct the source term of the scalar flux moments for
 * a method of characteristics iteration.
 *
 *Copyright:
@@ -27,8 +26,8 @@
 * NANI   scattering anisotropy (=1 for isotropic scattering).
 * MAXNU  number of angular modes nu=(l,m).
 * KEYANI 'mode to l' index: l=KEYANI(nu)
-*     in Cartesian 2D:  KEYANI(NU)=INT(0.5*(SQRT(REAL(1+8*(NU-1)))-1.0))
-*     in Cartesian 3D:  KEYANI(NU)=INT(SQRT(REAL(NU-1))).
+*        in Cartesian 2D:  KEYANI(NU)=INT(0.5*(SQRT(REAL(1+8*(NU-1)))-1.0))
+*        in Cartesian 3D:  KEYANI(NU)=INT(SQRT(REAL(NU-1))).
 *
 *Parameters: output
 * NPJJM  number of non-vanishing pjj modes.

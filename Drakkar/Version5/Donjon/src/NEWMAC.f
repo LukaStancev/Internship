@@ -4,28 +4,53 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create a new macrolib which includes the devices properties.
+* Create a new macrolib which includes the devices properties.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki
+*Author(s): 
+* D. Sekki
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create type(L_MACROLIB);
-*         HENTRY(2): modification type(L_MATEX);
-*         HENTRY(3): read-only type(L_MACROLIB);
-*         HENTRY(4): read-only type(L_DEVICE).
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The NEWMAC: module specification is:
+* MACRO3 MATEX := NEWMAC: MATEX MACRO2 DEVICE
+*   :: [ EDIT iprint ] [ XFAC xfac ] ;
+* where
+*   MACRO3 : name of the \emph{macrolib} to be created by the module. It will 
+*     contain the updated properties of each material region with respect to 
+*     the current position of each device.
+*   MATEX  : name of the \emph{matex} object, containing the complete reactor 
+*     material index including devices. MATEX must be specified in the 
+*     modification mode; it will store the updated h-factors, computed per 
+*     each fuel region with respect to the devices positions.
+*   MACRO2 : name of the read-only extended \emph{macrolib}, previously created 
+*     by the MACINI: module.
+*   DEVICE : name of the read-only \emph{device} object containing the devices 
+*     information and parameters.
+*   EDIT   : keyword used to set iprint.
+*   iprint : integer index used to control the printing on screen: = 0
+*     for no print; = 1 for minimum printing; larger values produce increasing 
+*     amounts of output. The default value is iprint = 1.
+*   XFAC   : keyword used to specify the number of cells on which incremental 
+*     cross sections were computed in the supercell code.
+*   xfac   : corrective factor for delta sigmas (real number). For DRAGON 
+*     code, xfac is generally set to 2.0 and, for MULTICELL  code, set to 1.0.
+*     The default value is 2.0. 
 *
 *-----------------------------------------------------------------------
 *

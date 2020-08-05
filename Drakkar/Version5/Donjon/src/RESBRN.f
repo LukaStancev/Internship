@@ -4,13 +4,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* initialize the axial shape and compute the first burnup limits per
+* Initialize the axial shape and compute the first burnup limits per
 * bundle for every channel (used for the time-average model).
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal
 *
-*Author(s): D. Sekki
+*Author(s): 
+*  D. Sekki
 *
 *Parameters: input
 * IPMAP   pointer to fuel-map information.

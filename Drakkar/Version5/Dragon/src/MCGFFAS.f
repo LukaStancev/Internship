@@ -18,6 +18,7 @@
 *Author(s): I. Suslov and R. Le Tellier
 *
 *Parameters: input
+* SUBSCH  track coefficients calculation subroutine.
 * K       total number of volumes for which specific values
 *         of the neutron flux and reactions rates are required.
 * KPN     total number of unknowns in vectors F.
@@ -45,6 +46,9 @@
 *
 *Parameters: input/output
 * F       vector containing the zonal scalar flux
+*
+*Parameters: scratch
+* B       undefined.
 *
 *-----------------------------------------------------------------------
 *

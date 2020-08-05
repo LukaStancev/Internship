@@ -23,20 +23,23 @@
 *  SMNG(IGR)=0
 * NB : for reflector case, the upscattering is fixed to zero
 *
-*Author(s): J. Taforeau
+*Author(s): 
+* J. Taforeau
 *
-* parameters: input
-* IPDAT       address of info data block
-* IPMIC       address of the microlib object
-* NBU         number of burnup points
-* NBMIX       number of mixturess
-* NGP         number of energy groups
-* NANI        number of anisotropy
-* NVAR        number of state variables
-* STAIDX      table of states index order
-* NADF        number of ADF to be recovered
-* NTYPE       number  of adf type
-* LADF        flag for adf
+*Parameters: input
+* IPDAT   address of info data block
+* IPMIC   address of the microlib object
+* NBU     number of burnup points
+* NBMIX   number of mixturess
+* NGP     number of energy groups
+* NANI    number of anisotropy
+* NVAR    number of state variables
+* STAIDX  table of states index order
+* NADF    number of ADF to be recovered
+* NTYPE   number  of adf type
+* LADF    flag for adf
+*
+*Parameters: 
 *
 *-----------------------------------------------------------------------
 *

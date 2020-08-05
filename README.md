@@ -9,7 +9,7 @@ The datasets produced during my Ph.D. thesis are centralized on this project. Th
 
 ## Version5 datasets execution
 
-The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1879](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, this latter revision is also included in this repository. It can be compiled and then executed with the following commands:
+The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1923](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, this latter revision is also included in this repository. It can be compiled and then executed with the following commands:
 ```
 cd Drakkar/Version5/Donjon/src
 make

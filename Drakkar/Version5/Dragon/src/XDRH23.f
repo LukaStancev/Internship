@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* calculation of the macro-source for the She-Liu-Shi double
+* Calculation of the macro-source for the She-Liu-Shi double
 * heterogeneity model (part 2).
 *
 *Copyright:

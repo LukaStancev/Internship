@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read specifications for the rod-devices from the input file.
+* Read specifications for the rod-devices from the input file.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki and A. Hebert
+*Author(s): 
+* D. Sekki and A. Hebert
 *
 *Parameters: input
 * IPDEV  pointer to device information.

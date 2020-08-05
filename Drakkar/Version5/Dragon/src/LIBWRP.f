@@ -2,58 +2,58 @@
       SUBROUTINE LIBWRP(IPRINT,NTYP,NGR,NRTOT,MAXTEM,MAXDIL,IGR,IRES,
      >                  ITYP,DSIGPL,NTM,NDI,RTMP,RDIL,RESI,NTMPR,NDILR,
      >                  TMPT,DILT,REST)
-C
-C------------------------------  LIBWRP  ------------------------------
-C
-C  PROGRAMME STATISTICS:
-C     NAME     : LIBWRP
-C     ENTRY    : LIBWRP
-C     USE      : PREPARE WIMS-D4 RESONANCE DATA
-C     MODIFIED : 97-08-17
-C     AUTHOR   : G. MARLEAU
-C
-C  ROUTINE PARAMETERS:
-C   INPUT
-C     IPRINT : PRINT FLAG                           I
-C     NTYP   : NUMBER OF RESONANCE TABLES PER ISOTOPES (2 or 3) I
-C     NGR    : NUMBER OF RESONANCE GROUPS           I
-C     NRTOT  : MAMINUM NUMBER OF RESONANT ISOTOPES  I
-C     MAXTEM : MAMINUM NUMBER OF TEMPERATURE        I
-C     MAXDIL : MAMINUM NUMBER OF DILUTIONS          I
-C     IGR    : RESONANCE GROUP NUMBER               I
-C     IRES   : RESONANCE ISOTOPE SET                I
-C     ITYP   : XS TYPE                              I
-C     DSIGPL : BACKGROUND XS                        R
-C     NTM    : NUMBER OF TEMPERATURES               I(NTYP,NRTOT,
-C                                                     NGR)
-C     NDI    : NUMBER OF DILUTIONS                  I(NTYP,NRTOT,
-C                                                     NGR)
-C     RTMP   : RESONANCE TEMPERATURE                R(MAXTEM,
-C                                                NTYP,NRTOT,NGR)
-C     RDIL   : RESONANCE DILUTION                   R(MAXDIL,
-C                                             NTYP,NRTOT,NGR)
-C     RESI   : RESONANCE INTEGRALS                  R(MAXDIL,
-C                                      MAXTEM,NTYP,NRTOT,NGR)
-C   OUTPUT
-C     NTMPR  : NUMBER OF LOCAL TEMPERATURES         I
-C     NDILR  : NUMBER OF LOCAL DILUTIONS            I
-C     TMPT   : WORK TEMPERATURE                     R(MAXTEM)
-C     DILT   : WORK DILUTION                        R(MAXDIL)
-C     REST   : WORK RESONANCE INTEGRALS             R(MAXDIL*
-C                                                     MAXTEM)
-C
-C------------------------------  LIBWRP  ------------------------------
-C
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Prepare WIMS-D4 resonance data 
+*
+*Copyright:
+* Copyright (C) 1997 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): 
+* G. Marleau
+*
+*Parameters: input
+* IPRINT  print flag           
+* NTYP    number of resonance tables per isotopes 
+* NGR     number of resonance groups           
+* NRTOT   maminum number of resonant isotopes  
+* MAXTEM  maminum number of temperature        
+* MAXDIL  maminum number of dilutions          
+* IGR     resonance group number               
+* IRES    resonance isotope set                
+* ITYP    XS type                              
+* DSIGPL  background XS                        
+* NTM     number of temperatures               
+* NDI     number of dilutions                  
+* RTMP    resonance temperature                
+* RDIL    resonance dilution                   
+* RESI    resonance integrals                  
+*
+*Parameters: output
+* NTMPR   number of local temperatures         
+* NDILR   number of local dilutions            
+* TMPT    work temperature                     
+* DILT    work dilution                        
+* REST    work resonance integrals             
+*
+*-----------------------------------------------------------------------
+*
       IMPLICIT NONE
-C----
-C PARAMETERS
-C----
+*----
+* PARAMETERS
+*----
       INTEGER   IOUT
       CHARACTER NAMSBR*6
       PARAMETER (IOUT=6,NAMSBR='LIBWRP')
-C----
-C INTERFACE VARIABLES
-C----
+*----
+* INTERFACE VARIABLES
+*----
       INTEGER   IPRINT,NTYP,NGR,NRTOT,MAXTEM,MAXDIL,IGR,IRES,ITYP,
      1          NTMPR,NDILR
       INTEGER   NTM(NTYP,NRTOT,NGR),NDI(NTYP,NRTOT,NGR)
@@ -61,14 +61,14 @@ C----
       REAL      RTMP(MAXTEM,NTYP,NRTOT,NGR),RDIL(MAXDIL,NTYP,NRTOT,NGR),
      1          RESI(MAXDIL,MAXTEM,NTYP,NRTOT,NGR),TMPT(MAXTEM),
      2          DILT(MAXDIL),REST(MAXDIL*MAXTEM)
-C----
-C LOCAL VARIABLES
-C----
+*----
+* LOCAL VARIABLES
+*----
       INTEGER   ITT,IT,IPOS,ID
       REAL      XDIL
-C
-C----
-C
+*
+*----
+*
       NTMPR=NTM(ITYP,IRES,IGR)
       NDILR=NDI(ITYP,IRES,IGR)
       IF(ABS(IPRINT) .GE. 100) THEN
@@ -100,9 +100,9 @@ C
         WRITE(IOUT,6011) NAMSBR
       ENDIF
       RETURN
-C----
-C  FORMAT
-C----
+*----
+*  FORMAT
+*----
  6000 FORMAT('   RESONANCE TEMPERATURE TABULATION = ')
  6001 FORMAT('   RESONANCE DILUTIONS TABULATION   = ')
  6002 FORMAT(1P,5E15.7)

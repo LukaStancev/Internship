@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* create 2D projection (EXCELT geometry analysis) of a 3D prismatic
+* Create 2D projection (EXCELT geometry analysis) of a 3D prismatic
 * geometry
 *
 *Copyright:

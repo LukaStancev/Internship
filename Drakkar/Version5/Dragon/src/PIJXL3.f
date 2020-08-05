@@ -38,12 +38,13 @@
 *
 *-----------------------------------------------------------------------
 *
+      USE             GANLIB
       IMPLICIT        NONE
 *----
 *  SUBROUTINE ARGUMENTS
 *----
       LOGICAL         LEAKSW
-      INTEGER         IPTRK
+      TYPE(C_PTR)     IPTRK
       INTEGER         IPRT,NGRP,NANI,NBMIX,NPSYS(NGRP),NRENOR,NELPIJ
       REAL            XSSIGT(0:NBMIX,NGRP),XSSIGW(0:NBMIX,NANI,NGRP),
      >                PIJ(NELPIJ,NGRP)
@@ -395,7 +396,7 @@
             ENDIF
   160    CONTINUE
          CALL PIJD2R(NREG,NSOUT,DBLPIJ(1,IGRP),FFACT,.FALSE.,NELPIJ,
-     >               PIJ(1,IGRP))
+     >               NPIJ,PIJ(1,IGRP))
  2090    CONTINUE
          DEALLOCATE(FFACT)
 *

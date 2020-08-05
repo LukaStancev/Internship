@@ -4,12 +4,13 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* read the specification for a given rod from the input file.
+* Read the specification for a given rod from the input file.
 *
 *Copyright:
 * Copyright (C) 2007 Ecole Polytechnique de Montreal.
 *
-*Author(s): D. Sekki and A. Hebert
+*Author(s): 
+* D. Sekki and A. Hebert
 *
 *Parameters: input
 * JPDEV  pointer to LCM list object with device information.

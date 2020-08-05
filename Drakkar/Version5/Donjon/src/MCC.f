@@ -4,26 +4,42 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* fuel map modification module.
+* Fuel map modification module.
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): M. Cordiez
+*Author(s): 
+* M. Cordiez
 *
-*Parameters: input/output
-* NENTRY  number of LCM objects or files used by the operator.
-* HENTRY  name of each LCM object or file:
-*         HENTRY(1): create or modification type(L_THM);
-*         HENTRY(2): modification type(L_MAP);
-* IENTRY  type of each LCM object or file:
-*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
-*         =4 sequential ascii file.
-* JENTRY  access of each LCM object or file:
-*         =0 the LCM object or file is created;
-*         =1 the LCM object or file is open for modifications;
-*         =2 the LCM object or file is open in read-only mode.
-* KENTRY  LCM object address or file unit number.
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The MCC: module specifications are:
+* [FLMAP1] := MCC: FLMAP1 [FLMAP2] :: (descmcc1) ; 
+* where
+*   FLMAP1 : name of the \emph{MAP} object that will contain the updated 
+*     fuel-lattice information. If FLMAP1 appears on both LHS and RHS, it will 
+*     be updated; if it only appears on RHS, it will only be read to display 
+*     its contents.
+*   FLMAP2 : name of the \emph{MAP} object that contains information to be 
+*     recovered to update FLMAP1. If FLMAP2 exists, data to update FLMAP1 will 
+*     be taken in it. If not, data to update FLMAP1 will be taken in FLMAP1.
+*   (descmcc1) : structure describing the main input data to the MCC: module. 
+*     Note that this input data is mandatory and must be specified either if 
+*     FLMAP1 is updated or only read.
 *
 *-----------------------------------------------------------------------
 *

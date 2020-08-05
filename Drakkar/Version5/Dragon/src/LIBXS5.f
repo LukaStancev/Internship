@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* temperature interpolation of autolib (bin cross sections) information
+* Temperature interpolation of autolib (bin cross sections) information
 *
 *Copyright:
 * Copyright (C) 2014 Ecole Polytechnique de Montreal

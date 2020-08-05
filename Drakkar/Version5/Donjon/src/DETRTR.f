@@ -3,10 +3,23 @@
 *
 *----------------------------------------------------------------------
 *Purpose:
-* obtain the coordinates of a point where the interpolation is
+* Obtain the coordinates of a point where the interpolation is
 * performed
 *
 *Author(s):
+* ???
+*
+*Parameters: 
+* DA      
+* A       
+* IA      
+* A1      
+* A2      
+* A3      
+* II1     
+* II2     
+* II3     
+*
 *----------------------------------------------------------------------
 *
       DIMENSION A(*)

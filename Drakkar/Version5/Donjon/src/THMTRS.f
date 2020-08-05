@@ -9,13 +9,14 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* driver of the transient thermal-hydraulics module for a single time
+* Driver of the transient thermal-hydraulics module for a single time
 * iteration
 *
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): P. Gallet and A. Hebert
+*Author(s): 
+* P. Gallet and A. Hebert
 *
 *Parameters: input
 * MPTHMI  directory of the THM object containing steady-state

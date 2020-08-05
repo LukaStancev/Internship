@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* compute errors and normalization factors for 3D prismatic extended
+* Compute errors and normalization factors for 3D prismatic extended
 * tracking (adapted from NXTTLS.f)
 *
 *Copyright:

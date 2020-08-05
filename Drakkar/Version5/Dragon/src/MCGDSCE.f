@@ -23,7 +23,8 @@
 * M       number of material mixtures.
 * N       number of elements for this track.
 * IS      arrays for surfaces neighbors
-* JS      JS(IS(ISOUT)+1:IS(ISOUT+1)) give the neighboring regions to surface ISOUT.
+* JS      JS(IS(ISOUT)+1:IS(ISOUT+1)) give the neighboring 
+*         regions to surface ISOUT.
 * NOM     integer tracking elements.
 * NZON    index-number of the mixture type assigned to each volume.
 * TR      macroscopic total cross section.
@@ -32,24 +33,23 @@
 *         of the neutron flux and reactions rates are required.
 * NREG    number of volumes for which specific values
 *         of the neutron flux and reactions rates are required.
-* LEXAC   type of exponential function calculation (=.false. to compute
-*         exponential functions using tables).
 * IMU     polar angle index.
 * NMU     order of the polar quadrature set.
 * NFUNL   number of moments of the flux (in 2D : NFUNL=NANI*(NANI+1)/2).
 * NMOD    first dimension of ISGNR.
 * NPJJM   number of pjj modes to store for LPJJAN option.
-* TRHAR   spherical harmonics components for this azimuthal angle in the plan.
+* TRHAR   spherical harmonics components for this azimuthal 
+*         angle in the plan.
 * LPJJAN  flag for the calculation of anisotropic moments of the pjj.
 * PJJIND  index of the modes for LPJJAN option.
 * MODST   starting angular mode index.
 *
 *Parameters: input/output
-* PJJ
-* PSJ
+* PJJ     escape probabilities.
+* PSJ     escape probabilities.
 *
 *Parameters: scratch
-* H
+* H       undefined.
 *
 *-----------------------------------------------------------------------
 *
