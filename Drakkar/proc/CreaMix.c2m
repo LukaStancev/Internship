@@ -23,12 +23,12 @@ PARAMETER Library ConcMode
           FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat
           AgNat CdNat SNat HfNat InNat
           Zirc4 Incon SS304 M5 AIC HfR
-          GdNat Gd2O3 BP MolarMasses ::
+          GdNat Gd2O3 BP MolarMasses TENDL ::
       ::: LINKED_LIST
           FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat
           AgNat CdNat SNat HfNat InNat
           Zirc4 Incon SS304 M5 AIC HfR
-          GdNat Gd2O3 BP MolarMasses ; ;
+          GdNat Gd2O3 BP MolarMasses TENDL ; ;
 PROCEDURE AdaptIso ThermaExpans DeplChain GetTechData ;
 PROCEDURE GridDil GapDil ;
 MODULE    LIB: GREP: ABORT: UTL: END: ;
@@ -2764,36 +2764,6 @@ CTRA <<CTRA>>
     B11      =  <<NomB11>>    <<B11_mti>>
     U5DET    =  <<NomU235>>   <<U5FC>>
 *---- Fin Isotopes de Barres pour Modeti a 0 ----------
-  MIX 10 (* MODE *)
-    COMB 1 <<ss304Cntr>>
-         2 <<IncCntr>>
-         3 <<Zr4Cntr>>
-         4 <<GrPreCntr>>
-         5 <<H2OCntr>>
-  MIX 11 (* MODEL *)
-    COMB 1 <<ss304Side>>
-         2 <<IncSide>>
-         3 <<Zr4Side>>
-         4 <<GrPreSide>>
-         5 <<H2OSide>>
-  MIX 12 (* MODEC *)
-    COMB 1 <<ss304Corn>>
-         2 <<IncCorn>>
-         3 <<Zr4Corn>>
-         4 <<GrPreCorn>>
-         5 <<H2OCorn>>
-  MIX 13 (* MODETI *)
-    COMB 5 1.0
-        6 1.0E-20
-  MIX 14 (* MODETE *)
-    COMB 1 <<ss304Tube>>
-         2 <<IncTube>>
-         3 <<Zr4Tube>>
-         4 <<GrPreTube>>
-         5 <<H2OTube>>
-  MIX 15 (* MODETI POUR TUBE INSTR*)
-    COMB 6 1.0E-20
-         7 1.0
 *--- TUBES --------------------------------------------
   MIX 20 <<tmod>> NOEV (* TUBE *)
     Fe54     = <<NomFe54>>     <<Fe54T>>
@@ -3047,22 +3017,6 @@ CTRA <<CTRA>>
     Si29     = <<NomSi29>>     <<Si29CladAICg>>
     Si30     = <<NomSi30>>     <<Si30CladAICg>>
 
-  MIX 41 COMB 21 1.0
-  MIX 42 COMB 21 1.0
-  MIX 43 COMB 21 1.0
-
-  MIX 44 COMB 23 1.0
-  MIX 45 COMB 23 1.0
-  MIX 46 COMB 23 1.0
-
-  MIX 47 COMB 24 1.0
-  MIX 48 COMB 24 1.0
-  MIX 49 COMB 24 1.0
-
-  MIX 50 COMB 22 1.0
-  MIX 51 COMB 22 1.0
-  MIX 52 COMB 22 1.0
-
 *--- AIR ----------------------------------------------
   MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
     N14      = <<NomN14>>    4.19850E-5
@@ -3098,9 +3052,6 @@ CTRA <<CTRA>>
     PU242    = <<NomPu242>>  <<Pu2fuel>> <<iPu2>> SHIB <<NomSSPu2>>
     AM241    = <<NomAm241>>  <<Am1fuel>>
     O16      = <<NomO16>>    <<O_fuel>>
-  MIX 101 COMB 100 1.
-  MIX 102 COMB 100 1.
-  MIX 103 COMB 100 1.
 
 *--- COMB MOX -----------------------------------------
   MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
@@ -3115,9 +3066,6 @@ CTRA <<CTRA>>
     PU242    = <<NomPu242>>  <<Pu2cornfuel>> <<iPu2>> SHIB <<NomSSPu2>>
     AM241    = <<NomAm241>>  <<Am1cornfuel>>
     O16      = <<NomO16>>    <<O_corn_fuel>>
-  MIX 111 COMB 110 1.
-  MIX 112 COMB 110 1.
-  MIX 113 COMB 110 1.
 
   MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
     U234     = <<NomU234>>   <<U4sidefuel>>
@@ -3131,9 +3079,6 @@ CTRA <<CTRA>>
     PU242    = <<NomPu242>>  <<Pu2sidefuel>> <<iPu2>> SHIB <<NomSSPu2>>
     AM241    = <<NomAm241>>  <<Am1sidefuel>>
     O16      = <<NomO16>>    <<O_side_fuel>>
-  MIX 121 COMB 120 1.
-  MIX 122 COMB 120 1.
-  MIX 123 COMB 120 1.
 
   MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
     U234     = <<NomU234>>   <<U4cntrfuel>>
@@ -3147,9 +3092,6 @@ CTRA <<CTRA>>
     PU242    = <<NomPu242>>  <<Pu2cntrfuel>> <<iPu2>> SHIB <<NomSSPu2>>
     AM241    = <<NomAm241>>  <<Am1cntrfuel>>
     O16      = <<NomO16>>    <<O_cntr_fuel>>
-  MIX 131 COMB 130 1.
-  MIX 132 COMB 130 1.
-  MIX 133 COMB 130 1.
 
 *--- COMB UGd -----------------------------------------
   MIX 140 <<tfuel>> (* COMB with Gd *)
@@ -3170,12 +3112,259 @@ CTRA <<CTRA>>
     PU242    = <<NomPu242>>  <<Pu2Gd_fuel>> <<iPu2>> SHIB <<NomSSPu2>>
     AM241    = <<NomAm241>>  0.
     O16      = <<NomO16>>    <<O_UGd_fuel>>
+! Highest Mix number MUST be equal to NMIX
+  MIX <<Nmix>> COMB 140 1.
+  ;
+
+INTEGER O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 ;
+GREP: TENDL :: GETVAL 'O16'  1 >>O16<< ;
+GREP: TENDL :: GETVAL 'U235' 1 >>U235<< ;
+GREP: TENDL :: GETVAL 'U238' 1 >>U238<< ;
+GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90<< ;
+GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91<< ;
+GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92<< ;
+GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94<< ;
+GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96<< ;
+IF O16 -311 = NOT THEN
+  IF O16 10 < THEN
+    EVALUATE NomO16 := "O16_00" O16 I_TO_S + ;
+  ELSEIF O16 100 < THEN
+    EVALUATE NomO16 := "O16_0" O16 I_TO_S + ;
+  ELSE
+    EVALUATE NomO16 := "O16_" O16 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibO16
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      O16   = <<NomO16>>   <<O16Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      O16   = <<NomO16>>   <<O16Gr>>
+    MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+      O16      = <<NomO16>>      <<O_mti>>
+    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+      O16      = <<NomO16>>      <<O_mti>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      O16      = <<NomO16>>      <<O16T>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      O16      = <<NomO16>>      <<O16Cl>>
+    MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
+      O16      = <<NomO16>>    1.12630E-5
+    MIX 65 <<tmod>> (* BP Pyrex *)
+      O16      = <<NomO16>>   <<O16BP>>
+    MIX 100 <<tfuel>> (* COMB *)
+      O16      = <<NomO16>>    <<O_fuel>>
+  ;
+ENDIF ;
+IF U235 -311 = NOT THEN
+  IF U235 10 < THEN
+    EVALUATE NomU235 := "U235_00" U235 I_TO_S + ;
+  ELSEIF U235 100 < THEN
+    EVALUATE NomU235 := "U235_0" U235 I_TO_S + ;
+  ELSE
+    EVALUATE NomU235 := "U235_" U235 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibU235
+    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+      U5DET    =  <<NomU235>>   <<U5FC>>
+    MIX 100 <<tfuel>> (* COMB *)
+      U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
+  ;
+ENDIF ;
+IF U238 -311 = NOT THEN
+  IF U238 10 < THEN
+    EVALUATE NomU238 := "U238_00" U238 I_TO_S + ;
+  ELSEIF U238 100 < THEN
+    EVALUATE NomU238 := "U238_0" U238 I_TO_S + ;
+  ELSE
+    EVALUATE NomU238 := "U238_" U238 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibU238
+    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+      U5DET    =  <<NomU238>>   <<U5FC>>
+    MIX 100 <<tfuel>> (* COMB *)
+      U238     = <<NomU238>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU238>>
+  ;
+ENDIF ;
+IF Zr90 -311 = NOT THEN
+  IF Zr90 10 < THEN
+    EVALUATE NomZr90 := "Zr90_00" Zr90 I_TO_S + ;
+  ELSEIF Zr90 100 < THEN
+    EVALUATE NomZr90 := "Zr90_0" Zr90 I_TO_S + ;
+  ELSE
+    EVALUATE NomZr90 := "Zr90_" Zr90 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibZr90
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      Zr90     = <<NomZr90>>    <<Zr90Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      Zr90     = <<NomZr90>>    <<Zr90Gr>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      Zr90     = <<NomZr90>>     <<Zr90T>> <<iZrT>> SHIB <<NomSSZr90>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      Zr90     = <<NomZr90>>     <<Zr90Cl>> <<iZrG>> SHIB <<NomSSZr90>>
+  ;
+ENDIF ;
+IF Zr91 -311 = NOT THEN
+  IF Zr91 10 < THEN
+    EVALUATE NomZr91 := "Zr91_00" Zr91 I_TO_S + ;
+  ELSEIF Zr91 100 < THEN
+    EVALUATE NomZr91 := "Zr91_0" Zr91 I_TO_S + ;
+  ELSE
+    EVALUATE NomZr91 := "Zr91_" Zr91 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibZr91
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      Zr91     = <<NomZr91>>    <<Zr91Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      Zr91     = <<NomZr91>>    <<Zr91Gr>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      Zr91     = <<NomZr91>>     <<Zr91T>> <<iZrT>> SHIB <<NomSSZr91>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      Zr91     = <<NomZr91>>     <<Zr91Cl>> <<iZrG>> SHIB <<NomSSZr91>>
+  ;
+ENDIF ;
+IF Zr92 -311 = NOT THEN
+  IF Zr92 10 < THEN
+    EVALUATE NomZr92 := "Zr92_00" Zr92 I_TO_S + ;
+  ELSEIF Zr92 100 < THEN
+    EVALUATE NomZr92 := "Zr92_0" Zr92 I_TO_S + ;
+  ELSE
+    EVALUATE NomZr92 := "Zr92_" Zr92 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibZr92
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      Zr92     = <<NomZr92>>    <<Zr92Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      Zr92     = <<NomZr92>>    <<Zr92Gr>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      Zr92     = <<NomZr92>>     <<Zr92T>> <<iZrT>> SHIB <<NomSSZr92>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      Zr92     = <<NomZr92>>     <<Zr92Cl>> <<iZrG>> SHIB <<NomSSZr92>>
+  ;
+ENDIF ;
+IF Zr94 -311 = NOT THEN
+  IF Zr94 10 < THEN
+    EVALUATE NomZr94 := "Zr94_00" Zr94 I_TO_S + ;
+  ELSEIF Zr94 100 < THEN
+    EVALUATE NomZr94 := "Zr94_0" Zr94 I_TO_S + ;
+  ELSE
+    EVALUATE NomZr94 := "Zr94_" Zr94 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibZr94
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      Zr94     = <<NomZr94>>    <<Zr94Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      Zr94     = <<NomZr94>>    <<Zr94Gr>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      Zr94     = <<NomZr94>>     <<Zr94T>> <<iZrT>> SHIB <<NomSSZr94>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      Zr94     = <<NomZr94>>     <<Zr94Cl>> <<iZrG>> SHIB <<NomSSZr94>>
+  ;
+ENDIF ;
+IF Zr96 -311 = NOT THEN
+  IF Zr96 10 < THEN
+    EVALUATE NomZr96 := "Zr96_00" Zr96 I_TO_S + ;
+  ELSEIF Zr96 100 < THEN
+    EVALUATE NomZr96 := "Zr96_0" Zr96 I_TO_S + ;
+  ELSE
+    EVALUATE NomZr96 := "Zr96_" Zr96 I_TO_S + ;
+  ENDIF ;
+  Library := LIB: Library ::
+    CTRA <<CTRA>>
+    MIXS LIB: <<LibGenre>> FIL: draglibZr96
+    MIX 3 <<tmod>> NOEV (* Zr4 *)
+      Zr96     = <<NomZr96>>    <<Zr96Z4>>
+    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+      Zr96     = <<NomZr96>>    <<Zr96Gr>>
+    MIX 20 <<tmod>> NOEV (* TUBE *)
+      Zr96     = <<NomZr96>>     <<Zr96T>> <<iZrT>> SHIB <<NomSSZr96>>
+    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+      Zr96     = <<NomZr96>>     <<Zr96Cl>> <<iZrG>> SHIB <<NomSSZr96>>
+  ;
+ENDIF ;
+
+*------------------------------------------------------
+* Combine the previous MIXes to produce the other required MIXes.
+*------------------------------------------------------
+Library := LIB: Library ::
+  CTRA <<CTRA>>
+  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+
+  MIX 10 (* MODE *)
+    COMB 1 <<ss304Cntr>>
+         2 <<IncCntr>>
+         3 <<Zr4Cntr>>
+         4 <<GrPreCntr>>
+         5 <<H2OCntr>>
+  MIX 11 (* MODEL *)
+    COMB 1 <<ss304Side>>
+         2 <<IncSide>>
+         3 <<Zr4Side>>
+         4 <<GrPreSide>>
+         5 <<H2OSide>>
+  MIX 12 (* MODEC *)
+    COMB 1 <<ss304Corn>>
+         2 <<IncCorn>>
+         3 <<Zr4Corn>>
+         4 <<GrPreCorn>>
+         5 <<H2OCorn>>
+  MIX 13 (* MODETI *)
+    COMB 5 1.0
+        6 1.0E-20
+  MIX 14 (* MODETE *)
+    COMB 1 <<ss304Tube>>
+         2 <<IncTube>>
+         3 <<Zr4Tube>>
+         4 <<GrPreTube>>
+         5 <<H2OTube>>
+  MIX 15 (* MODETI POUR TUBE INSTR*)
+    COMB 6 1.0E-20
+         7 1.0
+  MIX 41 COMB 21 1.0
+  MIX 42 COMB 21 1.0
+  MIX 43 COMB 21 1.0
+
+  MIX 44 COMB 23 1.0
+  MIX 45 COMB 23 1.0
+  MIX 46 COMB 23 1.0
+
+  MIX 47 COMB 24 1.0
+  MIX 48 COMB 24 1.0
+  MIX 49 COMB 24 1.0
+
+  MIX 50 COMB 22 1.0
+  MIX 51 COMB 22 1.0
+  MIX 52 COMB 22 1.0
+
+  MIX 101 COMB 100 1.
+  MIX 102 COMB 100 1.
+  MIX 103 COMB 100 1.
+  MIX 111 COMB 110 1.
+  MIX 112 COMB 110 1.
+  MIX 113 COMB 110 1.
+  MIX 121 COMB 120 1.
+  MIX 122 COMB 120 1.
+  MIX 123 COMB 120 1.
+  MIX 131 COMB 130 1.
+  MIX 132 COMB 130 1.
+  MIX 133 COMB 130 1.
   MIX 141 COMB 140 1.
   MIX 142 COMB 140 1.
   MIX 143 COMB 140 1.
   MIX 144 COMB 140 1.
-! Highest Mix number MUST be equal to NMIX
-  MIX <<Nmix>> COMB 140 1.
   ;
 
 *------------------------------------------------------

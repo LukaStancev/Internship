@@ -61,7 +61,7 @@ else
   echo 'creation of directory' $MACH
   mkdir ../"$MACH"
 fi
-CodeDir=$PWD/../Version5/Donjon
+CodeDir=$(dirname "$(readlink -f "$0")")/Version5/Donjon
 DataDir=$PWD
 
 if [ $Sysx = "AIX" ]; then

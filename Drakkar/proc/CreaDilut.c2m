@@ -18,10 +18,8 @@
 *  < Library
 *======================================================
 PARAMETER LibDilut ConcMode MolarMasses
-          BNat Zirc4 Incon SS304 ::
-      ::: LINKED_LIST
-          LibDilut          MolarMasses
-          BNat Zirc4 Incon SS304 ; ;
+          BNat Zirc4 Incon SS304 TENDL ::
+      ::: LINKED_LIST TENDL ; ;
 MODULE    LIB: GREP: ABORT: UTL: END: ;
 LINKED_LIST ListeIsot ListeAutop ;
 PROCEDURE AdaptIso ;
@@ -519,6 +517,95 @@ LibDilut := LIB: ::
     Mn55     = <<NomMn55>>  <<Mn55>>
     Nb93     = <<NomNb93>>  <<Nb93>>
 ;
+
+INTEGER O16tendl U235tendl U238tendl Zr90tendl Zr91tendl Zr92tendl
+  Zr94tendl Zr96tendl ;
+GREP: TENDL :: GETVAL 'O16'  1 >>O16tendl<< ;
+GREP: TENDL :: GETVAL 'U235' 1 >>U235tendl<< ;
+GREP: TENDL :: GETVAL 'U238' 1 >>U238tendl<< ;
+GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90tendl<< ;
+GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91tendl<< ;
+GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92tendl<< ;
+GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94tendl<< ;
+GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96tendl<< ;
+IF O16tendl -311 = NOT THEN
+  IF O16tendl 10 < THEN
+    EVALUATE NomO16 := "O16_00" O16tendl I_TO_S + ;
+  ELSEIF O16tendl 100 < THEN
+    EVALUATE NomO16 := "O16_0" O16tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomO16 := "O16_" O16tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibO16
+    O16      = <<NomO16>>   <<O16>>
+  ;
+ENDIF ;
+IF Zr90tendl -311 = NOT THEN
+  IF Zr90tendl 10 < THEN
+    EVALUATE NomZr90 := "Zr90_00" Zr90tendl I_TO_S + ;
+  ELSEIF Zr90tendl 100 < THEN
+    EVALUATE NomZr90 := "Zr90_0" Zr90tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomZr90 := "Zr90_" Zr90tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibZr90
+    Zr90     = <<NomZr90>>  <<Zr90>>
+  ;
+ENDIF ;
+IF Zr91tendl -311 = NOT THEN
+  IF Zr91tendl 10 < THEN
+    EVALUATE NomZr91 := "Zr91_00" Zr91tendl I_TO_S + ;
+  ELSEIF Zr91tendl 100 < THEN
+    EVALUATE NomZr91 := "Zr91_0" Zr91tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomZr91 := "Zr91_" Zr91tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibZr91
+    Zr91     = <<NomZr91>>  <<Zr91>>
+  ;
+ENDIF ;
+IF Zr92tendl -311 = NOT THEN
+  IF Zr92tendl 10 < THEN
+    EVALUATE NomZr92 := "Zr92_00" Zr92tendl I_TO_S + ;
+  ELSEIF Zr92tendl 100 < THEN
+    EVALUATE NomZr92 := "Zr92_0" Zr92tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomZr92 := "Zr92_" Zr92tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibZr92
+    Zr92     = <<NomZr92>>  <<Zr92>>
+  ;
+ENDIF ;
+IF Zr94tendl -311 = NOT THEN
+  IF Zr94tendl 10 < THEN
+    EVALUATE NomZr94 := "Zr94_00" Zr94tendl I_TO_S + ;
+  ELSEIF Zr94tendl 100 < THEN
+    EVALUATE NomZr94 := "Zr94_0" Zr94tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomZr94 := "Zr94_" Zr94tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibZr94
+    Zr94     = <<NomZr94>>  <<Zr94>>
+  ;
+ENDIF ;
+IF Zr96tendl -311 = NOT THEN
+  IF Zr96tendl 10 < THEN
+    EVALUATE NomZr96 := "Zr96_00" Zr96tendl I_TO_S + ;
+  ELSEIF Zr96tendl 100 < THEN
+    EVALUATE NomZr96 := "Zr96_0" Zr96tendl I_TO_S + ;
+  ELSE
+    EVALUATE NomZr96 := "Zr96_" Zr96tendl I_TO_S + ;
+  ENDIF ;
+  LibDilut := LIB: LibDilut ::
+    MIXS LIB: <<LibGenre>> FIL: draglibZr96
+    Zr96     = <<NomZr96>>  <<Zr96>>
+  ;
+ENDIF ;
 
 END: ;
 QUIT "LIST" .

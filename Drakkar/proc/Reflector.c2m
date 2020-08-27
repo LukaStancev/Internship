@@ -1,4 +1,5 @@
-PARAMETER Multicompo ReflSpecs :: ::: LINKED_LIST ReflSpecs ; ;
+PARAMETER Multicompo ReflSpecs TENDL
+  :: ::: LINKED_LIST ReflSpecs TENDL ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix CreaDilut
   Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf GetTechData ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop Library
@@ -61,7 +62,8 @@ MolarMasses ::
 *---- 4) Library with all mixes ------------------------
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
-HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
+HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses
+TENDL ::
 <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
@@ -88,6 +90,20 @@ GREP: ListeIsot :: GETVAL 'B10  ' <<LibId>> NVAL 8 >>NomB10<<   ;
 GREP: ListeIsot :: GETVAL 'B11  ' <<LibId>> NVAL 8 >>NomB11<<   ;
 GREP: ListeIsot :: GETVAL 'Fe54 ' <<LibId>> NVAL 8 >>NomFe54<<  ;
 
+*--------------------------------------------------------------------
+* TENDL specifics
+*--------------------------------------------------------------------
+INTEGER O16tendl ;
+GREP: TENDL :: GETVAL 'O16'  1 >>O16tendl<< ;
+STRING NomO16tendl ;
+IF O16tendl 10 < THEN
+  EVALUATE NomO16tendl := "O16_00" O16tendl I_TO_S + ;
+ELSEIF O16tendl 100 < THEN
+  EVALUATE NomO16tendl := "O16_0" O16tendl I_TO_S + ;
+ELSE
+  EVALUATE NomO16tendl := "O16_" O16tendl I_TO_S + ;
+ENDIF ;
+
 REAL H1 O16 H2O B10 B11 ;
 INTEGER CASE := 1 ;
 WHILE CASE 2 <= DO
@@ -110,37 +126,53 @@ WHILE CASE 2 <= DO
     EVALUATE H2O := 0.          ;
   ENDIF ;
 
-Library := LIB: Library ::
-* Borated water
-  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+  Library := LIB: Library ::
+  ! Borated water
+    MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
 
-  MIX 10 <<TempMod>>
-    H1_H2O    = <<NomH1>>  <<H1>>  NOEV
-    O16       = <<NomO16>> <<O16>> NOEV
-    B10       = <<NomB10>> <<B10>> NOEV
-    B11       = <<NomB11>> <<B11>> NOEV
-  MIX 11 <<TempMod>>
-    H1_H2O    = <<NomH1>>  <<H1>>  NOEV
-    O16       = <<NomO16>> <<O16>> NOEV
-    B10       = <<NomB10>> <<B10>> NOEV
-    B11       = <<NomB11>> <<B11>> NOEV
-  MIX 12 <<TempMod>>
-    H1_H2O    = <<NomH1>>  <<H1>>  NOEV
-    O16       = <<NomO16>> <<O16>> NOEV
-    B10       = <<NomB10>> <<B10>> NOEV
-    B11       = <<NomB11>> <<B11>> NOEV
-  MIX 13 <<TempMod>>
-    H1_H2O    = <<NomH1>>  <<H1>>  NOEV
-    O16       = <<NomO16>> <<O16>> NOEV
-    B10       = <<NomB10>> <<B10>> NOEV
-    B11       = <<NomB11>> <<B11>> NOEV
-  MIX 14 <<TempMod>>
-    H1_H2O    = <<NomH1>>  <<H1>>  NOEV
-    O16       = <<NomO16>> <<O16>> NOEV
-    B10       = <<NomB10>> <<B10>> NOEV
-    B11       = <<NomB11>> <<B11>> NOEV
-;
+    MIX 10 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
+    MIX 11 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
+    MIX 12 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
+    MIX 13 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
+    MIX 14 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
+  ;
+  IF O16tendl -311 = NOT THEN
+  Library := LIB: Library ::
+  ! Borated water
+    MIXS LIB: <<LibGenre>> FIL: draglibO16
 
+    MIX 10 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+    MIX 11 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+    MIX 12 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+    MIX 13 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+    MIX 14 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+  ;
+  ENDIF ;
   AUTO_LIB := USS: Library DiscrAu ::
     EDIT 0 GRMIN 45 MAXST 200 ;
   CP := ASM: AUTO_LIB Discr :: EDIT 0 ARM ;
@@ -441,7 +473,7 @@ WHILE iCB nCB <= DO
             ECHO "- He    : " fvHe '.' ;
             * Definition of reflector libraries
             LibDilut ConcMode MolarMasses
-            BNat Zirc4 Incon SS304 := CreaDilut ::
+            BNat Zirc4 Incon SS304 := CreaDilut TENDL ::
             <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
             * The MIX numbers are defined starting from 3

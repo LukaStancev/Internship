@@ -13,7 +13,8 @@
 *======================================================================
 * Structures et Modules
 *-------------------------------------------------------
-PARAMETER   ExpLibrary Burnup ConcMode Info ;
+PARAMETER ExpLibrary Burnup ConcMode Info TENDL ::
+   ::: LINKED_LIST TENDL ; ;
 PROCEDURE   CreaStepList GetMolarMass MetalMix CreaMix
             Geo15x15 Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU:
@@ -164,7 +165,8 @@ MolarMasses ::
 *---- 4) Library with all mixes ------------------------
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
-HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses ::
+HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses
+TENDL ::
 <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>

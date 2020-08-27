@@ -4,7 +4,7 @@
 
 The datasets produced during my Ph.D. thesis are centralized on this project. This principle of openness is intended to allow, in a pragmatic and effective way:
 * the verifiable and complete reproducibility of this publicly funded research,
-* the transparency necessary for a rigorous peer-review,
+* the transparency necessary for a rigorous peer review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
 
 ## Version5 datasets execution
@@ -14,7 +14,7 @@ The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be execu
 cd Drakkar/Version5/Donjon/src
 make
 cd ../../../data
-../runVersion5.sh JEFF311.x2m
+../runVersion5.sh Tihange.x2m
 ```
 
 ## Disclaimer

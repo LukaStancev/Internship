@@ -5,8 +5,6 @@
 * Author: A. Bruneau 2013, 2014, 04.2015, 07.2015, 08.2015
 *         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
 *----------------------------------------------------------------------
-* Dragon: v5bev1058
-*----------------------------------------------------------------------
 * ATTENTION! La variable "bu_index" est initialisee par un mot-cle "REPL" (script local)
 *            A remplacer par l'indice du pas de burnup voulu dans LINKED_LIST StepList 'Burnup' et 'BurnStep'
 *
@@ -20,8 +18,9 @@
 *======================================================================
 * STRUCTURES et MODULES utilises
 *-------------------------------------------------
-PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info ::
-  ::: XSM_FILE      ImpLibrary Burnup ConcMode Info ; ;
+PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info TENDL ::
+  ::: XSM_FILE      ImpLibrary Burnup ConcMode Info ;
+  ::: LINKED_LIST                                   TENDL ; ;
 PROCEDURE   CreaStepList Geo15x15 CreaGeoHom ModDet35
             Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU: EDI: SAP: SPH:
@@ -98,6 +97,19 @@ STRING  BiblXS   := "SAPHYB"   ;
 *---
 STRING Evaluation := "JEFF311"  ;
 STRING FileNuclData := "D172" Evaluation + ;
+
+*---
+*  Specifities for TENDL
+*---
+INTEGER O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 ;
+GREP: TENDL :: GETVAL 'O16'  1 >>O16<< ;
+GREP: TENDL :: GETVAL 'U235' 1 >>U235<< ;
+GREP: TENDL :: GETVAL 'U238' 1 >>U238<< ;
+GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90<< ;
+GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91<< ;
+GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92<< ;
+GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94<< ;
+GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96<< ;
 
 *=======================================================
 * INFO-DEFINED CALCULATION OPTIONS
@@ -473,31 +485,31 @@ WHILE m dm <= DO
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
             H1_H2O <<h_10>>
-            O16    <<o_10>>
+*            O16    <<o_10>>
             B10  <<b10_10>>
             B11  <<b11_10>>
           MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
             H2O <<h2o_11>>
             H1_H2O <<h_11>>
-            O16    <<o_11>>
+*            O16    <<o_11>>
             B10  <<b10_11>>
             B11  <<b11_11>>
           MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
             H2O <<h2o_12>>
             H1_H2O <<h_12>>
-            O16    <<o_12>>
+*            O16    <<o_12>>
             B10  <<b10_12>>
             B11  <<b11_12>>
           MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
             H2O <<h2o_13>>
             H1_H2O <<h_13>>
-            O16    <<o_13>>
+*            O16    <<o_13>>
             B10  <<b10_13>>
             B11  <<b11_13>>
           MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
             H2O <<h2o_14>>
             H1_H2O <<h_14>>
-            O16    <<o_14>>
+*            O16    <<o_14>>
             B10  <<b10_14>>
             B11  <<b11_14>>
           MIX  20 <<tmod_nom_K>> NOEV (* TUBE *)
@@ -514,6 +526,36 @@ WHILE m dm <= DO
           MIX  37 <<tmod_nom_K>> NOEV (* GAINE AICn *)
           MIX  38 <<tmod_nom_K>> NOEV (* GAINE AICg *)
           ;
+
+        IF O16 -311 = NOT THEN
+          Library := LIB: Library :: EDIT 0
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: draglibO16
+            MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+              O16    <<o_10>>
+            MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+              O16    <<o_11>>
+            MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+              O16    <<o_12>>
+            MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_13>>
+            MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
+              O16    <<o_14>>
+            ;
+        ELSE
+          Library := LIB: Library :: EDIT 0
+            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+            MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+              O16    <<o_10>>
+            MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+              O16    <<o_11>>
+            MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+              O16    <<o_12>>
+            MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_13>>
+            MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
+              O16    <<o_14>>
+            ;
+        ENDIF ;
 *------------------------------------------------------
 * Set Library at burnup
 * mixes communs a tous les assemblages

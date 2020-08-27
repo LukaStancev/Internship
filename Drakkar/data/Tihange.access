@@ -9,7 +9,7 @@ echo -e "\nExecute ${accessname}.access script\n"
 
 cp "$1"/proc/* .
 
-#--- link to nuclear data file: JEFF-3.1.1 (NJOY2016)
+#--- nuclear data file: JEFF-3.1.1 (NJOY2016)
 rm -f D172JEFF311 # Deleting a Draglib file that could already exist in some setups
 if [ -f "$1/draglibJeff3.1.1_PyNjoy2016" ] ; then
     cp "$1"/draglibJeff3.1.1_PyNjoy2016 D172JEFF311
@@ -23,6 +23,11 @@ else
     cp draglibJeff3.1.1_PyNjoy2016 "$1"/. # For the future executions
     mv draglibJeff3.1.1_PyNjoy2016 D172JEFF311
 fi
+
+#-- TENDL nuclear data files (also NJOY2016)
+cp "$1"/draglibO16 .
+cp "$1"/draglibU23* .
+cp "$1"/draglibZr9* .
 
 Evaluation=$(grep "STRING Evaluation :=" EvoNominale.c2m | cut -d\" -f2)
 
