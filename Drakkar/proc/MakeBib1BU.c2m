@@ -523,6 +523,7 @@ WHILE m dm <= DO
           MIX  52 <<tmod_nom_K>> NOEV (* ABS_ACIER *)
           MIX  30 <<tclad_K>> NOEV (* GAINE *)
           MIX  32 <<tmod_nom_K>> NOEV (* GAINE ABS_ACIER *)
+          MIX  36 <<tclad_K>> NOEV (* GAINE M5 *)
           MIX  37 <<tmod_nom_K>> NOEV (* GAINE AICn *)
           MIX  38 <<tmod_nom_K>> NOEV (* GAINE AICg *)
           ;
@@ -573,6 +574,7 @@ WHILE m dm <= DO
           MIX 52
           MIX 30 (* GAINE *)
           MIX 32 (* GAINE ABS_ACIER *)
+          MIX 36 (* GAINE M5 *)
           MIX 37 (* GAINE AICn *)
           MIX 38 (* GAINE AICg *)
           ;
@@ -581,13 +583,13 @@ WHILE m dm <= DO
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX 34 <<tmod_nom_K>>
             MIX 35 <<tmod_nom_K>>
-            MIX 36 <<tmod_nom_K>>
+            MIX 59 <<tmod_nom_K>>
             MIX 65 <<tmod_nom_K>> ;
           Library := LIB: Library Burnup :: EDIT 0
             BURN <<bstep>>
             MIX 34
             MIX 35
-            MIX 36
+            MIX 59
             MIX 65
             ;
         ENDIF ;
