@@ -197,11 +197,11 @@ INTEGER    i    j    k    l    m := 1 1 1 1 1 ;
 INTEGER   di   dj   dk   dl   dm ;
 REAL    alpha beta kinf ;
 
-REAL    h2o_10 h2o_11 h2o_12 h2o_13 h2o_14 ;
-REAL    h_10   h_11   h_12   h_13   h_14   ;
-REAL    o_10   o_11   o_12   o_13   o_14   ;
-REAL    b10_10 b10_11 b10_12 b10_13 b10_14 ;
-REAL    b11_10 b11_11 b11_12 b11_13 b11_14 ;
+REAL    h2o_5 h2o_10 h2o_11 h2o_12 h2o_13 ;
+REAL    h_5   h_10   h_11   h_12   h_13   ;
+REAL    o_5   o_10   o_11   o_12   o_13   ;
+REAL    b10_5 b10_10 b10_11 b10_12 b10_13 ;
+REAL    b11_5 b11_10 b11_11 b11_12 b11_13 ;
 STRING  SaveDir ; ! Nom du DIR dans objet EDI (avec '_2G')
 STRING  Noml ; ! 'Nom' de la Bib (NOML)
 
@@ -365,16 +365,16 @@ WHILE m dm <= DO
 *------------------------------------------------------
 * Recover Nominal Concentrations from ConcMode (see .access)
 *------------------------------------------------------
+        GREP: ConcMode :: GETVAL 'MODETI' 1 4
+                        >>h_5<< >>o_5<< >>b10_5<< >>b11_5<< ;
         GREP: ConcMode :: GETVAL 'MODE  ' 1 4
                         >>h_10<< >>o_10<< >>b10_10<< >>b11_10<< ;
         GREP: ConcMode :: GETVAL 'MODEL ' 1 4
                         >>h_11<< >>o_11<< >>b10_11<< >>b11_11<< ;
         GREP: ConcMode :: GETVAL 'MODEC ' 1 4
                         >>h_12<< >>o_12<< >>b10_12<< >>b11_12<< ;
-        GREP: ConcMode :: GETVAL 'MODETI' 1 4
-                        >>h_13<< >>o_13<< >>b10_13<< >>b11_13<< ;
         GREP: ConcMode :: GETVAL 'MODETE' 1 4
-                        >>h_14<< >>o_14<< >>b10_14<< >>b11_14<< ;
+                        >>h_13<< >>o_13<< >>b10_13<< >>b11_13<< ;
 *------------------------------------------------------
 * Modif LIB en fonction des parametres CBOR DMOD
 * alpha: dmod / dmod_nom  [dmod_nom = .716403 g.cm^-3]
@@ -385,6 +385,12 @@ WHILE m dm <= DO
 *------------------------------------------------------
         EVALUATE alpha := dmod dmod_nom / ;
         EVALUATE beta  := cbor cbor_nom / ;
+
+        EVALUATE h2o_5 := h2o_5 alpha * ;
+        EVALUATE h_5   := h_5 alpha * ;
+        EVALUATE o_5   := o_5 alpha * ;
+        EVALUATE b10_5 := b10_5 alpha * beta * ;
+        EVALUATE b11_5 := b11_5 alpha * beta * ;
 
         EVALUATE h2o_10 := h2o_10 alpha * ;
         EVALUATE h_10   := h_10 alpha * ;
@@ -409,12 +415,6 @@ WHILE m dm <= DO
         EVALUATE o_13   := o_13 alpha * ;
         EVALUATE b10_13 := b10_13 alpha * beta * ;
         EVALUATE b11_13 := b11_13 alpha * beta * ;
-
-        EVALUATE h2o_14 := h2o_14 alpha * ;
-        EVALUATE h_14   := h_14 alpha * ;
-        EVALUATE o_14   := o_14 alpha * ;
-        EVALUATE b10_14 := b10_14 alpha * beta * ;
-        EVALUATE b11_14 := b11_14 alpha * beta * ;
 *------------------------------------------------------
 * Numeros de mix:
 *------------------------------------------------------
@@ -426,12 +426,14 @@ WHILE m dm <= DO
 *               MOX     110 ->  139
 *               UGd     140 -> Nmix
 *------------------------------------------------------
+* Materiaux de base
+*    5 - Eau boree
+*    6 - Eau boree tube instrumentation
 * Moderateurs
 *   10 - MODE   [moderateur cellule centrale]
 *   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
 *   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
-*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
-*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
+*   13 - MODETE [moderateur cellule tube (exterieur du tube)]
 * Structures: Tubes
 *   20 - TUBE
 * Structures: Barres
@@ -482,6 +484,12 @@ WHILE m dm <= DO
 ! Attention: correction de transport a rajouter a chaque appel au module LIB:
           CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
 ! ATTENTION : supprimer H2O ou H1_H2O et O16 selon la bibli utilisee
+          MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+            H2O <<h2o_5>>
+            H1_H2O <<h_5>>
+*            O16    <<o_5>>
+            B10  <<b10_5>>
+            B11  <<b11_5>>
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
             H1_H2O <<h_10>>
@@ -500,18 +508,12 @@ WHILE m dm <= DO
 *            O16    <<o_12>>
             B10  <<b10_12>>
             B11  <<b11_12>>
-          MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
+          MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
             H2O <<h2o_13>>
             H1_H2O <<h_13>>
 *            O16    <<o_13>>
             B10  <<b10_13>>
             B11  <<b11_13>>
-          MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
-            H2O <<h2o_14>>
-            H1_H2O <<h_14>>
-*            O16    <<o_14>>
-            B10  <<b10_14>>
-            B11  <<b11_14>>
           MIX  20 <<tmod_nom_K>> NOEV (* TUBE *)
           MIX  21 <<tmod_nom_K>> NOEV (* AIC *)
           MIX  41 <<tmod_nom_K>> NOEV (* AIC *)
@@ -531,30 +533,30 @@ WHILE m dm <= DO
         IF O16 -311 = NOT THEN
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: draglibO16
+            MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_5>>
             MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
               O16    <<o_10>>
             MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
               O16    <<o_11>>
             MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
               O16    <<o_12>>
-            MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
+            MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
               O16    <<o_13>>
-            MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
-              O16    <<o_14>>
             ;
         ELSE
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+            MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_5>>
             MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
               O16    <<o_10>>
             MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
               O16    <<o_11>>
             MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
               O16    <<o_12>>
-            MIX   13 <<tmod_nom_K>> NOEV (* MODETI *)
+            MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
               O16    <<o_13>>
-            MIX   14 <<tmod_nom_K>> NOEV (* MODETE *)
-              O16    <<o_14>>
             ;
         ENDIF ;
 *------------------------------------------------------

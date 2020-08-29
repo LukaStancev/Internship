@@ -2521,15 +2521,12 @@ REAL     Na23BP := Na23BPf BP_Tconc  * ;
 *    3 - Zircalloy-4
 *    4 - Grilles precalculees
 *    5 - Eau boree
-*    6 - Isotopes de barre virtuelle
-*    7 - Eau boree tube instrumentation
+*    6 - Eau boree tube instrumentation
 * Moderateurs
 *   10 - MODE   [moderateur cellule centrale]
 *   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
 *   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
-*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
-*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
-*   15 - MODETII [moderateur cellule tube (interieur du tube d'instrumentation)]
+*   13 - MODETE [moderateur cellule tube (exterieur du tube)]
 * Structures: Tubes
 *   20 - TUBE
 * Structures: Barres
@@ -2734,35 +2731,17 @@ CTRA <<CTRA>>
     Zr96     = <<NomZr96>>    <<Zr96Gr>>
   MIX 5 <<tmod>> NOEV ! (* Eau normale *)
     H2O      = <<NomH2O>> <<H2O_mti>>
-    H1_H2O   = <<NomH1>>       <<H_mti>>
-    O16      = <<NomO16>>      <<O_mti>>
-    B10      =  <<NomB10>>    <<B10_mti>>
-    B11      =  <<NomB11>>    <<B11_mti>>
-  MIX 6 <<tmod>> NOEV
-*--- Isotopes de Barres pour Modeti a 0 ---------------
-* Utilité à réévaluer sur un calcul de Saphyb
-    Ag107    = <<NomAg107>>    0.
-    Ag109    = <<NomAg109>>    0.
-    Cd106    = <<NomCd106>>    0.
-    Cd108    = <<NomCd108>>    0.
-    Cd110    = <<NomCd110>>    0.
-    Cd111    = <<NomCd111>>    0.
-    Cd112    = <<NomCd112>>    0.
-    Cd113    = <<NomCd113>>    0.
-    Cd114    = <<NomCd114>>    0.
-    Cd116    = <<NomCd116>>    0.
-    In115    = <<NomIn115>>    0.
-    In113    = <<NomIn113>>    0.
-    B10      = <<NomB10>>    0.
-    B11      = <<NomB11>>    0.
-    CNat     = <<NomCNat>>      0.
-  MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-    H2O      = <<NomH2O>> <<H2O_mti>>
-    H1_H2O   = <<NomH1>>       <<H_mti>>
-    O16      = <<NomO16>>      <<O_mti>>
-    B10      =  <<NomB10>>    <<B10_mti>>
-    B11      =  <<NomB11>>    <<B11_mti>>
-    U5DET    =  <<NomU235>>   <<U5FC>>
+    H1_H2O   = <<NomH1>>  <<H_mti>>
+    O16      = <<NomO16>> <<O_mti>>
+    B10      = <<NomB10>> <<B10_mti>>
+    B11      = <<NomB11>> <<B11_mti>>
+  MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+    H2O      = <<NomH2O>>  <<H2O_mti>>
+    H1_H2O   = <<NomH1>>   <<H_mti>>
+    O16      = <<NomO16>>  <<O_mti>>
+    B10      = <<NomB10>>  <<B10_mti>>
+    B11      = <<NomB11>>  <<B11_mti>>
+    U5DET    = <<NomU235>> <<U5FC>>
 *---- Fin Isotopes de Barres pour Modeti a 0 ----------
 *--- TUBES --------------------------------------------
   MIX 20 <<tmod>> NOEV (* TUBE *)
@@ -3142,7 +3121,7 @@ IF O16 -311 = NOT THEN
       O16   = <<NomO16>>   <<O16Gr>>
     MIX 5 <<tmod>> NOEV ! (* Eau normale *)
       O16      = <<NomO16>>      <<O_mti>>
-    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+    MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
       O16      = <<NomO16>>      <<O_mti>>
     MIX 20 <<tmod>> NOEV (* TUBE *)
       O16      = <<NomO16>>      <<O16T>>
@@ -3167,7 +3146,7 @@ IF U235 -311 = NOT THEN
   Library := LIB: Library ::
     CTRA <<CTRA>>
     MIXS LIB: <<LibGenre>> FIL: draglibU235
-    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+    MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
       U5DET    =  <<NomU235>>   <<U5FC>>
     MIX 100 <<tfuel>> (* COMB *)
       U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
@@ -3184,8 +3163,6 @@ IF U238 -311 = NOT THEN
   Library := LIB: Library ::
     CTRA <<CTRA>>
     MIXS LIB: <<LibGenre>> FIL: draglibU238
-    MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-      U5DET    =  <<NomU238>>   <<U5FC>>
     MIX 100 <<tfuel>> (* COMB *)
       U238     = <<NomU238>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU238>>
   ;
@@ -3321,18 +3298,12 @@ Library := LIB: Library ::
          3 <<Zr4Corn>>
          4 <<GrPreCorn>>
          5 <<H2OCorn>>
-  MIX 13 (* MODETI *)
-    COMB 5 1.0
-        6 1.0E-20
-  MIX 14 (* MODETE *)
+  MIX 13 (* MODETE *)
     COMB 1 <<ss304Tube>>
          2 <<IncTube>>
          3 <<Zr4Tube>>
          4 <<GrPreTube>>
          5 <<H2OTube>>
-  MIX 15 (* MODETI POUR TUBE INSTR*)
-    COMB 6 1.0E-20
-         7 1.0
   MIX 41 COMB 21 1.0
   MIX 42 COMB 21 1.0
   MIX 43 COMB 21 1.0

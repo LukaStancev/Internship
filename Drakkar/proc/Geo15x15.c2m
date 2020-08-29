@@ -218,15 +218,12 @@ EVALUATE Rfuel4 := rFuel ;
 *    3 - Zircalloy-4
 *    4 - Grilles precalculees
 *    5 - Eau boree
-*    6 - Isotopes de barre virtuelle
-*    7 - Eau boree tube instrumentation
+*    6 - Eau boree tube instrumentation
 * Moderateurs
 *   10 - MODE   [moderateur cellule centrale]
 *   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
 *   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
-*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
-*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
-*   15 - MODETII [moderateur cellule tube (interieur du tube d'instrumentation)]
+*   13 - MODETE [moderateur cellule tube (exterieur du tube)]
 * Structures: Tubes
 *   20 - TUBE
 * Structures: Barres
@@ -254,7 +251,7 @@ Cellules := GEO: ::
   MESHX  0. <<pPin>>
   MESHY  0. <<pPin>>
   RADIUS 0. <<rTubeIn>> <<rTubeEx>>
-  MIX    13  20  14 ;
+  MIX    5  20  13 ;
 
 ::: C1 := GEO: CARCEL 5
   MESHX  0. <<pPin>>
@@ -270,13 +267,13 @@ Cellules := GEO: ::
   MESHY  0. <<pPin>>
   RADIUS 0.0 <<rCladBPIn>> <<rRodBPIn>> <<rRodBPEx>>
          <<rCladBPEx>> <<rTubeIn>> <<rTubeEx>>
-  MIX    59  34  65  35  13  20  14 ;
+  MIX    59  34  65  35  5  20  13 ;
 
 ::: R  := GEO: CARCEL 4
   MESHX  0. <<pPin>>
   MESHY  0. <<pPin>>
   RADIUS 0. <<rRodAICn>> <<rCladRod>> <<rTubeIn>> <<rTubeEx>>
-  MIX  41  37  13  20  14 ;
+  MIX  41  37  5  20  13 ;
 ;
 
 Huitieme := GEO: Cellules :: CAR2D 8 8
