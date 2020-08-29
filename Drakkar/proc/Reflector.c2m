@@ -135,6 +135,11 @@ WHILE CASE 2 <= DO
       O16       = <<NomO16>> <<O16>> NOEV
       B10       = <<NomB10>> <<B10>> NOEV
       B11       = <<NomB11>> <<B11>> NOEV
+    MIX 6 <<TempMod>>
+      H1_H2O    = <<NomH1>>  <<H1>>  NOEV
+      O16       = <<NomO16>> <<O16>> NOEV
+      B10       = <<NomB10>> <<B10>> NOEV
+      B11       = <<NomB11>> <<B11>> NOEV
     MIX 10 <<TempMod>>
       H1_H2O    = <<NomH1>>  <<H1>>  NOEV
       O16       = <<NomO16>> <<O16>> NOEV
@@ -162,6 +167,8 @@ WHILE CASE 2 <= DO
     MIXS LIB: <<LibGenre>> FIL: draglibO16
 
     MIX 5 <<TempMod>>
+      O16       = <<NomO16tendl>> <<O16>> NOEV
+    MIX 6 <<TempMod>>
       O16       = <<NomO16tendl>> <<O16>> NOEV
     MIX 10 <<TempMod>>
       O16       = <<NomO16tendl>> <<O16>> NOEV

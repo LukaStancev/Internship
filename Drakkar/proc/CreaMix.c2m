@@ -182,7 +182,7 @@ REAL dCladAICn ; ! Stainless Steel (SS304) Clad dens. (AICn Rods)
 REAL dCladSS   ; ! Stainless Steel (SS304) Clad dens. (Steel Rods)
 REAL dCladB4C  ; ! Stainless Steel (SS304) Clad dens. (B4C Rods)
 
-REAL U5FC dMOX dUO2 dUGd dInc dZr4  ;
+REAL dMOX dUO2 dUGd dInc dZr4  ;
 REAL dTube dCladFuel dRodAIC dSS dGrid dRodB4C dRodBP dRodHf ;
 REAL dCladBPEx dCladBPIn ;
 REAL InGridfPre Z4GridfPre SSGridfPre ;
@@ -577,7 +577,6 @@ GREP: Densities :: GETVAL 'dUO2 ' 1 >>dUO2<< ;
 GREP: Densities :: GETVAL 'dMOX' 1 >>dMOX<< ;
 
 GREP: Distances :: GETVAL 'rFuel' 1 >>rFuel<< ;
-GREP: Compositions :: GETVAL 'U5FC' 1 >>U5FC<< ;
 
 ! //////////////////////////////////////////////////////////////////////
 ! /// GET ROD DATA ///
@@ -2741,7 +2740,7 @@ CTRA <<CTRA>>
     O16      = <<NomO16>>  <<O_mti>>
     B10      = <<NomB10>>  <<B10_mti>>
     B11      = <<NomB11>>  <<B11_mti>>
-    U5DET    = <<NomU235>> <<U5FC>>
+    U5DET    = <<NomU235>> 1.0E-9
 *---- Fin Isotopes de Barres pour Modeti a 0 ----------
 *--- TUBES --------------------------------------------
   MIX 20 <<tmod>> NOEV (* TUBE *)
@@ -3147,7 +3146,7 @@ IF U235 -311 = NOT THEN
     CTRA <<CTRA>>
     MIXS LIB: <<LibGenre>> FIL: draglibU235
     MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-      U5DET    =  <<NomU235>>   <<U5FC>>
+      U5DET    =  <<NomU235>>   1.0E-9
     MIX 100 <<tfuel>> (* COMB *)
       U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
   ;

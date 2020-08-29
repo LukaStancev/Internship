@@ -490,6 +490,13 @@ WHILE m dm <= DO
 *            O16    <<o_5>>
             B10  <<b10_5>>
             B11  <<b11_5>>
+          MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+            H2O <<h2o_5>>
+            H1_H2O <<h_5>>
+*            O16    <<o_5>>
+            B10  <<b10_5>>
+            B11  <<b11_5>>
+            U235 1.0E-9
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
             H1_H2O <<h_10>>
@@ -535,6 +542,8 @@ WHILE m dm <= DO
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: draglibO16
             MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
               O16    <<o_5>>
+            MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_5>>
             MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
               O16    <<o_10>>
             MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
@@ -548,6 +557,8 @@ WHILE m dm <= DO
           Library := LIB: Library :: EDIT 0
             CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
             MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+              O16    <<o_5>>
+            MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
               O16    <<o_5>>
             MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
               O16    <<o_10>>

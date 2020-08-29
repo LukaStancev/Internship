@@ -168,7 +168,6 @@ INTEGER Teneur_I ;
   REAL H2OCntrPre ;
   REAL H2OSidePre ;
   REAL H2OCornPre ;
-  REAL U5FC ;
   REAL Main_enri := 0.0 ;
   REAL U4enri ;
   REAL U6enri ;
@@ -391,8 +390,6 @@ IF Gestion "BEAV" = THEN
 ! ---------------------------------------------------------------------
 ! --- ENRICHISSEMENT/TENEURS/CONCENTRATIONS ---
 ! ---------------------------------------------------------------------
-  !DIVERS -----------------------------------------------------------
-  EVALUATE U5FC     := 1E-9 ;
   !COMB UOX -----------------------------------------------------------
   IF AssType "UOX" = THEN
     IF Teneur_I 160 = THEN
@@ -563,8 +560,6 @@ ELSEIF Gestion "TIH" = THEN
 ! ---------------------------------------------------------------------
 ! --- ENRICHISSEMENT/TENEURS/CONCENTRATIONS ---
 ! ---------------------------------------------------------------------
-  !DIVERS -----------------------------------------------------------
-  EVALUATE U5FC     := 1E-9 ;
   !COMB UOX -----------------------------------------------------------
   IF AssType "UOX" = THEN
     IF Teneur_I 195 = THEN
@@ -805,8 +800,6 @@ ELSEIF DataType "GRIDDATA" = THEN
 
 
 ELSEIF DataType "COMPOSITIONS" = THEN
-  TechData := UTL: TechData :: CREA 'U5FC' 1 = <<U5FC>> ;
-
   TechData := UTL: TechData :: CREA 'Main_enri' 1 = <<Main_enri>> ;
   TechData := UTL: TechData :: CREA 'U4enri' 1 = <<U4enri>> ;
   TechData := UTL: TechData :: CREA 'U6enri' 1 = <<U6enri>> ;
