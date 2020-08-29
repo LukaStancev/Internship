@@ -16,6 +16,11 @@ else
    MACH=`uname -sm | sed 's/[ ]/_/'`
 fi
 ls -ltr
-cp *Power* "$1"/"$MACH"/.
+for file in *Power*
+do
+    md5sum=$(md5sum "$file" | cut -d" " -f1)
+    prefix=$(echo "$file" | cut -d"." -f1)
+    mv "$file" "$1"/"$MACH"/"$prefix"_"$md5sum".ascii
+done
 
 echo -e $savename".save script terminated\n"

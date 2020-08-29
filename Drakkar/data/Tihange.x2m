@@ -1,9 +1,12 @@
 MODULE GREP: MSTR: UTL: DELETE: END: ;
-PROCEDURE EvoNominale MakeBib1BU Reflector Tihange TENDLfilenam ;
+PROCEDURE EvoNominale MakeBib1BU Reflector Tihange ;
 LINKED_LIST ReflSpecs TENDL ;
 XSM_FILE Library Burnup ConcMode Info
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12
   PowerCD PowerD PowerARO Temp ;
+SEQ_ASCII PowerCD_asc  :: FILE './_PowerCD.ascii'  ;
+SEQ_ASCII PowerD_asc   :: FILE './_PowerD.ascii'   ;
+SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
 * Default: use JEFF-3.1.1 for all isotopes (= -311)
 TENDL := MSTR:       :: PUT 1 O16  -311 ;
 TENDL := MSTR: TENDL :: PUT 1 U235 -311 ;
@@ -47,11 +50,6 @@ PowerCD PowerD PowerARO := Tihange
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
 *--- Export the bare minimum to ASCII, i.e. radial power distributions
 *    and k-effectives
-STRING FilenameCD FilenameD FilenameARO ;
-TENDLfilenam TENDL :: >>FilenameCD<< >>FilenameD<< >>FilenameARO<< ;
-SEQ_ASCII PowerCD_asc  :: FILE <<FilenameCD>>  ;
-SEQ_ASCII PowerD_asc   :: FILE <<FilenameD>>   ;
-SEQ_ASCII PowerARO_asc :: FILE <<FilenameARO>> ;
 INTEGER Length ;
 GREP: PowerCD :: LENGTH POWER-CHAN >>Length<< ;
 Temp := TENDL ;
