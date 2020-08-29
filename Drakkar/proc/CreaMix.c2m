@@ -3124,14 +3124,26 @@ IF O16 -311 = NOT THEN
       O16      = <<NomO16>>      <<O_mti>>
     MIX 20 <<tmod>> NOEV (* TUBE *)
       O16      = <<NomO16>>      <<O16T>>
+    MIX 24 <<tmod>> NOEV (* HAFNIUM ROD *)
+      O16      = <<NomO16>>      <<O16HfR>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       O16      = <<NomO16>>      <<O16Cl>>
+    MIX 36 <<tclad>> NOEV (* GAINE M5 *)
+      O16      = <<NomO16>>  <<O16M5Cl>>
     MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
       O16      = <<NomO16>>    1.12630E-5
     MIX 65 <<tmod>> (* BP Pyrex *)
       O16      = <<NomO16>>   <<O16BP>>
     MIX 100 <<tfuel>> (* COMB *)
       O16      = <<NomO16>>    <<O_fuel>>
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      O16      = <<NomO16>>    <<O_corn_fuel>>
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      O16      = <<NomO16>>    <<O_side_fuel>>
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      O16      = <<NomO16>>    <<O_cntr_fuel>>
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      O16      = <<NomO16>>    <<O_UGd_fuel>>
   ;
 ENDIF ;
 IF U235 -311 = NOT THEN
@@ -3185,6 +3197,16 @@ IF Zr90 -311 = NOT THEN
       Zr90     = <<NomZr90>>     <<Zr90T>> <<iZrT>> SHIB <<NomSSZr90>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       Zr90     = <<NomZr90>>     <<Zr90Cl>> <<iZrG>> SHIB <<NomSSZr90>>
+    MIX 100 <<tfuel>> (* COMB *)
+      Zr90     = <<NomZr90>> 0.0
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      Zr90     = <<NomZr90>> 0.0
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      Zr90     = <<NomZr90>> 0.0
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      Zr90     = <<NomZr90>> 0.0
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      Zr90     = <<NomZr90>> 0.0
   ;
 ENDIF ;
 IF Zr91 -311 = NOT THEN
@@ -3206,6 +3228,16 @@ IF Zr91 -311 = NOT THEN
       Zr91     = <<NomZr91>>     <<Zr91T>> <<iZrT>> SHIB <<NomSSZr91>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       Zr91     = <<NomZr91>>     <<Zr91Cl>> <<iZrG>> SHIB <<NomSSZr91>>
+    MIX 100 <<tfuel>> (* COMB *)
+      Zr91     = <<NomZr91>> 0.0
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      Zr91     = <<NomZr91>> 0.0
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      Zr91     = <<NomZr91>> 0.0
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      Zr91     = <<NomZr91>> 0.0
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      Zr91     = <<NomZr91>> 0.0
   ;
 ENDIF ;
 IF Zr92 -311 = NOT THEN
@@ -3227,6 +3259,16 @@ IF Zr92 -311 = NOT THEN
       Zr92     = <<NomZr92>>     <<Zr92T>> <<iZrT>> SHIB <<NomSSZr92>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       Zr92     = <<NomZr92>>     <<Zr92Cl>> <<iZrG>> SHIB <<NomSSZr92>>
+    MIX 100 <<tfuel>> (* COMB *)
+      Zr92     = <<NomZr92>> 0.0
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      Zr92     = <<NomZr92>> 0.0
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      Zr92     = <<NomZr92>> 0.0
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      Zr92     = <<NomZr92>> 0.0
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      Zr92     = <<NomZr92>> 0.0
   ;
 ENDIF ;
 IF Zr94 -311 = NOT THEN
@@ -3248,6 +3290,16 @@ IF Zr94 -311 = NOT THEN
       Zr94     = <<NomZr94>>     <<Zr94T>> <<iZrT>> SHIB <<NomSSZr94>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       Zr94     = <<NomZr94>>     <<Zr94Cl>> <<iZrG>> SHIB <<NomSSZr94>>
+    MIX 100 <<tfuel>> (* COMB *)
+      Zr94     = <<NomZr94>> 0.0
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      Zr94     = <<NomZr94>> 0.0
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      Zr94     = <<NomZr94>> 0.0
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      Zr94     = <<NomZr94>> 0.0
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      Zr94     = <<NomZr94>> 0.0
   ;
 ENDIF ;
 IF Zr96 -311 = NOT THEN
@@ -3269,6 +3321,16 @@ IF Zr96 -311 = NOT THEN
       Zr96     = <<NomZr96>>     <<Zr96T>> <<iZrT>> SHIB <<NomSSZr96>>
     MIX 30 <<tclad>> NOEV (* GAINE COMB *)
       Zr96     = <<NomZr96>>     <<Zr96Cl>> <<iZrG>> SHIB <<NomSSZr96>>
+    MIX 100 <<tfuel>> (* COMB *)
+      Zr96     = <<NomZr96>> 0.0
+    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+      Zr96     = <<NomZr96>> 0.0
+    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+      Zr96     = <<NomZr96>> 0.0
+    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+      Zr96     = <<NomZr96>> 0.0
+    MIX 140 <<tfuel>> (* COMB with Gd *)
+      Zr96     = <<NomZr96>> 0.0
   ;
 ENDIF ;
 

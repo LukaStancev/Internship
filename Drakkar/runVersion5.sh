@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # author : A. Hebert
 # use    : rdonjon <file.x2m> [<compiler>] [-w]
@@ -44,13 +44,18 @@ do
             data=$param
             typ='custom'
          else
-            typ=$param
+            re='^[0-9]+$'
+            if ! [[ $param =~ $re ]] ; then
+               typ=$param
+            else
+               intg=$param
+            fi
          fi ;;
    esac
 done
 Code=Donjon
 if [ $quiet = 0 ]; then
-  echo 'execute' $xxx 'with' $Code 'on system' $MACH 'with' $typ 'compiler'
+    echo 'execute' $xxx 'with' $Code 'on' $(hostname) 'system (' $MACH ') with' $typ 'compiler'
 fi
 
 if [ -d ../"$MACH" ]; then
@@ -76,7 +81,7 @@ while [ -d $Tmpdir/rundir$inum ]
   do
   inum=`expr $inum + 1 `
 done
-Rundir=$Tmpdir/rundir$inum
+Rundir=$Tmpdir/rundir$inum$intg
 mkdir $Rundir
 if [ $quiet = 0 ]; then
   echo "RunDirectory:" $Rundir
