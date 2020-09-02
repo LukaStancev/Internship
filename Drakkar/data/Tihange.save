@@ -23,4 +23,11 @@ do
     mv "$file" "$1"/"$MACH"/"$prefix"_"$md5sum".ascii
 done
 
+# Keep only a few result files, in case of random sampling.
+if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
+then
+   tail -45 *.result
+   rm -f *.result
+fi
+
 echo -e $savename".save script terminated\n"

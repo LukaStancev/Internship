@@ -3175,7 +3175,7 @@ IF U238 -311 = NOT THEN
     CTRA <<CTRA>>
     MIXS LIB: <<LibGenre>> FIL: draglibU238
     MIX 100 <<tfuel>> (* COMB *)
-      U238     = <<NomU238>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU238>>
+      U238     = <<NomU238>>   <<U8fuel>>  <<iU8>> SHIB <<NomSSU238>>
   ;
 ENDIF ;
 IF Zr90 -311 = NOT THEN
