@@ -479,8 +479,8 @@ WHILE iCB nCB <= DO
             ECHO "- SS304 : " fvSS304 ' ;' ;
             ECHO "- He    : " fvHe '.' ;
             * Definition of reflector libraries
-            LibDilut ConcMode MolarMasses
-            BNat Zirc4 Incon SS304 := CreaDilut TENDL ::
+            LibDilut := CreaDilut ConcMode MolarMasses BNat Zirc4 Incon
+            SS304 TENDL ::
             <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
             <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
             * The MIX numbers are defined starting from 3
