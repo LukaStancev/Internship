@@ -11,8 +11,9 @@ MODULE LIB: GEO: DELETE: UTL: END: ABORT: GREP: MSTR: INFO: MAC: ;
 * mode).
 *----------------------------------------------------------------------
 STRING FileNuclData Evaluation Palier Location ;
-REAL CB ;
-:: >>FileNuclData<< >>Evaluation<< >>Palier<< >>Location<< >>CB<< ;
+REAL CB dBaffleBarrl ;
+:: >>FileNuclData<< >>Evaluation<< >>Palier<< >>Location<< >>CB<<
+  >>dBaffleBarrl<< ;
 *
 FractionVol := MSTR: :: CD 'Radial' ;
 FractionVol := MSTR: FractionVol :: CD 'Bottom' ;
@@ -25,8 +26,8 @@ REAL BZone1 := 0.847 ; !1st layer (the closest to the core)
 REAL BZone2 := 15.16 ; !2nd layer
 REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
 *
-EVALUATE nbZones := 3 ;
-nbZones := UTL: nbZones :: CREA 'Bottom' 1 = <<nbZones>> ;
+INTEGER nbZones := 3 ;
+nbZones := UTL: :: CREA 'Bottom' 1 = <<nbZones>> ;
 *
 ! Volume fraction for zone1, zone2 and zone3.
 FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
@@ -85,11 +86,10 @@ EVALUATE HZone7 := HZone7 HZone6 + ;
 *---
 *  Radial reflector
 *---
-REAL dBaffle dBaffleBarrl dBarrl dBarrlShield dShield
-:: >>dBaffleBarrl<< ;
+REAL dBaffle dBarrl dBarrlShield dShield ;
 *
-INTEGER nbZones := 4 ;
-nbZones := UTL: :: CREA 'Radial' 1 = <<nbZones>> ;
+EVALUATE nbZones := 4 ;
+nbZones := UTL: nbZones :: CREA 'Radial' 1 = <<nbZones>> ;
 * Steel volume fraction in the water between the baffle and the barrel,
 * due to the horizontal steel reinforcement plates that are vertically
 * distributed. Approximately 5-6%.
