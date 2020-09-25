@@ -1,10 +1,10 @@
-PARAMETER GEOM MACRO
+PARAMETER GEOM Library
   ConcMode MolarMasses BNat Zirc4 Incon SS304 TENDL
-  :: ::: LINKED_LIST MACRO
+  :: ::: LINKED_LIST
   ConcMode MolarMasses BNat Zirc4 Incon SS304 TENDL ; ;
 PROCEDURE CreaDilut GetTechData ;
-LINKED_LIST LibDilut nbZones FractionVol List ;
-MODULE LIB: GEO: DELETE: UTL: END: ABORT: GREP: MSTR: INFO: MAC: ;
+LINKED_LIST nbZones FractionVol List ;
+MODULE LIB: GEO: DELETE: UTL: END: ABORT: GREP: MSTR: INFO: ;
 *----------------------------------------------------------------------
 * The geometry could be simplified beyond the baffle without
 * consequences. Can be verified in full core transport (CASMO in MXN
@@ -19,39 +19,54 @@ FractionVol := MSTR: :: CD 'Radial' ;
 FractionVol := MSTR: FractionVol :: CD 'Bottom' ;
 FractionVol := MSTR: FractionVol :: CD 'Top' ;
 *---
-*  Bottom reflector : dimensions, compositions and properties
-*  From BEAVRS
+*  Compute water density from its pressure and temperature
 *---
-REAL BZone1 := 0.847 ; !1st layer (the closest to the core)
-REAL BZone2 := 15.16 ; !2nd layer
-REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
-*
+REAL dMod OpePressure Temp ;
+List := GetTechData :: 'TIH' 'UOX' 0 'None' 'GENERAL' ;
+GREP: List :: GETVAL 'OpePressure' 1 >>OpePressure<< ;
+List := DELETE: List ;
+IF Location "Bottom" = Location "Radial" = + THEN
+  EVALUATE Temp := 286.4 273.15 + ; ! Core inlet moderator temperature
+ELSEIF Location "Top" = THEN
+  EVALUATE Temp  := 320.1 273.15 + ; ! Core outlet moderator temperature
+ELSE
+  ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
+  ABORT: ;
+ENDIF ;
+INFO: :: TMP: <<Temp>> K PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
+  CALC DENS PWATER >>dMod<< ; ! [g.cm-3]
+*---
+*  Bottom reflector : volumic fractions and dimensions, from BEAVRS
+*---
 INTEGER nbZones := 3 ;
 nbZones := UTL: :: CREA 'Bottom' 1 = <<nbZones>> ;
-*
 ! Volume fraction for zone1, zone2 and zone3.
 FractionVol := UTL: FractionVol :: STEP UP 'Bottom'
+                    ! MIX    3     4     5
   CREA 'Wat' <<nbZones>> = 0.618 0.625 1.000
   CREA 'Zr4' <<nbZones>> = 0.371 0.088 0.000
   CREA 'Inc' <<nbZones>> = 0.000 0.000 0.000
   CREA 'SS ' <<nbZones>> = 0.000 0.276 0.000
   CREA 'He ' <<nbZones>> = 0.000 0.000 0.000   ;
-*
-REAL OpePressure dModBottom ;
-List := GetTechData :: 'TIH' 'UOX' 0 'None' 'GENERAL' ;
-GREP: List :: GETVAL 'OpePressure' 1 >>OpePressure<< ;
-List := DELETE: List ;
-REAL TempBottom := 286.4 273.15 + ; ! Core inlet moderator temperature
-INFO: :: TMP: <<TempBottom>> K PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
-  CALC DENS PWATER >>dModBottom<< ; ! [g.cm-3]
-*
+REAL BZone1 := 0.847 ; !1st layer (the closest to the core)
+REAL BZone2 := 15.16 ; !2nd layer
+REAL BZone3 := 20.00 ; !3rd layer (the farthest from the core)
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE BZone2 := BZone2 BZone1 + ;
 EVALUATE BZone3 := BZone3 BZone2 + ;
 *---
-*  Top reflector : dimensions, compositions and properties
-*  From BEAVRS
+*  Top reflector : volumic fractions and dimensions, from BEAVRS
 *---
+EVALUATE nbZones := 7 ;
+nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
+! Volume fraction for zone1, zone2, zone3, etc.
+FractionVol := UTL: FractionVol :: STEP UP 'Top'
+                    ! MIX    3     4     5     6     7     8    9
+  CREA 'Wat' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
+  CREA 'Zr4' <<nbZones>> = 0.096 0.096 0.096 0.372 0.008 0.088 0.000
+  CREA 'Inc' <<nbZones>> = 0.007 0.032 0.007 0.000 0.000 0.000 0.000
+  CREA 'SS ' <<nbZones>> = 0.000 0.005 0.000 0.000 0.000 0.276 0.000
+  CREA 'He ' <<nbZones>> = 0.280 0.280 0.280 0.011 0.000 0.011 0.000 ;
 REAL HZone1 := 10.76 ; !1st layer (the closest to the core)
 REAL HZone2 :=  4.19 ; !2nd layer
 REAL HZone3 :=  4.50 ; !3rd layer
@@ -59,23 +74,6 @@ REAL HZone4 :=  2.05 ; !4th layer
 REAL HZone5 :=  3.35 ; !5th layer
 REAL HZone6 :=  8.83 ; !6th layer
 REAL HZone7 := 20.00 ; !7th layer (the farthest from the core)
-*
-EVALUATE nbZones := 7 ;
-nbZones := UTL: nbZones :: CREA 'Top' 1 = <<nbZones>> ;
-*
-! Volume fraction for zone1, zone2, zone3, etc.
-FractionVol := UTL: FractionVol :: STEP UP 'Top'
-  CREA 'Wat' <<nbZones>> = 0.617 0.587 0.617 0.617 0.992 0.625 1.000
-  CREA 'Zr4' <<nbZones>> = 0.096 0.096 0.096 0.372 0.008 0.088 0.000
-  CREA 'Inc' <<nbZones>> = 0.007 0.032 0.007 0.000 0.000 0.000 0.000
-  CREA 'SS ' <<nbZones>> = 0.000 0.005 0.000 0.000 0.000 0.276 0.000
-  CREA 'He ' <<nbZones>> = 0.280 0.280 0.280 0.011 0.000 0.011 0.000 ;
-*
-REAL dModTop ;
-REAL TempTop  := 320.1 273.15 + ; ! Core outlet moderator temperature
-INFO: :: TMP: <<TempTop>> K PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
-  CALC DENS PWATER >>dModTop<< ; ! [g.cm-3]
-*
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
 EVALUATE HZone2 := HZone2 HZone1 + ;
 EVALUATE HZone3 := HZone3 HZone2 + ;
@@ -84,10 +82,8 @@ EVALUATE HZone5 := HZone5 HZone4 + ;
 EVALUATE HZone6 := HZone6 HZone5 + ;
 EVALUATE HZone7 := HZone7 HZone6 + ;
 *---
-*  Radial reflector
+*  Radial reflector : volumic fractions and dimensions
 *---
-REAL dBaffle dBarrl dBarrlShield dShield ;
-*
 EVALUATE nbZones := 4 ;
 nbZones := UTL: nbZones :: CREA 'Radial' 1 = <<nbZones>> ;
 * Steel volume fraction in the water between the baffle and the barrel,
@@ -95,7 +91,15 @@ nbZones := UTL: nbZones :: CREA 'Radial' 1 = <<nbZones>> ;
 * distributed. Approximately 5-6%.
 REAL fvsteel := 0.05 ;
 REAL fvwater := 1.0 fvsteel - ;
-*
+! Volume fraction for zone1, zone2, zone3 and zone4.
+FractionVol := UTL: FractionVol :: STEP UP 'Radial'
+                    ! MIX  3  4           5  6
+  CREA 'Wat' <<nbZones>> = 0. <<fvwater>> 1. 0.
+  CREA 'Zr4' <<nbZones>> = 0. 0.          0. 0.
+  CREA 'Inc' <<nbZones>> = 0. 0.          0. 0.
+  CREA 'SS ' <<nbZones>> = 1. <<fvsteel>> 0. 1.
+  CREA 'He ' <<nbZones>> = 0. 0.          0. 0. ;
+REAL dBaffle dBarrl dBarrlShield dShield ;
 * Gap where the flux is retrieved at the interface
 REAL FluxGap := 0.005 ; ! [cm]
 * Refined Zone, i.e. with a finer discretization
@@ -133,45 +137,24 @@ ELSEIF Palier 'CASMO5_MxN_3' = THEN
            3.794823  5.1    6.0          6.8 ;
   EVALUATE RefZnR := 5.0 ;
 ELSE
-  ECHO "Palier non-reconnu" ;
+  ECHO "Unrecognized Palier:" Palier ;
   ABORT: ;
 ENDIF ;
-* DRAGON uses the abscissae, so the thicknesses must be
-* cumulated.
+* DRAGON uses the abscissae, so the thicknesses must be cumulated.
 REAL EndBaffle := dBaffle ;
 REAL BegBarrl := EndBaffle dBaffleBarrl + ;
 REAL EndBarrl := BegBarrl dBarrl + ;
 REAL BegShield := EndBarrl dBarrlShield + ;
 REAL EndShield := BegShield dShield + ;
 REAL BegVessel := EndShield 20.0 + ;
-*
-EVALUATE nbZones := 4 ;
-! Volume fraction for zone1, zone2, zone3, etc.
-FractionVol := UTL: FractionVol :: STEP UP 'Radial'
-                    ! MIX  3  4           5  6
-  CREA 'Wat' <<nbZones>> = 0. <<fvwater>> 1. 0.
-  CREA 'Zr4' <<nbZones>> = 0. 0.          0. 0.
-  CREA 'Inc' <<nbZones>> = 0. 0.          0. 0.
-  CREA 'SS ' <<nbZones>> = 1. <<fvsteel>> 0. 1.
-  CREA 'He ' <<nbZones>> = 0. 0.          0. 0. ;
-*
-REAL Temp dMod fvMod fvZr4 fvInc fvSS304 fvHe ;
-IF Location "Bottom" = Location "Radial" = + THEN
-  EVALUATE dMod := dModBottom ;
-  EVALUATE Temp := TempBottom ;
-ELSEIF Location "Top" = THEN
-  EVALUATE dMod := dModTop ;
-  EVALUATE Temp := TempTop ;
-ELSE
-  ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
-  ABORT: ;
-ENDIF ;
 *---
 *  Compositions
 *---
+REAL fvMod fvZr4 fvInc fvSS304 fvHe ;
 GREP: nbZones :: GETVAL <<Location>> 1 >>nbZones<< ;
+:: <<nbZones>> ;
 INTEGER iZone := 1 ;
-INTEGER firstMIX ;
+INTEGER iMIX ;
 WHILE iZone nbZones <= DO
   * Recovery of zone composition
   GREP: FractionVol :: STEP UP <<Location>>
@@ -187,33 +170,29 @@ WHILE iZone nbZones <= DO
   ECHO "- Inc   : " fvInc ' ;' ;
   ECHO "- SS304 : " fvSS304 ' ;' ;
   ECHO "- He    : " fvHe '.' ;
+  * Leave two index numbers free for 1) the fuel and,
+  *                                  2) the flux recovery area
+  EVALUATE iMIX := iZone 2 + ;
   * Definition of reflector libraries
-  LibDilut := CreaDilut ConcMode MolarMasses BNat Zirc4 Incon
-  SS304 TENDL ::
-  <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
-  <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
-  * The MIX numbers are defined starting from 3
-  EVALUATE firstMIX := 2 iZone + ;
-  ECHO 'First MIX : ' firstMIX ;
-  * Recovery of zone's constitutive media
-  MACRO := MAC: MACRO LibDilut ::
-    NMIX 9 MIX <<firstMIX>> 1 OLDL ;
-  * If this is the first layer, we define the MIX in which
-  * the flux will be retrieved
   IF iZone 1 = THEN
-    MACRO := MAC: MACRO LibDilut ::
-      MIX 2 1 OLDL ; ! Retrieve flux in this MIX
+    Library := CreaDilut ConcMode MolarMasses BNat Zirc4
+      Incon SS304 TENDL ::
+      <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
+      <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
+  ELSE
+    Library := CreaDilut Library ConcMode MolarMasses BNat Zirc4
+      Incon SS304 TENDL ::
+      <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
+      <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
   ENDIF ;
-  LibDilut := DELETE: LibDilut ;
   EVALUATE iZone := iZone 1 + ;
 ENDWHILE ;
 *---
 *  Geometry
 *---
 IF Location "Radial" = THEN
-  ! Mondot's advices based on generalized beta experience :
-  ! * 4000 meshes
-  ! * S16 (SN with N=16)
+  ! Mondot's advices based on generalized beta experience:
+  ! * 4000 meshes (we mesh much less)
   EVALUATE MeshClsBarrl := dBaffleBarrl 0.4 / R_TO_I ;
   ECHO "MeshClsBarrl (troncature)=" MeshClsBarrl ;
   *

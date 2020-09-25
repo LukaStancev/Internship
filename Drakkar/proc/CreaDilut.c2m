@@ -17,7 +17,7 @@
 * Output Provided:
 *  < Library
 *======================================================
-PARAMETER LibDilut ConcMode MolarMasses
+PARAMETER Library ConcMode MolarMasses
           BNat Zirc4 Incon SS304 TENDL ::
       ::: LINKED_LIST TENDL ; ;
 MODULE    LIB: GREP: ABORT: UTL: END: ;
@@ -42,13 +42,13 @@ REAL dMod               ; ! Densité du modérateur
 REAL CB                 ; ! Concentration en bore
 REAL fvMod fvZr4 fvInc fvSS304 ; ! Fractions volumiques des différents milieux
 STRING FileNuclData LibGenre Evaluation ;
-INTEGER LibId ;
+INTEGER LibId iMIX ;
 
 *--------------------------------------------------------------------
 * Fractions volumiques des différents milieux présents dans la zone
 *--------------------------------------------------------------------
-:: >>dMod<< >>TMil<< >>CB<< >>fvMod<< >>fvZr4<< >>fvInc<< >>fvSS304<<
-   >>FileNuclData<< >>Evaluation<< ;
+:: >>iMIX<< >>dMod<< >>TMil<< >>CB<< >>fvMod<< >>fvZr4<< >>fvInc<<
+  >>fvSS304<< >>FileNuclData<< >>Evaluation<< ;
 
 *------------------------------------------------------
 * Recuperation des noms des isotopes
@@ -459,64 +459,125 @@ ECHO "Nb93   " Nb93 ;
 *--------------------------------------------------------------------
 * Définition du mélange correspondant dans la librairie
 *--------------------------------------------------------------------
-LibDilut := LIB: ::
-  NMIX 32
+IF iMIX 3 = THEN
+  Library := LIB: ::
+    NMIX 32
 
-  MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-* Milieu générique issu de la dilution de tous les constituants
-  MIX 1 <<TMil>>
-    H2O      = <<NomH2O>>   <<faH2O>>
-    H1_H2O   = <<NomH1>>    <<faH>>
-    O16      = <<NomO16>>   <<O16>>
-    B10      = <<NomB10>>   <<B10>>
-    B11      = <<NomB11>>   <<B11>>
-    Fe54     = <<NomFe54>>  <<Fe54>>
-    Fe56     = <<NomFe56>>  <<Fe56>>
-    Fe57     = <<NomFe57>>  <<Fe57>>
-    Fe58     = <<NomFe58>>  <<Fe58>>
-    Cr50     = <<NomCr50>>  <<Cr50>>
-    Cr52     = <<NomCr52>>  <<Cr52>>
-    Cr53     = <<NomCr53>>  <<Cr53>>
-    Cr54     = <<NomCr54>>  <<Cr54>>
-    ZrNat    = <<NomZrNat>> <<Zr>>
-    Zr90     = <<NomZr90>>  <<Zr90>>
-    Zr91     = <<NomZr91>>  <<Zr91>>
-    Zr92     = <<NomZr92>>  <<Zr92>>
-    Zr93     = <<NomZr93>>  <<Zr93>>
-    Zr94     = <<NomZr94>>  <<Zr94>>
-    Zr95     = <<NomZr95>>  <<Zr95>>
-    Zr96     = <<NomZr96>>  <<Zr96>>
-    Sn112    = <<NomSn112>> <<Sn112>>
-    Sn114    = <<NomSn114>> <<Sn114>>
-    Sn115    = <<NomSn115>> <<Sn115>>
-    Sn116    = <<NomSn116>> <<Sn116>>
-    Sn117    = <<NomSn117>> <<Sn117>>
-    Sn118    = <<NomSn118>> <<Sn118>>
-    Sn119    = <<NomSn119>> <<Sn119>>
-    Sn120    = <<NomSn120>> <<Sn120>>
-    Sn122    = <<NomSn122>> <<Sn122>>
-    Sn124    = <<NomSn124>> <<Sn124>>
-    Ni58     = <<NomNi58>>  <<Ni58>>
-    Ni60     = <<NomNi60>>  <<Ni60>>
-    Ni61     = <<NomNi61>>  <<Ni61>>
-    Ni62     = <<NomNi62>>  <<Ni62>>
-    Ni64     = <<NomNi64>>  <<Ni64>>
-    Al27     = <<NomAl27>>  <<Al27>>
-    Mo95     = <<NomMo95>>  <<Mo95>>
-    TiNat    = <<NomTiNat>> <<TiN>>
-    Ti46     = <<NomTi46>>  <<Ti46>>
-    Ti47     = <<NomTi47>>  <<Ti47>>
-    Ti48     = <<NomTi48>>  <<Ti48>>
-    Ti49     = <<NomTi49>>  <<Ti49>>
-    Ti50     = <<NomTi50>>  <<Ti50>>
-    SiNat    = <<NomSiNat>> <<SiN>>
-    Si28     = <<NomSi28>>  <<Si28>>
-    Si29     = <<NomSi29>>  <<Si29>>
-    Si30     = <<NomSi30>>  <<Si30>>
-    Co59     = <<NomCo59>>  <<Co59>>
-    Mn55     = <<NomMn55>>  <<Mn55>>
-    Nb93     = <<NomNb93>>  <<Nb93>>
-;
+    MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+  * Milieu générique issu de la dilution de tous les constituants
+    MIX <<iMIX>> <<TMil>>
+      H2O      = <<NomH2O>>   <<faH2O>>
+      H1_H2O   = <<NomH1>>    <<faH>>
+      O16      = <<NomO16>>   <<O16>>
+      B10      = <<NomB10>>   <<B10>>
+      B11      = <<NomB11>>   <<B11>>
+      Fe54     = <<NomFe54>>  <<Fe54>>
+      Fe56     = <<NomFe56>>  <<Fe56>>
+      Fe57     = <<NomFe57>>  <<Fe57>>
+      Fe58     = <<NomFe58>>  <<Fe58>>
+      Cr50     = <<NomCr50>>  <<Cr50>>
+      Cr52     = <<NomCr52>>  <<Cr52>>
+      Cr53     = <<NomCr53>>  <<Cr53>>
+      Cr54     = <<NomCr54>>  <<Cr54>>
+      ZrNat    = <<NomZrNat>> <<Zr>>
+      Zr90     = <<NomZr90>>  <<Zr90>>
+      Zr91     = <<NomZr91>>  <<Zr91>>
+      Zr92     = <<NomZr92>>  <<Zr92>>
+      Zr93     = <<NomZr93>>  <<Zr93>>
+      Zr94     = <<NomZr94>>  <<Zr94>>
+      Zr95     = <<NomZr95>>  <<Zr95>>
+      Zr96     = <<NomZr96>>  <<Zr96>>
+      Sn112    = <<NomSn112>> <<Sn112>>
+      Sn114    = <<NomSn114>> <<Sn114>>
+      Sn115    = <<NomSn115>> <<Sn115>>
+      Sn116    = <<NomSn116>> <<Sn116>>
+      Sn117    = <<NomSn117>> <<Sn117>>
+      Sn118    = <<NomSn118>> <<Sn118>>
+      Sn119    = <<NomSn119>> <<Sn119>>
+      Sn120    = <<NomSn120>> <<Sn120>>
+      Sn122    = <<NomSn122>> <<Sn122>>
+      Sn124    = <<NomSn124>> <<Sn124>>
+      Ni58     = <<NomNi58>>  <<Ni58>>
+      Ni60     = <<NomNi60>>  <<Ni60>>
+      Ni61     = <<NomNi61>>  <<Ni61>>
+      Ni62     = <<NomNi62>>  <<Ni62>>
+      Ni64     = <<NomNi64>>  <<Ni64>>
+      Al27     = <<NomAl27>>  <<Al27>>
+      Mo95     = <<NomMo95>>  <<Mo95>>
+      TiNat    = <<NomTiNat>> <<TiN>>
+      Ti46     = <<NomTi46>>  <<Ti46>>
+      Ti47     = <<NomTi47>>  <<Ti47>>
+      Ti48     = <<NomTi48>>  <<Ti48>>
+      Ti49     = <<NomTi49>>  <<Ti49>>
+      Ti50     = <<NomTi50>>  <<Ti50>>
+      SiNat    = <<NomSiNat>> <<SiN>>
+      Si28     = <<NomSi28>>  <<Si28>>
+      Si29     = <<NomSi29>>  <<Si29>>
+      Si30     = <<NomSi30>>  <<Si30>>
+      Co59     = <<NomCo59>>  <<Co59>>
+      Mn55     = <<NomMn55>>  <<Mn55>>
+      Nb93     = <<NomNb93>>  <<Nb93>>
+  ;
+ELSE
+  Library := LIB: Library ::
+    NMIX 32
+
+    MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
+  * Milieu générique issu de la dilution de tous les constituants
+    MIX <<iMIX>> <<TMil>>
+      H2O      = <<NomH2O>>   <<faH2O>>
+      H1_H2O   = <<NomH1>>    <<faH>>
+      O16      = <<NomO16>>   <<O16>>
+      B10      = <<NomB10>>   <<B10>>
+      B11      = <<NomB11>>   <<B11>>
+      Fe54     = <<NomFe54>>  <<Fe54>>
+      Fe56     = <<NomFe56>>  <<Fe56>>
+      Fe57     = <<NomFe57>>  <<Fe57>>
+      Fe58     = <<NomFe58>>  <<Fe58>>
+      Cr50     = <<NomCr50>>  <<Cr50>>
+      Cr52     = <<NomCr52>>  <<Cr52>>
+      Cr53     = <<NomCr53>>  <<Cr53>>
+      Cr54     = <<NomCr54>>  <<Cr54>>
+      ZrNat    = <<NomZrNat>> <<Zr>>
+      Zr90     = <<NomZr90>>  <<Zr90>>
+      Zr91     = <<NomZr91>>  <<Zr91>>
+      Zr92     = <<NomZr92>>  <<Zr92>>
+      Zr93     = <<NomZr93>>  <<Zr93>>
+      Zr94     = <<NomZr94>>  <<Zr94>>
+      Zr95     = <<NomZr95>>  <<Zr95>>
+      Zr96     = <<NomZr96>>  <<Zr96>>
+      Sn112    = <<NomSn112>> <<Sn112>>
+      Sn114    = <<NomSn114>> <<Sn114>>
+      Sn115    = <<NomSn115>> <<Sn115>>
+      Sn116    = <<NomSn116>> <<Sn116>>
+      Sn117    = <<NomSn117>> <<Sn117>>
+      Sn118    = <<NomSn118>> <<Sn118>>
+      Sn119    = <<NomSn119>> <<Sn119>>
+      Sn120    = <<NomSn120>> <<Sn120>>
+      Sn122    = <<NomSn122>> <<Sn122>>
+      Sn124    = <<NomSn124>> <<Sn124>>
+      Ni58     = <<NomNi58>>  <<Ni58>>
+      Ni60     = <<NomNi60>>  <<Ni60>>
+      Ni61     = <<NomNi61>>  <<Ni61>>
+      Ni62     = <<NomNi62>>  <<Ni62>>
+      Ni64     = <<NomNi64>>  <<Ni64>>
+      Al27     = <<NomAl27>>  <<Al27>>
+      Mo95     = <<NomMo95>>  <<Mo95>>
+      TiNat    = <<NomTiNat>> <<TiN>>
+      Ti46     = <<NomTi46>>  <<Ti46>>
+      Ti47     = <<NomTi47>>  <<Ti47>>
+      Ti48     = <<NomTi48>>  <<Ti48>>
+      Ti49     = <<NomTi49>>  <<Ti49>>
+      Ti50     = <<NomTi50>>  <<Ti50>>
+      SiNat    = <<NomSiNat>> <<SiN>>
+      Si28     = <<NomSi28>>  <<Si28>>
+      Si29     = <<NomSi29>>  <<Si29>>
+      Si30     = <<NomSi30>>  <<Si30>>
+      Co59     = <<NomCo59>>  <<Co59>>
+      Mn55     = <<NomMn55>>  <<Mn55>>
+      Nb93     = <<NomNb93>>  <<Nb93>>
+  ;
+ENDIF ;
 
 INTEGER O16tendl U235tendl U238tendl Zr90tendl Zr91tendl Zr92tendl
   Zr94tendl Zr96tendl ;
@@ -536,7 +597,7 @@ IF O16tendl -311 = NOT THEN
   ELSE
     EVALUATE NomO16 := "O16_" O16tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibO16
     O16      = <<NomO16>>   <<O16>>
   ;
@@ -549,7 +610,7 @@ IF Zr90tendl -311 = NOT THEN
   ELSE
     EVALUATE NomZr90 := "Zr90_" Zr90tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibZr90
     Zr90     = <<NomZr90>>  <<Zr90>>
   ;
@@ -562,7 +623,7 @@ IF Zr91tendl -311 = NOT THEN
   ELSE
     EVALUATE NomZr91 := "Zr91_" Zr91tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibZr91
     Zr91     = <<NomZr91>>  <<Zr91>>
   ;
@@ -575,7 +636,7 @@ IF Zr92tendl -311 = NOT THEN
   ELSE
     EVALUATE NomZr92 := "Zr92_" Zr92tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibZr92
     Zr92     = <<NomZr92>>  <<Zr92>>
   ;
@@ -588,7 +649,7 @@ IF Zr94tendl -311 = NOT THEN
   ELSE
     EVALUATE NomZr94 := "Zr94_" Zr94tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibZr94
     Zr94     = <<NomZr94>>  <<Zr94>>
   ;
@@ -601,7 +662,7 @@ IF Zr96tendl -311 = NOT THEN
   ELSE
     EVALUATE NomZr96 := "Zr96_" Zr96tendl I_TO_S + ;
   ENDIF ;
-  LibDilut := LIB: LibDilut ::
+  Library := LIB: Library ::
     MIXS LIB: <<LibGenre>> FIL: draglibZr96
     Zr96     = <<NomZr96>>  <<Zr96>>
   ;

@@ -234,6 +234,8 @@ INTEGER iCB nCB iLocation iBaffleBarrl nBaffleBarrl iPalier idxPalier
         nPalier iMethod ;
 * Boron parametrization
 Boron := UTL: :: CREA 'CB' 5 = 0.0 200.0 500.0 1000.0 2000.0 ; ! ppm
+* Composition indices
+INTEGER iZone nbZones iMIX ;
 *
 * Any additionnal parameterization loop can be added here. Example(s):
 * - reflector moderator density,
@@ -286,6 +288,12 @@ WHILE iCB nCB <= DO
         GREP: ReflSpecs :: GETVAL 'Paliers' <<idxPalier>> NVAL 8
           >>Palier<< ;
         ECHO "Palier =" Palier ;
+        *----------------------------------------------------------
+        *  Reflector geometry and compositions
+        *----------------------------------------------------------
+        GEOM Library := ReflGeoCompo ConcMode MolarMasses BNat
+          Zirc4 Incon SS304 TENDL :: <<FileNuclData>> <<Evaluation>>
+          <<Palier>> <<Location>> <<CB>> <<dBaffleBarrl>> >>nbZones<< ;
         *------------------------------------------------------------
         *  Loop on the two cases, to have two different spectrum
         *  ratios
@@ -297,18 +305,24 @@ WHILE iCB nCB <= DO
           ELSEIF CASE 2 = THEN
             MACRO := MACRO_FUEL_2 ;
           ENDIF ;
-          *----------------------------------------------------------
-          *  Reflector geometry and compositions
-          *----------------------------------------------------------
-          GEOM MACRO := ReflGeoCompo MACRO ConcMode MolarMasses BNat
-            Zirc4 Incon SS304 TENDL :: <<FileNuclData>> <<Evaluation>>
-            <<Palier>> <<Location>> <<CB>> <<dBaffleBarrl>> ;
+          * Define the MIX in which the flux will be retrieved
+          MACRO := MAC: MACRO Library :: MIX 2 3 OLDL ;
+          EVALUATE iZone := 1 ;
+          WHILE iZone nbZones <= DO
+            * Leave two index numbers free for 1) the fuel and,
+            *                                  2) the flux recovery area
+            EVALUATE iMIX := iZone 2 + ;
+            MACRO := MAC: MACRO Library :: MIX <<iMIX>> <<iMIX>> OLDL ;
+            EVALUATE iZone := iZone 1 + ;
+          ENDWHILE ;
           *----------------------------------------------------------
           *  Solve flux
           *----------------------------------------------------------
           TRACK := SNT: GEOM ::
             EDIT 1
             MAXR 100000
+            ! Mondot's advices based on generalized beta experience:
+            ! * S16 (SN with N=16)
             SN 16 SCAT 2 QUAD 10 ;
           SYSTEM := ASM: MACRO TRACK :: ARM ;
           FLUX := FLU: SYSTEM MACRO TRACK :: EDIT 0 TYPE K ;
@@ -391,10 +405,11 @@ WHILE iCB nCB <= DO
             EVALUATE SigmaAbs2_B := SectionTot2 Scat2toAll - ;
             EVALUATE SigmaSlowd_B := Scat1toAll Scat1to1 - ;
           ENDIF ;
-          GEOM TRACK SYSTEM FLUX MACRO OUT := DELETE:
-          GEOM TRACK SYSTEM FLUX MACRO OUT ;
+          TRACK SYSTEM FLUX MACRO OUT := DELETE:
+          TRACK SYSTEM FLUX MACRO OUT ;
           EVALUATE CASE := CASE 1 + ;
         ENDWHILE ; ! Boucle sur les CASE
+        GEOM Library := DELETE: GEOM Library ;
         IF BndaryFlx2_A BndaryFlx1_A /
            BndaryFlx2_B BndaryFlx1_B / / 1.0 - ABS 0.01 < THEN
           ECHO "The two calculations (for different 2 spectrum " ;
