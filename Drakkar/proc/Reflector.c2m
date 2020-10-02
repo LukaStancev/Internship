@@ -291,7 +291,7 @@ WHILE iCB nCB <= DO
         *----------------------------------------------------------
         *  Reflector geometry and compositions
         *----------------------------------------------------------
-        GEOM Library := ReflGeoCompo ConcMode MolarMasses BNat
+        GEOM Library := ReflGeoCompo MolarMasses BNat
           Zirc4 Incon SS304 TENDL :: <<FileNuclData>> <<Evaluation>>
           <<Palier>> <<Location>> <<CB>> <<dBaffleBarrl>> >>nbZones<< ;
         *------------------------------------------------------------

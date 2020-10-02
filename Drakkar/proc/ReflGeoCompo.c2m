@@ -1,7 +1,5 @@
-PARAMETER GEOM Library
-  ConcMode MolarMasses BNat Zirc4 Incon SS304 TENDL
-  :: ::: LINKED_LIST
-  ConcMode MolarMasses BNat Zirc4 Incon SS304 TENDL ; ;
+PARAMETER GEOM Library MolarMasses BNat Zirc4 Incon SS304 TENDL
+    :: ::: LINKED_LIST MolarMasses BNat Zirc4 Incon SS304 TENDL ; ;
 PROCEDURE CreaDilut GetTechData ;
 LINKED_LIST nbZones FractionVol List ;
 MODULE LIB: GEO: DELETE: UTL: END: ABORT: GREP: MSTR: INFO: ;
@@ -28,7 +26,7 @@ List := DELETE: List ;
 IF Location "Bottom" = Location "Radial" = + THEN
   EVALUATE Temp := 286.4 273.15 + ; ! Core inlet moderator temperature
 ELSEIF Location "Top" = THEN
-  EVALUATE Temp  := 320.1 273.15 + ; ! Core outlet moderator temperature
+  EVALUATE Temp := 320.1 273.15 + ; ! Core outlet moderator temperature
 ELSE
   ECHO "ERROR, REFLECTOR NOT RECOGNIZED" ;
   ABORT: ;
@@ -99,12 +97,12 @@ FractionVol := UTL: FractionVol :: STEP UP 'Radial'
   CREA 'Inc' <<nbZones>> = 0. 0.          0. 0.
   CREA 'SS ' <<nbZones>> = 1. <<fvsteel>> 0. 1.
   CREA 'He ' <<nbZones>> = 0. 0.          0. 0. ;
-REAL dBaffle dBarrl dBarrlShield dShield ;
+REAL dCenterBarrl dBaffle dBarrl dBarrlShield dShield ;
 * Gap where the flux is retrieved at the interface
 REAL FluxGap := 0.005 ; ! [cm]
 * Refined Zone, i.e. with a finer discretization
 REAL RefZn := 6.0 ; ! [cm]
-REAL RefZnR ;
+REAL RefFuel RefZnR ;
 INTEGER MeshClsBarrl ;
 *
 IF Palier 'CP0_900' = THEN
@@ -115,13 +113,15 @@ IF Palier 'CP0_900' = THEN
 * http://www.iaea.org/inis/
 * collection/NCLCollectionStore/_Public/26/077/26077395.pdf
 * --------------------------------
-  EVALUATE dBaffle := 9.0 8.0 / 2.54 * ; ! 9/8 in
-  EVALUATE dBarrl  := 2.0       2.54 * ; ! 2 in
+  EVALUATE dCenterBarrl := 133.0 7.0 8.0 / + 2.54 *   ! 133+7/8 in (ID)
+                                              2.0 / ; ! from diameter to radius
+  EVALUATE dBaffle :=            9.0 8.0 /   2.54 * ; ! 9/8 in
+  EVALUATE dBarrl  :=        2.0             2.54 * ; ! 2 in
   EVALUATE dBarrlShield :=
-    142.0 5.0 8.0 / + ! ID Barrel = 142+5/8 in
-    133.0 7.0 8.0 / + ! ID Shield = 133+7/8 in
-    2.0 2.0 * + !... to OD Shield = 137+7/8 in
-    - 2.0 / 2.54 * ;
+    142.0 5.0 8.0 / + ! ID Shield = 142+5/8 in
+    133.0 7.0 8.0 / + ! ID Barrel = 133+7/8 in
+    2.0 2.0 * + !... to OD Barrel = 137+7/8 in
+    - 2.0 / (* from diameter to radius *) 2.54 * ;
   EVALUATE dShield := 2.0 11.0 16.0 / + 2.54 * ; ! 2+11/16 in
   EVALUATE RefZnR := 3.5 ;
 ELSEIF Palier 'BEAVRS' = THEN
@@ -141,12 +141,17 @@ ELSE
   ABORT: ;
 ENDIF ;
 * DRAGON uses the abscissae, so the thicknesses must be cumulated.
-REAL EndBaffle := dBaffle ;
-REAL BegBarrl := EndBaffle dBaffleBarrl + ;
+REAL BegBarrl := dCenterBarrl ;
+REAL EndBaffle := BegBarrl dBaffleBarrl - ;
+REAL BegBaffle := EndBaffle dBaffle - ;
+*
 REAL EndBarrl := BegBarrl dBarrl + ;
 REAL BegShield := EndBarrl dBarrlShield + ;
 REAL EndShield := BegShield dShield + ;
 REAL BegVessel := EndShield 20.0 + ;
+* Refined Zone, i.e. with a finer discretization
+EVALUATE RefFuel := BegBaffle 21.5 (* cm *) - ;
+EVALUATE RefZnR  := BegBaffle RefZnR + ;
 *---
 *  Compositions
 *---
@@ -175,12 +180,12 @@ WHILE iZone nbZones <= DO
   EVALUATE iMIX := iZone 2 + ;
   * Definition of reflector libraries
   IF iZone 1 = THEN
-    Library := CreaDilut ConcMode MolarMasses BNat Zirc4
+    Library := CreaDilut MolarMasses BNat Zirc4
       Incon SS304 TENDL ::
       <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
       <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
   ELSE
-    Library := CreaDilut Library ConcMode MolarMasses BNat Zirc4
+    Library := CreaDilut Library MolarMasses BNat Zirc4
       Incon SS304 TENDL ::
       <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
       <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
@@ -193,20 +198,21 @@ ENDWHILE ;
 IF Location "Radial" = THEN
   ! Mondot's advices based on generalized beta experience:
   ! * 4000 meshes (we mesh much less)
-  EVALUATE MeshClsBarrl := dBaffleBarrl 0.4 / R_TO_I ;
-  ECHO "MeshClsBarrl (troncature)=" MeshClsBarrl ;
+  EVALUATE MeshClsBarrl := dBaffleBarrl 0.4 / R_TO_I (* truncates *) ;
+  ECHO "MeshClsBarrl (truncated)=" MeshClsBarrl ;
+  EVALUATE FluxGap := BegBaffle FluxGap + ;
   *
-  GEOM := GEO: :: CAR1D 9
+  GEOM := GEO: :: CAR1D 10
     X- ALBE 1.0 X+ VOID
-    MESHX    -21.5 0.0 <<FluxGap>> <<EndBaffle>> <<RefZnR>>
-    <<BegBarrl>> <<EndBarrl>> <<BegShield>> <<EndShield>>
-    <<BegVessel>>
-    MIX           1   2           3             4          4
-            ! fuel flux+steel   steel water+steel water+steel
-                3            5             6             5
-            ! steel         water      steel(if screen) water
-    SPLITX       30   1           25    20 <<MeshClsBarrl>>
-                 10           5              6            4
+    MESHX 0.0 <<RefFuel>> <<BegBaffle>> <<FluxGap>> <<EndBaffle>>
+      <<RefZnR>> <<BegBarrl>> <<EndBarrl>> <<BegShield>> <<EndShield>>
+      <<BegVessel>>
+    MIX      1           1             2           3             4
+       !   fuel        fuel        flux+steel    steel      water+steel
+                4            3            5             6             5
+       !   water+steel     steel        water    steel(if screen)  water
+    SPLITX  10          30             1          25            20
+         <<MeshClsBarrl>>   10            5             6             4
     ;
 ELSEIF Location "Bottom" = THEN
   GEOM := GEO: :: CAR1D 6

@@ -17,10 +17,9 @@
 * Output Provided:
 *  < Library
 *======================================================
-PARAMETER Library ConcMode MolarMasses
-          BNat Zirc4 Incon SS304 TENDL ::
-      ::: LINKED_LIST TENDL ; ;
-MODULE    LIB: GREP: ABORT: UTL: END: ;
+PARAMETER Library MolarMasses BNat Zirc4 Incon SS304 TENDL ::
+  ::: LINKED_LIST TENDL ; ;
+MODULE LIB: GREP: ABORT: UTL: END: ;
 LINKED_LIST ListeIsot ListeAutop ;
 PROCEDURE AdaptIso ;
 *--------------------------------------------------------------------
