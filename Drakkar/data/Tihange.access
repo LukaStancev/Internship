@@ -9,22 +9,22 @@ echo -e "\nExecute ${accessname}.access script\n"
 
 cp "$1"/proc/* .
 
-#--- nuclear data file: JEFF-3.1.1 (NJOY2016)
+#--- main nuclear data file: JEFF-3.1.1
 rm -f D172JEFF311 # Deleting a Draglib file that could already exist in some setups
-if [ -f "$1/draglibJeff3.1.1_PyNjoy2016" ] ; then
-    cp "$1"/draglibJeff3.1.1_PyNjoy2016 D172JEFF311
+if [ -f "$1/draglib/draglibJeff3.1.1" ] ; then
+    cp "$1"/draglib/draglibJeff3.1.1 D172JEFF311
 else
-    echo "draglibJeff3.1.1_PyNjoy2016 file does not exist. Trying to download it..."
-    wget https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.1.1/draglibJeff3.1.1_PyNjoy2016
-    if [ ! -f "draglibJeff3.1.1_PyNjoy2016" ] ; then
+    echo "draglibJeff3.1.1 file does not exist. Trying to download it..."
+    wget -O draglibJeff3.1.1 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.1.1/draglibJeff3.1.1_PyNjoy2016
+    if [ ! -f "draglibJeff3.1.1" ] ; then
         echo "Cannot download missing Draglib file. Allow Internet access or download it to the Drakkar directory."
         exit 1
     fi
-    cp draglibJeff3.1.1_PyNjoy2016 "$1"/. # For the future executions
-    mv draglibJeff3.1.1_PyNjoy2016 D172JEFF311
+    cp draglibJeff3.1.1 "$1"/draglib/. # For the future executions
+    mv draglibJeff3.1.1 D172JEFF311
 fi
 
-#-- TENDL nuclear data files (also NJOY2016)
+#-- TENDL nuclear data files
 cp "$1"/draglibO16 .
 cp "$1"/draglibU23* .
 cp "$1"/draglibZr9* .

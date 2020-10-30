@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+if [ $# = 0 ]
+   then
+   echo "usage: convert_draglib.save directory" 1>&2
+   exit 1
+fi
+echo access convert_draglib.save
+mv DRGLIB "$1"/draglib/DRGLIB
+ls -l
