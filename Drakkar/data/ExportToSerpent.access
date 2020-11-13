@@ -1,0 +1,199 @@
+#!/bin/bash
+accessname=$(basename $0 | cut -d"." -f1)
+if [ $# = 0 ]
+   then
+   echo "usage: "$accessname".access directory" 1>&2
+   exit 1
+fi
+echo -e "\nExecute ${accessname}.access script\n"
+
+cp "$1"/proc/* .
+
+#--- main nuclear data file: JEFF-3.1.1
+rm -f D172JEFF311 # Deleting a Draglib file that could already exist in some setups
+if [ -f "$1/draglib/draglibJeff3.1.1" ] ; then
+    cp "$1"/draglib/draglibJeff3.1.1 D172JEFF311
+else
+    echo "draglibJeff3.1.1 file does not exist. Trying to download it..."
+    wget -O draglibJeff3.1.1 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.1.1/draglibJeff3.1.1_PyNjoy2016
+    if [ ! -f "draglibJeff3.1.1" ] ; then
+        echo "Cannot download missing Draglib file. Allow Internet access or download it to the Drakkar directory."
+        exit 1
+    fi
+    cp draglibJeff3.1.1 "$1"/draglib/. # For the future executions
+    mv draglibJeff3.1.1 D172JEFF311
+fi
+
+#-- TENDL nuclear data files
+cp "$1"/draglibO16 .
+cp "$1"/draglibU23* .
+cp "$1"/draglibZr9* .
+
+Evaluation=$(grep "STRING Evaluation :=" EvoNominale.c2m | cut -d\" -f2)
+
+#----------------------------------------------------------
+# Modification PROCEDURES .c2m
+# In-place modification of the temporary procedures copies in rundir
+#----------------------------------------------------------
+# Isotopes that shall be removed (depends on evaluation chosen)
+if [ "$Evaluation" = "ENDFVI8" ] ; then
+    #List of isotopes to be removed
+    isoAExclure=( "H2O" "Si28" "Si29" "Si30" "Ti46" "Ti47" "Ti48" "Ti49" "Ti50" \
+    "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \
+    "Cd106" "Cd108" "In115" "Sn112" "Sn114" "S33" "S34" "K39" "K40" \
+    "K41" "In113")
+elif [ "$Evaluation" = "JEF22" ] ; then
+    #List of isotopes to be removed
+    isoAExclure=( "H2O" "Si28" "Si29" "Si30" "Ti46" "Ti47" "Ti48" "Ti49" "Ti50" \
+    "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \
+    "Cd106" "Cd108" "InNat" "Sn112" "Sn114" "K39" "K40" "K41" "In113")
+elif [ "$Evaluation" = "JEFF31" ] || [ "$Evaluation" = "JEFF311" ] || [ "$Evaluation" = "JEFF312" ] || \
+[ "$Evaluation" = "ENDFVII0" ] || [ "$Evaluation" = "ENDFVII1" ] ; then
+    #List of isotopes to be removed
+    isoAExclure=( "H2O" "SiNat" "TiNat" "ZrNat" "InNat" "KNat" "In113")
+else
+    echo "This evaluation is unknown : $Evaluation"
+    echo "Therefore, access script cannot remove supernumerary isotopes from datasets and procedures."
+fi
+
+i=0
+echo "Number of isotopes to be excluded : ${#isoAExclure[@]}"
+while [ "$i" -lt "${#isoAExclure[@]}" ] ; do
+  echo " - ${isoAExclure[i]}"
+  sed -i '/ '"${isoAExclure[i]}"' /{s/^ /!/}' GetMolarMass.c2m
+  sed -i '/ '"${isoAExclure[i]}"' /{s/^ /!/}' MakeBib1BU.c2m
+  sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaMix.c2m
+  sed -i '/^\s*'"${isoAExclure[i]}"' /{s/^ /!/}' CreaDilut.c2m
+  i=$(($i+1))
+done
+
+#----------------------------------------------------------
+# Definition of the list of particularised isotopes
+#----------------------------------------------------------
+# A CSV file is available in directory /proc/ to allow the
+# conversion of the name of the particularized isotopes with
+# respect of the type of library.
+# The file is composed of 5 columns :
+# idx,NM_STD,NM_JE
+# Starting from column #2 they refers to :
+#   - NM_STD   : Standard reference name based on IsoXXX
+#   - NM_JE    : JEF*,ENDF*
+# The separator is a semicolumn (sep=";")
+#----------------------------------------------------------
+
+#--- Name CSV file
+fileisotcsv="$1/data/isotconvlist.csv"
+# Index CSV
+idxCsv=2
+
+#--- 'repliso'
+# A function called 'repliso' is defined to replace the standard
+# reference name with the library name included in the CSV file
+#---
+repliso(){
+   local ARRAY=("${!1}")
+   local FILEINP=$2
+   local IDXREPL=$3
+   for iso in "${ARRAY[@]}"; do
+    line=$(grep $iso $FILEINP)
+    IFS=';' read -ra elem <<< "$line"
+    nameiso="${elem[$IDXREPL]}"
+    ARRAY=( "${ARRAY[@]/$iso/$nameiso}" )     # Attention with pattern matches
+   done
+   printf "%q " "${ARRAY[@]}"
+}
+
+#--- Lists of particularised isotopes
+# Define the list of particularised isotopes that are stored in the
+# multi-parameter library.
+# The available choices are :
+#   - LNR (10+1 isotopes)
+#   - EDF (35+1 isotopes)
+#   - ALL
+# References :
+#   - Verification of the Cocagne core using cluster depletion calculations
+#     (Hoareau et alt.)
+#   - New core calculation chain of EDF: multigroup calculations and impact
+#     study of the isotope chain on core calculations
+#     (Palak Jain)
+#   - Study of historical effects in multi-parameter interpolation
+#     (Marie Decroocq)
+# Notes :
+#   - To avoid issues in the isotope's name conversion, a white space should
+#     be included when the name of an isotope is contained in another isotope's
+#     name.
+#     (Ex. Pm148 has to be written as 'Pm148 ' to prevent conflits with Pm148m)
+#---
+wsedi=$(printf "%16s" " ")  # whitespaces EDI print
+wslib=$(printf "%16s" " ")  # whitespaces SAP/MCO print
+
+ListIsoPart=$(grep "STRING ListIsoPart" MakeBib1BU.c2m | awk '{print $4}' | tr -d '"')
+case "$ListIsoPart" in
+  "LNR")
+      IsoPartic=(
+        # Burnable absorber
+        'B10' 'B11'
+        # Fission Products (Xenon and Samarium chain isotopes)
+        'Xe135' 'I135'
+        'Nd147' 'Pm147' 'Pm148 ' 'Pm148m' 'Pm149' 'Sm149'
+        # Other
+        'U5DET'
+        )
+      IsoHeavy=(
+        # Heavy isotopes (actinides)
+        'U235' 'U238' 'Pu239' 'Pu240' 'Pu241' 'Pu242' 'Am241' 'Am242m'
+        )
+      IsoEdi=("${IsoPartic[@]}" "${IsoHeavy[@]}")
+
+      #--- Convert Isotope's names
+      IsoPartic=($(repliso IsoPartic[@] $fileisotcsv $idxCsv))
+      IsoEdi=($(repliso IsoEdi[@] $fileisotcsv $idxCsv))
+      #--- Define printing format in mydata
+      printEdiIsot+="${#IsoEdi[@]}" ; for iso in ${IsoEdi[@]} ; do printEdiIsot+=$(echo "\n${wsedi}${iso}"); done
+      for iso in ${IsoPartic[@]} ; do printSapIsot+=$(echo "\n${wslib}${iso}"); done
+      printMcoIsot+="${#IsoPartic[@]}" ; for iso in ${IsoPartic[@]} ; do printMcoIsot+=$(echo "\n${wslib}${iso}"); done
+      ;;
+  "EDF")
+      IsoPartic=(
+        # Burnable absorber
+        'B10' 'B11'
+        # Fission Products (Xenon and Samarium chain isotopes)
+        'Xe135' 'I135'
+        'Nd147' 'Pm147' 'Pm148 ' 'Pm148m' 'Pm149' 'Sm149' 'Sm147' 'Sm148' 'Sm150' 'Nd146' 'Nd148'
+        # Heavy isotopes (actinides)
+        'U234' 'U235' 'U236' 'U237' 'U238' 'Pu238' 'Pu239' 'Pu240' 'Pu241' 'Pu242' 'Am241' 'Am242m'
+        'Np237' 'Np238' 'Np239' 'Am243' 'Cm242' 'Cm243' 'Cm244' 'Cm245'
+        # Other
+        'U5DET'
+        )
+      IsoEdi=("${IsoPartic[@]}")
+
+      #--- Convert Isotope's names
+      IsoPartic=($(repliso IsoPartic[@] $fileisotcsv $idxCsv))
+      IsoEdi=($(repliso IsoEdi[@] $fileisotcsv $idxCsv))
+      #--- Define printing format in mydata
+      printEdiIsot+="${#IsoEdi[@]}" ; for iso in ${IsoEdi[@]} ; do printEdiIsot+=$(echo "\n${wsedi}${iso}"); done
+      for iso in ${IsoPartic[@]} ; do printSapIsot+=$(echo "\n${wslib}${iso}"); done
+      printMcoIsot+="${#IsoPartic[@]}" ; for iso in ${IsoPartic[@]} ; do printMcoIsot+=$(echo "\n${wslib}${iso}"); done
+      ;;
+  "ALL")
+      IsoPartic=('ALL')
+      printSapIsot="TOUT"
+      printEdiIsot="ALL"
+      ;;
+  *)
+      echo "Invalid ListIsoPart " $ListIsoPart
+      exit 1
+      ;;
+esac
+
+# Definition des isotopes particularises et des isotopes a rendement de fission generant les isotopes particularises
+echo "Isotopes a Particulariser   : ${#IsoPartic[@]}"
+for iso in ${IsoPartic[@]} ; do echo " - ${iso}"; done
+
+sed -i "s/#printEdiIsot/$printEdiIsot/g"   MakeBib1BU.c2m
+sed -i "s/#printSapIsot/$printSapIsot/g"   MakeBib1BU.c2m
+sed -i "s/#printMcoIsot/$printMcoIsot/g"   MakeBib1BU.c2m
+
+ls -l
+echo -e $accessname".access script terminated\n"
