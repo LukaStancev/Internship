@@ -1,10 +1,10 @@
 MODULE UTL: GREP: MSTR: DELETE: END: ;
 PROCEDURE Geo15x15 CreaStepList GetMolarMass MetalMix CreaMix
-  ReflGeoCompo ;
+  ReflGeoCompo DefRandomIso ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu StepList MolarMasses Library
   ConcMode FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
   CdNat SNat HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP
-  TENDL GEOM ;
+  Random GEOM ;
 STRING FilenameBase FilenameGeo FilenameComp ;
 REAL null ;
 *---
@@ -27,15 +27,34 @@ CdNat SNat HfNat InNat
 Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP := MetalMix
 MolarMasses ::
 <<Evaluation>> <<Gestion>> ;
-* Default: use JEFF-3.1.1 for all isotopes (= -311)
-TENDL := MSTR:       :: PUT 1 O16  -311 ;
-TENDL := MSTR: TENDL :: PUT 1 U235 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 U238 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr90 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr91 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr92 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr94 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr96 -311 ;
+*---
+*  Define random sampling for each isotope
+*  Default: use JEFF-3.1.1 for all isotopes (= -311)
+*---
+Random := MSTR:        :: PUT 1 O16   -311 ;
+Random := MSTR: Random :: PUT 1 U235  -311 ;
+Random := MSTR: Random :: PUT 1 U238  -311 ;
+Random := MSTR: Random :: PUT 1 Zr90  -311 ;
+Random := MSTR: Random :: PUT 1 Zr91  -311 ;
+Random := MSTR: Random :: PUT 1 Zr92  -311 ;
+Random := MSTR: Random :: PUT 1 Zr94  -311 ;
+Random := MSTR: Random :: PUT 1 Zr96  -311 ;
+Random := MSTR: Random :: PUT 1 Ni58  -311 ;
+Random := MSTR: Random :: PUT 1 Fe54  -311 ;
+Random := MSTR: Random :: PUT 1 Fe56  -311 ;
+Random := MSTR: Random :: PUT 1 Cr52  -311 ;
+Random := MSTR: Random :: PUT 1 In115 -311 ;
+Random := MSTR: Random :: PUT 1 Ag107 -311 ;
+Random := MSTR: Random :: PUT 1 Ag109 -311 ;
+Random := MSTR: Random :: PUT 1 Cd106 -311 ;
+Random := MSTR: Random :: PUT 1 Cd108 -311 ;
+Random := MSTR: Random :: PUT 1 Cd110 -311 ;
+Random := MSTR: Random :: PUT 1 Cd111 -311 ;
+Random := MSTR: Random :: PUT 1 Cd112 -311 ;
+Random := MSTR: Random :: PUT 1 Cd113 -311 ;
+Random := MSTR: Random :: PUT 1 Cd114 -311 ;
+Random := MSTR: Random :: PUT 1 Cd116 -311 ;
+Random := DefRandomIso Random ;
 *---
 *  Initialize the variables needed for the reflectors
 *---
@@ -99,7 +118,7 @@ WHILE ibor 3 <= DO
   *---- 4) Library with all mixes ------------------------
     Library ConcMode := CreaMix FeNat CrNat SnNat NiNat ZrNat TiNat
       SiNat KNat BNat AgNat CdNat SNat HfNat InNat Zirc4 Incon SS304 M5
-      AIC HfR GdNat Gd2O3 BP MolarMasses TENDL ::
+      AIC HfR GdNat Gd2O3 BP MolarMasses Random ::
       <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
       <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
       <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
@@ -138,7 +157,7 @@ WHILE ibor 3 <= DO
       EVALUATE Location := 'Top' ;
     ENDIF ;
     GEOM Library := ReflGeoCompo MolarMasses BNat
-      Zirc4 Incon SS304 TENDL :: <<FileNuclData>> <<Evaluation>>
+      Zirc4 Incon SS304 Random :: <<FileNuclData>> <<Evaluation>>
       <<Palier>> <<Location>> <<cbor>> <<dBaffleBarrl>> >>nbZones<< ;
     * Save in the corresponding files
     EVALUATE FilenameBase := "./_Refl" Location +

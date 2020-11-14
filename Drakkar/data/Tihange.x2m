@@ -1,49 +1,68 @@
 MODULE GREP: MSTR: UTL: DELETE: END: ;
-PROCEDURE EvoNominale MakeBib1BU Reflector Tihange ;
-LINKED_LIST ReflSpecs TENDL ;
+PROCEDURE EvoNominale MakeBib1BU Reflector Tihange DefRandomIso ;
+LINKED_LIST ReflSpecs Random ;
 XSM_FILE Library Burnup ConcMode Info
   REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12
   PowerCD PowerD PowerARO Temp ;
 SEQ_ASCII PowerCD_asc  :: FILE './_PowerCD.ascii'  ;
 SEQ_ASCII PowerD_asc   :: FILE './_PowerD.ascii'   ;
 SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
-* Default: use JEFF-3.1.1 for all isotopes (= -311)
-TENDL := MSTR:       :: PUT 1 O16  -311 ;
-TENDL := MSTR: TENDL :: PUT 1 U235 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 U238 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr90 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr91 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr92 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr94 -311 ;
-TENDL := MSTR: TENDL :: PUT 1 Zr96 -311 ;
+*---
+*  Define random sampling for each isotope
+*  Default: use JEFF-3.1.1 for all isotopes (= -311)
+*---
+Random := MSTR:        :: PUT 1 O16   -311 ;
+Random := MSTR: Random :: PUT 1 U235  -311 ;
+Random := MSTR: Random :: PUT 1 U238  -311 ;
+Random := MSTR: Random :: PUT 1 Zr90  -311 ;
+Random := MSTR: Random :: PUT 1 Zr91  -311 ;
+Random := MSTR: Random :: PUT 1 Zr92  -311 ;
+Random := MSTR: Random :: PUT 1 Zr94  -311 ;
+Random := MSTR: Random :: PUT 1 Zr96  -311 ;
+Random := MSTR: Random :: PUT 1 Ni58  -311 ;
+Random := MSTR: Random :: PUT 1 Fe54  -311 ;
+Random := MSTR: Random :: PUT 1 Fe56  -311 ;
+Random := MSTR: Random :: PUT 1 Cr52  -311 ;
+Random := MSTR: Random :: PUT 1 In115 -311 ;
+Random := MSTR: Random :: PUT 1 Ag107 -311 ;
+Random := MSTR: Random :: PUT 1 Ag109 -311 ;
+Random := MSTR: Random :: PUT 1 Cd106 -311 ;
+Random := MSTR: Random :: PUT 1 Cd108 -311 ;
+Random := MSTR: Random :: PUT 1 Cd110 -311 ;
+Random := MSTR: Random :: PUT 1 Cd111 -311 ;
+Random := MSTR: Random :: PUT 1 Cd112 -311 ;
+Random := MSTR: Random :: PUT 1 Cd113 -311 ;
+Random := MSTR: Random :: PUT 1 Cd114 -311 ;
+Random := MSTR: Random :: PUT 1 Cd116 -311 ;
+Random := DefRandomIso Random ;
 *---
 ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
                      CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
-REFL := Reflector ReflSpecs TENDL ;
+REFL := Reflector ReflSpecs Random ;
 *---
-Library Burnup ConcMode Info := EvoNominale TENDL ::
+Library Burnup ConcMode Info := EvoNominale Random ::
   TIH UOX 195 None 1 ;
-UOX195 := MakeBib1BU Library Burnup ConcMode Info TENDL ;
+UOX195 := MakeBib1BU Library Burnup ConcMode Info Random ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-Library Burnup ConcMode Info := EvoNominale TENDL ::
+Library Burnup ConcMode Info := EvoNominale Random ::
   TIH UOX 310 None 1 ;
-UOX310 := MakeBib1BU Library Burnup ConcMode Info TENDL ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info Random ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-Library Burnup ConcMode Info := EvoNominale TENDL ::
+Library Burnup ConcMode Info := EvoNominale Random ::
   TIH UOX 255 Py8 1 ;
-UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info TENDL ;
+UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-Library Burnup ConcMode Info := EvoNominale TENDL ::
+Library Burnup ConcMode Info := EvoNominale Random ::
   TIH UOX 255 Py12 1 ;
-UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info TENDL ;
+UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-Library Burnup ConcMode Info := EvoNominale TENDL ::
+Library Burnup ConcMode Info := EvoNominale Random ::
   TIH UOX 310 Py12 1 ;
-UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info TENDL ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 PowerCD PowerD PowerARO := Tihange
@@ -52,17 +71,17 @@ PowerCD PowerD PowerARO := Tihange
 *    and k-effectives
 INTEGER Length ;
 GREP: PowerCD :: LENGTH POWER-CHAN >>Length<< ;
-Temp := TENDL ;
+Temp := Random ;
 Temp := MSTR: Temp PowerCD  :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
                                CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
 PowerCD_asc := Temp ;
 Temp := DELETE: Temp ;
-Temp := TENDL ;
+Temp := Random ;
 Temp := MSTR: Temp PowerD   :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
                                CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
 PowerD_asc := Temp ;
 Temp := DELETE: Temp ;
-Temp := TENDL ;
+Temp := Random ;
 Temp := MSTR: Temp PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
                                CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
 PowerARO_asc := Temp ;

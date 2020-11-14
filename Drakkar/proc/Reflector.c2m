@@ -1,7 +1,7 @@
-PARAMETER Multicompo ReflSpecs TENDL
-  :: ::: LINKED_LIST ReflSpecs TENDL ; ;
+PARAMETER Multicompo ReflSpecs Random
+  :: ::: LINKED_LIST ReflSpecs Random ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix ReflGeoCompo
-  Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf ;
+  Geo15x15 AdaptIso LefebvreLeb Koebke CurrFluxIntf GetRandomIso ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu ListeIsot ListeAutop Library
   CP CALC XS AUTO_LIB MACRO MACRO_FUEL_1 MACRO_FUEL_2 StepList
   MolarMasses FeNat CrNat SnNat NiNat ZrNat TiNat SiNat BNat AgNat CdNat
@@ -60,7 +60,7 @@ MolarMasses ::
 Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses
-TENDL ::
+Random ::
 <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
@@ -88,18 +88,10 @@ GREP: ListeIsot :: GETVAL 'B11  ' <<LibId>> NVAL 8 >>NomB11<<   ;
 GREP: ListeIsot :: GETVAL 'Fe54 ' <<LibId>> NVAL 8 >>NomFe54<<  ;
 
 *--------------------------------------------------------------------
-* TENDL specifics
+* Specifics for randomly sampled isotopes
+INTEGER NbIso NumIso irand ;
+STRING NamIso draglib RandIsoName ;
 *--------------------------------------------------------------------
-INTEGER O16tendl ;
-GREP: TENDL :: GETVAL 'O16'  1 >>O16tendl<< ;
-STRING NomO16tendl ;
-IF O16tendl 10 < THEN
-  EVALUATE NomO16tendl := "O16_00" O16tendl I_TO_S + ;
-ELSEIF O16tendl 100 < THEN
-  EVALUATE NomO16tendl := "O16_0" O16tendl I_TO_S + ;
-ELSE
-  EVALUATE NomO16tendl := "O16_" O16tendl I_TO_S + ;
-ENDIF ;
 
 REAL H1 O16 H2O B10 B11 ;
 INTEGER CASE := 1 ;
@@ -158,25 +150,34 @@ WHILE CASE 2 <= DO
       B10       = <<NomB10>> <<B10>> NOEV
       B11       = <<NomB11>> <<B11>> NOEV
   ;
-  IF O16tendl -311 = NOT THEN
-  Library := LIB: Library ::
-  ! Borated water
-    MIXS LIB: <<LibGenre>> FIL: draglibO16
+* If applicable, modify the library with randomly sampled isotopes
+  GREP: Random :: GETVAL 'NbIso' 1 >>NbIso<< ;
+  EVALUATE NumIso := 1 ;
+  WHILE NumIso NbIso <= DO
+    GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
+    >>draglib<< >>RandIsoName<< ;
+    IF NamIso 'O16' = irand -311 = NOT * THEN
+      Library := LIB: Library ::
+      ! Borated water
+        MIXS LIB: <<LibGenre>> FIL: <<draglib>>
 
-    MIX 5 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-    MIX 6 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-    MIX 10 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-    MIX 11 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-    MIX 12 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-    MIX 13 <<TempMod>>
-      O16       = <<NomO16tendl>> <<O16>> NOEV
-  ;
-  ENDIF ;
+        MIX 5 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+        MIX 6 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+        MIX 10 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+        MIX 11 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+        MIX 12 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+        MIX 13 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<O16>> NOEV
+      ;
+    ENDIF ;
+    EVALUATE NumIso := NumIso 1 + ;
+  ENDWHILE ;
+*
   AUTO_LIB := USS: Library DiscrAu ::
     EDIT 0 GRMIN 45 MAXST 200 ;
   CP := ASM: AUTO_LIB Discr :: EDIT 0 ARM ;
@@ -292,7 +293,7 @@ WHILE iCB nCB <= DO
         *  Reflector geometry and compositions
         *----------------------------------------------------------
         GEOM Library := ReflGeoCompo MolarMasses BNat
-          Zirc4 Incon SS304 TENDL :: <<FileNuclData>> <<Evaluation>>
+          Zirc4 Incon SS304 Random :: <<FileNuclData>> <<Evaluation>>
           <<Palier>> <<Location>> <<CB>> <<dBaffleBarrl>> >>nbZones<< ;
         *------------------------------------------------------------
         *  Loop on the two cases, to have two different spectrum

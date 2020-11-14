@@ -1,0 +1,35 @@
+MODULE GREP: END: ;
+PARAMETER Random ;
+*---
+*  Input :
+*  Random isotope number which designates a specific isotope
+*  'Random' object, containing all kinds of information we need
+*---
+INTEGER NumIso ;
+:: >>NumIso<< ;
+*---
+* Output :
+* Isotope name
+* Random sampling number of that isotope
+* A string with the isotope name and its random sampling number
+* A string designating the Draglib in which this isotope can be found
+* Draglib isotope name, that can be passed to LIB: module
+*---
+STRING NamIso draglib RandIsoName ;
+INTEGER irand ;
+*
+INTEGER IdxIso := NumIso 1 - 8 * 1 + ; ! 8 char per isotope
+GREP: Random :: GETVAL 'NamIso' <<IdxIso>> NVAL 8 >>NamIso<< ;
+GREP: Random :: GETVAL <<NamIso>> 1 >>irand<< ;
+EVALUATE draglib := 'draglib' NamIso + ;
+IF irand 10 < THEN
+  EVALUATE RandIsoName := NamIso "_00" irand I_TO_S + + ;
+ELSEIF irand 100 < THEN
+  EVALUATE RandIsoName := NamIso "_0"  irand I_TO_S + + ;
+ELSE
+  EVALUATE RandIsoName := NamIso "_"   irand I_TO_S + + ;
+ENDIF ;
+*
+:: <<NamIso>> <<irand>> <<draglib>> <<RandIsoName>> ;
+END: ;
+QUIT "LIST" .

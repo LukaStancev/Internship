@@ -24,10 +24,8 @@ else
     mv draglibJeff3.1.1 D172JEFF311
 fi
 
-#-- TENDL nuclear data files
-cp "$1"/draglibO16 .
-cp "$1"/draglibU23* .
-cp "$1"/draglibZr9* .
+#-- copy TENDL nuclear data files (and not JEFF nuclear data file)
+find "$1" -type f -name "draglib*" ! -name "*Jeff*" -exec cp {} . \;
 
 Evaluation=$(grep "STRING Evaluation :=" EvoNominale.c2m | cut -d\" -f2)
 

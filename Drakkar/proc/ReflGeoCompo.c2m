@@ -1,5 +1,5 @@
-PARAMETER GEOM Library MolarMasses BNat Zirc4 Incon SS304 TENDL
-    :: ::: LINKED_LIST MolarMasses BNat Zirc4 Incon SS304 TENDL ; ;
+PARAMETER GEOM Library MolarMasses BNat Zirc4 Incon SS304 Random
+    :: ::: LINKED_LIST MolarMasses BNat Zirc4 Incon SS304 Random ; ;
 PROCEDURE CreaDilut GetTechData ;
 LINKED_LIST nbZones FractionVol List ;
 MODULE LIB: GEO: DELETE: UTL: END: ABORT: GREP: MSTR: INFO: ;
@@ -181,12 +181,12 @@ WHILE iZone nbZones <= DO
   * Definition of reflector libraries
   IF iZone 1 = THEN
     Library := CreaDilut MolarMasses BNat Zirc4
-      Incon SS304 TENDL ::
+      Incon SS304 Random ::
       <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
       <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
   ELSE
     Library := CreaDilut Library MolarMasses BNat Zirc4
-      Incon SS304 TENDL ::
+      Incon SS304 Random ::
       <<iMIX>> <<dMod>> <<Temp>> <<CB>> <<fvMod>> <<fvZr4>> <<fvInc>>
       <<fvSS304>> <<FileNuclData>> <<Evaluation>> ;
   ENDIF ;

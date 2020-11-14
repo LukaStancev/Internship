@@ -17,11 +17,11 @@
 * Output Provided:
 *  < Library
 *======================================================
-PARAMETER Library MolarMasses BNat Zirc4 Incon SS304 TENDL ::
-  ::: LINKED_LIST TENDL ; ;
+PARAMETER Library MolarMasses BNat Zirc4 Incon SS304 Random ::
+  ::: LINKED_LIST Random ; ;
 MODULE LIB: GREP: ABORT: UTL: END: ;
 LINKED_LIST ListeIsot ListeAutop ;
-PROCEDURE AdaptIso ;
+PROCEDURE AdaptIso GetRandomIso ;
 *--------------------------------------------------------------------
 * Paramètres constants
 *--------------------------------------------------------------------
@@ -577,95 +577,65 @@ ELSE
       Nb93     = <<NomNb93>>  <<Nb93>>
   ;
 ENDIF ;
-
-INTEGER O16tendl U235tendl U238tendl Zr90tendl Zr91tendl Zr92tendl
-  Zr94tendl Zr96tendl ;
-GREP: TENDL :: GETVAL 'O16'  1 >>O16tendl<< ;
-GREP: TENDL :: GETVAL 'U235' 1 >>U235tendl<< ;
-GREP: TENDL :: GETVAL 'U238' 1 >>U238tendl<< ;
-GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90tendl<< ;
-GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91tendl<< ;
-GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92tendl<< ;
-GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94tendl<< ;
-GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96tendl<< ;
-IF O16tendl -311 = NOT THEN
-  IF O16tendl 10 < THEN
-    EVALUATE NomO16 := "O16_00" O16tendl I_TO_S + ;
-  ELSEIF O16tendl 100 < THEN
-    EVALUATE NomO16 := "O16_0" O16tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomO16 := "O16_" O16tendl I_TO_S + ;
+* If applicable, modify the library with randomly sampled isotopes
+INTEGER NbIso NumIso irand ;
+STRING NamIso draglib RandIsoName ;
+GREP: Random :: GETVAL 'NbIso' 1 >>NbIso<< ;
+EVALUATE NumIso := 1 ;
+WHILE NumIso NbIso <= DO
+  GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
+  >>draglib<< >>RandIsoName<< ;
+  IF NamIso 'O16' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<O16>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibO16
-    O16      = <<NomO16>>   <<O16>>
-  ;
-ENDIF ;
-IF Zr90tendl -311 = NOT THEN
-  IF Zr90tendl 10 < THEN
-    EVALUATE NomZr90 := "Zr90_00" Zr90tendl I_TO_S + ;
-  ELSEIF Zr90tendl 100 < THEN
-    EVALUATE NomZr90 := "Zr90_0" Zr90tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomZr90 := "Zr90_" Zr90tendl I_TO_S + ;
+  IF NamIso 'Zr90' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Zr90>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibZr90
-    Zr90     = <<NomZr90>>  <<Zr90>>
-  ;
-ENDIF ;
-IF Zr91tendl -311 = NOT THEN
-  IF Zr91tendl 10 < THEN
-    EVALUATE NomZr91 := "Zr91_00" Zr91tendl I_TO_S + ;
-  ELSEIF Zr91tendl 100 < THEN
-    EVALUATE NomZr91 := "Zr91_0" Zr91tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomZr91 := "Zr91_" Zr91tendl I_TO_S + ;
+  IF NamIso 'Zr91' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Zr91>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibZr91
-    Zr91     = <<NomZr91>>  <<Zr91>>
-  ;
-ENDIF ;
-IF Zr92tendl -311 = NOT THEN
-  IF Zr92tendl 10 < THEN
-    EVALUATE NomZr92 := "Zr92_00" Zr92tendl I_TO_S + ;
-  ELSEIF Zr92tendl 100 < THEN
-    EVALUATE NomZr92 := "Zr92_0" Zr92tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomZr92 := "Zr92_" Zr92tendl I_TO_S + ;
+  IF NamIso 'Zr92' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Zr92>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibZr92
-    Zr92     = <<NomZr92>>  <<Zr92>>
-  ;
-ENDIF ;
-IF Zr94tendl -311 = NOT THEN
-  IF Zr94tendl 10 < THEN
-    EVALUATE NomZr94 := "Zr94_00" Zr94tendl I_TO_S + ;
-  ELSEIF Zr94tendl 100 < THEN
-    EVALUATE NomZr94 := "Zr94_0" Zr94tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomZr94 := "Zr94_" Zr94tendl I_TO_S + ;
+  IF NamIso 'Zr94' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Zr94>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibZr94
-    Zr94     = <<NomZr94>>  <<Zr94>>
-  ;
-ENDIF ;
-IF Zr96tendl -311 = NOT THEN
-  IF Zr96tendl 10 < THEN
-    EVALUATE NomZr96 := "Zr96_00" Zr96tendl I_TO_S + ;
-  ELSEIF Zr96tendl 100 < THEN
-    EVALUATE NomZr96 := "Zr96_0" Zr96tendl I_TO_S + ;
-  ELSE
-    EVALUATE NomZr96 := "Zr96_" Zr96tendl I_TO_S + ;
+  IF NamIso 'Zr96' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Zr96>> ;
   ENDIF ;
-  Library := LIB: Library ::
-    MIXS LIB: <<LibGenre>> FIL: draglibZr96
-    Zr96     = <<NomZr96>>  <<Zr96>>
-  ;
-ENDIF ;
-
+  IF NamIso 'Ni58' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Ni58>> ;
+  ENDIF ;
+  IF NamIso 'Fe54' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Fe54>> ;
+  ENDIF ;
+  IF NamIso 'Fe56' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Fe56>> ;
+  ENDIF ;
+  IF NamIso 'Cr52' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      <<NamIso>> = <<RandIsoName>> <<Cr52>> ;
+  ENDIF ;
+  EVALUATE NumIso := NumIso 1 + ;
+ENDWHILE ;
 END: ;
 QUIT "LIST" .

@@ -1,0 +1,40 @@
+MODULE MSTR: UTL: GREP: END: ;
+PARAMETER Random ;
+*---
+*  List of potentially randomly sampled isotopes
+*---
+* 8 characters per isotope
+Random := UTL: Random :: CREA 'NamIso' 46 = ! 46/2 = 23 isotopes
+  'O16 ' '    ' ! O16
+  'U235' '    ' ! U235
+  'U238' '    ' ! U238
+  'Zr90' '    ' ! Zr90
+  'Zr91' '    ' ! Zr91
+  'Zr92' '    ' ! Zr92
+  'Zr94' '    ' ! Zr94
+  'Zr96' '    ' ! Zr96
+  'Ni58' '    ' ! Ni58
+  'Fe54' '    ' ! Fe54
+  'Fe56' '    ' ! Fe56
+  'Cr52' '    ' ! Cr52
+  'In11' '5   ' ! In115
+  'Ag10' '7   ' ! Ag107
+  'Ag10' '9   ' ! Ag109
+  'Cd10' '6   ' ! Cd106
+  'Cd10' '8   ' ! Cd108
+  'Cd11' '0   ' ! Cd110
+  'Cd11' '1   ' ! Cd111
+  'Cd11' '2   ' ! Cd112
+  'Cd11' '3   ' ! Cd113
+  'Cd11' '4   ' ! Cd114
+  'Cd11' '6   ' ! Cd116
+;
+*---
+*  Properly store the number of potentially sampled isotopes, to ease
+*  reuse
+*---
+INTEGER NbIso ;
+GREP: Random :: LENGTH 'NamIso' >>NbIso<< ;
+EVALUATE NbIso := NbIso 2 / ;
+Random := UTL: Random :: CREA 'NbIso' 1 = <<NbIso>> ;
+END: ;

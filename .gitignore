@@ -13,6 +13,17 @@ Drakkar/Version5/Trivac/src/Trivac
 # Version5 Draglib files
 **/draglib*
 
+# Serpent outputs
+**/*.ss2.out
+**/*.ss2.seed
+**/*.ss2_geom1.png
+**/*.ss2_mesh1.png
+**/*.ss2_res.m
+
+# D2S input files
+**/*.geo
+**/*.compo
+
 # Slurm output (log) files
 **/slurm-*.out
 

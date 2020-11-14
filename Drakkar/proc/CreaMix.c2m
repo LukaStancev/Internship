@@ -23,14 +23,14 @@ PARAMETER Library ConcMode
           FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat
           AgNat CdNat SNat HfNat InNat
           Zirc4 Incon SS304 M5 AIC HfR
-          GdNat Gd2O3 BP MolarMasses TENDL ::
+          GdNat Gd2O3 BP MolarMasses Random ::
       ::: LINKED_LIST
           FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat
           AgNat CdNat SNat HfNat InNat
           Zirc4 Incon SS304 M5 AIC HfR
-          GdNat Gd2O3 BP MolarMasses TENDL ; ;
+          GdNat Gd2O3 BP MolarMasses Random ; ;
 PROCEDURE AdaptIso ThermaExpans DeplChain GetTechData ;
-PROCEDURE GridDil GapDil ;
+PROCEDURE GridDil GapDil GetRandomIso ;
 MODULE    LIB: GREP: ABORT: UTL: END: ;
 LINKED_LIST ListeIsot ListeAutop ;
 
@@ -3094,245 +3094,536 @@ CTRA <<CTRA>>
   MIX <<Nmix>> COMB 140 1.
   ;
 
-INTEGER O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 ;
-GREP: TENDL :: GETVAL 'O16'  1 >>O16<< ;
-GREP: TENDL :: GETVAL 'U235' 1 >>U235<< ;
-GREP: TENDL :: GETVAL 'U238' 1 >>U238<< ;
-GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90<< ;
-GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91<< ;
-GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92<< ;
-GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94<< ;
-GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96<< ;
-IF O16 -311 = NOT THEN
-  IF O16 10 < THEN
-    EVALUATE NomO16 := "O16_00" O16 I_TO_S + ;
-  ELSEIF O16 100 < THEN
-    EVALUATE NomO16 := "O16_0" O16 I_TO_S + ;
-  ELSE
-    EVALUATE NomO16 := "O16_" O16 I_TO_S + ;
+
+
+* If applicable, modify the library with randomly sampled isotopes
+INTEGER NbIso NumIso irand ;
+STRING NamIso draglib RandIsoName ;
+GREP: Random :: GETVAL 'NbIso' 1 >>NbIso<< ;
+EVALUATE NumIso := 1 ;
+WHILE NumIso NbIso <= DO
+  GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
+  >>draglib<< >>RandIsoName<< ;
+  IF NamIso 'O16' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        O16   = <<RandIsoName>>   <<O16Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        O16   = <<RandIsoName>>   <<O16Gr>>
+      MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+        O16      = <<RandIsoName>>      <<O_mti>>
+      MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+        O16      = <<RandIsoName>>      <<O_mti>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        O16      = <<RandIsoName>>      <<O16T>>
+      MIX 24 <<tmod>> NOEV (* HAFNIUM ROD *)
+        O16      = <<RandIsoName>>      <<O16HfR>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        O16      = <<RandIsoName>>      <<O16Cl>>
+      MIX 36 <<tclad>> NOEV (* GAINE M5 *)
+        O16      = <<RandIsoName>>  <<O16M5Cl>>
+      MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
+        O16      = <<RandIsoName>>    1.12630E-5
+      MIX 65 <<tmod>> (* BP Pyrex *)
+        O16      = <<RandIsoName>>   <<O16BP>>
+      MIX 100 <<tfuel>> (* COMB *)
+        O16      = <<RandIsoName>>    <<O_fuel>>
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        O16      = <<RandIsoName>>    <<O_corn_fuel>>
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        O16      = <<RandIsoName>>    <<O_side_fuel>>
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        O16      = <<RandIsoName>>    <<O_cntr_fuel>>
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        O16      = <<RandIsoName>>    <<O_UGd_fuel>>
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibO16
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      O16   = <<NomO16>>   <<O16Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      O16   = <<NomO16>>   <<O16Gr>>
-    MIX 5 <<tmod>> NOEV ! (* Eau normale *)
-      O16      = <<NomO16>>      <<O_mti>>
-    MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-      O16      = <<NomO16>>      <<O_mti>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      O16      = <<NomO16>>      <<O16T>>
-    MIX 24 <<tmod>> NOEV (* HAFNIUM ROD *)
-      O16      = <<NomO16>>      <<O16HfR>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      O16      = <<NomO16>>      <<O16Cl>>
-    MIX 36 <<tclad>> NOEV (* GAINE M5 *)
-      O16      = <<NomO16>>  <<O16M5Cl>>
-    MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
-      O16      = <<NomO16>>    1.12630E-5
-    MIX 65 <<tmod>> (* BP Pyrex *)
-      O16      = <<NomO16>>   <<O16BP>>
-    MIX 100 <<tfuel>> (* COMB *)
-      O16      = <<NomO16>>    <<O_fuel>>
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      O16      = <<NomO16>>    <<O_corn_fuel>>
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      O16      = <<NomO16>>    <<O_side_fuel>>
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      O16      = <<NomO16>>    <<O_cntr_fuel>>
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      O16      = <<NomO16>>    <<O_UGd_fuel>>
-  ;
-ENDIF ;
-IF U235 -311 = NOT THEN
-  IF U235 10 < THEN
-    EVALUATE NomU235 := "U235_00" U235 I_TO_S + ;
-  ELSEIF U235 100 < THEN
-    EVALUATE NomU235 := "U235_0" U235 I_TO_S + ;
-  ELSE
-    EVALUATE NomU235 := "U235_" U235 I_TO_S + ;
+  IF NamIso 'U235' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: draglibU235
+      MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+        U5DET = <<RandIsoName>> 1.0E-9
+      MIX 100 <<tfuel>> (* COMB *)
+        U235 = <<RandIsoName>> <<U5fuel>> <<iU5>> SHIB <<NomSSU235>>
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibU235
-    MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-      U5DET    =  <<NomU235>>   1.0E-9
-    MIX 100 <<tfuel>> (* COMB *)
-      U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
-  ;
-ENDIF ;
-IF U238 -311 = NOT THEN
-  IF U238 10 < THEN
-    EVALUATE NomU238 := "U238_00" U238 I_TO_S + ;
-  ELSEIF U238 100 < THEN
-    EVALUATE NomU238 := "U238_0" U238 I_TO_S + ;
-  ELSE
-    EVALUATE NomU238 := "U238_" U238 I_TO_S + ;
+  IF NamIso 'U238' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: draglibU238
+      MIX 100 <<tfuel>> (* COMB *)
+        U238 = <<RandIsoName>> <<U8fuel>> <<iU8>> SHIB <<NomSSU238>>
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibU238
-    MIX 100 <<tfuel>> (* COMB *)
-      U238     = <<NomU238>>   <<U8fuel>>  <<iU8>> SHIB <<NomSSU238>>
-  ;
-ENDIF ;
-IF Zr90 -311 = NOT THEN
-  IF Zr90 10 < THEN
-    EVALUATE NomZr90 := "Zr90_00" Zr90 I_TO_S + ;
-  ELSEIF Zr90 100 < THEN
-    EVALUATE NomZr90 := "Zr90_0" Zr90 I_TO_S + ;
-  ELSE
-    EVALUATE NomZr90 := "Zr90_" Zr90 I_TO_S + ;
+  IF NamIso 'Zr90' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Zr90 = <<RandIsoName>> <<Zr90Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Zr90 = <<RandIsoName>> <<Zr90Gr>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        Zr90 = <<RandIsoName>> <<Zr90T>> <<iZrT>> SHIB <<NomSSZr90>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        Zr90 = <<RandIsoName>> <<Zr90Cl>> <<iZrG>> SHIB <<NomSSZr90>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Zr90 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Zr90 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Zr90 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Zr90 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Zr90 = <<RandIsoName>> 0.0
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibZr90
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      Zr90     = <<NomZr90>>    <<Zr90Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      Zr90     = <<NomZr90>>    <<Zr90Gr>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      Zr90     = <<NomZr90>>     <<Zr90T>> <<iZrT>> SHIB <<NomSSZr90>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      Zr90     = <<NomZr90>>     <<Zr90Cl>> <<iZrG>> SHIB <<NomSSZr90>>
-    MIX 100 <<tfuel>> (* COMB *)
-      Zr90     = <<NomZr90>> 0.0
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      Zr90     = <<NomZr90>> 0.0
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      Zr90     = <<NomZr90>> 0.0
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      Zr90     = <<NomZr90>> 0.0
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      Zr90     = <<NomZr90>> 0.0
-  ;
-ENDIF ;
-IF Zr91 -311 = NOT THEN
-  IF Zr91 10 < THEN
-    EVALUATE NomZr91 := "Zr91_00" Zr91 I_TO_S + ;
-  ELSEIF Zr91 100 < THEN
-    EVALUATE NomZr91 := "Zr91_0" Zr91 I_TO_S + ;
-  ELSE
-    EVALUATE NomZr91 := "Zr91_" Zr91 I_TO_S + ;
+  IF NamIso 'Zr91' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Zr91 = <<RandIsoName>> <<Zr91Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Zr91 = <<RandIsoName>> <<Zr91Gr>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        Zr91 = <<RandIsoName>> <<Zr91T>> <<iZrT>> SHIB <<NomSSZr91>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        Zr91 = <<RandIsoName>> <<Zr91Cl>> <<iZrG>> SHIB <<NomSSZr91>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Zr91 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Zr91 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Zr91 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Zr91 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Zr91 = <<RandIsoName>> 0.0
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibZr91
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      Zr91     = <<NomZr91>>    <<Zr91Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      Zr91     = <<NomZr91>>    <<Zr91Gr>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      Zr91     = <<NomZr91>>     <<Zr91T>> <<iZrT>> SHIB <<NomSSZr91>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      Zr91     = <<NomZr91>>     <<Zr91Cl>> <<iZrG>> SHIB <<NomSSZr91>>
-    MIX 100 <<tfuel>> (* COMB *)
-      Zr91     = <<NomZr91>> 0.0
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      Zr91     = <<NomZr91>> 0.0
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      Zr91     = <<NomZr91>> 0.0
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      Zr91     = <<NomZr91>> 0.0
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      Zr91     = <<NomZr91>> 0.0
-  ;
-ENDIF ;
-IF Zr92 -311 = NOT THEN
-  IF Zr92 10 < THEN
-    EVALUATE NomZr92 := "Zr92_00" Zr92 I_TO_S + ;
-  ELSEIF Zr92 100 < THEN
-    EVALUATE NomZr92 := "Zr92_0" Zr92 I_TO_S + ;
-  ELSE
-    EVALUATE NomZr92 := "Zr92_" Zr92 I_TO_S + ;
+  IF NamIso 'Zr92' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Zr92 = <<RandIsoName>> <<Zr92Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Zr92 = <<RandIsoName>> <<Zr92Gr>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        Zr92 = <<RandIsoName>> <<Zr92T>> <<iZrT>> SHIB <<NomSSZr92>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        Zr92 = <<RandIsoName>> <<Zr92Cl>> <<iZrG>> SHIB <<NomSSZr92>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Zr92 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Zr92 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Zr92 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Zr92 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Zr92 = <<RandIsoName>> 0.0
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibZr92
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      Zr92     = <<NomZr92>>    <<Zr92Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      Zr92     = <<NomZr92>>    <<Zr92Gr>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      Zr92     = <<NomZr92>>     <<Zr92T>> <<iZrT>> SHIB <<NomSSZr92>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      Zr92     = <<NomZr92>>     <<Zr92Cl>> <<iZrG>> SHIB <<NomSSZr92>>
-    MIX 100 <<tfuel>> (* COMB *)
-      Zr92     = <<NomZr92>> 0.0
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      Zr92     = <<NomZr92>> 0.0
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      Zr92     = <<NomZr92>> 0.0
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      Zr92     = <<NomZr92>> 0.0
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      Zr92     = <<NomZr92>> 0.0
-  ;
-ENDIF ;
-IF Zr94 -311 = NOT THEN
-  IF Zr94 10 < THEN
-    EVALUATE NomZr94 := "Zr94_00" Zr94 I_TO_S + ;
-  ELSEIF Zr94 100 < THEN
-    EVALUATE NomZr94 := "Zr94_0" Zr94 I_TO_S + ;
-  ELSE
-    EVALUATE NomZr94 := "Zr94_" Zr94 I_TO_S + ;
+  IF NamIso 'Zr94' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Zr94 = <<RandIsoName>> <<Zr94Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Zr94 = <<RandIsoName>> <<Zr94Gr>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        Zr94 = <<RandIsoName>> <<Zr94T>> <<iZrT>> SHIB <<NomSSZr94>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        Zr94 = <<RandIsoName>> <<Zr94Cl>> <<iZrG>> SHIB <<NomSSZr94>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Zr94 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Zr94 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Zr94 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Zr94 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Zr94 = <<RandIsoName>> 0.0
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibZr94
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      Zr94     = <<NomZr94>>    <<Zr94Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      Zr94     = <<NomZr94>>    <<Zr94Gr>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      Zr94     = <<NomZr94>>     <<Zr94T>> <<iZrT>> SHIB <<NomSSZr94>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      Zr94     = <<NomZr94>>     <<Zr94Cl>> <<iZrG>> SHIB <<NomSSZr94>>
-    MIX 100 <<tfuel>> (* COMB *)
-      Zr94     = <<NomZr94>> 0.0
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      Zr94     = <<NomZr94>> 0.0
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      Zr94     = <<NomZr94>> 0.0
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      Zr94     = <<NomZr94>> 0.0
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      Zr94     = <<NomZr94>> 0.0
-  ;
-ENDIF ;
-IF Zr96 -311 = NOT THEN
-  IF Zr96 10 < THEN
-    EVALUATE NomZr96 := "Zr96_00" Zr96 I_TO_S + ;
-  ELSEIF Zr96 100 < THEN
-    EVALUATE NomZr96 := "Zr96_0" Zr96 I_TO_S + ;
-  ELSE
-    EVALUATE NomZr96 := "Zr96_" Zr96 I_TO_S + ;
+  IF NamIso 'Zr96' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Zr96 = <<RandIsoName>> <<Zr96Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Zr96 = <<RandIsoName>> <<Zr96Gr>>
+      MIX 20 <<tmod>> NOEV (* TUBE *)
+        Zr96 = <<RandIsoName>> <<Zr96T>> <<iZrT>> SHIB <<NomSSZr96>>
+      MIX 30 <<tclad>> NOEV (* GAINE COMB *)
+        Zr96 = <<RandIsoName>> <<Zr96Cl>> <<iZrG>> SHIB <<NomSSZr96>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Zr96 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Zr96 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Zr96 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Zr96 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Zr96 = <<RandIsoName>> 0.0
+    ;
   ENDIF ;
-  Library := LIB: Library ::
-    CTRA <<CTRA>>
-    MIXS LIB: <<LibGenre>> FIL: draglibZr96
-    MIX 3 <<tmod>> NOEV (* Zr4 *)
-      Zr96     = <<NomZr96>>    <<Zr96Z4>>
-    MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
-      Zr96     = <<NomZr96>>    <<Zr96Gr>>
-    MIX 20 <<tmod>> NOEV (* TUBE *)
-      Zr96     = <<NomZr96>>     <<Zr96T>> <<iZrT>> SHIB <<NomSSZr96>>
-    MIX 30 <<tclad>> NOEV (* GAINE COMB *)
-      Zr96     = <<NomZr96>>     <<Zr96Cl>> <<iZrG>> SHIB <<NomSSZr96>>
-    MIX 100 <<tfuel>> (* COMB *)
-      Zr96     = <<NomZr96>> 0.0
-    MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
-      Zr96     = <<NomZr96>> 0.0
-    MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
-      Zr96     = <<NomZr96>> 0.0
-    MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
-      Zr96     = <<NomZr96>> 0.0
-    MIX 140 <<tfuel>> (* COMB with Gd *)
-      Zr96     = <<NomZr96>> 0.0
-  ;
-ENDIF ;
+  IF NamIso 'Ni58' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 1 <<tmod>> NOEV (* SS304 *)
+        Ni58 = <<RandIsoName>> <<Ni58SS>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        Ni58 = <<RandIsoName>> <<Ni58Inc>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Ni58 = <<RandIsoName>> <<Ni58Gr>>
+      MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
+        Ni58 = <<RandIsoName>> <<Ni58SSRo>>
+      MIX 32 <<tmod>> NOEV (* GAINA & GAINAA for ABS_ACIER *)
+        Ni58 = <<RandIsoName>> <<Ni58CladSS>>
+      MIX 33 <<tmod>> NOEV (* GAINA & GAINAA for ABSO B4C *)
+        Ni58 = <<RandIsoName>> <<Ni58CladB4C>>
+      MIX 34 <<tmod>> NOEV (* GAINE BP INT ACIER SS304 *)
+        Ni58 = <<RandIsoName>> <<Ni58CladInt>>
+      MIX 35 <<tmod>> NOEV (* GAINE BP EXT ACIER SS304 *)
+        Ni58 = <<RandIsoName>> <<Ni58CladExt>>
+      MIX 37 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICn *)
+        Ni58 = <<RandIsoName>> <<Ni58CladAICn>>
+      MIX 38 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICg *)
+        Ni58 = <<RandIsoName>> <<Ni58CladAICg>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Ni58 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Ni58 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Ni58 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Ni58 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Ni58 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Fe54' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 1 <<tmod>> NOEV (* SS304 *)
+        Fe54 = <<RandIsoName>> <<Fe54SS>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        Fe54 = <<RandIsoName>> <<Fe54Inc>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Fe54 = <<RandIsoName>> <<Fe54Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Fe54 = <<RandIsoName>> <<Fe54Gr>>
+      MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
+        Fe54 = <<RandIsoName>> <<Fe54SSRo>>
+      MIX 32 <<tmod>> NOEV (* GAINA & GAINAA for ABS_ACIER *)
+        Fe54 = <<RandIsoName>> <<Fe54CladSS>>
+      MIX 33 <<tmod>> NOEV (* GAINA & GAINAA for ABSO B4C *)
+        Fe54 = <<RandIsoName>> <<Fe54CladB4C>>
+      MIX 34 <<tmod>> NOEV (* GAINE BP INT ACIER SS304 *)
+        Fe54 = <<RandIsoName>> <<Fe54CladInt>>
+      MIX 35 <<tmod>> NOEV (* GAINE BP EXT ACIER SS304 *)
+        Fe54 = <<RandIsoName>> <<Fe54CladExt>>
+      MIX 37 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICn *)
+        Fe54 = <<RandIsoName>> <<Fe54CladAICn>>
+      MIX 38 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICg *)
+        Fe54 = <<RandIsoName>> <<Fe54CladAICg>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Fe54 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Fe54 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Fe54 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Fe54 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Fe54 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Fe56' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 1 <<tmod>> NOEV (* SS304 *)
+        Fe56 = <<RandIsoName>> <<Fe56SS>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        Fe56 = <<RandIsoName>> <<Fe56Inc>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Fe56 = <<RandIsoName>> <<Fe56Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Fe56 = <<RandIsoName>> <<Fe56Gr>>
+      MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
+        Fe56 = <<RandIsoName>> <<Fe56SSRo>>
+      MIX 32 <<tmod>> NOEV (* GAINA & GAINAA for ABS_ACIER *)
+        Fe56 = <<RandIsoName>> <<Fe56CladSS>>
+      MIX 33 <<tmod>> NOEV (* GAINA & GAINAA for ABSO B4C *)
+        Fe56 = <<RandIsoName>> <<Fe56CladB4C>>
+      MIX 34 <<tmod>> NOEV (* GAINE BP INT ACIER SS304 *)
+        Fe56 = <<RandIsoName>> <<Fe56CladInt>>
+      MIX 35 <<tmod>> NOEV (* GAINE BP EXT ACIER SS304 *)
+        Fe56 = <<RandIsoName>> <<Fe56CladExt>>
+      MIX 37 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICn *)
+        Fe56 = <<RandIsoName>> <<Fe56CladAICn>>
+      MIX 38 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICg *)
+        Fe56 = <<RandIsoName>> <<Fe56CladAICg>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Fe56 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Fe56 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Fe56 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Fe56 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Fe56 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cr52' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 1 <<tmod>> NOEV (* SS304 *)
+        Cr52 = <<RandIsoName>> <<Cr52SS>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        Cr52 = <<RandIsoName>> <<Cr52Inc>>
+      MIX 3 <<tmod>> NOEV (* Zr4 *)
+        Cr52 = <<RandIsoName>> <<Cr52Z4>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        Cr52 = <<RandIsoName>> <<Cr52Gr>>
+      MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
+        Cr52 = <<RandIsoName>> <<Cr52SSRo>>
+      MIX 32 <<tmod>> NOEV (* GAINA & GAINAA for ABS_ACIER *)
+        Cr52 = <<RandIsoName>> <<Cr52CladSS>>
+      MIX 33 <<tmod>> NOEV (* GAINA & GAINAA for ABSO B4C *)
+        Cr52 = <<RandIsoName>> <<Cr52CladB4C>>
+      MIX 34 <<tmod>> NOEV (* GAINE BP INT ACIER SS304 *)
+        Cr52 = <<RandIsoName>> <<Cr52CladInt>>
+      MIX 35 <<tmod>> NOEV (* GAINE BP EXT ACIER SS304 *)
+        Cr52 = <<RandIsoName>> <<Cr52CladExt>>
+      MIX 37 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICn *)
+        Cr52 = <<RandIsoName>> <<Cr52CladAICn>>
+      MIX 38 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AICg *)
+        Cr52 = <<RandIsoName>> <<Cr52CladAICg>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cr52 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cr52 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cr52 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cr52 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cr52 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'In115' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        In115 = <<RandIsoName>> <<In115AIC>> <<iIn>> SHIB <<NomSSIn115>>
+      MIX 100 <<tfuel>> (* COMB *)
+        In115 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        In115 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        In115 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        In115 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        In115 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Ag107' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Ag107 = <<RandIsoName>> <<Ag107AIC>> <<iAg7>> SHIB <<NomSSAg7>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Ag107 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Ag107 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Ag107 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Ag107 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Ag107 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Ag109' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Ag109 = <<RandIsoName>> <<Ag109AIC>> <<iAg9>> SHIB <<NomSSAg9>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Ag109 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Ag109 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Ag109 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Ag109 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Ag109 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd106' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd106 = <<RandIsoName>> <<Cd106AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd106 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd106 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd106 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd106 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd106 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd108' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd108 = <<RandIsoName>> <<Cd108AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd108 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd108 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd108 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd108 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd110' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd110 = <<RandIsoName>> <<Cd110AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd110 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd110 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd110 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd110 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd110 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd111' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd111 = <<RandIsoName>> <<Cd111AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd111 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd111 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd111 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd111 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd112' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd112 = <<RandIsoName>> <<Cd112AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd112 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd112 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd112 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd112 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd112 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd113' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd113 = <<RandIsoName>> <<Cd113AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd113 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd113 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd113 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd113 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd113 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd114' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd114 = <<RandIsoName>> <<Cd114AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd114 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd114 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd114 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd114 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd114 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  IF NamIso 'Cd116' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+        Cd116 = <<RandIsoName>> <<Cd116AIC>>
+      MIX 100 <<tfuel>> (* COMB *)
+        Cd116 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd116 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        Cd116 = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        Cd116 = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        Cd116 = <<RandIsoName>> 0.0
+    ;
+  ENDIF ;
+  EVALUATE NumIso := NumIso 1 + ;
+ENDWHILE ;
 
 *------------------------------------------------------
 * Combine the previous MIXes to produce the other required MIXes.

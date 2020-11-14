@@ -18,11 +18,11 @@
 *======================================================================
 * STRUCTURES et MODULES utilises
 *-------------------------------------------------
-PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info TENDL ::
+PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info Random ::
   ::: XSM_FILE      ImpLibrary Burnup ConcMode Info ;
-  ::: LINKED_LIST                                   TENDL ; ;
+  ::: LINKED_LIST                                   Random ; ;
 PROCEDURE   CreaStepList Geo15x15 CreaGeoHom ModDet35
-            Autop ;
+            Autop GetRandomIso ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU: EDI: SAP: SPH:
             TRIVAT: COMPO: EVO: UTL: GREP: ABORT: DELETE: END: ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu
@@ -98,18 +98,11 @@ STRING  BiblXS   := "SAPHYB"   ;
 STRING Evaluation := "JEFF311"  ;
 STRING FileNuclData := "D172" Evaluation + ;
 
-*---
-*  Specifities for TENDL
-*---
-INTEGER O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 ;
-GREP: TENDL :: GETVAL 'O16'  1 >>O16<< ;
-GREP: TENDL :: GETVAL 'U235' 1 >>U235<< ;
-GREP: TENDL :: GETVAL 'U238' 1 >>U238<< ;
-GREP: TENDL :: GETVAL 'Zr90' 1 >>Zr90<< ;
-GREP: TENDL :: GETVAL 'Zr91' 1 >>Zr91<< ;
-GREP: TENDL :: GETVAL 'Zr92' 1 >>Zr92<< ;
-GREP: TENDL :: GETVAL 'Zr94' 1 >>Zr94<< ;
-GREP: TENDL :: GETVAL 'Zr96' 1 >>Zr96<< ;
+*--------------------------------------------------------------------
+* Specifics for randomly sampled isotopes
+INTEGER NbIso NumIso irand ;
+STRING NamIso draglib RandIsoName ;
+*--------------------------------------------------------------------
 
 *=======================================================
 * INFO-DEFINED CALCULATION OPTIONS
@@ -496,7 +489,7 @@ WHILE m dm <= DO
 *            O16    <<o_5>>
             B10  <<b10_5>>
             B11  <<b11_5>>
-            U235 1.0E-9
+*            U235 1.0E-9
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
             H1_H2O <<h_10>>
@@ -537,39 +530,69 @@ WHILE m dm <= DO
           MIX  38 <<tmod_nom_K>> NOEV (* GAINE AICg *)
           ;
 
-        IF O16 -311 = NOT THEN
-          Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: draglibO16
-            MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
-              O16    <<o_5>>
-            MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
-              O16    <<o_5>>
-            MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
-              O16    <<o_10>>
-            MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
-              O16    <<o_11>>
-            MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
-              O16    <<o_12>>
-            MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
-              O16    <<o_13>>
-            ;
-        ELSE
-          Library := LIB: Library :: EDIT 0
-            CTRA <<CTRA>> MIXS LIB: <<LibGenre>> FIL: <<FileNuclData>>
-            MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
-              O16    <<o_5>>
-            MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
-              O16    <<o_5>>
-            MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
-              O16    <<o_10>>
-            MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
-              O16    <<o_11>>
-            MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
-              O16    <<o_12>>
-            MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
-              O16    <<o_13>>
-            ;
-        ENDIF ;
+        * If applicable, modify the library with randomly sampled
+        * isotopes
+        GREP: Random :: GETVAL 'NbIso' 1 >>NbIso<< ;
+        EVALUATE NumIso := 1 ;
+        WHILE NumIso NbIso <= DO
+          GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
+          >>draglib<< >>RandIsoName<< ;
+          IF NamIso 'O16' = THEN
+            IF irand -311 = NOT THEN
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<draglib>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  O16 = <<RandIsoName>> <<o_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  O16 = <<RandIsoName>> <<o_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  O16 = <<RandIsoName>> <<o_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  O16 = <<RandIsoName>> <<o_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  O16 = <<RandIsoName>> <<o_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  O16 = <<RandIsoName>> <<o_13>>
+                ;
+            ELSE
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<FileNuclData>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  O16    <<o_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  O16    <<o_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  O16    <<o_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  O16    <<o_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  O16    <<o_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  O16    <<o_13>>
+                ;
+            ENDIF ;
+          ENDIF ;
+          IF NamIso 'U235' = THEN
+            IF irand -311 = NOT THEN
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<draglib>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  U235 = <<RandIsoName>> 1.0E-9
+                ;
+            ELSE
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<FileNuclData>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  U235 1.0E-9
+                ;
+            ENDIF ;
+          ENDIF ;
+          EVALUATE NumIso := NumIso 1 + ;
+        ENDWHILE ;
 *------------------------------------------------------
 * Set Library at burnup
 * mixes communs a tous les assemblages
