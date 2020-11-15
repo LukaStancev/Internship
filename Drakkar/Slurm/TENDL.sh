@@ -16,33 +16,27 @@ cp ../data/isotconvlist.csv .
 intg=0
 for iso in O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 Ni58 Fe54 In115 Ag107 Ag109 Cd106 Cd108 Cd110 Cd111 Cd112 Cd113 Cd114 Cd116 Fe56 Cr52
 do
-  if [ "$iso" = "Zr91" ]
+  if [ "$iso" = "Zr91" ] || [ "$iso" == 'Fe54' ]
   then
-    maxrand=180
-  elif [ "$iso" = "Zr92" ] || [ "$iso" = "Zr94" ]
+    maxrand=179
+  elif [ "$iso" = "Zr92" ] || [ "$iso" = "Zr94" ] || [ "$iso" = "Zr96" ]
   then
-    maxrand=200
-  elif [ "$iso" = "Zr92" ]
-  then
-    maxrand=250
-  elif [ "$iso" == 'Fe54' ]
-  then
-    maxrand=180
+    maxrand=199
   elif [ "$iso" == 'In115' ] || [ "$iso" == 'Ag107' ]
   then
-    maxrand=100
+    maxrand=99
   elif [ "$iso" == 'Ag109' ] || [ "$iso" == 'Cd112' ] || [ "$iso" == 'Cd114' ]
   then
-    maxrand=60
+    maxrand=59
   elif [ "$iso" == 'Cd110' ] || [ "$iso" == 'Cd111' ] || [ "$iso" == 'Cd113' ]
   then
-    maxrand=40
+    maxrand=39
   elif [ "$iso" == 'Cd106' ] || [ "$iso" == 'Cd108' ] || [ "$iso" == 'Cd116' ]
   then
-    maxrand=20
+    maxrand=19
   elif [ "$iso" == 'Cr52' ] || [ "$iso" == 'Fe56' ]
   then
-    maxrand=10
+    maxrand=9
   else
     maxrand=299
   fi
