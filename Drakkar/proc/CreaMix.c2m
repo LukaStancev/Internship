@@ -3508,6 +3508,8 @@ WHILE NumIso NbIso <= DO
         Cd108 = <<RandIsoName>> <<Cd108AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd108 = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd108 = <<RandIsoName>> 0.0
       MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
         Cd108 = <<RandIsoName>> 0.0
       MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
@@ -3543,6 +3545,8 @@ WHILE NumIso NbIso <= DO
       MIX 100 <<tfuel>> (* COMB *)
         Cd111 = <<RandIsoName>> 0.0
       MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        Cd111 = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
         Cd111 = <<RandIsoName>> 0.0
       MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
         Cd111 = <<RandIsoName>> 0.0
