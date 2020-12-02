@@ -24,6 +24,9 @@ Drakkar/Version5/Trivac/src/Trivac
 **/*.geo
 **/*.compo
 
+# PDF files that may be generated for plotting
+**/*.pdf
+
 # Slurm output (log) files
 **/slurm-*.out
 
