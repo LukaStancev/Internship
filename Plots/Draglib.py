@@ -28,41 +28,69 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     #---
     fig, axs = plt.subplots(nrows = 2, sharex='all',
                             gridspec_kw={'hspace': 0})
-    # Create link toward Draglib file
+    #---
+    #  Create link toward Draglib file
+    #---
     command = ('ln -s ../../Njoy/TENDL/' + iso + '/draglib' + iso + ' _draglib'
                + iso + '.txt')
     os.system(command)
-    # List of interesting reactions
-    if iso == 'U238' or iso == 'U235':
-        reactions = ['NTOT0', 'NG', 'NINEL', 'NUSIGF']
+    # A few plotting parameters
+    if iso.startswith('U23'):
         minsig = 0.1
         loclegend = 'upper right'
-    elif iso == 'O16':
-        reactions = ['NTOT0', 'NINEL', 'NA', 'NELAS']
+        ncol = 2
+    else:
         minsig = 0.01
         loclegend = 'lower left'
-    else:
-        reactions = ['NTOT0', 'NUSIGF', 'NG', 'NINEL', 'NA', 'NELAS']
-        minsig = 0.01
-        loclegend = 'upper right'
+        ncol = 3
+    # Initialize the flag indicating presence/absence (resp. True/False) of at
+    # least one Autolib data
+    AutolibFlag = False
     #---
-    #  Load data
+    #  Load data (most time spent here)
     #---
     draglib = lcm.new('LCM_INP', 'draglib' + iso + '.txt')
     os.system('rm -f _draglib' + iso + '.txt')
-    draglib._impx=0
+    draglib._impx = 0
+    #---
+    #  Establish the list of available random samples, each being contained in
+    #  a directory
+    #---
+    dirnames = [dirnam for dirnam in draglib.keys() if iso in dirnam]
+    dirnames.sort()
+    #---
+    #  Establish the set of available reactions. Threshold reactions may be
+    #  present in some random samples, but absent in others (if its cross
+    #  sections are too low). The list established here is on a "minimum"
+    #  basis, i.e. present in every random samples.
+    #---
+    reactions = None
+    for dirname in dirnames:
+        isotopedir = draglib[dirname]
+        SubTemp = isotopedir['SUBTMP0002']
+        if not reactions:
+            reactions = set(SubTemp.keys())
+        else:
+            reactions = reactions.intersection(SubTemp.keys())
+    #---
+    #  Establish the list of interesting reactions among available ones, for
+    #  that isotope. The notable reactions set aside are: NG, NELAS, NFTOT,
+    #  N3N, N4N, NNP, N2A
+    #---
+    wished_reactions = {'NTOT0', 'NUSIGF', 'NINEL', 'N2N', 'NA', 'NP', 'ND'}
+    if iso.startswith('U23'):
+        wished_reactions = wished_reactions.difference({'NA', 'NP', 'ND'})
+    elif iso.startswith('Zr9'):
+        wished_reactions = wished_reactions.difference({'NA'})
+    reactions = list(reactions.intersection(wished_reactions))
+    reactions.sort()
     for reaction in reactions:
         print('reaction = ' + reaction)
         #---
         #  Recover the color so that all the curves of a given reaction are of
-        # the same color
+        #  the same color
         #---
         color = next(axs[0]._get_lines.prop_cycler)['color']
-        #
-        if (reaction == 'NTOT0' or reaction == 'NUSIGF') and (iso != 'O16'):
-            AutolibDir = 'BIN-' + reaction
-        else:
-            AutolibDir = None
         #---
         #  Retrieve data that shall be plotted
         #---
@@ -71,20 +99,23 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
         relstdEnergies = Energies
         # List that shall contain every random samples
         XSs = []
-        for irand in range(0, 300):
-            isotopedir = draglib[iso + '_' + str(irand).zfill(3)]
-            # Use 3rd temperature
-            SubTemp = isotopedir['SUBTMP0003']
+        for dirname in dirnames:
+            irand = int(dirname[-3:])
+            isotopedir = draglib[dirname]
+            # Use 2nd temperature
+            SubTemp = isotopedir['SUBTMP0002']
             Temperature = isotopedir['TEMPERATURE']
+            Temperature = str(int(Temperature[1]))
             # Print list of possible reactions
             if irand == 0:
-                SubTemp.lib()
+                print(SubTemp.keys())
             # Retrieve cross section
             XS = SubTemp[reaction]
             # Combine Autolib data and energy limits (where available) with XS
             # and energy limits outside of that (where Autolib is unavailable)
-            if AutolibDir:
-                # Sampling-insensitive data (identical in every samples)
+            if ('BIN-' + reaction) in SubTemp.keys():
+                AutolibFlag = True
+                # Sampling-insensitive data (identical in every random samples)
                 if irand == 0:
                     AutolibBins = isotopedir['BIN-NFS']
                     BinEnergies = isotopedir['BIN-ENERGY']
@@ -95,14 +126,16 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
                     Energies = np.concatenate((Ener_bef, BinEnergies,
                                                Ener_aft))
                 XS_bef, _, XS_aft = np.split(XS, [Autolib_beg, Autolib_end])
-                Autolib = SubTemp[AutolibDir]
+                Autolib = SubTemp['BIN-' + reaction]
                 XS = np.concatenate((XS_bef, Autolib, XS_aft))
             else:
-                # Minor reactions may have less than G+1 cross sections. They
-                # shall be considered as null. We strip most thermal energy
-                # limits in order to avoid plotting null cross sections.
+                # Minor (threshold) reactions may have less than G+1 cross
+                # sections. The missing cross sections shall be considered as
+                # equal to zero. Here, we strip the most thermal energy limits
+                # in order to avoid plotting cross sections equal to zero.
                 if (len(XS) + 1) < len(Energies):
                     Energies = Energies[:(len(XS) + 1)]
+                    relstdEnergies = relstdEnergies[:(len(XS) + 1)]
             XSs.append(XS)
             if graphtype == 'samples':
                 if irand == 0:
@@ -114,6 +147,14 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
             # Deleting progressively to avoid segfaults in lcm module
             del SubTemp
             del isotopedir
+        #---
+        #  For some minor (threshold) reactions, we may come up with an
+        #  irregular 2D array, because some samples may count more (non-zero)
+        #  cross sections than other samples. We shall homogenize this by
+        #  reducing to the smallest length.
+        #---
+        minlength = min(map(len, XSs))
+        XSs = [XS[:minlength] for XS in XSs]
         #---
         #  Transform XSs into 2D NumPy arrays and then compute mean and
         #  relative standard deviation (in %) over every samples
@@ -166,7 +207,7 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     #---
     # Set a title and axis labels
     axs[0].set_title('Statistics on ' + iso + ' cross section at '
-                     + str(int(Temperature[2]))
+                     + Temperature
                      + 'K versus energy, from TENDL Draglib', wrap=True)
     axs[1].set_xlabel('Incident neutron energy [eV]')
     if graphtype == 'samples':
@@ -176,15 +217,15 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
                           + '95% quantiles)')
     axs[1].set_ylabel('Relative standard deviation')
     # Add legends
-    leg = axs[0].legend(loc = loclegend, ncol = 2)
+    leg = axs[0].legend(loc = loclegend, ncol = ncol)
     # Set the linewidth of each legend object
     for legobj in leg.legendHandles:
         legobj.set_linewidth(0.6)
     # Cross sections are only readable in log-log graphs
     axs[0].set_xscale('log')
     axs[0].set_yscale('log')
-    ## Add energy limits for Autolib domain
-    if AutolibDir:
+    # Add energy limits for Autolib domain
+    if AutolibFlag:
         axs[0].axvline(BinEnergies[0], linestyle='--', color='black',
                        linewidth=0.2)
         axs[0].axvline(BinEnergies[-1], linestyle='--', color='black',
@@ -203,6 +244,9 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     # Start relative standard deviation at zero, to better see very low values
     # (at resonant peaks)
     axs[1].set_ylim(bottom = 0)
+    # Relative standard deviation plot is capped at 90%
+    ylimstd = min((axs[1].get_ylim())[1], 90)
+    axs[1].set_ylim(top = ylimstd)
     # Show all powers of 10 in Energies xaxis, with 10 minor ticks
     locmaj = ticker.LogLocator(base = 10.0, numticks = 24)
     locmin = ticker.LogLocator(base = 10.0, numticks = 24,
@@ -215,14 +259,19 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     # Add a light grid
     axs[0].grid(which='both', alpha=0.2, linewidth=0.1)
     axs[1].grid(which='both', alpha=0.2, linewidth=0.1)
-    # Tick relative standard deviation every 5% (major) and 2.5% (minor)
-    axs[1].yaxis.set_major_locator(ticker.MultipleLocator(5.0))
-    axs[1].yaxis.set_minor_locator(ticker.MultipleLocator(2.5))
-    # Set relative standard deviation y-ticks as '5%', '10%', ... except first
-    # one, which is a plain '0' (no percent sign)
+    if ylimstd < 50:
+        # Tick relative standard deviation every 5% (major) and 2.5% (minor)
+        tickstd = 5.0
+    else:
+        # Tick relative standard deviation every 10% (major) and 5% (minor)
+        tickstd = 10.0
+    axs[1].yaxis.set_major_locator(ticker.MultipleLocator(tickstd))
+    axs[1].yaxis.set_minor_locator(ticker.MultipleLocator(tickstd/2))
+    # Set relative standard deviation y-ticks as ('5%',) '10%', ... except the
+    # first one, which is a plain '0' (no percent sign)
     ytickspercent = ['0', '0']
     for i in np.arange(1, 19):
-        ytickspercent.append(str(i*5) + '%')
+        ytickspercent.append(str(i*int(tickstd)) + '%')
     axs[1].set_yticklabels(ytickspercent)
     # Tight layout prevents a label from exceeding the figure frame
     fig.tight_layout()
@@ -233,6 +282,9 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     #---
     #  Clean-up for next plot
     #---
+    plt.close('all')
     del fig
     del axs
+os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=XS_' + graphtype
+          + '.pdf -dBATCH XS_*_' + graphtype + '.pdf')
 print("Plotting completed")
