@@ -26,6 +26,11 @@ LINKED_LIST Library LibraryAu StepList CP Calc
             AIC HfR Gd2O3 BP
             Assmb AssmbAu Discr DiscrAu ;
 LOGICAL True False   := $True_L $False_L ;
+*--- Leakage model
+STRING LEAKTYPE LEAKEQUATION CTRA ;
+:: >>LEAKTYPE<< ; ! K or B
+EVALUATE LEAKEQUATION CTRA := "B1"   "APOL" ;
+!EVALUATE LEAKEQUATION CTRA := "P0TR" "OLDW" ;
 *---
 *  Retrieve assembly specifications
 *---
@@ -100,11 +105,6 @@ ELSE
                       "-" + ConfigPyrex + "_" + FileNuclData +  ;
 ENDIF ;
 
-*--- Modele de fuites
-STRING LEAKTYPE LEAKEQUATION CTRA ;
-EVALUATE LEAKTYPE LEAKEQUATION CTRA := "B" "B1"   "APOL" ;
-!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "P0TR" "OLDW" ;
-!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "B1" "APOL" ;
 *=======================================================
 * SUMMARY CALCULATION
 *-------------------------------------------------------

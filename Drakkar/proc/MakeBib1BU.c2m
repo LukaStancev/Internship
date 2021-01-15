@@ -144,11 +144,11 @@ GREP: Info :: GETVAL 'TypeDil'      1 4   >>TypeDil<<      ;
 * previously defined
 *-------------------------------------------------------
 
-*--- Modele de fuites
+*--- Leakage model
 STRING LEAKTYPE LEAKEQUATION CTRA ;
-EVALUATE LEAKTYPE LEAKEQUATION CTRA := "B" "B1"   "APOL" ;
-!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "P0TR" "OLDW" ;
-!EVALUATE LEAKTYPE LEAKEQUATION CTRA := "K" "B1" "APOL" ;
+:: >>LEAKTYPE<< ; ! K or B
+EVALUATE LEAKEQUATION CTRA := "B1"   "APOL" ;
+!EVALUATE LEAKEQUATION CTRA := "P0TR" "OLDW" ;
 *--- Genre de bibliotheque (DRAGON)
 STRING  LibGenre := 'DRAGON' ;
 

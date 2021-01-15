@@ -1,12 +1,13 @@
-MODULE GREP: MSTR: UTL: DELETE: END: ;
-PROCEDURE EvoNominale MakeBib1BU Reflector Tihange DefRandomIso ;
-LINKED_LIST ReflSpecs Random ;
+MODULE MSTR: DELETE: END: ;
+PROCEDURE EvoNominale MakeBib1BU DefRandomIso ;
+LINKED_LIST Random ;
 XSM_FILE Library Burnup ConcMode Info
-  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12
-  PowerCD PowerD PowerARO Temp ;
-SEQ_ASCII PowerCD_asc  :: FILE './_PowerCD.ascii'  ;
-SEQ_ASCII PowerD_asc   :: FILE './_PowerD.ascii'   ;
-SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
+  UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
+SEQ_ASCII UOX195a      :: FILE './_UOX195.ascii'       ;
+SEQ_ASCII UOX310a      :: FILE './_UOX310.ascii'       ;
+SEQ_ASCII UOX255_Py8a  :: FILE './_UOX255_Py8.ascii'   ;
+SEQ_ASCII UOX255_Py12a :: FILE './_UOX255_Py12.ascii'  ;
+SEQ_ASCII UOX310_Py12a :: FILE './_UOX310_Py12.ascii'  ;
 *---
 *  Define random sampling for each isotope
 *  Default: use JEFF-3.1.1 for all isotopes (= -311)
@@ -36,55 +37,35 @@ Random := MSTR: Random :: PUT 1 Cd114 -311 ;
 Random := MSTR: Random :: PUT 1 Cd116 -311 ;
 Random := DefRandomIso Random ;
 *---
-ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
-                     CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
-REFL := Reflector ReflSpecs Random ;
-*---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 195 None 1 ;
-UOX195 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+  K TIH UOX 195 None 1 ;
+UOX195 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 310 None 1 ;
-UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+  K TIH UOX 310 None 1 ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 255 Py8 1 ;
-UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+  K TIH UOX 255 Py8 1 ;
+UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 255 Py12 1 ;
-UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+  K TIH UOX 255 Py12 1 ;
+UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 310 Py12 1 ;
-UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+  K TIH UOX 310 Py12 1 ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
-*---
-PowerCD PowerD PowerARO := Tihange
-  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
-*--- Export the bare minimum to ASCII, i.e. radial power distributions
-*    and k-effectives
-INTEGER Length ;
-GREP: PowerCD :: LENGTH POWER-CHAN >>Length<< ;
-Temp := Random ;
-Temp := MSTR: Temp PowerCD  :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
-                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
-PowerCD_asc := Temp ;
-Temp := DELETE: Temp ;
-Temp := Random ;
-Temp := MSTR: Temp PowerD   :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
-                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
-PowerD_asc := Temp ;
-Temp := DELETE: Temp ;
-Temp := Random ;
-Temp := MSTR: Temp PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
-                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
-PowerARO_asc := Temp ;
-Temp := DELETE: Temp ;
+*--- Export the Muticompos, containing the k-infinity
+UOX195a      := UOX195      ;
+UOX310a      := UOX310      ;
+UOX255_Py8a  := UOX255_Py8  ;
+UOX255_Py12a := UOX255_Py12 ;
+UOX310_Py12a := UOX310_Py12 ;
 END: ;
 QUIT "LIST" .
