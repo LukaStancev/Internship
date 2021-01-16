@@ -1,14 +1,13 @@
 #  Convert library-type and geometry-type DRAGON objects to Serpent input file.
 #  It is limited to PWR geometries symmetrical by eighth.
-#  Usage   : python3 geo_compo.py
+#  Usage   : from D2S import D2S
+#            D2S(geofilename)
 #  Authors : V. Salino, B. Dechenaux Sensei
 #  Date    : 11/2020
 
 #---
 # Imports
 #---
-import glob
-import os
 import math
 import numpy as np
 import decimal
@@ -23,7 +22,7 @@ class compo:
     """
     The compo class stores the isotopic composition of a material.
     """
-    def __init__(self,filename,mix,temp,material):
+    def __init__(self, filename, mix, temp, material):
         # Original filename from which mix was extracted. Several files often
         # contain identical compositions.
         self.m_filename = filename
@@ -57,7 +56,7 @@ class compo:
             if value > threshold:
                 newCompo[ key ] = value
         self.m_compo = newCompo
-    def writeSerpent(self):
+    def writeSerpent(self, out):
         """
         Writes the isotopic composition in a Serpent input file
         """
@@ -69,10 +68,11 @@ class compo:
         for iso in self.m_compo:
             if iso == 'H1_H2O':
                 moder = 'moder lwtr' + str(self.m_mix) + ' 1001 '
-        # Print the header line for the entire material...
-        print('mat mix' + str(self.m_mix) + ' sum ' + moder
-              + 'tmp ' + str(self.m_temp) + ' % Kelvin')
-        # ...and then, print one line for each isotope
+        # Write the header line for the entire material...
+        out.write('mat mix' + str(self.m_mix) + ' sum ' + moder
+                  + 'tmp ' + str(self.m_temp) + ' % Kelvin\n')
+        # ...and then, write one line for each isotope. But let's prepare it,
+        # first !
         for iso in self.m_compo:
             if iso == 'H1_H2O':
                 iso_ace = 'H1lwtr'
@@ -129,13 +129,13 @@ class compo:
                                     + iso_ace_tsl + xsdata_subset[i][1][-4:-1]
                                     + 't')
                 i = i + 1
-            # Print the line for the isotope we're on
-            print ("%s %.8E" %(aceFile,self.m_compo[iso]))
-        # Print the 'thermr' card, if needed
+            # Write the line for the isotope we're on
+            out.write("%s %.8E\n" %(aceFile,self.m_compo[iso]))
+        # Write the 'thermr' card, if needed
         if tslFiles:
-            print('therm lwtr' + str(self.m_mix) + ' ' + str(self.m_temp) + ' '
-                  + tslFiles)
-        print('\n')
+            out.write('therm lwtr' + str(self.m_mix) + ' ' + str(self.m_temp)
+                      + ' ' + tslFiles + '\n')
+        out.write('\n')
     def __eq__(self, compoToCompare):
         """
         Overloading == operator : we can compare 2 objects directly
@@ -153,14 +153,14 @@ class compo:
 #  Math functions
 #---
 # Perform a truncation, keeping only n significant digits
-def truncate(x,n):
+def truncate(x, n):
     def fexp(number):
         (sign, digits, exponent) = decimal.Decimal(number).as_tuple()
         return len(digits) + exponent - 1
     return math.floor(x/(10**(fexp(x)-n+1)))*(10**(fexp(x)-n+1))
 # These exact trigonometric functions avoid the use of Pi and therefore
 # rounding off errors such as sin(pi) = 1.0e-16
-def exa_sin(angle):
+def exact_sin(angle):
     if angle % 180 == 0:
         result = 0
     elif angle % 360 == 90:
@@ -168,9 +168,9 @@ def exa_sin(angle):
     elif angle % 360 == 270:
         result = -1
     else:
-        raise Exception('exa_sin function was not designed for angle=',angle)
+        raise Exception('exact_sin function was not designed for angle=',angle)
     return result
-def exa_cos(angle):
+def exact_cos(angle):
     if angle % 360 == 0:
         result = 1
     elif angle % 180 == 90:
@@ -178,7 +178,7 @@ def exa_cos(angle):
     elif angle % 360 == 180:
         result = -1
     else:
-        raise Exception('exa_cos function was not designed for angle=',angle)
+        raise Exception('exact_cos function was not designed for angle=',angle)
     return result
 #---
 #  Composition function
@@ -196,42 +196,8 @@ def getMat(idx, mix, dens, name):
 #---
 #  Geometric functions
 #---
-# Deploy cell numbers on the full pin map
-def deploy(npin,cellIDs):
-    center = int((npin-1)/2)
-    center = np.array([center, center])
-    # Initialize pin map
-    pinmap = np.zeros((npin,npin))
-    i = 0
-    # CellIDs are expressed on east-south-east eighth, that is
-    # 0 0 0 0 0
-    # 0 0 0 0 0
-    # 0 0 x x x
-    # 0 0 0 x x
-    # 0 0 0 0 x
-    for x in range(int((npin-1)/2), npin):
-        for y in range(x, npin):
-            # cellIDs are negative because they refer to embedded geometries
-            # We keep the positive integers instead
-            pinmap[x][y] = -cellIDs[i]
-            i = i+1
-            xp = x
-            yp = y
-            for angle in range(0,360-45,45):
-                # https://en.wikipedia.org/wiki/Rotations_and_reflections_in_two_dimensions
-                # For each angle, we calculate the matrix that will operate the
-                # reflection relative to a line forming an angle with the
-                # horizontal, in order to reconstruct every eigth in the
-                # counter-clockwise order
-                Refl = np.array([
-                    [exa_cos(2*angle), exa_sin(2*angle)],
-                    [exa_sin(2*angle),-exa_cos(2*angle)]])
-                # Reflection line goes through the assembly center
-                [xp,yp] = np.dot(np.array([xp,yp]) - center, Refl) + center
-                pinmap[xp][yp] = pinmap[x][y]
-    return pinmap
 # Compute number of pins and performs checks regarding that matter
-def getNpin(npinx,npiny,cellIDs):
+def getNpin(npinx, npiny, cellIDs):
     if npinx != npiny:
         raise Exception('Non-square lattices are not supported.')
     # We're now sure it is a square so we can keep only one dimension
@@ -242,9 +208,43 @@ def getNpin(npinx,npiny,cellIDs):
     # Compute number of pins on the full pin map (on each axis)
     npin = (npin-1)*2+1
     return npin
+# Deploy cell numbers on the full pin map
+def deploy(npin, cellIDs):
+    center = int((npin-1)/2)
+    center = np.array([center, center])
+    # Initialize pin map
+    pinmap = np.zeros((npin,npin))
+    i = 0
+    # cellIDs are expressed on east-south-east eighth, that is
+    # 0 0 0 0 0
+    # 0 0 0 0 0
+    # 0 0 x x x
+    # 0 0 0 x x
+    # 0 0 0 0 x
+    for x in range(int((npin-1)/2), npin):
+        for y in range(x, npin):
+            # cellIDs are negative because they refer to embedded geometries
+            # We keep the positive integers instead
+            pinmap[x][y] = -cellIDs[i]
+            i = i + 1
+            xp = x
+            yp = y
+            for angle in range(0, 360-45, 45):
+                # https://en.wikipedia.org/wiki/Rotations_and_reflections_in_two_dimensions
+                # For each angle, we calculate the matrix that will operate the
+                # reflection relative to a line forming an angle with the
+                # horizontal, in order to reconstruct every eigth in the
+                # counter-clockwise order
+                Refl = np.array([
+                    [exact_cos(2*angle), exact_sin(2*angle)],
+                    [exact_sin(2*angle),-exact_cos(2*angle)]])
+                # Reflection line goes through the assembly center
+                [xp,yp] = np.dot(np.array([xp,yp]) - center, Refl) + center
+                pinmap[xp][yp] = pinmap[x][y]
+    return pinmap
 # Compute pin and assembly pitches
-def getPitches(npin,pinmap,cellNames,meshxList,meshyList):
-    # Pick first pincell that is not a border pincell, ie pin[1][1] and
+def getPitches(npin, pinmap, cellNames, meshxList, meshyList):
+    # Pick first pincell that is not a border pincell, i.e. pin[1][1] and
     # retrieve its pitch as a reference against which the other pitches will be
     # checked
     cellID = int(pinmap[1][1])
@@ -282,113 +282,113 @@ def getPitches(npin,pinmap,cellNames,meshxList,meshyList):
                 if not (pinpitch*(1-1e-6) < meshy < pinpitch*1.1):
                     raise Exception('Irregular lattices are not supported.')
     return pinpitch,assemblypitch
-
-#---
-#  Select assembly
-#---
-filename = '_UOX255_Py12_960ppm.geo'
-# Remove the first character of the filename, i.e. the underscore
-filename = filename[1:]
-
-#---
-#  Print general information
-#---
-# Printing general information
-print('set title','"Tihange',filename[:-4]+'"')
-print('\n')
-print('set acelib "../../Njoy/Universal.xsdata"')
-print('set bc 3')
-print('set pop 6000 500 20')
-print('plot 3 2500 2500')
-print('mesh 3 2500 2500')
-print('\n')
-
-#---
-#  Retrieve assembly geometry
-#---
-fuel_geo = lcm.new('LCM_INP', filename)
-# Retrieve name given to each type of cell
-cellNames = fuel_geo['CELL'].split()
-# Retrieve identifier of each pincell (i.e. the assembly layout)
-cellIDs = fuel_geo['MIX']
-# Retrieve number of pins in both X-axis and Y-axis (on eighth geometry)
-npinx = fuel_geo['STATE-VECTOR'][2]
-npiny = fuel_geo['STATE-VECTOR'][3]
-# Retrieve pincell sizes
-meshxList = {}
-meshyList = {}
-for cellName in cellNames:
-    meshxList[cellName] = fuel_geo[cellName]['MESHX'][1]
-    meshyList[cellName] = fuel_geo[cellName]['MESHY'][1]
-# Perform consistency checks regarding number of pins
-npin = getNpin(npinx,npiny,cellIDs)
-# Deploy the full pin map from eighth vectorized cellIDs
-pinmap = deploy(npin,cellIDs)
-# Compute pin and assembly pitches in a thorough consistency check
-[pinpitch, assemblypitch] = getPitches(npin,pinmap,cellNames,meshxList,
-                                       meshyList)
-# Assess the compositions used in this geometry
-mix_in_geom = set()
-for cellID in range(0,len(cellNames)):
-    cellName = cellNames[cellID]
-    materials = fuel_geo[cellName]['MIX']
-    mix_in_geom.update(materials.tolist())
-mix_in_geom = list(mix_in_geom)
-mix_in_geom.sort()
-
-#---
-#  Print assembly geometry
-#---
-# Printing the few different type of pincells
-for cellID in range(0,len(cellNames)):
-    cellName = cellNames[cellID]
-    radii = fuel_geo[cellName]['RADIUS'][1:]
-    materials = fuel_geo[cellName]['MIX']
-    # Prints cellID together with its name as a commentary
-    print('pin',cellID+1,'%',cellName)
-    for radius,material in zip(radii, materials):
-        # I would prefer to align on the largest material name, in
-        # particular for debugging purposes, but... How to?
-        print('mix' + str(material) + ' ' + str(radius))
-    # Add the peripheric material, alone on its line (geometric limit is the
-    # pin pitch)
-    print('mix' + str(materials[-1]) + '\n')
-# Printing the pin lattice
-print('lat 110 1 0.0 0.0',npin,npin,pinpitch)
-for y in range(0,npin):
-    print(*[int(pin) for pin in pinmap[:][y]])
-print('\n')
-# Deal with water gap all around the assembly, composed of the same water
-# that is used for border cells
-cellName = cellNames[int(pinmap[0][1] - 1)]
-mat = fuel_geo[cellName]['MIX'][-1]
-# Python computation of npin*pinpitch/2 has only 8 precise digits. We must
-# truncate it. Otherwise the geometry becomes larger than required, causing
-# an 'undefined geometry' error in Serpent.
-print('surf  1000  sqc  0.0 0.0 ' + str(truncate(npin*pinpitch/2,8)))
-print('surf  1001  sqc  0.0 0.0 ' + str(assemblypitch/2))
-print('cell 110  0  fill 110   -1000')
-print('cell 111  0  mix' + str(mat) + '       1000 -1001')
-print('cell 112  0  outside     1001\n')
-
-#---
-#  Compositions
-#---
-compos = [] # List of compo objects
-filename = filename[:-4] + '.compo'
-library = lcm.new('LCM_INP', filename)
-mix = library['ISOTOPESMIX']
-dens = library['ISOTOPESDENS']
-temp = library['ISOTOPESTEMP']
-name = library['ISOTOPERNAME'].split()
-for imix in np.unique(mix):
-    compos.append(compo(filename,imix,temp,getMat(imix,mix,dens,name)))
-
-#---
-#  Print compositions
-#---
-i = 1
-for mix in mix_in_geom:
-    for compo in compos:
-        if mix == compo.getMix():
-            compo.writeSerpent()
+# Main function
+def D2S(geofilename):
+    global compo
+    #---
+    #  Remove the first character of the filename, i.e. the underscore :
+    #  PyGan's lcm method requires that filenames begin with an underscore, but
+    #  at the same time requires that it is passed without this underscore
+    #---
+    filename = geofilename[1:]
+    #---
+    #  Prepare file writing for Serpent
+    #---
+    out = open(filename[:-4] + '.sss2', 'w')
+    #---
+    #  Write general information
+    #---
+    out.write('set title ' + '"Tihange ' + filename[:-4] + '"\n')
+    out.write('set acelib "../../Njoy/Universal.xsdata"\n')
+    out.write('set bc 3\n')
+    out.write('set pop 6000 500 20\n')
+    out.write('plot 3 2500 2500\n')
+    out.write('mesh 3 2500 2500\n\n')
+    #---
+    #  Retrieve assembly geometry
+    #---
+    fuel_geo = lcm.new('LCM_INP', filename)
+    # Retrieve name given to each type of cell
+    cellNames = fuel_geo['CELL'].split()
+    # Retrieve identifier of each pincell (i.e. the assembly layout)
+    cellIDs = fuel_geo['MIX']
+    # Retrieve number of pins in both X-axis and Y-axis (on eighth geometry)
+    npinx = fuel_geo['STATE-VECTOR'][2]
+    npiny = fuel_geo['STATE-VECTOR'][3]
+    # Retrieve pincell sizes
+    meshxList = {}
+    meshyList = {}
+    for cellName in cellNames:
+        meshxList[cellName] = fuel_geo[cellName]['MESHX'][1]
+        meshyList[cellName] = fuel_geo[cellName]['MESHY'][1]
+    # Perform consistency checks regarding number of pins
+    npin = getNpin(npinx,npiny,cellIDs)
+    # Deploy the full pin map from eighth vectorized cellIDs
+    pinmap = deploy(npin,cellIDs)
+    # Compute pin and assembly pitches in a thorough consistency check
+    [pinpitch, assemblypitch] = getPitches(npin,pinmap,cellNames,meshxList,
+                                           meshyList)
+    # Assess the compositions used in this geometry
+    mix_in_geom = set()
+    for cellID in range(0,len(cellNames)):
+        cellName = cellNames[cellID]
+        materials = fuel_geo[cellName]['MIX']
+        mix_in_geom.update(materials.tolist())
+    mix_in_geom = list(mix_in_geom)
+    mix_in_geom.sort()
+    #---
+    #  Write assembly geometry
+    #---
+    # Writing the few different type of pincells
+    for cellID in range(0,len(cellNames)):
+        cellName = cellNames[cellID]
+        radii = fuel_geo[cellName]['RADIUS'][1:]
+        materials = fuel_geo[cellName]['MIX']
+        # Writes cellID together with its name as a commentary
+        out.write('pin ' + str(cellID+1) + ' %' + cellName + '\n')
+        for radius,material in zip(radii, materials):
+            # I would prefer to align on the largest material name, in
+            # particular for debugging purposes, but... How to?
+            out.write('mix' + str(material) + ' ' + str(radius) + '\n')
+        # Add the peripheric material, alone on its line (geometric limit is
+        # the pin pitch)
+        out.write('mix' + str(materials[-1]) + '\n\n')
+    # Writing the pin lattice
+    out.write('lat 110 1 0.0 0.0 ' + str(npin) + ' ' + str(npin) + ' '
+              + str(pinpitch) + '\n')
+    for y in range(0,npin):
+        pinline = [str(int(pin)) for pin in pinmap[:][y]]
+        out.write(' '.join(pinline) + '\n')
+    # Deal with water gap all around the assembly, composed of the same water
+    # that is used for border cells
+    cellName = cellNames[int(pinmap[0][1] - 1)]
+    mat = fuel_geo[cellName]['MIX'][-1]
+    # Python computation of npin*pinpitch/2 has only 8 precise digits. We must
+    # truncate it. Otherwise the geometry becomes very slightly larger than it
+    # should be, causing an 'undefined geometry' error in Serpent.
+    out.write('\nsurf  1000  sqc  0.0 0.0 ' + str(truncate(npin*pinpitch/2,8))
+              + '\n')
+    out.write('surf  1001  sqc  0.0 0.0 ' + str(assemblypitch/2) + '\n')
+    out.write('cell 110  0  fill 110   -1000' + '\n')
+    out.write('cell 111  0  mix' + str(mat) + '       1000 -1001' + '\n')
+    out.write('cell 112  0  outside     1001\n\n')
+    #---
+    #  Compositions
+    #---
+    compos = [] # List of compo objects
+    filename = filename[:-4] + '.compo'
+    library = lcm.new('LCM_INP', filename)
+    mix = library['ISOTOPESMIX']
+    dens = library['ISOTOPESDENS']
+    temp = library['ISOTOPESTEMP']
+    name = library['ISOTOPERNAME'].split()
+    for imix in np.unique(mix):
+        compos.append(compo(filename,imix,temp,getMat(imix,mix,dens,name)))
+    #---
+    #  Write compositions
+    #---
+    for mix in mix_in_geom:
+        for comp in compos:
+            if mix == comp.getMix():
+                comp.writeSerpent(out)
+    out.close()
