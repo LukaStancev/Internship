@@ -129,7 +129,7 @@ WHILE ibor 3 <= DO
     ELSE
       EVALUATE Suffix := ConfigPyrex ;
     ENDIF ;
-    EVALUATE FilenameBase := "./_UOX" Teneur_I I_TO_S +
+    EVALUATE FilenameBase := "./UOX" Teneur_I I_TO_S +
                              "_" + Suffix +
                              "_" + cbor R_TO_I I_TO_S + "ppm" + ;
     EVALUATE FilenameGeo  := FilenameBase ".geo"   + ;
@@ -160,7 +160,7 @@ WHILE ibor 3 <= DO
       Zirc4 Incon SS304 Random :: <<FileNuclData>> <<Evaluation>>
       <<Palier>> <<Location>> <<cbor>> <<dBaffleBarrl>> >>nbZones<< ;
     * Save in the corresponding files
-    EVALUATE FilenameBase := "./_Refl" Location +
+    EVALUATE FilenameBase := "./Refl" Location +
                              "_" + cbor R_TO_I I_TO_S + "ppm" + ;
     EVALUATE FilenameGeo  := FilenameBase ".geo"   + ;
     EVALUATE FilenameComp := FilenameBase ".compo" + ;

@@ -10,6 +10,7 @@
 #---
 import math
 import numpy as np
+import os
 import decimal
 # faulthandler for segmentation faults. Left here due to a heisenbug in lcm.
 import faulthandler; faulthandler.enable()
@@ -150,6 +151,24 @@ class compo:
         """
         return "compo of mix %d from file %s"%(self.m_mix,self.m_filename)
 #---
+#  lcm loading function, dealing with PyGan's peculiarities
+#---
+def loadlcm(filepath):
+    if '/' in filepath:
+        # PyGan can only read files in the local directory. When the file to be
+        # read is located elsewhere, it is necessary to make a link.
+        filename = filepath.split('/')[-1]
+        os.system('ln -s ' + filepath + ' _' + filename)
+        # PyGan's lcm method requires that filenames begin with an underscore,
+        # but at the same time requires that it is passed without this
+        # underscore
+        loadedfile = lcm.new('LCM_INP', filename)
+        # Once loaded, we can delete the created link
+        os.system('rm _' + filename)
+    else:
+        loadedfile = lcm.new('LCM_INP', filepath)
+    return loadedfile
+#---
 #  Math functions
 #---
 # Perform a truncation, keeping only n significant digits
@@ -283,22 +302,17 @@ def getPitches(npin, pinmap, cellNames, meshxList, meshyList):
                     raise Exception('Irregular lattices are not supported.')
     return pinpitch,assemblypitch
 # Main function
-def D2S(geofilename):
+def D2S(filepath):
     global compo
-    #---
-    #  Remove the first character of the filename, i.e. the underscore :
-    #  PyGan's lcm method requires that filenames begin with an underscore, but
-    #  at the same time requires that it is passed without this underscore
-    #---
-    filename = geofilename[1:]
+    filename = filepath.split('/')[-1]
     #---
     #  Prepare file writing for Serpent
     #---
-    out = open(filename[:-4] + '.sss2', 'w')
+    out = open(filename + '.sss2', 'w')
     #---
     #  Write general information
     #---
-    out.write('set title ' + '"Tihange ' + filename[:-4] + '"\n')
+    out.write('set title ' + '"Tihange ' + filename + '"\n')
     out.write('set acelib "../../Njoy/Universal.xsdata"\n')
     out.write('set bc 3\n')
     out.write('set pop 6000 500 20\n')
@@ -307,7 +321,7 @@ def D2S(geofilename):
     #---
     #  Retrieve assembly geometry
     #---
-    fuel_geo = lcm.new('LCM_INP', filename)
+    fuel_geo = loadlcm(filepath + '.geo')
     # Retrieve name given to each type of cell
     cellNames = fuel_geo['CELL'].split()
     # Retrieve identifier of each pincell (i.e. the assembly layout)
@@ -376,8 +390,7 @@ def D2S(geofilename):
     #  Compositions
     #---
     compos = [] # List of compo objects
-    filename = filename[:-4] + '.compo'
-    library = lcm.new('LCM_INP', filename)
+    library = loadlcm(filepath + '.compo')
     mix = library['ISOTOPESMIX']
     dens = library['ISOTOPESDENS']
     temp = library['ISOTOPESTEMP']

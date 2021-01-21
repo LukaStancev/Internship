@@ -5,8 +5,9 @@ import glob
 import os
 from D2S import D2S
 
-for geofilename in glob.glob('_UOX*.geo'):
-    print(geofilename)
-    D2S(geofilename)
+for geofilepath in glob.glob('../geo_compo/UOX*.geo'):
+    filepath = geofilepath[:-4]
+    print(filepath)
+    D2S(filepath)
 
 os.system('mv *.sss2 ../.')
