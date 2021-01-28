@@ -1,8 +1,8 @@
-[![IRSN](https://circleci.com/gh/IRSN/UncertaintyPhD.svg?style=shield)](https://circleci.com/gh/IRSN/UncertaintyPhD)
+[![IRSN](https://circleci.com/gh/IRSN/SalinoPhD.svg?style=shield)](https://circleci.com/gh/IRSN/SalinoPhD)
 
 ## Introduction
 
-The datasets produced during my Ph.D. thesis are centralized on this project. This principle of openness is intended to allow, in a pragmatic and effective way:
+The production realized during this PhD thesis is centralized on this repository. This principle of openness is intended to allow, in a pragmatic and effective way:
 * the verifiable and complete reproducibility of this publicly funded research,
 * the transparency necessary for a rigorous peer review,
 * the broadest dissemination of the ideas developed, with the aim of enhancing nuclear safety.
