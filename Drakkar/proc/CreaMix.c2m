@@ -2529,7 +2529,6 @@ REAL     Na23BP := Na23BPf BP_Tconc  * ;
 * Structures: Tubes
 *   20 - TUBE
 * Structures: Barres
-*   21 - AIC    [Barres AIC]
 *   22 - ACIER  [Barres acier]
 *   23 - B4C    [Barres B4C]
 *   24 - HfNat  [Barres Hafnium]
@@ -2542,10 +2541,11 @@ REAL     Na23BP := Na23BPf BP_Tconc  * ;
 *   36 - GAINC M5 [Gaine combustible]
 *   37 - GAINA  [Gaine Barres AICn]
 *   38 - GAINA  [Gaine Barres AICg]
-* Structures: Barres (suite)
-*   41 - AIC    [Barres AIC 1ere couronne]
-*   42 - AIC    [Barres AIC 2e couronne]
-*   43 - AIC    [Barres AIC 3e couronne]
+* Structures: Control rods
+*   40 - AIC    [1st ring]
+*   41 - AIC    [2nd ring]
+*   42 - AIC    [3nd ring]
+*   43 - AIC    [4th ring]
 *   44 - B4C    [Barres B4C 1ere couronne]
 *   45 - B4C    [Barres B4C 2e couronne]
 *   46 - B4C    [Barres B4C 3e couronne]
@@ -2773,20 +2773,6 @@ CTRA <<CTRA>>
     Sn124    = <<NomSn124>>    <<Sn124T>>
 
 *--- BARRES -------------------------------------------
-  MIX 21 <<tmod>> NOEV (* ABSO AIC *)
-    Ag107    = <<NomAg107>>    <<Ag107AIC>> <<iAg7>> SHIB <<NomSSAg7>>
-    Ag109    = <<NomAg109>>    <<Ag109AIC>> <<iAg9>> SHIB <<NomSSAg9>>
-    Cd106    = <<NomCd106>>    <<Cd106AIC>>
-    Cd108    = <<NomCd108>>    <<Cd108AIC>>
-    Cd110    = <<NomCd110>>    <<Cd110AIC>> ! <<iCd0>> SHIB <<NomSSCd110>>
-    Cd111    = <<NomCd111>>    <<Cd111AIC>>
-    Cd112    = <<NomCd112>>    <<Cd112AIC>>
-    Cd113    = <<NomCd113>>    <<Cd113AIC>>
-    Cd114    = <<NomCd114>>    <<Cd114AIC>>
-    Cd116    = <<NomCd116>>    <<Cd116AIC>>
-    In115    = <<NomIn115>>    <<In115AIC>> <<iIn>> SHIB <<NomSSIn115>>
-    In113    = <<NomIn113>>    <<In113AIC>> <<iIn>> SHIB <<NomSSIn113>>
-
   MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
     Fe54     = <<NomFe54>>     <<Fe54SSRo>>
     Fe56     = <<NomFe56>>     <<Fe56SSRo>>
@@ -2994,6 +2980,20 @@ CTRA <<CTRA>>
     Si28     = <<NomSi28>>     <<Si28CladAICg>>
     Si29     = <<NomSi29>>     <<Si29CladAICg>>
     Si30     = <<NomSi30>>     <<Si30CladAICg>>
+
+  MIX 40 <<tmod>> NOEV (* ABSO AIC *)
+    Ag107    = <<NomAg107>>    <<Ag107AIC>> <<iAg7>> SHIB <<NomSSAg7>>
+    Ag109    = <<NomAg109>>    <<Ag109AIC>> <<iAg9>> SHIB <<NomSSAg9>>
+    Cd106    = <<NomCd106>>    <<Cd106AIC>>
+    Cd108    = <<NomCd108>>    <<Cd108AIC>>
+    Cd110    = <<NomCd110>>    <<Cd110AIC>> ! <<iCd0>> SHIB <<NomSSCd110>>
+    Cd111    = <<NomCd111>>    <<Cd111AIC>>
+    Cd112    = <<NomCd112>>    <<Cd112AIC>>
+    Cd113    = <<NomCd113>>    <<Cd113AIC>>
+    Cd114    = <<NomCd114>>    <<Cd114AIC>>
+    Cd116    = <<NomCd116>>    <<Cd116AIC>>
+    In115    = <<NomIn115>>    <<In115AIC>> <<iIn>> SHIB <<NomSSIn115>>
+    In113    = <<NomIn113>>    <<In113AIC>> <<iIn>> SHIB <<NomSSIn113>>
 
 *--- AIR ----------------------------------------------
   MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
@@ -3432,7 +3432,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         In115 = <<RandIsoName>> <<In115AIC>> <<iIn>> SHIB <<NomSSIn115>>
       MIX 100 <<tfuel>> (* COMB *)
         In115 = <<RandIsoName>> 0.0
@@ -3450,7 +3450,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Ag107 = <<RandIsoName>> <<Ag107AIC>> <<iAg7>> SHIB <<NomSSAg7>>
       MIX 100 <<tfuel>> (* COMB *)
         Ag107 = <<RandIsoName>> 0.0
@@ -3468,7 +3468,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Ag109 = <<RandIsoName>> <<Ag109AIC>> <<iAg9>> SHIB <<NomSSAg9>>
       MIX 100 <<tfuel>> (* COMB *)
         Ag109 = <<RandIsoName>> 0.0
@@ -3486,7 +3486,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd106 = <<RandIsoName>> <<Cd106AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd106 = <<RandIsoName>> 0.0
@@ -3504,7 +3504,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd108 = <<RandIsoName>> <<Cd108AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd108 = <<RandIsoName>> 0.0
@@ -3522,7 +3522,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd110 = <<RandIsoName>> <<Cd110AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd110 = <<RandIsoName>> 0.0
@@ -3540,7 +3540,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd111 = <<RandIsoName>> <<Cd111AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd111 = <<RandIsoName>> 0.0
@@ -3558,7 +3558,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd112 = <<RandIsoName>> <<Cd112AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd112 = <<RandIsoName>> 0.0
@@ -3576,7 +3576,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd113 = <<RandIsoName>> <<Cd113AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd113 = <<RandIsoName>> 0.0
@@ -3594,7 +3594,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd114 = <<RandIsoName>> <<Cd114AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd114 = <<RandIsoName>> 0.0
@@ -3612,7 +3612,7 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
-      MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+      MIX 40 <<tmod>> NOEV (* ABSO AIC *)
         Cd116 = <<RandIsoName>> <<Cd116AIC>>
       MIX 100 <<tfuel>> (* COMB *)
         Cd116 = <<RandIsoName>> 0.0
@@ -3660,9 +3660,9 @@ Library := LIB: Library ::
          3 <<Zr4Tube>>
          4 <<GrPreTube>>
          5 <<H2OTube>>
-  MIX 41 COMB 21 1.0
-  MIX 42 COMB 21 1.0
-  MIX 43 COMB 21 1.0
+  MIX 41 COMB 40 1.0
+  MIX 42 COMB 40 1.0
+  MIX 43 COMB 40 1.0
 
   MIX 44 COMB 23 1.0
   MIX 45 COMB 23 1.0

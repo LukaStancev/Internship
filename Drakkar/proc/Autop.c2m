@@ -127,9 +127,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -215,9 +215,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -289,9 +289,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1 Ag107 21
-            REGI Rod1 Ag109 21
-            REGI Rod1 In115 21
+            REGI Rod1 Ag107 40
+            REGI Rod1 Ag109 40
+            REGI Rod1 In115 40
             REGI Rod2 Ag107 41
             REGI Rod2 Ag109 41
             REGI Rod2 In115 41
@@ -386,9 +386,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -488,9 +488,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -575,9 +575,9 @@ IF FlagLibAu NOT THEN
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1 Ag107 21
-            REGI Rod1 Ag109 21
-            REGI Rod1 In115 21
+            REGI Rod1 Ag107 40
+            REGI Rod1 Ag109 40
+            REGI Rod1 In115 40
             REGI Rod2 Ag107 41
             REGI Rod2 Ag109 41
             REGI Rod2 In115 41
@@ -660,9 +660,9 @@ ELSE
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -748,9 +748,9 @@ ELSE
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -822,9 +822,9 @@ ELSE
             REGI Com1 <<NomZrNat>> 20
             REGI Com1 <<NomZrNat>> 30 36
 
-            REGI Rod1 Ag107 21
-            REGI Rod1 Ag109 21
-            REGI Rod1 In115 21
+            REGI Rod1 Ag107 40
+            REGI Rod1 Ag109 40
+            REGI Rod1 In115 40
             REGI Rod2 Ag107 41
             REGI Rod2 Ag109 41
             REGI Rod2 In115 41
@@ -919,9 +919,9 @@ ELSE
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -1021,9 +1021,9 @@ ELSE
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1  Ag107 21
-            REGI Rod1  Ag109 21
-            REGI Rod1  In115 21
+            REGI Rod1  Ag107 40
+            REGI Rod1  Ag109 40
+            REGI Rod1  In115 40
             REGI Rod2  Ag107 41
             REGI Rod2  Ag109 41
             REGI Rod2  In115 41
@@ -1108,9 +1108,9 @@ ELSE
             REGI Com1 Zr94  30 36
             REGI Com1 Zr96  30 36
 
-            REGI Rod1 Ag107 21
-            REGI Rod1 Ag109 21
-            REGI Rod1 In115 21
+            REGI Rod1 Ag107 40
+            REGI Rod1 Ag109 40
+            REGI Rod1 In115 40
             REGI Rod2 Ag107 41
             REGI Rod2 Ag109 41
             REGI Rod2 In115 41

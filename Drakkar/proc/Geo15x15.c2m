@@ -44,7 +44,7 @@ REAL    rTubeIn rTubeEx ;
 ! --- DISCRETIZATION ---
 ! ---------------------------------------------------------------------
 REAL    Rfuel1  Rfuel2  Rfuel3  Rfuel4 ;
-REAL    rRodAICn1 rRodAICn2 rRodAICn3 ;
+REAL    rRodAICn1 rRodAICn2 rRodAICn3 rRodAICn4 ;
 *-------------------------------------------------------
 * Pyrex configuration provided : None Py8 Py12
 *-------------------------------------------------------
@@ -204,6 +204,10 @@ EVALUATE Rfuel1 := rFuel .50 SQRT * ;
 EVALUATE Rfuel2 := rFuel .80 SQRT * ;
 EVALUATE Rfuel3 := rFuel .95 SQRT * ;
 EVALUATE Rfuel4 := rFuel ;
+EVALUATE rRodAICn1 := rRodAICn .50 SQRT * ;
+EVALUATE rRodAICn2 := rRodAICn .80 SQRT * ;
+EVALUATE rRodAICn3 := rRodAICn .95 SQRT * ;
+EVALUATE rRodAICn4 := rRodAICn ;
 *------------------------------------------------------
 * Materiaux de base:      1 ->    9
 * Moderateurs:           10 ->   19
@@ -226,17 +230,16 @@ EVALUATE Rfuel4 := rFuel ;
 *   13 - MODETE [moderateur cellule tube (exterieur du tube)]
 * Structures: Tubes
 *   20 - TUBE
-* Structures: Barres
-*   21 - AIC    [Barres AIC]
 * Structures: Gaines
 *   30 - GAINC  [Gaine combustible UOX/MOX/UGd]
 *   34 - GAINE BP INT ACIER SS304
 *   35 - GAINE BP EXT ACIER SS304
 *   37 - GAINA  [Gaine Barres AICn]
-* Structures: Barres (suite)
-*   41 - AIC    [Barres AIC 1ere couronne]
-*   42 - AIC    [Barres AIC 2e couronne]
-*   43 - AIC    [Barres AIC 3e couronne]
+* Structures: Control rods
+*   40 - AIC    [1st ring]
+*   41 - AIC    [2nd ring]
+*   42 - AIC    [3nd ring]
+*   43 - AIC    [4th ring]
 * Poison consommable (Pyrex)
 *   59 - Air
 *   65 - PYREX
@@ -269,11 +272,12 @@ Cellules := GEO: ::
          <<rCladBPEx>> <<rTubeIn>> <<rTubeEx>>
   MIX    59  34  65  35  5  20  13 ;
 
-::: R  := GEO: CARCEL 4
+::: R  := GEO: CARCEL 7
   MESHX  0. <<pPin>>
   MESHY  0. <<pPin>>
-  RADIUS 0. <<rRodAICn>> <<rCladRod>> <<rTubeIn>> <<rTubeEx>>
-  MIX  41  37  5  20  13 ;
+  RADIUS 0. <<rRodAICn1>> <<rRodAICn2>> <<rRodAICn3>> <<rRodAICn4>>
+   <<rCladRod>> <<rTubeIn>> <<rTubeEx>>
+  MIX  40 41 42 43  37  5  20  13 ;
 ;
 
 Huitieme := GEO: Cellules :: CAR2D 8 8

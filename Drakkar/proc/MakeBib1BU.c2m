@@ -515,7 +515,7 @@ WHILE m dm <= DO
             B10  <<b10_13>>
             B11  <<b11_13>>
           MIX  20 <<tmod_nom_K>> NOEV (* TUBE *)
-          MIX  21 <<tmod_nom_K>> NOEV (* AIC *)
+          MIX  40 <<tmod_nom_K>> NOEV (* AIC *)
           MIX  41 <<tmod_nom_K>> NOEV (* AIC *)
           MIX  42 <<tmod_nom_K>> NOEV (* AIC *)
           MIX  43 <<tmod_nom_K>> NOEV (* AIC *)
@@ -600,7 +600,7 @@ WHILE m dm <= DO
         Library := LIB: Library Burnup :: EDIT 0
           BURN <<bstep>>
           MIX 20 (* TUBE *)
-          MIX 21 (* AIC *)
+          MIX 40 (* AIC *)
           MIX 41
           MIX 42
           MIX 43
