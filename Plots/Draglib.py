@@ -10,10 +10,10 @@ import lcm
 import numpy as np
 import os
 import glob
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import matplotlib
 matplotlib.use('pdf')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 # We may plot quantiles or energy-correlated random samples
 graphtype = 'quantiles'
@@ -191,16 +191,10 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
                                 where='post', linewidth=0.1, color=color,
                                 alpha=1/(abs(q-0.5)*3+1))
         #---
-        #  Print some correlations' informations
+        #  Compute some correlations' informations
         #---
-        print(np.min(np.corrcoef(XSs)))
-        print(np.sum(np.corrcoef(XSs) < 0.9))
-        print(np.sum(np.corrcoef(XSs) < 0.99))
-        print(np.sum(np.corrcoef(XSs) < 0.999))
-        print(np.sum(np.corrcoef(XSs) < 0.9999))
-        print(np.sum(np.corrcoef(XSs) < 0.99999))
-        print(np.sum(np.corrcoef(XSs) < 0.999999))
-        print(np.sum(np.corrcoef(XSs) < 0.9999999))
+        if(reaction == 'NTOT0'):
+            min_rij = np.min(np.corrcoef(XSs))
     del draglib
     #---
     #  Graph glitter
@@ -273,6 +267,10 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     for i in np.arange(1, 19):
         ytickspercent.append(str(i*int(tickstd)) + '%')
     axs[1].set_yticklabels(ytickspercent)
+    # Show minimum correlation coefficient in a corner of the figure
+    axs[0].text(0.05, 0.9, r'$\mathrm{min}(\mathcal{R}_{ij})=$'
+                + str(round(min_rij,5)), fontsize=8,
+                transform=axs[0].transAxes)
     # Tight layout prevents a label from exceeding the figure frame
     fig.tight_layout()
     #---
