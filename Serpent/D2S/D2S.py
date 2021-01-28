@@ -68,10 +68,11 @@ class compo:
         moder = ''
         for iso in self.m_compo:
             if iso == 'H1_H2O':
-                moder = 'moder lwtr' + str(self.m_mix) + ' 1001 '
+                moder = 'moder lwtr' + str(self.m_mix) + ' 1001\n'
         # Write the header line for the entire material...
-        out.write('mat mix' + str(self.m_mix) + ' sum ' + moder
-                  + 'tmp ' + str(self.m_temp) + ' % Kelvin\n')
+        out.write('mat mix' + str(self.m_mix) + ' sum\n')
+        out.write(moder)
+        out.write('tmp ' + str(self.m_temp) + ' % Kelvin\n')
         # ...and then, write one line for each isotope. But let's prepare it,
         # first !
         for iso in self.m_compo:
@@ -316,6 +317,7 @@ def D2S(filepath):
     out.write('set acelib "../../Njoy/Universal.xsdata"\n')
     out.write('set bc 3\n')
     out.write('set pop 6000 500 20\n')
+    out.write('set ures 1\n')
     out.write('plot 3 2500 2500\n')
     out.write('mesh 3 2500 2500\n\n')
     #---
