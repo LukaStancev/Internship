@@ -17,6 +17,12 @@ cd ../../../data
 ../runVersion5.sh Tihange.x2m
 ```
 
+This example is a simulation of the first start-up tests of [Tihange-1](https://inis.iaea.org/collection/NCLCollectionStore/_Public/11/511/11511367.pdf). It is based on JEFF-3.1.1, with 172 groups. Other Draglib can be downloaded from: https://www.polymtl.ca/merlin/libraries.htm
+
+From ENDF files, it is also possible to produce your own Draglib using Python scripts in PyNjoy2016 (see more [here](https://github.com/IRSN/PyNjoy2016)).
+
+The power distribution can be accessed through that [kind of command](https://github.com/IRSN/SalinoPhD/blob/1abc854045630af1af45fc0e682fb4aee5cea29e/Drakkar/Reference/Diff.sh#L22) (for a quick peek) or plotted through PyGan, an interface between Python and Version5 (an example [here](https://github.com/IRSN/SalinoPhD/blob/master/Plots/2Dpow.py)).
+
 ## Disclaimer
 
 The user of these files is solely responsible for their adequacy to his needs, the precautions to be taken, the qualification of his personnel and the use he makes of the results he obtains.
