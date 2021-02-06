@@ -1,3 +1,4 @@
+* Author : V. Salino (IRSN), 02/2021
 PARAMETER Multicompo ReflSpecs Random
   :: ::: LINKED_LIST ReflSpecs Random ; ;
 PROCEDURE CreaStepList GetMolarMass MetalMix CreaMix ReflGeoCompo

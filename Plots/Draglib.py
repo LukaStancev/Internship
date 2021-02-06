@@ -1,6 +1,7 @@
 #
 #  Plotting Draglib content
 #  Usage : python3 Draglib.py
+#  Author : V. Salino (IRSN), 02/2021
 #
 
 # Imports

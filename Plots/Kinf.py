@@ -1,6 +1,7 @@
 #
 #  Plotting K-infinite difference between Dragon and Serpent
 #  Usage : python3 Kinf.py
+#  Author : V. Salino (IRSN), 02/2021
 #
 
 # Imports

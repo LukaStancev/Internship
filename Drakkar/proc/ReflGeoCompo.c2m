@@ -1,3 +1,4 @@
+* Author : V. Salino (IRSN), 02/2021
 PARAMETER GEOM Library MolarMasses BNat Zirc4 Incon SS304 Random
     :: ::: LINKED_LIST MolarMasses BNat Zirc4 Incon SS304 Random ; ;
 PROCEDURE CreaDilut GetTechData ;

@@ -1,3 +1,4 @@
+* Author : Vivian Salino (IRSN), 02/2021
 MODULE GREP: MSTR: UTL: DELETE: END: ;
 PROCEDURE EvoNominale MakeBib1BU Reflector Tihange DefRandomIso ;
 LINKED_LIST ReflSpecs Random ;

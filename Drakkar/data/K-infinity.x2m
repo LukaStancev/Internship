@@ -1,3 +1,4 @@
+* Author : V. Salino (IRSN), 02/2021
 MODULE MSTR: DELETE: END: ;
 PROCEDURE EvoNominale MakeBib1BU DefRandomIso ;
 LINKED_LIST Random ;

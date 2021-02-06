@@ -1,6 +1,7 @@
 #
 #  Plotting power uncertainty on 2D maps
 #  Usage : python3 2Dpow.py
+#  Author ; V. Salino (IRSN), 02/2021
 #
 
 # Imports
