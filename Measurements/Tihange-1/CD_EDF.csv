@@ -1,0 +1,20 @@
+# EDF reconstruction of axially-integrated 2D power distribution during
+# Tihange-1 first start-up, in hot zero power state.
+# Only the south-southeast eighth is represented. The first value
+# therefore corresponds to the central assembly.
+# C and D banks of control rods are inserted.
+# Source :
+#   CEA-N-2092, "Qualification du systeme Neptune - Interpretation
+#   d'experiences critiques - Calculs de coeur de reacteur de puissance",
+#   H. Panek, Ph.D. Thesis, Université Paris-Sud Centre d'Orsay, 1979.
+#   https://inis.iaea.org/collection/NCLCollectionStore/_Public/11/511/11511367.pdf
+#   Page 214 of that PDF or page 206 as written at the top of the page
+# Author : V. Salino (IRSN), 02/2021
+0.7053
+0.6500,0.6566
+0.4203,0.6939,0.4853
+1.0350,1.0665,1.0842,1.1679
+1.3341,1.3677,1.3457,1.1760,0.4994
+1.2219,1.3299,1.3468,1.1577,0.6568
+0.5670,1.1241,1.2830,0.8553
+0.7403,0.6593

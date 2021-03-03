@@ -1,0 +1,20 @@
+# Framatome reconstruction of axially-integrated 2D power distribution during
+# Tihange-1 first start-up, in hot zero power state.
+# Only the south-southeast eighth is represented. The first value
+# therefore corresponds to the central assembly.
+# All control rods are out.
+# Source :
+#   CEA-N-2092, "Qualification du systeme Neptune - Interpretation
+#   d'experiences critiques - Calculs de coeur de reacteur de puissance",
+#   H. Panek, Ph.D. Thesis, Université Paris-Sud Centre d'Orsay, 1979.
+#   https://inis.iaea.org/collection/NCLCollectionStore/_Public/11/511/11511367.pdf
+#   Page 203 of that PDF or page 195 as written at the top of the page
+# Author : V. Salino (IRSN), 02/2021
+1.104
+1.105,1.099
+1.108,1.084,1.092
+1.084,1.096,1.094,1.117
+1.092,1.068,1.084,1.093,0.916
+1.067,1.083,1.002,0.956,0.721
+1.050,1.054,0.984,0.659
+0.936,0.686
