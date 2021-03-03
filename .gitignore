@@ -16,9 +16,11 @@ Drakkar/Version5/Trivac/src/Trivac
 # Serpent outputs
 **/*.out
 **/*.seed
-**/*_geom1.png
+**/*_geom*.png
 **/*_mesh1.png
 **/*_res.m
+**/*_core0.m
+**/*_det0.m
 # Serpent inputs
 **/*.sss2
 
