@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sss2=/soft_snc/SERPENT2/2.1.31/sss2
+sss2=/soft_snc/SERPENT2/2.1.32/sss2
 if ! command -v $sss2 &> /dev/null
 then
     echo "Serpent 2 could not be found in $sss2"
