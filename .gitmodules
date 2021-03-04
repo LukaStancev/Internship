@@ -1,0 +1,3 @@
+[submodule "PyNjoy2016"]
+	path = PyNjoy2016
+	url = https://github.com/IRSN/PyNjoy2016

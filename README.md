@@ -11,7 +11,7 @@ The production realized during this PhD thesis is centralized on this repository
 
 The [Version5](https://www.polymtl.ca/merlin/version5.htm) datasets can be executed with its [beta revision 1923](https://www.polymtl.ca/merlin/development.htm), as made available by its developers (École Polytechnique de Montréal). For the sake of convenience, this latter revision is also included in this repository. It can be downloaded, compiled and then executed with the following commands:
 ```
-git clone https://github.com/IRSN/SalinoPhD.git
+git clone --recurse-submodules https://github.com/IRSN/SalinoPhD.git
 cd SalinoPhD/Drakkar/Version5/Donjon/src
 make
 cd ../../../data
