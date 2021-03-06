@@ -1,3 +1,6 @@
+# ENDF directories
+ENDF/*/**
+
 # Version5 result files stored in this folder
 **/Linux_x86_64/
 
