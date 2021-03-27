@@ -12,37 +12,36 @@ import glob
 import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
-
-def fold(full):
-    # Retrieve center coordinates (assuming a square)
-    center = len(full[:, 0])//2
-    # We retrieve each quarter, that are not squares (+1 in one dimension)
-    UpperRight = full[:center, center:]
-    LowerRight = np.rot90(full[center:, center+1:])
-    LowerLeft = np.rot90( full[center+1:, :center+1], 2)
-    UpperLeft = np.rot90( full[:center+1, :center], 3)
-    # Cumulate every quarters and mean them
-    Quarter = (UpperRight + LowerRight + LowerLeft + UpperLeft)/4
-    # Add the horizontal line. The information contained here is redundant,
-    # except for the central value (which is full[center, center])
-    LowerLine = np.hstack(( full[center, center], np.flip(Quarter[:, 0]) ))
-    return np.vstack(( Quarter, LowerLine ))
-
-for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
-['all rods out', 'D rod bank inserted', 'C and D rod banks inserted']):
-    print('controlrods = ' + controlrods)
-    os.system('ln -s ../Drakkar/Linux_x86_64/_Power' + controlrods
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from BasicFunctions import *
+#
+controlrods = ['CD', 'D', 'ARO']
+text = {}
+text['ARO'] = 'all rods out'
+text['D'] = 'D rod bank inserted'
+text['CD'] = 'C and D rod banks inserted'
+# Create a dictionnary to store the maximum standard deviation among
+# every assemblies
+# Create a dictionary to store the standard deviation of the assembly with the
+# most uncertain power, among all those assemblies in the core.
+maxstd = {}
+for controlrod in controlrods:
+    print('controlrod = ' + controlrod)
+    maxstd[controlrod] = {}
+    # Create links toward every available power distribution
+    os.system('ln -s ../Drakkar/Linux_x86_64/_Power' + controlrod
               + '_*.ascii .')
     # List isotopes we've been (potentially) randomly sampling
-    firstfile = glob.glob('_Power' + controlrods + '_*.ascii')[0]
+    firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
     isotopes = ResultFile['NamIso'].split()
+    del ResultFile
     # Initialize dictionnary (isotope-wise) of lists (sampling-wise) that will
     # contain the retrieved data
     powers = {}
     for iso in isotopes:
         powers[iso] = []
-    for file in list(glob.glob('_Power' + controlrods + '_*.ascii')):
+    for file in list(glob.glob('_Power' + controlrod + '_*.ascii')):
         # Loading data while removing beginning-of-filename underscore
         ResultFile = lcm.new('LCM_INP', file[1:])
         os.system("rm " + file)
@@ -55,6 +54,7 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
         for iso in isotopes:
             if int(ResultFile[iso]) != -311:
                 powers[iso].append(power)
+        del ResultFile
     # Convert this list of 1D numpy array into a 2D numpy array:
     # [irand, iassembly]
     tmp = {}
@@ -62,41 +62,19 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
         tmp[iso] = np.array(powers[iso])
     powers = tmp
     # Update 'isotopes' list so that only those isotopes that were indeed
-    # randomly sampled can be the subject of loops
+    # randomly sampled can be the subject of loops to come
     isotopes_used = []
     for iso in isotopes:
         if powers[iso].size != 0:
             isotopes_used.append(iso)
     isotopes = isotopes_used
-    # Layout of the assemblies in the core:
-    #   = 0, void (i.e. no assembly at this position)
-    #   = 1, presence of an assembly
-    if len(powers[iso][0, :]) == 157: # assemblies
-        CoreLayout = np.array([[1, 1, 0, 0, 0, 0, 0, 0],
-                               [1, 1, 1, 1, 0, 0, 0, 0],
-                               [1, 1, 1, 1, 1, 0, 0, 0],
-                               [1, 1, 1, 1, 1, 1, 0, 0],
-                               [1, 1, 1, 1, 1, 1, 1, 0],
-                               [1, 1, 1, 1, 1, 1, 1, 0],
-                               [1, 1, 1, 1, 1, 1, 1, 1],
-                               [1, 1, 1, 1, 1, 1, 1, 1]], dtype=int)
-    else:
-        raise Exception('Unsupported core layout')
-    # --- Unfold this quarter core on a full core layout
-    # Prepare upper core layout, minus central vertical line
-    UpperLeft = np.delete( np.rot90(CoreLayout), -1, axis=0)
-    UpperRight = np.delete( np.delete(CoreLayout, -1, axis=0), 0, axis=1 )
-    Upper = np.hstack( (UpperLeft, UpperRight) )
-    # Prepare lower core layout, letting vertical line
-    LowerLeft = np.rot90(CoreLayout, 2)
-    LowerRight = np.delete( np.rot90(CoreLayout, 3), 0, axis=1 )
-    Lower = np.hstack( (LowerLeft, LowerRight) )
-    FullCoreLayout = np.vstack((Upper, Lower))
+    # Layout of the assemblies in the core
+    CoreLayout, FullCoreLayout = GetCoreLayout(len(powers[isotopes[0]][0, :]))
     #
     FullPowers2D = {}
     Powers2D = {}
     for iso in isotopes:
-        # Deploy the 1D-indexed power maps into a 2D-indexed power maps
+        # Deploy the 1D-indexed power maps into 2D-indexed power maps
         FullPowers2D[iso] = np.zeros(( len(powers[iso][:, 0]),      # irand
                                        len(FullCoreLayout[:, 0]),   # Y-axis
                                        len(FullCoreLayout[0, :]) )) # X-axis
@@ -117,6 +95,9 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
     #---
     for iso in isotopes:
         print(iso)
+        # Initialize maximum relative standard deviation to zero
+        maxstd[controlrod][iso] = 0
+        # Initialize figure
         fig, axs = plt.subplots(8, 8, sharex='all', figsize=(8, 8),
                                 gridspec_kw={'hspace': 0, 'wspace': 0})
         for x in range(0, len(CoreLayout[0, :])):
@@ -130,6 +111,9 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
                     # Compute relative standard deviation for each assembly
                     mean = np.mean(Powers2D[iso][:, x, y])
                     relstd = np.std(Powers2D[iso][:, x, y])/mean*100
+                    # Store its maximum for future purposes
+                    maxstd[controlrod][iso] = max(relstd,
+                                                  maxstd[controlrod][iso])
                     # Print relative standard deviation for each assembly
                     textstr = r'$\sigma / \mu = %.1f$%%' % (relstd, )
                     axs[x, y].text(0.05, 0.95, textstr,
@@ -156,14 +140,15 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
         #---
         #  Add a title
         #---
-        fig.suptitle('Tihange first zero-power start-up, ' + controlrodstext
+        fig.suptitle('Tihange first zero-power start-up, ' + text[controlrod]
                      + '\nProbability density vs normalized assembly power'
                      + '\n' + str(len(Powers2D[iso][:, 0, 0]))
                      + ' random samplings of ' + iso)
         #---
         #  Save plot as pdf (vectorized)
         #---
-        fig.savefig(controlrods + '_' + iso + '.eps')
+        os.system('mkdir -p output_2Dpow')
+        fig.savefig('output_2Dpow/' + controlrod + '_' + iso + '.pdf')
         #---
         #  Clean-up for next plot
         #---
@@ -171,6 +156,70 @@ for controlrods, controlrodstext in zip(['ARO', 'D', 'CD'], \
     #---
     #  Merge pdf with ghostscript
     #---
-    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=' + controlrods
-              + '.pdf -dBATCH ' + controlrods + '_*.pdf')
+    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=output_2Dpow/'
+              + controlrod + '.pdf -dBATCH output_2Dpow/' + controlrod
+              + '_*.pdf')
+#---
+#  Plot, as a summary, the maximum relative standard deviation on an assembly
+#  power, for each isotope and each control rod state
+#---
+w = 0.75
+dimw = w/len(controlrods)
+# Order according to std.dev. in the 'CD control rods inserted' state
+Ordering = 'CD'
+maxstd_sorted = {}
+maxstd_sorted[Ordering] = sorted(maxstd[Ordering].items(),
+                                 key = lambda x: x[1],
+                                 reverse=True)
+isotopes = [i[0] for i in maxstd_sorted[Ordering]]
+relstd = [i[1] for i in maxstd_sorted[Ordering]]
+# Sort in the same order (isotope-wise) the remaining states (except the one
+# already sorted)
+controlrods.remove(Ordering)
+for CR in controlrods:
+    maxstd_sorted[CR] = [maxstd[CR][i] for i in isotopes]
+# Preparing a bar plot
+fig, ax = plt.subplots()
+y_pos = np.arange(len(isotopes))
+# Plot the data
+ax.barh(y_pos - 0.25, relstd, dimw, align='center',
+        label = text[Ordering], zorder = 3)
+i = 0
+for CR in controlrods:
+    i = i + 1
+    ax.barh(y_pos + i * dimw - 0.25, maxstd_sorted[CR], dimw,
+            align='center', label = text[CR].capitalize(), zorder = 3)
+#---
+#  Graph glitter
+#---
+ax.set_yticks(y_pos)
+ax.set_yticklabels(isotopes)
+ax.invert_yaxis() # labels read top-to-bottom
+ax.set_ylim(len(isotopes) - 1 + w/2, -w/2)
+ax.set_xlabel(r'Relative standard deviation (1$\sigma$) of the most '
+              + 'uncertain assembly power')
+plt.legend(loc = 'lower right', framealpha = 1.0)
+ax.set_title('Ranking of nuclear data uncertainties on Tihange first\n'
+             + 'zero-power start-up, with three control rods insertions')
+# Add one minor tick between each major ticks
+ax.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
+# Add percent sign after yticks
+labels = ax.get_xticks()
+percentlabels = [0] + ['{:02.1f}'.format(i) + '%' for i in labels[1:]]
+ax.set_xticklabels(percentlabels)
+# Add a light x-axis grid in the background
+ax.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
+        linestyle = '--')
+ax.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
+        linestyle = '--', dashes=(20, 20))
+plt.tight_layout()
+#---
+#  Save plot as pdf (vectorized)
+#---
+fig.savefig('output_2Dpow/Summary.pdf')
+#---
+#  Clean-up
+#---
+plt.close('all')
+
 print("Plotting completed")

@@ -19,10 +19,11 @@ import matplotlib.ticker as ticker
 # We may plot quantiles or energy-correlated random samples
 graphtype = 'quantiles'
 #graphtype = 'samples'
-
-for iso in glob.glob('../../Njoy/TENDL/*'):
-    # Retrieve isotope name as given in directories' names
-    iso = iso.rsplit('/', 1)[1]
+path = '../PyNjoy2016/output/'
+directories = glob.glob(path + 'TENDL-2019/*') + glob.glob(path + 'SANDY/*')
+for draglibpath in directories:
+    # Retrieve isotope name as given in directories' names and its source
+    source, iso = draglibpath.rsplit('/', 2)[1:3]
     print('iso = ' + iso)
     #---
     #  Initialize plot
@@ -30,29 +31,40 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     fig, axs = plt.subplots(nrows = 2, sharex='all',
                             gridspec_kw={'hspace': 0})
     #---
-    #  Create link toward Draglib file
+    #  Create link toward Draglib file and load data (most time spent here)
     #---
-    command = ('ln -s ../../Njoy/TENDL/' + iso + '/draglib' + iso + ' _draglib'
-               + iso + '.txt')
+    command = ('ln -s ' + draglibpath + '/draglib' + iso + ' _draglib' + iso
+               + '.txt')
     os.system(command)
+    draglib = lcm.new('LCM_INP', 'draglib' + iso + '.txt')
+    os.system('rm -f _draglib' + iso + '.txt')
+    draglib._impx = 0
     # A few plotting parameters
+    minsig = 0.01
     if iso.startswith('U23'):
         minsig = 0.1
         loclegend = 'upper right'
         ncol = 2
+    elif iso == 'Fe54':
+        loclegend = 'upper left'
+        ncol = 3
+    elif iso == 'Cd110':
+        loclegend = 'upper left'
+        ncol = 2
+    elif iso == 'Zr92' or iso == 'Zr94':
+        loclegend = 'upper left'
+        ncol = 2
     else:
-        minsig = 0.01
         loclegend = 'lower left'
         ncol = 3
+    # Select 2nd temperature (550K), except for H1_H2O (7th, 573.5K)
+    if iso == "H1_H2O":
+        itemp = 7
+    else:
+        itemp = 2
     # Initialize the flag indicating presence/absence (resp. True/False) of at
     # least one Autolib data
     AutolibFlag = False
-    #---
-    #  Load data (most time spent here)
-    #---
-    draglib = lcm.new('LCM_INP', 'draglib' + iso + '.txt')
-    os.system('rm -f _draglib' + iso + '.txt')
-    draglib._impx = 0
     #---
     #  Establish the list of available random samples, each being contained in
     #  a directory
@@ -68,7 +80,7 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     reactions = None
     for dirname in dirnames:
         isotopedir = draglib[dirname]
-        SubTemp = isotopedir['SUBTMP0002']
+        SubTemp = isotopedir['SUBTMP000' + str(itemp)]
         if not reactions:
             reactions = set(SubTemp.keys())
         else:
@@ -85,6 +97,14 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
         wished_reactions = wished_reactions.difference({'NA'})
     reactions = list(reactions.intersection(wished_reactions))
     reactions.sort()
+    labels = {}
+    labels['NTOT0'] = "(n,tot)"
+    labels['NUSIGF'] = r"$\nu\times$(n,f)"
+    labels['NINEL'] = "(n,n')"
+    labels['N2N'] = "(n,2n)"
+    labels['NA'] = r"(n,$\alpha$)"
+    labels['NP'] = "(n,p)"
+    labels['ND'] = "(n,d)"
     for reaction in reactions:
         print('reaction = ' + reaction)
         #---
@@ -103,10 +123,10 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
         for dirname in dirnames:
             irand = int(dirname[-3:])
             isotopedir = draglib[dirname]
-            # Use 2nd temperature
-            SubTemp = isotopedir['SUBTMP0002']
+            # Retrieve the temperature
+            SubTemp = isotopedir['SUBTMP000' + str(itemp)]
             Temperature = isotopedir['TEMPERATURE']
-            Temperature = str(int(Temperature[1]))
+            Temperature = str(int(Temperature[itemp - 1]))
             # Print list of possible reactions
             if irand == 0:
                 print(SubTemp.keys())
@@ -140,14 +160,18 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
             XSs.append(XS)
             if graphtype == 'samples':
                 if irand == 0:
-                    axs[0].step(Energies, np.append(XS, XS[-1]), where='post',
-                                linewidth=0.05, color=color, label=reaction)
+                    axs[0].step(Energies, np.append(XS, XS[-1]),
+                                where = 'post', linewidth = 0.05,
+                                color = color,
+                                label = labels[reaction])
                 elif irand < 20:
-                    axs[0].step(Energies, np.append(XS, XS[-1]), where='post',
-                                linewidth=0.05, color=color)
+                    axs[0].step(Energies, np.append(XS, XS[-1]),
+                                where = 'post', linewidth = 0.05,
+                                color = color)
             # Deleting progressively to avoid segfaults in lcm module
             del SubTemp
             del isotopedir
+        nrand = str(len(XSs))
         #---
         #  For some minor (threshold) reactions, we may come up with an
         #  irregular 2D array, because some samples may count more (non-zero)
@@ -177,6 +201,7 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
         #---
         axs[1].step(relstdEnergies, np.append(relstdXS, relstdXS[-1]),
                     where='post', linewidth=0.1, color=color)
+        print("max(relstdXS) = " + str(max(relstdXS)))
         #---
         #  Add median and a few other quantiles
         #---
@@ -185,25 +210,26 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
                 qXS = np.quantile(XSs, q, axis=0)
                 if q == 0.5:
                     axs[0].step(Energies, np.append(qXS, qXS[-1]),
-                                where='post', linewidth=0.1, color=color,
-                                label=reaction)
+                                where = 'post', linewidth = 0.1, color = color,
+                                label = labels[reaction])
                 else:
                     axs[0].step(Energies, np.append(qXS, qXS[-1]),
-                                where='post', linewidth=0.1, color=color,
-                                alpha=1/(abs(q-0.5)*3+1))
-        #---
-        #  Compute some correlations' informations
-        #---
-        if(reaction == 'NTOT0'):
-            min_rij = np.min(np.corrcoef(XSs))
+                                where = 'post', linewidth = 0.1, color = color,
+                                alpha = 1/(abs(q - 0.5)*3 + 1))
     del draglib
     #---
     #  Graph glitter
     #---
     # Set a title and axis labels
-    axs[0].set_title('Statistics on ' + iso + ' cross section at '
-                     + Temperature
-                     + 'K versus energy, from TENDL Draglib', wrap=True)
+    if source == 'TENDL-2019':
+        sourcetxt = nrand + ' TENDL-2019 random samples'
+    elif source == 'SANDY':
+        sourcetxt = nrand + ' random samples in JEFF-3.3 covariances'
+    else:
+        raise Exception(source + ' unknown.')
+    axs[0].set_title('Statistics on ' + iso + ' cross sections versus energy,'
+                     + '\ngiven by ' + sourcetxt + ',\nat ' + Temperature
+                     + ' K, extracted from Draglib.', wrap = True)
     axs[1].set_xlabel('Incident neutron energy [eV]')
     if graphtype == 'samples':
         axs[0].set_ylabel('Cross section [b]')
@@ -254,36 +280,47 @@ for iso in glob.glob('../../Njoy/TENDL/*'):
     # Add a light grid
     axs[0].grid(which='both', alpha=0.2, linewidth=0.1)
     axs[1].grid(which='both', alpha=0.2, linewidth=0.1)
-    if ylimstd < 50:
-        # Tick relative standard deviation every 5% (major) and 2.5% (minor)
-        tickstd = 5.0
+    # ylimstd is the maximum relative deviation on this plot (in %)
+    if ylimstd < 4:
+        # Tick relative standard deviation every 0.5% (major) and 0.1% (minor)
+        tickstd_maj = 0.5
+        tickstd_min = tickstd_maj/5
+    elif ylimstd < 20:
+        # Tick relative standard deviation every 2% (major) and 1% (minor)
+        tickstd_maj = 2
+        tickstd_min = tickstd_maj/2
     else:
         # Tick relative standard deviation every 10% (major) and 5% (minor)
-        tickstd = 10.0
-    axs[1].yaxis.set_major_locator(ticker.MultipleLocator(tickstd))
-    axs[1].yaxis.set_minor_locator(ticker.MultipleLocator(tickstd/2))
+        tickstd_maj = 10
+        tickstd_min = tickstd_maj/2
+    axs[1].yaxis.set_major_locator(ticker.MultipleLocator(tickstd_maj))
+    axs[1].yaxis.set_minor_locator(ticker.MultipleLocator(tickstd_min))
     # Set relative standard deviation y-ticks as ('5%',) '10%', ... except the
     # first one, which is a plain '0' (no percent sign)
     ytickspercent = ['0', '0']
     for i in np.arange(1, 19):
-        ytickspercent.append(str(i*int(tickstd)) + '%')
+        if ylimstd < 4:
+            yticktext = '{:02.1f}'.format(i*tickstd_maj) + '%'
+        else:
+            yticktext = str(i*int(tickstd_maj)) + '%'
+        ytickspercent.append(yticktext)
     axs[1].set_yticklabels(ytickspercent)
-    # Show minimum correlation coefficient in a corner of the figure
-    axs[0].text(0.05, 0.9, r'$\mathrm{min}(\mathcal{R}_{ij})=$'
-                + str(round(min_rij,5)), fontsize=8,
-                transform=axs[0].transAxes)
-    # Tight layout prevents a label from exceeding the figure frame
-    fig.tight_layout()
     #---
     #  Save plot as pdf (vectorized)
     #---
-    fig.savefig('XS_' + iso + '_' + graphtype + '.pdf')
+    os.system('mkdir -p output_Draglib')
+    fig.savefig('output_Draglib/XS_' + iso + '_' + graphtype + '.pdf',
+                bbox_inches='tight')
     #---
     #  Clean-up for next plot
     #---
     plt.close('all')
     del fig
     del axs
-os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=XS_' + graphtype
-          + '.pdf -dBATCH XS_*_' + graphtype + '.pdf')
+#---
+#  Merge all the existing PDFs
+#---
+os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite'
+          + ' -sOUTPUTFILE=output_Draglib/XS_' + graphtype + '.pdf'
+          + ' -dBATCH output_Draglib/XS_*_' + graphtype + '.pdf')
 print("Plotting completed")
