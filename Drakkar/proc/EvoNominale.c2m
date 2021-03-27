@@ -85,8 +85,9 @@ ENDIF ;
 *---
 * File containing multigroup nuclear data
 *---
+INTEGER NGroups := 172 ;
 STRING Evaluation := "JEFF311"  ;
-STRING FileNuclData := "D172" Evaluation + ;
+STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 
 *=======================================================
 * These parameters are parsed from the calculation options previously defined
@@ -167,7 +168,7 @@ Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses
 Random ::
-<<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
+<<NGroups>> <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
 >>PowMWT<< ;

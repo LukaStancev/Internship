@@ -14,7 +14,7 @@ cd $LaunchDir
 cp ../data/isotconvlist.csv .
 
 intg=0
-for iso in O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 Ni58 Fe54 In115 Ag107 Ag109 Cd106 Cd108 Cd110 Cd111 Cd112 Cd113 Cd114 Cd116 Fe56 Cr52
+for iso in H1_H2O B10 B11 O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 Ni58 Fe54 In115 Ag107 Ag109 Cd106 Cd108 Cd110 Cd111 Cd112 Cd113 Cd114 Cd116 Fe56 Cr52
 do
   if [ "$iso" = "Zr91" ] || [ "$iso" == 'Fe54' ]
   then
@@ -34,7 +34,7 @@ do
   elif [ "$iso" == 'Cd106' ] || [ "$iso" == 'Cd108' ] || [ "$iso" == 'Cd116' ]
   then
     maxrand=19
-  elif [ "$iso" == 'Cr52' ] || [ "$iso" == 'Fe56' ]
+  elif [ "$iso" == 'Cr52' ]
   then
     maxrand=9
   else
@@ -48,7 +48,7 @@ do
     cp ../data/Tihange.x2m    Tihange_${iso}_${irand}.x2m
     cp ../data/Tihange.access Tihange_${iso}_${irand}.access
     cp ../data/Tihange.save   Tihange_${iso}_${irand}.save
-    # Change the isotope from JEFF-3.1.1 to a random one from TENDL
+    # Change the isotope from JEFF-3.1.1 to a random one
     sed -i 's/'$iso'.*/'$iso' '$irand' ;/' Tihange_${iso}_${irand}.x2m
     # Writing Slurm instruction file
     echo "#!/bin/bash"                                                 > ${iso}_${irand}_Tihange.sh

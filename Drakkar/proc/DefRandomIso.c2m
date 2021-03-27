@@ -4,8 +4,11 @@ PARAMETER Random ;
 *  List of potentially randomly sampled isotopes
 *---
 * 8 characters per isotope
-Random := UTL: Random :: CREA 'NamIso' 46 = ! 46/2 = 23 isotopes
+Random := UTL: Random :: CREA 'NamIso' 52 = ! 52/2 = 26 isotopes
   'O16 ' '    ' ! O16
+  'H1_H' '2O  ' ! H1_H2O
+  'B10 ' '    ' ! B10
+  'B11 ' '    ' ! B11
   'U235' '    ' ! U235
   'U238' '    ' ! U238
   'Zr90' '    ' ! Zr90

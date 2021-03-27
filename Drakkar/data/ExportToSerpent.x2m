@@ -18,8 +18,9 @@ INTEGER ThermaExpans := 1 ;
 REAL dmod tmod cbor tfuel PowMWT ;
 STRING CTRA := "APOL" ;
 * File containing multigroup nuclear data
+INTEGER NGroups := 172 ;
 STRING Evaluation := "JEFF311"  ;
-STRING FileNuclData := "D172" Evaluation + ;
+STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 *---- 2) Molar Masses ----------------------------------
 MolarMasses := GetMolarMass :: <<FileNuclData>> <<Evaluation>> ;
 *---- 3) Metal Mixes -----------------------------------
@@ -32,29 +33,32 @@ MolarMasses ::
 *  Define random sampling for each isotope
 *  Default: use JEFF-3.1.1 for all isotopes (= -311)
 *---
-Random := MSTR:        :: PUT 1 O16   -311 ;
-Random := MSTR: Random :: PUT 1 U235  -311 ;
-Random := MSTR: Random :: PUT 1 U238  -311 ;
-Random := MSTR: Random :: PUT 1 Zr90  -311 ;
-Random := MSTR: Random :: PUT 1 Zr91  -311 ;
-Random := MSTR: Random :: PUT 1 Zr92  -311 ;
-Random := MSTR: Random :: PUT 1 Zr94  -311 ;
-Random := MSTR: Random :: PUT 1 Zr96  -311 ;
-Random := MSTR: Random :: PUT 1 Ni58  -311 ;
-Random := MSTR: Random :: PUT 1 Fe54  -311 ;
-Random := MSTR: Random :: PUT 1 Fe56  -311 ;
-Random := MSTR: Random :: PUT 1 Cr52  -311 ;
-Random := MSTR: Random :: PUT 1 In115 -311 ;
-Random := MSTR: Random :: PUT 1 Ag107 -311 ;
-Random := MSTR: Random :: PUT 1 Ag109 -311 ;
-Random := MSTR: Random :: PUT 1 Cd106 -311 ;
-Random := MSTR: Random :: PUT 1 Cd108 -311 ;
-Random := MSTR: Random :: PUT 1 Cd110 -311 ;
-Random := MSTR: Random :: PUT 1 Cd111 -311 ;
-Random := MSTR: Random :: PUT 1 Cd112 -311 ;
-Random := MSTR: Random :: PUT 1 Cd113 -311 ;
-Random := MSTR: Random :: PUT 1 Cd114 -311 ;
-Random := MSTR: Random :: PUT 1 Cd116 -311 ;
+Random := MSTR:        :: PUT 1 O16    -311 ;
+Random := MSTR: Random :: PUT 1 H1_H2O -311 ;
+Random := MSTR: Random :: PUT 1 B10    -311 ;
+Random := MSTR: Random :: PUT 1 B11    -311 ;
+Random := MSTR: Random :: PUT 1 U235   -311 ;
+Random := MSTR: Random :: PUT 1 U238   -311 ;
+Random := MSTR: Random :: PUT 1 Zr90   -311 ;
+Random := MSTR: Random :: PUT 1 Zr91   -311 ;
+Random := MSTR: Random :: PUT 1 Zr92   -311 ;
+Random := MSTR: Random :: PUT 1 Zr94   -311 ;
+Random := MSTR: Random :: PUT 1 Zr96   -311 ;
+Random := MSTR: Random :: PUT 1 Ni58   -311 ;
+Random := MSTR: Random :: PUT 1 Fe54   -311 ;
+Random := MSTR: Random :: PUT 1 Fe56   -311 ;
+Random := MSTR: Random :: PUT 1 Cr52   -311 ;
+Random := MSTR: Random :: PUT 1 In115  -311 ;
+Random := MSTR: Random :: PUT 1 Ag107  -311 ;
+Random := MSTR: Random :: PUT 1 Ag109  -311 ;
+Random := MSTR: Random :: PUT 1 Cd106  -311 ;
+Random := MSTR: Random :: PUT 1 Cd108  -311 ;
+Random := MSTR: Random :: PUT 1 Cd110  -311 ;
+Random := MSTR: Random :: PUT 1 Cd111  -311 ;
+Random := MSTR: Random :: PUT 1 Cd112  -311 ;
+Random := MSTR: Random :: PUT 1 Cd113  -311 ;
+Random := MSTR: Random :: PUT 1 Cd114  -311 ;
+Random := MSTR: Random :: PUT 1 Cd116  -311 ;
 Random := DefRandomIso Random ;
 *---
 *  Initialize the variables needed for the reflectors
@@ -120,8 +124,8 @@ WHILE ibor 3 <= DO
     Library ConcMode := CreaMix FeNat CrNat SnNat NiNat ZrNat TiNat
       SiNat KNat BNat AgNat CdNat SNat HfNat InNat Zirc4 Incon SS304 M5
       AIC HfR GdNat Gd2O3 BP MolarMasses Random ::
-      <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
-      <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
+      <<NGroups>> <<FileNuclData>> <<Evaluation>> <<Gestion>>
+      <<AssType>> <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
       <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
       >>PowMWT<< ;
     * Save in the corresponding files

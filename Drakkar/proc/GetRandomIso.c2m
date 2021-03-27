@@ -22,7 +22,7 @@ INTEGER irand ;
 INTEGER IdxIso := NumIso 1 - 8 * 1 + ; ! 8 char per isotope
 GREP: Random :: GETVAL 'NamIso' <<IdxIso>> NVAL 8 >>NamIso<< ;
 GREP: Random :: GETVAL <<NamIso>> 1 >>irand<< ;
-EVALUATE draglib := 'draglib' NamIso + ;
+EVALUATE draglib := 'drglib' NamIso + ;
 IF irand 10 < THEN
   EVALUATE RandIsoName := NamIso "_00" irand I_TO_S + + ;
 ELSEIF irand 100 < THEN

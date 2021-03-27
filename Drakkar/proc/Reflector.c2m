@@ -14,8 +14,9 @@ MODULE LIB: ASM: FLU: EDI: COMPO: DELETE: USS: UTL: END: ABORT:
 *---
 * File containing multigroup nuclear data
 *---
+INTEGER NGroups := 172 ;
 STRING Evaluation := "JEFF311"  ;
-STRING FileNuclData := "D172" Evaluation + ;
+STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 STRING  LibGenre ;
 INTEGER LibId ;
 STRING  AssType  := "UOX"  ; ! 3 Char: UOX, MOX, ou UGd
@@ -62,7 +63,7 @@ Library ConcMode := CreaMix
 FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat CdNat SNat
 HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP MolarMasses
 Random ::
-<<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
+<<NGroups>> <<FileNuclData>> <<Evaluation>> <<Gestion>> <<AssType>>
 <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
 <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
 >>PowMWT<< ;
@@ -157,6 +158,62 @@ WHILE CASE 2 <= DO
   WHILE NumIso NbIso <= DO
     GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
     >>draglib<< >>RandIsoName<< ;
+    IF NamIso 'H1_H2O' = irand -311 = NOT * THEN
+      Library := LIB: Library ::
+      ! Borated water
+        MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+        MIX 5 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+        MIX 6 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+        MIX 10 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+        MIX 11 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+        MIX 12 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+        MIX 13 <<TempMod>>
+          <<NamIso>>    = <<RandIsoName>>  <<H1>>  NOEV
+      ;
+    ENDIF ;
+    IF NamIso 'B10' = irand -311 = NOT * THEN
+      Library := LIB: Library ::
+      ! Borated water
+        MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+
+        MIX 5 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+        MIX 6 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+        MIX 10 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+        MIX 11 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+        MIX 12 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+        MIX 13 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B10>> NOEV
+      ;
+    ENDIF ;
+    IF NamIso 'B11' = irand -311 = NOT * THEN
+      Library := LIB: Library ::
+      ! Borated water
+        MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+
+        MIX 5 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+        MIX 6 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+        MIX 10 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+        MIX 11 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+        MIX 12 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+        MIX 13 <<TempMod>>
+          <<NamIso>> = <<RandIsoName>> <<B11>> NOEV
+      ;
+    ENDIF ;
     IF NamIso 'O16' = irand -311 = NOT * THEN
       Library := LIB: Library ::
       ! Borated water

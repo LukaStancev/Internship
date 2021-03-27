@@ -95,8 +95,9 @@ STRING  BiblXS   := "SAPHYB"   ;
 *---
 * File containing multigroup nuclear data
 *---
+INTEGER NGroups := 172 ;
 STRING Evaluation := "JEFF311"  ;
-STRING FileNuclData := "D172" Evaluation + ;
+STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 
 *--------------------------------------------------------------------
 * Specifics for randomly sampled isotopes
@@ -479,41 +480,16 @@ WHILE m dm <= DO
 ! ATTENTION : supprimer H2O ou H1_H2O et O16 selon la bibli utilisee
           MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
             H2O <<h2o_5>>
-            H1_H2O <<h_5>>
-*            O16    <<o_5>>
-            B10  <<b10_5>>
-            B11  <<b11_5>>
           MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
             H2O <<h2o_5>>
-            H1_H2O <<h_5>>
-*            O16    <<o_5>>
-            B10  <<b10_5>>
-            B11  <<b11_5>>
-*            U235 1.0E-9
           MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
             H2O <<h2o_10>>
-            H1_H2O <<h_10>>
-*            O16    <<o_10>>
-            B10  <<b10_10>>
-            B11  <<b11_10>>
           MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
             H2O <<h2o_11>>
-            H1_H2O <<h_11>>
-*            O16    <<o_11>>
-            B10  <<b10_11>>
-            B11  <<b11_11>>
           MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
             H2O <<h2o_12>>
-            H1_H2O <<h_12>>
-*            O16    <<o_12>>
-            B10  <<b10_12>>
-            B11  <<b11_12>>
           MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
             H2O <<h2o_13>>
-            H1_H2O <<h_13>>
-*            O16    <<o_13>>
-            B10  <<b10_13>>
-            B11  <<b11_13>>
           MIX  20 <<tmod_nom_K>> NOEV (* TUBE *)
           MIX  40 <<tmod_nom_K>> NOEV (* AIC *)
           MIX  41 <<tmod_nom_K>> NOEV (* AIC *)
@@ -537,6 +513,117 @@ WHILE m dm <= DO
         WHILE NumIso NbIso <= DO
           GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
           >>draglib<< >>RandIsoName<< ;
+          IF NamIso 'H1_H2O' = THEN
+            IF irand -311 = NOT THEN
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<draglib>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  H1_H2O = <<RandIsoName>> <<h_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  H1_H2O = <<RandIsoName>> <<h_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  H1_H2O = <<RandIsoName>> <<h_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  H1_H2O = <<RandIsoName>> <<h_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  H1_H2O = <<RandIsoName>> <<h_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  H1_H2O = <<RandIsoName>> <<h_13>>
+                ;
+            ELSE
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<FileNuclData>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  H1_H2O <<h_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  H1_H2O <<h_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  H1_H2O <<h_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  H1_H2O <<h_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  H1_H2O <<h_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  H1_H2O <<h_13>>
+                ;
+            ENDIF ;
+          ENDIF ;
+          IF NamIso 'B10' = THEN
+            IF irand -311 = NOT THEN
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<draglib>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B10  = <<RandIsoName>> <<b10_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B10  = <<RandIsoName>> <<b10_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  B10  = <<RandIsoName>> <<b10_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  B10  = <<RandIsoName>> <<b10_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  B10  = <<RandIsoName>> <<b10_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  B10  = <<RandIsoName>> <<b10_13>>
+                ;
+            ELSE
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<FileNuclData>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B10  <<b10_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B10  <<b10_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  B10  <<b10_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  B10  <<b10_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  B10  <<b10_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  B10  <<b10_13>>
+                ;
+            ENDIF ;
+          ENDIF ;
+          IF NamIso 'B11' = THEN
+            IF irand -311 = NOT THEN
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<draglib>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B11  = <<RandIsoName>> <<b11_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B11  = <<RandIsoName>> <<b11_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  B11  = <<RandIsoName>> <<b11_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  B11  = <<RandIsoName>> <<b11_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  B11  = <<RandIsoName>> <<b11_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  B11  = <<RandIsoName>> <<b11_13>>
+                ;
+            ELSE
+              Library := LIB: Library :: EDIT 0
+                CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
+                FIL: <<FileNuclData>>
+                MIX   5 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B11  <<b11_5>>
+                MIX   6 <<tmod_nom_K>> NOEV (* MODETI *)
+                  B11  <<b11_5>>
+                MIX   10 <<tmod_nom_K>> NOEV (* MODE *)
+                  B11  <<b11_10>>
+                MIX   11 <<tmod_nom_K>> NOEV (* MODEL *)
+                  B11  <<b11_11>>
+                MIX   12 <<tmod_nom_K>> NOEV (* MODEC *)
+                  B11  <<b11_12>>
+                MIX   13 <<tmod_nom_K>> NOEV (* MODETE *)
+                  B11  <<b11_13>>
+                ;
+            ENDIF ;
+          ENDIF ;
           IF NamIso 'O16' = THEN
             IF irand -311 = NOT THEN
               Library := LIB: Library :: EDIT 0

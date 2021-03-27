@@ -50,6 +50,7 @@ REAL avo_conc := avogadro 1.E-24 * ;
 *--------------------------------------------------------------------
 REAL cbor dmod tmod tclad tfuel ;
 STRING Gestion AssType ;
+INTEGER NGroups ;
 STRING FileNuclData ;
 STRING Evaluation  ;
 STRING LibGenre ;
@@ -190,6 +191,7 @@ REAL rFuel TempF TempC Alpha Beta ;
 REAL DUMMY_R0 := 0.0 ;
 *------------------------------------------------------
 * Get FileNuclData (nom de la bibliotheque)
+*     NGroups (number of neutron energy groups in this mesh)
 *     Evaluation (nom generique de la bibli, ex. ENDFVII1)
 *     Gestion (TIH, BEAV)
 *     AssType (UOX, MOX, UGd)
@@ -199,7 +201,7 @@ REAL DUMMY_R0 := 0.0 ;
 *     Teneur en Gd2O3 dans les crayons empoisonnés
 *     Nombre de crayons empoisonnés
 *------------------------------------------------------
-:: >>FileNuclData<< >>Evaluation<< >>Gestion<< >>AssType<<
+:: >>NGroups<< >>FileNuclData<< >>Evaluation<< >>Gestion<< >>AssType<<
    >>Teneur_I<< >>ThermExp<< >>CTRA<< ;
 EVALUATE Main_enri := Teneur_I I_TO_R 100. / ;
 
@@ -2586,8 +2588,16 @@ REAL     Na23BP := Na23BPf BP_Tconc  * ;
 
 INTEGER  Nmix := 145 ; ! Highest mix number must be equal to Nmix
 
+* Perform subgroup self-shielding with physical probability tables if
+* the current mesh has less than 295 groups. If it has 295 groups or
+* more, then use mathematical probability tables.
+STRING Autop ;
+IF NGroups 295 < THEN
+  EVALUATE Autop := "SUBG" ;
+ELSE
+  EVALUATE Autop := "PT" ;
+ENDIF ;
 ! Procedure de definition de la chaine de decroissance
-STRING Autop := "SUBG" ;
 Library := DeplChain :: <<Nmix>> <<FileNuclData>> <<Evaluation>>
                         <<LibGenre>> <<CTRA>> <<Autop>> ;
 
@@ -3104,6 +3114,36 @@ EVALUATE NumIso := 1 ;
 WHILE NumIso NbIso <= DO
   GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
   >>draglib<< >>RandIsoName<< ;
+  IF NamIso 'H1_H2O' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+        H1_H2O   = <<RandIsoName>>  <<H_mti>>
+      MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+        H1_H2O   = <<RandIsoName>>   <<H_mti>>
+    ;
+  ENDIF ;
+  IF NamIso 'B10' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+        B10      = <<RandIsoName>> <<B10_mti>>
+      MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+        B10      = <<RandIsoName>>  <<B10_mti>>
+    ;
+  ENDIF ;
+  IF NamIso 'B11' = irand -311 = NOT * THEN
+    Library := LIB: Library ::
+      CTRA <<CTRA>>
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+        B11      = <<RandIsoName>> <<B11_mti>>
+      MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+        B11      = <<RandIsoName>>  <<B11_mti>>
+    ;
+  ENDIF ;
   IF NamIso 'O16' = irand -311 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
@@ -3143,7 +3183,7 @@ WHILE NumIso NbIso <= DO
   IF NamIso 'U235' = irand -311 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
-      MIXS LIB: <<LibGenre>> FIL: draglibU235
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
         U5DET = <<RandIsoName>> 1.0E-9
       MIX 100 <<tfuel>> (* COMB *)
@@ -3153,7 +3193,7 @@ WHILE NumIso NbIso <= DO
   IF NamIso 'U238' = irand -311 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
-      MIXS LIB: <<LibGenre>> FIL: draglibU238
+      MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       MIX 100 <<tfuel>> (* COMB *)
         U238 = <<RandIsoName>> <<U8fuel>> <<iU8>> SHIB <<NomSSU238>>
     ;
