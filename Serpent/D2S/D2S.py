@@ -19,6 +19,7 @@ from collections import OrderedDict
 import faulthandler; faulthandler.enable()
 import lcm
 
+xsdata = '../PyNjoy2016/output/Universal.xsdata'
 #---
 #  Classes
 #---
@@ -88,7 +89,7 @@ class compo:
             # temperatures
             xsdata_subset = []
             # Go through xsdata file, find ace files of this isotope we're on
-            with open('../../../Njoy/Universal.xsdata') as xsdatafile:
+            with open('../' + xsdata) as xsdatafile:
                 xsdatalines = xsdatafile.readlines()
                 for xsdataline in xsdatalines:
                     # First field in xsdata file contains isotope's name
@@ -448,10 +449,15 @@ def InfiniteLattice(filepath):
     #---
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
     sss2.write('set title ' + '"Tihange ' + filename + '"\n')
-    sss2.write('set acelib "../../Njoy/Universal.xsdata"\n')
+    sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc periodic\n')
     sss2.write('set pop 6000 500 20\n')
     sss2.write('set ures 1\n')
+    sss2.write('set edepmode 2\n')
+    sss2.write('set gcu -1\n')
+    sss2.write('set cmm 0\n')
+    sss2.write('set shbuf 0 0\n')
+    sss2.write('set repro 0\n')
     sss2.write('plot 3 2500 2500\n')
     sss2.write('mesh 3 2500 2500\n\n')
     #
@@ -467,10 +473,16 @@ def FullCore(filepath, Assemblies, CB):
     sss2 = open('TihangeFullCore' + str(CB) + 'ppm.sss2', 'w')
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
     sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
-    sss2.write('set acelib "../../Njoy/Universal.xsdata"\n')
+    sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc black\n')
     sss2.write('set pop 500000 1000 200 1.0\n')
-    sss2.write('set ures 1\n\n')
+    sss2.write('set ures 1\n')
+    sss2.write('set edepmode 2\n')
+    sss2.write('set gcu -1\n')
+    sss2.write('set cmm 0\n')
+    sss2.write('set shbuf 0 0\n')
+    sss2.write('set repro 0\n')
+    sss2.write('\n')
     #---
     #  Perform a few consistency checks
     #---
@@ -703,9 +715,12 @@ def FullCore(filepath, Assemblies, CB):
     sss2.write('\n\n' + output)
     del top_compo
     #---
-    #  Tally on a grid larger than the core (2 more assemblies in each
-    #  direction), for possible energy deposition in the surroundings
-    #  Nota : energy deposition above and below the core are not tallied
+    #  To account for possible energy deposition in the surroundings, tally on
+    #  a grid larger than the core:
+    #  - radially, with 2 more assemblies in each direction,
+    #  - axially, with 3 bins : below the core, the active core itself, and
+    #    above the core. Each of these 3 axial bins has the same size as the
+    #    active core.
     #---
     xyn=len(mixs[0,0,:]) + 2*2
     xymax=str(assemblypitch*xyn/2)
@@ -713,7 +728,7 @@ def FullCore(filepath, Assemblies, CB):
     det = ('\n'
            + 'dx -' + xymax + ' ' + xymax +  ' ' + xyn + '\n'
            + 'dy -' + xymax + ' ' + xymax +  ' ' + xyn + '\n'
-           + 'dz 0.0 ' + str(sum(sizez)) + ' 1\n')
+           + 'dz -' + str(sum(sizez)) + ' ' + str(2*sum(sizez)) + ' 3\n')
     zpixel = str(int(2500*meshx[-1]/(meshb[-1] + sum(sizez) + mesht[-1])))
     #---
     #  Write plots and tallies options
