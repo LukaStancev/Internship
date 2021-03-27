@@ -67,12 +67,10 @@ cd ..
 #---
 mkdir -p TENDL-2019
 cd TENDL-2019
-wget https://tendl.web.psi.ch/tendl_2017/tar_files/O016.random.tgz
 wget https://tendl.web.psi.ch/tendl_2019/tar_files/Fe056.random.tgz
-mkdir -p O16 Fe56
-tar -xvzf O016.random.tgz -C O16
+mkdir -p Fe56
 tar -xvzf Fe056.random.tgz -C Fe56
-rm -f O016.random.tgz Fe056.random.tgz
+rm -f Fe056.random.tgz
 gzip -d Fe56/*.gz
 for iso in Zr090 Zr091 Zr092 Zr094 Zr096 Ag107 Ag109 In115 Cd106 Cd108 Cd110 Cd111 Cd112 Cd113 Cd114 Cd116 Fe054 Cr052 Ni058
 do
