@@ -220,7 +220,7 @@ ELSEIF Evaluation 'JEF22'       = THEN
   GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
 
 ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-       Evaluation 'JEFF312'  = +
+       Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
        Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
   GREP: MolarMasses :: GETVAL 'Si28 ' 1 >>si28<<  ;
@@ -274,7 +274,7 @@ REAL Zr96f :=  .0 ;
 REAL MZrNat ; ! Average Weight Ratio
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'  = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Zr90f :=  .5145 ;
@@ -349,7 +349,7 @@ REAL Ti50f := .0 ;
 REAL MTiNat ; ! Average Weight Ratio
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'  = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Ti46f := .0825 ;
@@ -392,7 +392,7 @@ REAL MSiNat ; ! Average Weight Ratio
 
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'  = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Si28f := .9222 ;
@@ -470,7 +470,7 @@ REAL Sn124f := .0  ;
 REAL MSnNat ; ! Average Weight Ratio
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Sn112f := .010  ;
@@ -629,7 +629,7 @@ REAL MCdNat ;
 
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE Cd106f := .0125 ;
@@ -689,7 +689,7 @@ REAL MKNat ; ! Average Weight Ratio
 
 
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311' = +
-   Evaluation 'JEFF312'  = +
+   Evaluation 'JEFF312'  = + Evaluation 'JEFF33'  = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE K39f := .9326 ;
@@ -734,6 +734,7 @@ REAL MSNat ; ! Average Weight Ratio
 ECHO "libtype:" Evaluation ;
 IF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
    Evaluation 'JEFF312'  = + Evaluation 'JEFF22'  = +
+   Evaluation 'JEFF33'   = +
    Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   EVALUATE S32f := .9502  ;

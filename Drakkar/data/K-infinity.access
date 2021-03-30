@@ -9,19 +9,19 @@ echo -e "\nExecute ${accessname}.access script\n"
 
 cp "$1"/proc/* .
 
-#--- main nuclear data file: JEFF-3.1.1
-rm -f D172JEFF311 # Deleting a Draglib file that could already exist in some setups
-if [ -f "$1/draglib/drglibJEFF-3.1.1" ] ; then
-    cp "$1"/draglib/drglibJEFF-3.1.1 D172JEFF311
+#--- main nuclear data file: JEFF-3.3
+rm -f D172JEFF33 # Deleting a Draglib file that could already exist in some setups
+if [ -f "$1/draglib/drglibJEFF-3.3" ] ; then
+    cp "$1"/draglib/drglibJEFF-3.3 D172JEFF33
 else
-    echo "drglibJEFF-3.1.1 file does not exist. Trying to download it..."
-    wget -O drglibJEFF-3.1.1 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.x/drglibJEFF-3.1.1
-    if [ ! -f "drglibJEFF-3.1.1" ] ; then
+    echo "drglibJEFF-3.3 file does not exist. Trying to download it..."
+    wget -O drglibJEFF-3.3 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.x/drglibJEFF-3.3
+    if [ ! -f "drglibJEFF-3.3" ] ; then
         echo "Cannot download missing Draglib file. Allow Internet access or download it to the Drakkar directory."
         exit 1
     fi
-    cp drglibJEFF-3.1.1 "$1"/draglib/. # For the future executions
-    mv drglibJEFF-3.1.1 D172JEFF311
+    cp drglibJEFF-3.3 "$1"/draglib/. # For the future executions
+    mv drglibJEFF-3.3 D172JEFF33
 fi
 
 #-- copy random nuclear data files (and not JEFF nuclear data file)
@@ -46,7 +46,7 @@ elif [ "$Evaluation" = "JEF22" ] ; then
     "Zr90" "Zr91" "Zr92" "Zr93" "Zr94" "Zr95" "Zr96" \
     "Cd106" "Cd108" "InNat" "Sn112" "Sn114" "K39" "K40" "K41" "In113")
 elif [ "$Evaluation" = "JEFF31" ] || [ "$Evaluation" = "JEFF311" ] || [ "$Evaluation" = "JEFF312" ] || \
-[ "$Evaluation" = "ENDFVII0" ] || [ "$Evaluation" = "ENDFVII1" ] ; then
+[ "$Evaluation" = "JEFF33" ] || [ "$Evaluation" = "ENDFVII0" ] || [ "$Evaluation" = "ENDFVII1" ] ; then
     #List of isotopes to be removed
     isoAExclure=( "H2O" "SiNat" "TiNat" "ZrNat" "InNat" "KNat" "In113")
 else

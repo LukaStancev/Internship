@@ -53,7 +53,9 @@ ELSEIF Evaluation 'JEF22'       = THEN
 ELSEIF Evaluation 'JEFF31'      = THEN
   EVALUATE LibId := 8 4 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
-ELSEIF Evaluation 'JEFF311'      = THEN
+ELSEIF Evaluation 'JEFF311'     = Evaluation 'JEFF33' = + THEN
+* For the isotopes that concern us, JEFF-3.3 and JEFF-3.1.1 provide the
+* same isotopes
   EVALUATE LibId := 8 5 * 1 + ;
   EVALUATE LibGenre := 'DRAGON' ;
 ELSEIF Evaluation 'JEFF312'      = THEN

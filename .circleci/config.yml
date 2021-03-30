@@ -14,7 +14,7 @@ jobs:
             cd Drakkar/Version5/Donjon/src
             make
       - run:
-          name: Tihange HZP JEFF-3.1.1
+          name: Tihange HZP JEFF-3.3
           command: |
             yum -y install wget # Required to download Draglib file
             cd Drakkar/data

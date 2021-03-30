@@ -330,9 +330,9 @@ IF FlagLibAu NOT THEN
     !!!-------------------------------------------------
   !!----------------------------------------------------
   ELSEIF Evaluation   "JEFF31" = Evaluation  "JEFF311" =
-         Evaluation  "JEFF312" = Evaluation "ENDFVII0" =
-         Evaluation "ENDFVII1" =
-         + + + + THEN
+         Evaluation  "JEFF312" = Evaluation "JEFF33"   =
+         Evaluation "ENDFVII0" = Evaluation "ENDFVII1" =
+         + + + + + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN
@@ -863,9 +863,9 @@ ELSE
     !!!-------------------------------------------------
   !!----------------------------------------------------
   ELSEIF Evaluation   "JEFF31" = Evaluation  "JEFF311" =
-         Evaluation  "JEFF312" = Evaluation "ENDFVII0" =
-         Evaluation "ENDFVII1" =
-         + + + + THEN
+         Evaluation  "JEFF312" = Evaluation "JEFF33"   =
+         Evaluation "ENDFVII0" = Evaluation "ENDFVII1" =
+         + + + + + THEN
   !!----------------------------------------------------
     !!!-------------------------------------------------
     IF     AssType "UOX" = THEN

@@ -585,67 +585,67 @@ EVALUATE NumIso := 1 ;
 WHILE NumIso NbIso <= DO
   GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
   >>draglib<< >>RandIsoName<< ;
-  IF NamIso 'H1_H2O' = irand -311 = NOT * THEN
+  IF NamIso 'H1_H2O' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<faH>> ;
   ENDIF ;
-  IF NamIso 'B10' = irand -311 = NOT * THEN
+  IF NamIso 'B10' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<B10>> ;
   ENDIF ;
-  IF NamIso 'B11' = irand -311 = NOT * THEN
+  IF NamIso 'B11' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<B11>> ;
   ENDIF ;
-  IF NamIso 'O16' = irand -311 = NOT * THEN
+  IF NamIso 'O16' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<O16>> ;
   ENDIF ;
-  IF NamIso 'Zr90' = irand -311 = NOT * THEN
+  IF NamIso 'Zr90' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Zr90>> ;
   ENDIF ;
-  IF NamIso 'Zr91' = irand -311 = NOT * THEN
+  IF NamIso 'Zr91' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Zr91>> ;
   ENDIF ;
-  IF NamIso 'Zr92' = irand -311 = NOT * THEN
+  IF NamIso 'Zr92' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Zr92>> ;
   ENDIF ;
-  IF NamIso 'Zr94' = irand -311 = NOT * THEN
+  IF NamIso 'Zr94' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Zr94>> ;
   ENDIF ;
-  IF NamIso 'Zr96' = irand -311 = NOT * THEN
+  IF NamIso 'Zr96' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Zr96>> ;
   ENDIF ;
-  IF NamIso 'Ni58' = irand -311 = NOT * THEN
+  IF NamIso 'Ni58' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Ni58>> ;
   ENDIF ;
-  IF NamIso 'Fe54' = irand -311 = NOT * THEN
+  IF NamIso 'Fe54' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Fe54>> ;
   ENDIF ;
-  IF NamIso 'Fe56' = irand -311 = NOT * THEN
+  IF NamIso 'Fe56' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Fe56>> ;
   ENDIF ;
-  IF NamIso 'Cr52' = irand -311 = NOT * THEN
+  IF NamIso 'Cr52' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
       <<NamIso>> = <<RandIsoName>> <<Cr52>> ;

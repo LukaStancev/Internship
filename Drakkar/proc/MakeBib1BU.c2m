@@ -96,7 +96,7 @@ STRING  BiblXS   := "SAPHYB"   ;
 * File containing multigroup nuclear data
 *---
 INTEGER NGroups := 172 ;
-STRING Evaluation := "JEFF311"  ;
+STRING Evaluation := "JEFF33"  ;
 STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 
 *--------------------------------------------------------------------
@@ -514,7 +514,7 @@ WHILE m dm <= DO
           GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
           >>draglib<< >>RandIsoName<< ;
           IF NamIso 'H1_H2O' = THEN
-            IF irand -311 = NOT THEN
+            IF irand -33 = NOT THEN
               Library := LIB: Library :: EDIT 0
                 CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
                 FIL: <<draglib>>
@@ -551,7 +551,7 @@ WHILE m dm <= DO
             ENDIF ;
           ENDIF ;
           IF NamIso 'B10' = THEN
-            IF irand -311 = NOT THEN
+            IF irand -33 = NOT THEN
               Library := LIB: Library :: EDIT 0
                 CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
                 FIL: <<draglib>>
@@ -588,7 +588,7 @@ WHILE m dm <= DO
             ENDIF ;
           ENDIF ;
           IF NamIso 'B11' = THEN
-            IF irand -311 = NOT THEN
+            IF irand -33 = NOT THEN
               Library := LIB: Library :: EDIT 0
                 CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
                 FIL: <<draglib>>
@@ -625,7 +625,7 @@ WHILE m dm <= DO
             ENDIF ;
           ENDIF ;
           IF NamIso 'O16' = THEN
-            IF irand -311 = NOT THEN
+            IF irand -33 = NOT THEN
               Library := LIB: Library :: EDIT 0
                 CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
                 FIL: <<draglib>>
@@ -662,7 +662,7 @@ WHILE m dm <= DO
             ENDIF ;
           ENDIF ;
           IF NamIso 'U235' = THEN
-            IF irand -311 = NOT THEN
+            IF irand -33 = NOT THEN
               Library := LIB: Library :: EDIT 0
                 CTRA <<CTRA>> MIXS LIB: <<LibGenre>>
                 FIL: <<draglib>>

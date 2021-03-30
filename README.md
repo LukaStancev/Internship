@@ -18,7 +18,7 @@ cd ../../../data
 ../runVersion5.sh Tihange.x2m
 ```
 
-This latter example is a simulation of the first start-up tests of [Tihange-1](https://inis.iaea.org/collection/NCLCollectionStore/_Public/11/511/11511367.pdf). It is based on JEFF-3.1.1 evaluation, with 172 energy groups (so-called XMAS energy mesh). Other Draglibs can be downloaded from: https://www.polymtl.ca/merlin/libraries.htm
+This latter example is a simulation of the first start-up tests of [Tihange-1](https://inis.iaea.org/collection/NCLCollectionStore/_Public/11/511/11511367.pdf). It is based on JEFF-3.3 evaluation, with 172 energy groups (so-called XMAS energy mesh). Other Draglibs can be downloaded from: https://www.polymtl.ca/merlin/libraries.htm
 
 From any ENDF files, it is also possible to produce your own Draglibs using Python scripts in PyNjoy2016 (see more [here](https://github.com/IRSN/PyNjoy2016)).
 

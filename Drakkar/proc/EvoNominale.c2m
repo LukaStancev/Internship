@@ -86,7 +86,7 @@ ENDIF ;
 * File containing multigroup nuclear data
 *---
 INTEGER NGroups := 172 ;
-STRING Evaluation := "JEFF311"  ;
+STRING Evaluation := "JEFF33"  ;
 STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 
 *=======================================================

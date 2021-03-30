@@ -387,7 +387,7 @@ IF Evaluation 'JEF22' = THEN
   'hf17' '9   ' 'hf18' '0   ' ;
 
 ELSEIF Evaluation 'ENDFVII1' = Evaluation 'JEFF311' =
-       Evaluation 'JEFF31' = + +
+       Evaluation 'JEFF31' = Evaluation 'JEFF33' = + + +
   THEN
   EVALUATE NbIsot := 90 ;
   EVALUATE 2NbIsot := NbIsot 2 * ;
@@ -511,7 +511,7 @@ IF Evaluation 'JEF22'      = THEN
   GREP: Awr :: GETVAL 'knat' 1 >>knat<< ;
 
 ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-       Evaluation 'JEFF312'  = +
+       Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
        Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   GREP: Awr :: GETVAL 'h1' 1 >>h1<< ;
   GREP: Awr :: GETVAL 'si28' 1 >>si28<< ;
@@ -637,7 +637,7 @@ ELSEIF Evaluation 'JEF22'       = THEN
   EVALUATE knat  := CNatRatio knat  * ;
 
 ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-       Evaluation 'JEFF312'  = +
+       Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
        Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
   EVALUATE h1    := CNatRatio h1    * ;
   EVALUATE si28  := CNatRatio si28  * ;
@@ -765,7 +765,7 @@ ELSEIF Evaluation 'JEF22'       = THEN
   MolarMasses := UTL: MolarMasses :: CREA 'Knat ' 1 = <<knat>> ;
 
 ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-       Evaluation 'JEFF312'  = +
+       Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
        Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;

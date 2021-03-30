@@ -324,7 +324,7 @@ ELSEIF Evaluation 'JEF22'       = THEN
   GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
 
 ELSEIF Evaluation 'JEFF31'   =   Evaluation 'JEFF311'  = +
-       Evaluation 'JEFF312'  = +
+       Evaluation 'JEFF312'  = + Evaluation 'JEFF33'   = +
        Evaluation 'ENDFVII0' = + Evaluation 'ENDFVII1' = + THEN
 
   GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
@@ -536,7 +536,8 @@ GREP: ListeIsot :: GETVAL 'Hf180' <<LibId>> NVAL 8 >>NomSSHf180<< ;
 GREP: ListeIsot :: GETVAL 'Cd110' <<LibId>> NVAL 8 >>NomSSCd110<< ;
 
 IF Evaluation 'ENDFVII1' = Evaluation 'ENDFVII0' = Evaluation 'JEFF31' =
- Evaluation 'JEFF311' = Evaluation 'JEFF312' = + + + + THEN
+ Evaluation 'JEFF311' = Evaluation 'JEFF312' = Evaluation 'JEFF33' =
+ + + + + + THEN
 
   GREP: ListeIsot :: GETVAL 'Zr90' <<LibId>> NVAL 8 >>NomSSZr90<< ;
   GREP: ListeIsot :: GETVAL 'Zr91' <<LibId>> NVAL 8 >>NomSSZr91<< ;
@@ -3114,7 +3115,7 @@ EVALUATE NumIso := 1 ;
 WHILE NumIso NbIso <= DO
   GetRandomIso Random :: <<NumIso>> >>NamIso<< >>irand<<
   >>draglib<< >>RandIsoName<< ;
-  IF NamIso 'H1_H2O' = irand -311 = NOT * THEN
+  IF NamIso 'H1_H2O' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3124,7 +3125,7 @@ WHILE NumIso NbIso <= DO
         H1_H2O   = <<RandIsoName>>   <<H_mti>>
     ;
   ENDIF ;
-  IF NamIso 'B10' = irand -311 = NOT * THEN
+  IF NamIso 'B10' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3134,7 +3135,7 @@ WHILE NumIso NbIso <= DO
         B10      = <<RandIsoName>>  <<B10_mti>>
     ;
   ENDIF ;
-  IF NamIso 'B11' = irand -311 = NOT * THEN
+  IF NamIso 'B11' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3144,7 +3145,7 @@ WHILE NumIso NbIso <= DO
         B11      = <<RandIsoName>>  <<B11_mti>>
     ;
   ENDIF ;
-  IF NamIso 'O16' = irand -311 = NOT * THEN
+  IF NamIso 'O16' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3180,7 +3181,7 @@ WHILE NumIso NbIso <= DO
         O16      = <<RandIsoName>>    <<O_UGd_fuel>>
     ;
   ENDIF ;
-  IF NamIso 'U235' = irand -311 = NOT * THEN
+  IF NamIso 'U235' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3190,7 +3191,7 @@ WHILE NumIso NbIso <= DO
         U235 = <<RandIsoName>> <<U5fuel>> <<iU5>> SHIB <<NomSSU235>>
     ;
   ENDIF ;
-  IF NamIso 'U238' = irand -311 = NOT * THEN
+  IF NamIso 'U238' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3198,7 +3199,7 @@ WHILE NumIso NbIso <= DO
         U238 = <<RandIsoName>> <<U8fuel>> <<iU8>> SHIB <<NomSSU238>>
     ;
   ENDIF ;
-  IF NamIso 'Zr90' = irand -311 = NOT * THEN
+  IF NamIso 'Zr90' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3222,7 +3223,7 @@ WHILE NumIso NbIso <= DO
         Zr90 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Zr91' = irand -311 = NOT * THEN
+  IF NamIso 'Zr91' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3246,7 +3247,7 @@ WHILE NumIso NbIso <= DO
         Zr91 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Zr92' = irand -311 = NOT * THEN
+  IF NamIso 'Zr92' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3270,7 +3271,7 @@ WHILE NumIso NbIso <= DO
         Zr92 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Zr94' = irand -311 = NOT * THEN
+  IF NamIso 'Zr94' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3294,7 +3295,7 @@ WHILE NumIso NbIso <= DO
         Zr94 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Zr96' = irand -311 = NOT * THEN
+  IF NamIso 'Zr96' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3318,7 +3319,7 @@ WHILE NumIso NbIso <= DO
         Zr96 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Ni58' = irand -311 = NOT * THEN
+  IF NamIso 'Ni58' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3354,7 +3355,7 @@ WHILE NumIso NbIso <= DO
         Ni58 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Fe54' = irand -311 = NOT * THEN
+  IF NamIso 'Fe54' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3392,7 +3393,7 @@ WHILE NumIso NbIso <= DO
         Fe54 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Fe56' = irand -311 = NOT * THEN
+  IF NamIso 'Fe56' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3430,7 +3431,7 @@ WHILE NumIso NbIso <= DO
         Fe56 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cr52' = irand -311 = NOT * THEN
+  IF NamIso 'Cr52' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3468,7 +3469,7 @@ WHILE NumIso NbIso <= DO
         Cr52 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'In115' = irand -311 = NOT * THEN
+  IF NamIso 'In115' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3486,7 +3487,7 @@ WHILE NumIso NbIso <= DO
         In115 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Ag107' = irand -311 = NOT * THEN
+  IF NamIso 'Ag107' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3504,7 +3505,7 @@ WHILE NumIso NbIso <= DO
         Ag107 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Ag109' = irand -311 = NOT * THEN
+  IF NamIso 'Ag109' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3522,7 +3523,7 @@ WHILE NumIso NbIso <= DO
         Ag109 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd106' = irand -311 = NOT * THEN
+  IF NamIso 'Cd106' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3540,7 +3541,7 @@ WHILE NumIso NbIso <= DO
         Cd106 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd108' = irand -311 = NOT * THEN
+  IF NamIso 'Cd108' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3558,7 +3559,7 @@ WHILE NumIso NbIso <= DO
         Cd108 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd110' = irand -311 = NOT * THEN
+  IF NamIso 'Cd110' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3576,7 +3577,7 @@ WHILE NumIso NbIso <= DO
         Cd110 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd111' = irand -311 = NOT * THEN
+  IF NamIso 'Cd111' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3594,7 +3595,7 @@ WHILE NumIso NbIso <= DO
         Cd111 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd112' = irand -311 = NOT * THEN
+  IF NamIso 'Cd112' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3612,7 +3613,7 @@ WHILE NumIso NbIso <= DO
         Cd112 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd113' = irand -311 = NOT * THEN
+  IF NamIso 'Cd113' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3630,7 +3631,7 @@ WHILE NumIso NbIso <= DO
         Cd113 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd114' = irand -311 = NOT * THEN
+  IF NamIso 'Cd114' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
@@ -3648,7 +3649,7 @@ WHILE NumIso NbIso <= DO
         Cd114 = <<RandIsoName>> 0.0
     ;
   ENDIF ;
-  IF NamIso 'Cd116' = irand -311 = NOT * THEN
+  IF NamIso 'Cd116' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>

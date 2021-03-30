@@ -11,34 +11,34 @@ SEQ_ASCII UOX255_Py12a :: FILE './_UOX255_Py12.ascii'  ;
 SEQ_ASCII UOX310_Py12a :: FILE './_UOX310_Py12.ascii'  ;
 *---
 *  Define random sampling for each isotope
-*  Default: use JEFF-3.1.1 for all isotopes (= -311)
+*  Default: use JEFF-3.3 for all isotopes (= -33)
 *---
-Random := MSTR:        :: PUT 1 O16    -311 ;
-Random := MSTR: Random :: PUT 1 H1_H2O -311 ;
-Random := MSTR: Random :: PUT 1 B10    -311 ;
-Random := MSTR: Random :: PUT 1 B11    -311 ;
-Random := MSTR: Random :: PUT 1 U235   -311 ;
-Random := MSTR: Random :: PUT 1 U238   -311 ;
-Random := MSTR: Random :: PUT 1 Zr90   -311 ;
-Random := MSTR: Random :: PUT 1 Zr91   -311 ;
-Random := MSTR: Random :: PUT 1 Zr92   -311 ;
-Random := MSTR: Random :: PUT 1 Zr94   -311 ;
-Random := MSTR: Random :: PUT 1 Zr96   -311 ;
-Random := MSTR: Random :: PUT 1 Ni58   -311 ;
-Random := MSTR: Random :: PUT 1 Fe54   -311 ;
-Random := MSTR: Random :: PUT 1 Fe56   -311 ;
-Random := MSTR: Random :: PUT 1 Cr52   -311 ;
-Random := MSTR: Random :: PUT 1 In115  -311 ;
-Random := MSTR: Random :: PUT 1 Ag107  -311 ;
-Random := MSTR: Random :: PUT 1 Ag109  -311 ;
-Random := MSTR: Random :: PUT 1 Cd106  -311 ;
-Random := MSTR: Random :: PUT 1 Cd108  -311 ;
-Random := MSTR: Random :: PUT 1 Cd110  -311 ;
-Random := MSTR: Random :: PUT 1 Cd111  -311 ;
-Random := MSTR: Random :: PUT 1 Cd112  -311 ;
-Random := MSTR: Random :: PUT 1 Cd113  -311 ;
-Random := MSTR: Random :: PUT 1 Cd114  -311 ;
-Random := MSTR: Random :: PUT 1 Cd116  -311 ;
+Random := MSTR:        :: PUT 1 O16    -33 ;
+Random := MSTR: Random :: PUT 1 H1_H2O -33 ;
+Random := MSTR: Random :: PUT 1 B10    -33 ;
+Random := MSTR: Random :: PUT 1 B11    -33 ;
+Random := MSTR: Random :: PUT 1 U235   -33 ;
+Random := MSTR: Random :: PUT 1 U238   -33 ;
+Random := MSTR: Random :: PUT 1 Zr90   -33 ;
+Random := MSTR: Random :: PUT 1 Zr91   -33 ;
+Random := MSTR: Random :: PUT 1 Zr92   -33 ;
+Random := MSTR: Random :: PUT 1 Zr94   -33 ;
+Random := MSTR: Random :: PUT 1 Zr96   -33 ;
+Random := MSTR: Random :: PUT 1 Ni58   -33 ;
+Random := MSTR: Random :: PUT 1 Fe54   -33 ;
+Random := MSTR: Random :: PUT 1 Fe56   -33 ;
+Random := MSTR: Random :: PUT 1 Cr52   -33 ;
+Random := MSTR: Random :: PUT 1 In115  -33 ;
+Random := MSTR: Random :: PUT 1 Ag107  -33 ;
+Random := MSTR: Random :: PUT 1 Ag109  -33 ;
+Random := MSTR: Random :: PUT 1 Cd106  -33 ;
+Random := MSTR: Random :: PUT 1 Cd108  -33 ;
+Random := MSTR: Random :: PUT 1 Cd110  -33 ;
+Random := MSTR: Random :: PUT 1 Cd111  -33 ;
+Random := MSTR: Random :: PUT 1 Cd112  -33 ;
+Random := MSTR: Random :: PUT 1 Cd113  -33 ;
+Random := MSTR: Random :: PUT 1 Cd114  -33 ;
+Random := MSTR: Random :: PUT 1 Cd116  -33 ;
 Random := DefRandomIso Random ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
