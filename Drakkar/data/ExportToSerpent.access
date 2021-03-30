@@ -10,18 +10,18 @@ echo -e "\nExecute ${accessname}.access script\n"
 cp "$1"/proc/* .
 
 #--- main nuclear data file: JEFF-3.3
-rm -f D172JEFF33 # Deleting a Draglib file that could already exist in some setups
-if [ -f "$1/draglib/drglibJEFF-3.3" ] ; then
-    cp "$1"/draglib/drglibJEFF-3.3 D172JEFF33
+rm -f D295JEFF33 # Deleting a Draglib file that could already exist in some setups
+if [ -f "$1/draglib/drglibJEFF-3.3_295" ] ; then
+    cp "$1"/draglib/drglibJEFF-3.3_295 D295JEFF33
 else
-    echo "drglibJEFF-3.3 file does not exist. Trying to download it..."
-    wget -O drglibJEFF-3.3 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.x/drglibJEFF-3.3
-    if [ ! -f "drglibJEFF-3.3" ] ; then
+    echo "drglibJEFF-3.3_295 file does not exist. Trying to download it..."
+    wget -O drglibJEFF-3.3_295 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.x/drglibJEFF-3.3_295
+    if [ ! -f "drglibJEFF-3.3_295" ] ; then
         echo "Cannot download missing Draglib file. Allow Internet access or download it to the Drakkar directory."
         exit 1
     fi
-    cp drglibJEFF-3.3 "$1"/draglib/. # For the future executions
-    mv drglibJEFF-3.3 D172JEFF33
+    cp drglibJEFF-3.3_295 "$1"/draglib/. # For the future executions
+    mv drglibJEFF-3.3_295 D295JEFF33
 fi
 
 #-- copy random nuclear data files (and not JEFF nuclear data file)

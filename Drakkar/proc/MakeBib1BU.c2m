@@ -95,7 +95,7 @@ STRING  BiblXS   := "SAPHYB"   ;
 *---
 * File containing multigroup nuclear data
 *---
-INTEGER NGroups := 172 ;
+INTEGER NGroups := 295 ;
 STRING Evaluation := "JEFF33"  ;
 STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
 
