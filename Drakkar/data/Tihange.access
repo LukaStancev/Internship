@@ -15,7 +15,7 @@ if [ -f "$1/draglib/drglibJEFF-3.1.1" ] ; then
     cp "$1"/draglib/drglibJEFF-3.1.1 D172JEFF311
 else
     echo "drglibJEFF-3.1.1 file does not exist. Trying to download it..."
-    wget -O drglibJEFF-3.1.1 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.1.1/draglibJeff3.1.1_PyNjoy2016
+    wget -O drglibJEFF-3.1.1 https://github.com/IRSN/PyNjoy2016/releases/download/JEFF-3.x/drglibJEFF-3.1.1
     if [ ! -f "drglibJEFF-3.1.1" ] ; then
         echo "Cannot download missing Draglib file. Allow Internet access or download it to the Drakkar directory."
         exit 1
