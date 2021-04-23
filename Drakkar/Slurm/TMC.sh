@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage : ./TENDL.sh
+# Usage : ./TMC.sh
 rm -rf ../Linux_x86_64
 inum=1
 while [ -d ../randomized_data_$inum ]

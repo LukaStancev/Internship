@@ -27,7 +27,7 @@ Serpent = {}
 Serpentpstd = {}
 Serpentmstd = {}
 # Loop for all Serpent
-respaths = glob.glob('../Serpent/UOX*.sss2_res.m')
+respaths = glob.glob('../Serpent/Assemblies_kinf/UOX*.sss2_res.m')
 respaths.sort()
 for respath in respaths:
     # Retrieve Serpent k-inf absorption-based estimator and its standard
@@ -164,11 +164,13 @@ fig, ax = plt.subplots()
 x = np.arange(len(Discrepancies))
 for i in range(nbBor):
     y = []
+    ypstd = []
+    ymstd = []
     Types = []
     xlabels = []
-    # Get mean discrepancy
-    for Type, Discrepancy in Discrepancies.items():
-        # Get discrepancy (for every type) in y
+    SortedDiscr = sorted(Discrepancies.items(), key=lambda x: x[1][1])
+    for Type, Discrepancy in SortedDiscr:
+        # Get mean discrepancy
         y.append(Discrepancy[i])
         # Construct legend from 'Type'. For example: '195_None', '255_Py8', ...
         Enrichment, Rods = Type.split('_')
@@ -180,14 +182,9 @@ for i in range(nbBor):
         elif Rods.startswith('Py'):
             Rods = Rods[2:] + ' Pyrex\nrods'
         xlabels.append(Enrichment + '\n' + Rods)
-    # Get discrepancy for +/- 1 sigma
-    ypstd = []
-    ymstd = []
-    for Type, Discrepancy in Discrepanciespstd.items():
-        ypstd.append(Discrepancy[i])
-    for Type, Discrepancy in Discrepanciesmstd.items():
-        ymstd.append(Discrepancy[i])
-    # Plot the data (discrepancy for the mean, -1sigma, +1sigma)
+        # Get discrepancy for +/- 1 sigma
+        ypstd.append(Discrepanciespstd[Type][i])
+        ymstd.append(Discrepanciesmstd[Type][i])
     ax.bar(x + i * dimw - 0.25, y, dimw,
            yerr = (np.array(y) - np.array(ymstd),
                    np.array(ypstd) - np.array(y)),
@@ -209,6 +206,8 @@ ax.set_title('Discrepancies of infinite multiplication factors\n'
              + 'Error bars correspond to the Monte-Carlo $1\sigma$ '
              + 'uncertainty.')
 plt.legend()
+# Add minor ticks
+ax.yaxis.set_minor_locator(ticker.MultipleLocator(100))
 # Tight layout prevents a label from exceeding the figure frame
 fig.tight_layout()
 fig.savefig('Kinf.pdf')
