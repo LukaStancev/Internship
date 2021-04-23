@@ -30,4 +30,4 @@ Assemblies[9] = '195_AIC'
 CB = 960 # ppm
 FullCore(filepath, Assemblies, CB)
 
-os.system('mv *.sss2 ../.')
+os.system('mv *.sss2 ../FullCore/.')

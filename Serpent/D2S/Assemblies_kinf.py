@@ -10,4 +10,4 @@ for geofilepath in glob.glob('../geo_compo/UOX*.geo'):
     print(filepath)
     InfiniteLattice(filepath)
 
-os.system('mv *.sss2 ../.')
+os.system('mv *.sss2 ../Assemblies_kinf/.')

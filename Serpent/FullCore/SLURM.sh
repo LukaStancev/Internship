@@ -7,8 +7,8 @@ then
     exit 1
 fi
 
-for input in UOX*.sss2
+for input in TihangeFullCore*ppm.sss2
 do
     echo $input
-    sbatch -t 00:10:00 -c 8 --mem-per-cpu=1G --wrap="srun $sss2 -omp 8 $input"
+    sbatch -c 40 --partition="seq,dev,par_IB" --mem=40G --wrap="srun $sss2 -omp 40 $input"
 done

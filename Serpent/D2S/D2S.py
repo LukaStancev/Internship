@@ -19,7 +19,7 @@ from collections import OrderedDict
 import faulthandler; faulthandler.enable()
 import lcm
 
-xsdata = '../PyNjoy2016/output/Universal.xsdata'
+xsdata = '../../PyNjoy2016/output/Universal.xsdata'
 #---
 #  Classes
 #---
@@ -89,7 +89,7 @@ class compo:
             # temperatures
             xsdata_subset = []
             # Go through xsdata file, find ace files of this isotope we're on
-            with open('../' + xsdata) as xsdatafile:
+            with open(xsdata) as xsdatafile:
                 xsdatalines = xsdatafile.readlines()
                 for xsdataline in xsdatalines:
                     # First field in xsdata file contains isotope's name
@@ -377,7 +377,7 @@ def sss2Assembly(filepath, filename, pinprefix, mixsuffix, univassmb):
                + '  mix' + str(mat) + mixsuffix + '       '
                + str(1000 + int(univassmb)) + ' -'
                + str(1100 + int(univassmb)) + '\n')
-    if univassmb == 0:
+    if int(univassmb) == 0:
         output += ('cell ' + str(300 + int(univassmb)) + '  ' + univassmb
                    + '  outside     ' + str(1100 + int(univassmb)) + '\n\n')
     #---
@@ -451,7 +451,7 @@ def InfiniteLattice(filepath):
     sss2.write('set title ' + '"Tihange ' + filename + '"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc periodic\n')
-    sss2.write('set pop 6000 500 20\n')
+    sss2.write('set pop 100000 1000 20\n')
     sss2.write('set ures 1\n')
     sss2.write('set edepmode 2\n')
     sss2.write('set gcu -1\n')
@@ -461,7 +461,7 @@ def InfiniteLattice(filepath):
     sss2.write('plot 3 2500 2500\n')
     sss2.write('mesh 3 2500 2500\n\n')
     #
-    output = sss2Assembly(filepath, filename, '', '', 0)
+    output = sss2Assembly(filepath, filename, '', '', 0)[0]
     sss2.write(output)
     sss2.close()
 # Main function for 3D full cores
@@ -475,7 +475,7 @@ def FullCore(filepath, Assemblies, CB):
     sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc black\n')
-    sss2.write('set pop 500000 1000 200 1.0\n')
+    sss2.write('set pop 200000 2000 200 1.0\n')
     sss2.write('set ures 1\n')
     sss2.write('set edepmode 2\n')
     sss2.write('set gcu -1\n')
@@ -737,7 +737,6 @@ def FullCore(filepath, Assemblies, CB):
     sss2.write('plot 3 5000 5000 100.0\n')
     sss2.write('plot 2 ' + zpixel + ' 2500\n')
     sss2.write('mesh 3 5000 5000\n')
-    sss2.write('det -4' + det + 'dr -4 void\n')
     sss2.write('det -6' + det + 'dr -6 void\n')
     sss2.write('det -7' + det + 'dr -7 void\n')
     sss2.write('det -8' + det + 'dr -8 void\n')
