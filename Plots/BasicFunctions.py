@@ -25,6 +25,15 @@ def GetCoreLayout(nbassembly):
     FullCoreLayout = UnfoldQuarter(CoreLayout)
     return CoreLayout, FullCoreLayout
 
+# Layout for Serpent output tallies
+# outside : number of assembly-sized tallies outside the core, on each side
+def GetSerpentLayout(FullCoreLayout, outside):
+    hstack = np.zeros((len(FullCoreLayout), outside))
+    SerpentLayout = np.hstack([hstack, FullCoreLayout, hstack])
+    vstack = np.zeros((outside, len(FullCoreLayout) + 2*outside))
+    SerpentLayout = np.vstack([vstack, SerpentLayout, vstack])
+    return SerpentLayout
+
 # Unfold a quarter core on a full core layout
 def UnfoldQuarter(quarter):
     # Prepare upper core layout, minus central vertical line

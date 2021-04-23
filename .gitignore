@@ -24,8 +24,12 @@ Drakkar/Version5/Trivac/src/Trivac
 **/*_res.m
 **/*_core0.m
 **/*_det0.m
-# Serpent inputs
+**/*_stat.m
+**/*_his0.m
+**/*.csw
+# Serpent inputs and temporary SLURM inputs
 **/*.sss2
+Serpent/TMC/*_*.sh
 
 # D2S input files
 **/*.geo
