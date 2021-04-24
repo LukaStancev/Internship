@@ -180,8 +180,8 @@ GREP: ListeIsot :: GETVAL 'InNat' <<LibId>> NVAL 8 >>NomInNat<< ;
 *--------------------------------------------------------------------
 !------ Données du modérateur ------
 REAL MBNat   B10f    B11f    ;
-REAL BTot    ;
-REAL H2O_mod B10_mod B11_mod ;
+REAL BTot_mod    ;
+REAL H2O_mod ;
 REAL H_mod O_mod h1 ;
 REAL MH2O := 18.01528 ;
 
@@ -194,11 +194,7 @@ GREP: MolarMasses :: GETVAL 'H1  ' 1  >>h1<<  ;
 EVALUATE H_mod := dMod avo_conc * MH2O / 2. * ;   ! En atomes/vol
 EVALUATE O_mod := dMod avo_conc * MH2O / ;   ! En atomes/vol
 EVALUATE H2O_mod := 0. ;
-EVALUATE BTot  := dMod CB * 1.E-6 * avo_conc * MBNat / ;
-
-EVALUATE B10_mod := BTot B10f * ;             ! En atomes/vol
-EVALUATE B11_mod := BTot B11f * ;             ! En atomes/vol
-
+EVALUATE BTot_mod  := dMod CB * 1.E-6 * avo_conc * MBNat / ;
 
 !---- Données du zircaloy ----
 REAL MZr4 Zr4Conc ;
@@ -329,15 +325,14 @@ EVALUATE SSConc := dSS avo_conc * MSS304 / ; ! En atomes/vol
 * Calcul des fractions atomiques volumiques des différents constituants
 *--------------------------------------------------------------------
 
-REAL faH2O faB10 faB11 faZr4 faInc faSS faHe ;
+REAL faH2O faB faZr4 faInc faSS faHe ;
 REAL faH   faO ;
 
 EVALUATE faH2O := 0. ;
 EVALUATE faH := H_mod fvMod * ;
 EVALUATE faO := O_mod fvMod * ;
 
-EVALUATE faB10 := B10_mod fvMod * ;
-EVALUATE faB11 := B11_mod fvMod * ;
+EVALUATE faB := BTot_mod fvMod * ;
 
 EVALUATE faZr4 := Zr4Conc fvZr4 * ;
 
@@ -350,8 +345,8 @@ EVALUATE faSS := SSConc fvSS304 * ;
 *--------------------------------------------------------------------
 
 ! Prop = fraction isotope x quantité du milieu dans sa fraction de volume
-REAL B10 := B10f faB10 * B10BInf faInc * + ;
-REAL B11 := B11f faB11 * B11BInf faInc * + ;
+REAL B10 := B10f faB * B10BInf faInc * + ;
+REAL B11 := B11f faB * B11BInf faInc * + ;
 REAL Fe54 := Fe54Z4f faZr4 * Fe54Inf faInc * Fe54SSf faSS * + + ;
 REAL Fe56 := Fe56Z4f faZr4 * Fe56Inf faInc * Fe56SSf faSS * + + ;
 REAL Fe57 := Fe57Z4f faZr4 * Fe57Inf faInc * Fe57SSf faSS * + + ;
