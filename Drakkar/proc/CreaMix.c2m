@@ -3129,20 +3129,56 @@ WHILE NumIso NbIso <= DO
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        B10      = <<RandIsoName>> <<B10BInc>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        B10      = <<RandIsoName>> <<B10BGr>>
       MIX 5 <<tmod>> NOEV ! (* Eau normale *)
         B10      = <<RandIsoName>> <<B10_mti>>
       MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-        B10      = <<RandIsoName>>  <<B10_mti>>
+        B10      = <<RandIsoName>> <<B10_mti>>
+      MIX 23 <<tmod>> NOEV (* ABSO B4C *)
+        B10B     = <<RandIsoName>> <<B10Brod>>
+      MIX 65 <<tmod>> (* BP Pyrex *)
+        B10      = <<RandIsoName>> <<B10BP>>
+      MIX 100 <<tfuel>> (* COMB *)
+        B10      = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        B10      = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        B10      = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        B10      = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        B10      = <<RandIsoName>> 0.0
     ;
   ENDIF ;
   IF NamIso 'B11' = irand -33 = NOT * THEN
     Library := LIB: Library ::
       CTRA <<CTRA>>
       MIXS LIB: <<LibGenre>> FIL: <<draglib>>
+      MIX 2 <<tmod>> NOEV (* Inconel *)
+        B11      = <<RandIsoName>> <<B11BInc>>
+      MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+        B11      = <<RandIsoName>> <<B11BGr>>
       MIX 5 <<tmod>> NOEV ! (* Eau normale *)
         B11      = <<RandIsoName>> <<B11_mti>>
       MIX 6   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
-        B11      = <<RandIsoName>>  <<B11_mti>>
+        B11      = <<RandIsoName>> <<B11_mti>>
+      MIX 23 <<tmod>> NOEV (* ABSO B4C *)
+        B11B     = <<RandIsoName>> <<B11Brod>>
+      MIX 65 <<tmod>> (* BP Pyrex *)
+        B11      = <<RandIsoName>> <<B11BP>>
+      MIX 100 <<tfuel>> (* COMB *)
+        B11      = <<RandIsoName>> 0.0
+      MIX 110 <<tfuel>> (* COMB_P [LOW PU] *)
+        B11      = <<RandIsoName>> 0.0
+      MIX 120 <<tfuel>> (* COMB_I [AVG PU] *)
+        B11      = <<RandIsoName>> 0.0
+      MIX 130 <<tfuel>> (* COMB_C [HIGH PU] *)
+        B11      = <<RandIsoName>> 0.0
+      MIX 140 <<tfuel>> (* COMB with Gd *)
+        B11      = <<RandIsoName>> 0.0
     ;
   ENDIF ;
   IF NamIso 'O16' = irand -33 = NOT * THEN
