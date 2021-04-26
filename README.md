@@ -22,7 +22,7 @@ This latter example is a simulation of the first start-up tests of [Tihange-1](h
 
 From any ENDF files, it is also possible to produce your own Draglibs using Python scripts in PyNjoy2016 (see more [here](https://github.com/IRSN/PyNjoy2016)).
 
-The power distribution can be accessed through that [kind of command](https://github.com/IRSN/SalinoPhD/blob/1abc854045630af1af45fc0e682fb4aee5cea29e/Drakkar/Reference/Diff.sh#L22) (for a quick peek) or plotted with Matplotlib through PyGan (a Python interface for Version5 ; an example [here](https://github.com/IRSN/SalinoPhD/blob/master/Plots/2Dpow.py)).
+The power distribution can be accessed through that [kind of command](https://github.com/IRSN/SalinoPhD/blob/1abc854045630af1af45fc0e682fb4aee5cea29e/Drakkar/Reference/Diff.sh#L22) (for a quick peek) or plotted with Matplotlib through PyGan (a Python interface for Version5 ; an example [here](https://github.com/IRSN/SalinoPhD/blob/ce12a2d121a9e9872b1677fd13fca0bbb7aa9587/Plots/PowDifference.py#L122-L136)).
 
 ## Disclaimer
 

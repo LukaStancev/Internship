@@ -1,6 +1,6 @@
 #
-#  Plotting power uncertainty on 2D maps
-#  Usage : python3 2Dpow.py
+#  Plotting power on 2D maps for TMC samples
+#  Usage : python3 TMC.py
 #  Author ; V. Salino (IRSN), 02/2021
 #
 
@@ -9,6 +9,7 @@ import lcm
 import numpy as np
 from scipy.stats import skew
 from scipy.stats import kurtosis
+import math
 import os
 import glob
 import matplotlib
@@ -54,7 +55,7 @@ for controlrod in controlrods:
         # Determine which isotope was randomly sampled in order to store the
         # obtained power distribution in the right place
         for iso in isotopes:
-            if int(ResultFile[iso]) != -311:
+            if int(ResultFile[iso]) != -33:
                 powers[iso].append(power)
         del ResultFile
     # Convert this list of 1D numpy array into a 2D numpy array:
@@ -180,8 +181,8 @@ for controlrod in controlrods:
         #---
         #  Save plot as pdf (vectorized)
         #---
-        os.system('mkdir -p output_2Dpow')
-        fig.savefig('output_2Dpow/' + controlrod + '_' + iso + '.pdf',
+        os.system('mkdir -p output_TMC')
+        fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
                     bbox_extra_artists=[st], bbox_inches='tight')
         #---
         #  Clean-up for next plot
@@ -279,7 +280,7 @@ for controlrod in controlrods:
             #---
             #  Save plot as pdf (vectorized)
             #---
-            fig.savefig('output_2Dpow/' + stat + '_' + controlrod + '_' + iso
+            fig.savefig('output_TMC/' + stat + '_' + controlrod + '_' + iso
                         + '.pdf', bbox_extra_artists=[st], bbox_inches='tight')
             #---
             #  Clean-up for next plot
@@ -288,8 +289,8 @@ for controlrod in controlrods:
     #---
     #  Merge pdf with ghostscript
     #---
-    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=output_2Dpow/'
-              + controlrod + '.pdf -dBATCH output_2Dpow/' + controlrod
+    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=output_TMC/'
+              + controlrod + '.pdf -dBATCH output_TMC/' + controlrod
               + '_*.pdf')
 #---
 #  Plot, as a summary, the maximum relative standard deviation on an assembly
@@ -348,10 +349,15 @@ plt.tight_layout()
 #---
 #  Save plot as pdf (vectorized)
 #---
-fig.savefig('output_2Dpow/Summary.pdf')
+fig.savefig('output_TMC/Summary.pdf')
 #---
 #  Clean-up
 #---
 plt.close('all')
-
+print('Rough magnitude order of the maximum total uncertainty:')
+for CR in controlrods:
+    ssum = np.sum(list(maxstd[CR].values()))
+    print(text[CR] + ', 3 sigma, normal sum = ' + str(3*ssum))
+    qsum = math.sqrt(np.sum(np.array(list(maxstd[CR].values()))**2))
+    print(text[CR] + ', 2 sigma, quadratic sum = ' + str(2*qsum))
 print("Plotting completed")

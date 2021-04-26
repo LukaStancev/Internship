@@ -48,7 +48,7 @@ do
     cp ../data/Tihange.x2m    Tihange_${iso}_${irand}.x2m
     cp ../data/Tihange.access Tihange_${iso}_${irand}.access
     cp ../data/Tihange.save   Tihange_${iso}_${irand}.save
-    # Change the isotope from JEFF-3.3 to a random one
+    # Change the isotope evaluation from JEFF-3.3 best-estimate to a randomly sampled one
     sed -i 's/'$iso'.*/'$iso' '$irand' ;/' Tihange_${iso}_${irand}.x2m
     # Writing Slurm instruction file
     echo "#!/bin/bash"                                                 > ${iso}_${irand}_Tihange.sh
