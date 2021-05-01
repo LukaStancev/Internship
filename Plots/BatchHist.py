@@ -165,8 +165,8 @@ for controlrod in controlrods:
     #---
     #  Save plot as pdf (vectorized)
     #---
-    os.system('mkdir -p BatchHist')
-    fig.savefig('BatchHist/' + controlrod + '.pdf', extra_artists=[st],
+    os.system('mkdir -p output_BatchHist')
+    fig.savefig('output_BatchHist/' + controlrod + '.pdf', extra_artists=[st],
                 bbox_inches='tight')
     #---
     #  Clean-up for next plot

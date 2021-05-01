@@ -74,7 +74,12 @@ CoreLayout, FullCoreLayout = GetCoreLayout(len(powers['ARO']['EDF']))
 #---
 #  Serpent power distributions
 #---
-for file in list(glob.glob('../Serpent/FullCore/*.sss2_det0.m')):
+relstd = {}
+# Storage for independant runs' results
+indruns = {}
+for controlrod in controlrods:
+    indruns[controlrod] = []
+for file in list(glob.glob('../Serpent/BatchHist/Tihange*ppm_*.sss2_his0.m')):
     cbor = file.split('/')[-1].split('_')[0]
     cbor = int(re.findall(r'\d+', cbor)[0])
     if cbor == 1206:
@@ -83,42 +88,21 @@ for file in list(glob.glob('../Serpent/FullCore/*.sss2_det0.m')):
         controlrod = 'D'
     elif cbor == 960:
         controlrod = 'CD'
-    # Retrieve Serpent detector output
-    det = serpentTools.read(file)
-    # Total energy deposition, see
-    # http://serpent.vtt.fi/mediawiki/index.php/ENDF_reaction_MT%27s_and_macroscopic_reaction_numbers
-    reaction = '-80'
-    power = det.detectors[reaction].tallies
-    if reaction == '-80':
-        power = power[0]
-    # Number of assembly-sized tallies outside the core, on each side
-    outside = 2
-    # Produce the core layout corresponding to tallies
-    hstack = np.zeros((len(FullCoreLayout), outside))
-    TalliesLayout = np.hstack([hstack, FullCoreLayout, hstack])
-    vstack = np.zeros((outside, len(FullCoreLayout) + 2*outside))
-    TalliesLayout = np.vstack([vstack, TalliesLayout, vstack])
-    # Compute fraction of power delivered in the reflector
-    corepower = np.where(TalliesLayout == 0, 0, power[1])
-    radialreflpower = np.where(TalliesLayout == 1, 0, power[1])
-    botreflpower = np.sum(power[0])
-    topreflpower = np.sum(power[2])
-    reflpower = np.sum(radialreflpower) + botreflpower + topreflpower
-    print('Fraction of the power Serpent delivers in the reflector = '
-          + str(np.sum(reflpower)/np.sum(power)) + ' (' + controlrod + ')')
-    # Ignore reflector power and renormalize core power
-    corepower = corepower/np.sum(corepower)*np.count_nonzero(corepower)
-    # The input is symmetrical by eighth, so we can symmetrize (a fold followed
-    # by an unfold) in order to increase the statistical strength
-    symcorepower = UnfoldEighth(FoldEighth(corepower))
-    # Estimate the uncertainty
-    sym = symcorepower
-    unsym = corepower
-    reldif = unsym[np.nonzero(unsym)] / sym[np.nonzero(sym)] - 1
-    print("min, max (%)=" + str(np.min(reldif)*100) + ", "
-          + str(np.max(reldif)*100))
-    # Remove all powers equal to zero
-    powers[controlrod]['Serpent'] = symcorepower[np.nonzero(symcorepower)]
+    else:
+        raise Exception(cbor + ' unknown.')
+    # Read that Serpent history file
+    indruns[controlrod].append(ReadPdistrSerpent(file, FullCoreLayout))
+for controlrod in controlrods:
+    # Convert this list of n-D NumPy array into a (n+1)-D NumPy array
+    indruns[controlrod] = np.array(indruns[controlrod])
+    # Mean indruns[runs, generations, iassembly] over active generations
+    indact = np.mean(indruns[controlrod][:, 198: ,:], axis = 1)
+    # Mean over independant runs
+    mean = np.mean(indact, axis = 0)
+    powers[controlrod]['Serpent'] = mean
+    # Relative standard-deviation (%) over independant runs
+    std = np.std(indact, axis = 0)
+    relstd[controlrod] = std/mean*100
 #---
 #  Drakkar power distributions
 #---
@@ -148,6 +132,8 @@ for controlrod in controlrods:
     for source in sources:
         # Show only a quarter of the core
         powerplot = fold(Deploy2D(powers[controlrod][source], FullCoreLayout))
+        if source == 'Serpent':
+            relstdplot = fold(Deploy2D(relstd[controlrod], FullCoreLayout))
         # Replace every zeroes with NaNs, in order to easily get them colored
         # in white (with set_bad)
         powerplot = np.where(np.isclose(powerplot, 0), float('nan'), powerplot)
@@ -175,6 +161,13 @@ for controlrod in controlrods:
                     text = str('{:.2f}'.format(round(powerplot[i, j], 2)))
                     ax.text(j, i, text, fontsize = fontsize_, color = 'black',
                             ha = 'center', va = 'center')
+                    # If Serpent is being plotted, add its 1-sigma relative
+                    # deviation
+                    if source == 'Serpent':
+                        text = '{:.2f}'.format(round(relstdplot[i, j], 2))
+                        text = (r'$\pm$' + str(text) + '%')
+                        ax.text(j, i + 0.33, text, fontsize = fontsize_ - 2,
+                                color = 'black', ha = 'center', va = 'center')
         # Add Battleship-style coordinates as ticks
         ax.xaxis.tick_bottom()
         xlabels = ['H', 'G', 'F', 'E', 'D', 'C', 'B', 'A']
@@ -188,13 +181,20 @@ for controlrod in controlrods:
             txt = source + ' pseudo-measured'
         else:
             txt = source + ' JEFF-3.3'
-        fig.suptitle(txt + ' power distribution on Tihange\nFirst zero-power '
+        txt = (txt + ' power distribution on Tihange\nfirst zero-power '
                      + 'start-up, ' + CRtext[controlrod])
+        if source == 'Serpent':
+            nbruns = np.shape(indruns[controlrod])[0]
+            txt += ('\n' + r'Monte-Carlo $1\sigma$ uncertainty from '
+                    + str(nbruns) + ' independant\n'
+                    + 'simulations with different random seeds')
+            plt.subplots_adjust(top = 0.85)
+        st = fig.suptitle(txt)
         #---
         #  Save plot as pdf (vectorized)
         #---
         fig.savefig('output_PowDifference/' + source + '_' + controlrod
-                    + '.pdf', bbox_inches='tight')
+                    + '.pdf', extra_artists=[st], bbox_inches='tight')
         #---
         #  Clean-up for next plot
         #---
@@ -231,7 +231,9 @@ for controlrod in controlrods:
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
         current_cmap = im.get_cmap()
         current_cmap.set_bad(color = 'white')
-        cbar.ax.tick_params(labelsize = 15)
+        cbar.ax.tick_params(labelsize = 12)
+        ylabels = [str(i) + '%' for i in list(np.arange(-3, 4)*5)]
+        cbar.ax.set_yticklabels(ylabels)
         # Add percent deviation inside each box
         fontsize_ = 10
         for i in range(len(discrp)):
@@ -255,7 +257,7 @@ for controlrod in controlrods:
         #  Add a title
         #---
         fig.suptitle('Relative difference in power distribution between\n'
-                     + a + ' and ' + b + ' on Tihange\nFirst zero-power '
+                     + a + ' and ' + b + ' on Tihange\nfirst zero-power '
                      'start-up, ' + CRtext[controlrod])
         #---
         #  Save plot as pdf (vectorized)
