@@ -91,7 +91,7 @@ for file in list(glob.glob('../Serpent/BatchHist/Tihange*ppm_*.sss2_his0.m')):
     else:
         raise Exception(cbor + ' unknown.')
     # Read that Serpent history file
-    indruns[controlrod].append(ReadPdistrSerpent(file, FullCoreLayout))
+    indruns[controlrod].append(ReadPdistrHistSerpent(file, FullCoreLayout))
 for controlrod in controlrods:
     # Convert this list of n-D NumPy array into a (n+1)-D NumPy array
     indruns[controlrod] = np.array(indruns[controlrod])
@@ -100,9 +100,9 @@ for controlrod in controlrods:
     # Mean over independant runs
     mean = np.mean(indact, axis = 0)
     powers[controlrod]['Serpent'] = mean
-    # Relative standard-deviation (%) over independant runs
+    # Relative standard error of the mean (%)
     std = np.std(indact, axis = 0)
-    relstd[controlrod] = std/mean*100
+    relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*100
 #---
 #  Drakkar power distributions
 #---
@@ -185,9 +185,9 @@ for controlrod in controlrods:
                      + 'start-up, ' + CRtext[controlrod])
         if source == 'Serpent':
             nbruns = np.shape(indruns[controlrod])[0]
-            txt += ('\n' + r'Monte-Carlo $1\sigma$ uncertainty from '
-                    + str(nbruns) + ' independant\n'
-                    + 'simulations with different random seeds')
+            txt += ('\n' + r'Relative standard error of the mean '
+                    + '($1\sigma$) from ' + str(nbruns) + '\n'
+                    + 'independant simulations with different random seeds')
             plt.subplots_adjust(top = 0.85)
         st = fig.suptitle(txt)
         #---
