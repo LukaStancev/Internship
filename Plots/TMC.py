@@ -135,7 +135,7 @@ for controlrod in controlrods:
                                    density = True)
                     # Compute relative standard deviation for each assembly
                     mean = np.mean(Powers2D[iso][:, x, y])
-                    relstd = np.std(Powers2D[iso][:, x, y])/mean*100
+                    relstd = np.std(Powers2D[iso][:, x, y], ddof = 1)/mean*100
                     textstr = (r'$\mu$=%.2f' % mean + '\n'
                                + r'$\sigma$=%.1f%%' % (relstd, ))
                     # Store its maximum for future purposes (summary plot)
@@ -240,7 +240,8 @@ for controlrod in controlrods:
             for x in range(0, len(CoreLayout[0, :])):
                 for y in range(0, len(CoreLayout[:, 0])):
                     if CoreLayout[x, y] == 1:
-                        SD[i, x, y] = (np.std(Powers2D[iso][:i + 1, x, y])
+                        SD[i, x, y] = (np.std(Powers2D[iso][:i + 1, x, y],
+                                       ddof = 1)
                                        /np.mean(Powers2D[iso][:i + 1, x, y])
                                        *100)
                         SK[i, x, y] = skew(Powers2D[iso][:i + 1, x, y])

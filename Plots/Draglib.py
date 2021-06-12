@@ -185,8 +185,8 @@ for draglibpath in directories:
         #  relative standard deviation (in %) over every samples
         #---
         XSs = np.array(XSs)
-        XS = np.mean(XSs, axis=0)
-        relstdXS = np.std(XSs, axis=0)/XS*100
+        XS = np.mean(XSs, axis = 0)
+        relstdXS = np.std(XSs, axis = 0, ddof = 1)/XS*100
         #---
         #  Keep relative standard deviation only when the cross section is
         #  larger than minsig b (for threshold reactions)

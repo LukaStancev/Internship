@@ -101,7 +101,7 @@ for controlrod in controlrods:
     mean = np.mean(indact, axis = 0)
     powers[controlrod]['Serpent'] = mean
     # Relative standard error of the mean (%)
-    std = np.std(indact, axis = 0)
+    std = np.std(indact, axis = 0, ddof = 1)
     relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*100
 #---
 #  Drakkar power distributions
