@@ -7,6 +7,7 @@
 # Imports
 import numpy as np
 import math
+from scipy.stats import moment
 import serpentTools
 from serpentTools.settings import rc
 
@@ -77,7 +78,7 @@ def ReadPdistrSerpent(file, FullCoreLayout, msg):
     return symcorepower[np.nonzero(symcorepower)]
 
 # Retrieve a per-batch Serpent power distribution
-def ReadPdistrSerpent(file, FullCoreLayout):
+def ReadPdistrHistSerpent(file, FullCoreLayout):
     SerpentLayout = GetSerpentLayout(FullCoreLayout, 2)
     # Read that Serpent history file
     hist = serpentTools.read(file)
@@ -199,3 +200,24 @@ def decomment(csvfile):
     for row in csvfile:
         raw = row.split('#')[0].strip()
         if raw: yield raw
+
+#---
+#  Functions useful for calculating standard errors (SE) for standard
+#  deviation (SD), skewness (SK) and excess kurtosis (KU)
+#---
+# https://stats.stackexchange.com/questions/156518/what-is-the-standard-error-of-the-sample-standard-deviation
+def SE_Variance(sample, std):
+    n = len(sample)
+    fourth = moment(sample, moment = 4)
+    return np.sqrt(1/n*(fourth - (n - 3)/(n - 1)*std**4))
+def SE_SD(sample):
+    std = np.std(sample, ddof = 1)
+    return SE_Variance(sample, std)/(2*std)
+# https://www.researchgate.net/publication/285590690_Standard_errors_A_review_and_evaluation_of_standard_error_estimators_using_Monte_Carlo_simulations
+def SE_SD_Normal(n):
+    return 1/np.sqrt(2*(n-1))
+def SE_SK(n):
+    return np.sqrt( (6*n*(n-1)) / ((n - 2)*(n + 1)*(n + 3)) )
+def SE_KU(n):
+    return 2*SE_SK(n)*np.sqrt( (n**2 - 1) / ((n - 3)*(n + 5)) )
+

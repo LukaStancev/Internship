@@ -16,6 +16,7 @@ import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from matplotlib.gridspec import GridSpec
 from BasicFunctions import *
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
@@ -28,12 +29,24 @@ text['CD'] = 'C and D rod banks inserted'
 # Create a dictionary to store the standard deviation of the assembly with the
 # most uncertain power, among all those assemblies in the core.
 maxstd = {}
+# ...and it's standard error
+maxstderr = {}
+# Same for maximum/minimum skewness and kurtosis
+minSK = {}
+maxSK = {}
+minKU = {}
+maxKU = {}
+nsamples = {}
 for controlrod in controlrods:
     print('controlrod = ' + controlrod)
     maxstd[controlrod] = {}
+    maxstderr[controlrod] = {}
+    minSK[controlrod] = {}
+    maxSK[controlrod] = {}
+    minKU[controlrod] = {}
+    maxKU[controlrod] = {}
     # Create links toward every available power distribution
-    os.system('ln -s ../Drakkar/Linux_x86_64/_Power' + controlrod
-              + '_*.ascii .')
+    os.system('ln -s ../Drakkar/Linux_TMC/_Power' + controlrod + '_*.ascii .')
     # List isotopes we've been (potentially) randomly sampling
     firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
@@ -98,8 +111,14 @@ for controlrod in controlrods:
     #---
     for iso in isotopes:
         print(iso)
+        nsamples[iso] = len(Powers2D[iso][:, 0, 0])
         # Initialize maximum relative standard deviation to zero
         maxstd[controlrod][iso] = 0
+        maxstderr[controlrod][iso] = 0
+        minSK[controlrod][iso] = math.inf
+        maxSK[controlrod][iso] = -math.inf
+        minKU[controlrod][iso] = math.inf
+        maxKU[controlrod][iso] = -math.inf
         # Initialize figure
         fig, axs = plt.subplots(8, 8, sharex = 'all', figsize = (8, 8),
                                 gridspec_kw = {'hspace': 0, 'wspace': 0})
@@ -120,20 +139,38 @@ for controlrod in controlrods:
                     textstr = (r'$\mu$=%.2f' % mean + '\n'
                                + r'$\sigma$=%.1f%%' % (relstd, ))
                     # Store its maximum for future purposes (summary plot)
-                    maxstd[controlrod][iso] = max(relstd,
-                                                  maxstd[controlrod][iso])
+                    if relstd > maxstd[controlrod][iso]:
+                        maxstd[controlrod][iso] = relstd
+                        SE = SE_SD(Powers2D[iso][:, x, y])
+                        maxstderr[controlrod][iso] = SE/mean*100
                     # Compute skewness and kurtosis only if sigma is large
                     # enough (> 0.1%)
                     if relstd > 0.1:
                         skwn = skew(Powers2D[iso][:, x, y])
                         kurt = kurtosis(Powers2D[iso][:, x, y])
-                        textstr +=  '\nS=%.1f' % skwn + '\nK=%.1f' % kurt
+                        textstr += '\nS=%.1f' % skwn + '\nK=%.1f' % kurt
+                        if skwn < minSK[controlrod][iso]:
+                            minSK[controlrod][iso] = skwn
+                        if skwn > maxSK[controlrod][iso]:
+                            maxSK[controlrod][iso] = skwn
+                        if kurt < minKU[controlrod][iso]:
+                            minKU[controlrod][iso] = kurt
+                        if kurt > maxKU[controlrod][iso]:
+                            maxKU[controlrod][iso] = kurt
                     # Print statistics for each assembly
                     axs[x, y].text(0.05, 0.95, textstr,
                                    transform=axs[x, y].transAxes,
                                    verticalalignment='top')
                     # Remove Y-ticks (unnecessary for a probability density)
                     axs[x, y].set_yticks([])
+        # If no skewness or kurtosis has been calculated (due to insufficient
+        # standard deviation), then it makes no sense to plot them. In this
+        # case, we set them to zero.
+        if minSK[controlrod][iso] == math.inf:
+            minSK[controlrod][iso] = 0
+            maxSK[controlrod][iso] = 0
+            minKU[controlrod][iso] = 0
+            maxKU[controlrod][iso] = 0
         for x in range(0, len(CoreLayout[0, :])):
             for y in range(0, len(CoreLayout[:, 0])):
                 # Assemblies are squares so we'd like square subplots
@@ -293,11 +330,16 @@ for controlrod in controlrods:
               + controlrod + '.pdf -dBATCH output_TMC/' + controlrod
               + '_*.pdf')
 #---
-#  Plot, as a summary, the maximum relative standard deviation on an assembly
-#  power, for each isotope and each control rod state
+#  For each isotope and each control rod state, plot, as a summary:
+#  * the maximum relative standard deviation of an assembly power
+#  * the minimum and maximum skewness on the core
+#  * the minimum and maximum kurtosis on the core
+#  The standard errors (due to the finite statistics) are plotted for each of
+#  these.
 #---
-w = 0.75
-dimw = w/len(controlrods)
+#---
+#  Sorting standard deviations
+#---
 # Order according to std.dev. in the 'CD control rods inserted' state
 Ordering = 'CD'
 maxstd_sorted = {}
@@ -306,50 +348,170 @@ maxstd_sorted[Ordering] = sorted(maxstd[Ordering].items(),
                                  reverse=True)
 isotopes = [i[0] for i in maxstd_sorted[Ordering]]
 relstd = [i[1] for i in maxstd_sorted[Ordering]]
-# Sort in the same order (isotope-wise) the remaining states (except the one
-# already sorted)
+# Sort in the same order (isotope-wise) the std.dev. of the other control rod
+# states, and also the standard errors for all control rod states
+maxstderr_sorted = {}
 controlrods.remove(Ordering)
 for CR in controlrods:
     maxstd_sorted[CR] = [maxstd[CR][i] for i in isotopes]
-# Preparing a bar plot
-fig, ax = plt.subplots()
+    maxstderr_sorted[CR] = [maxstderr[CR][i] for i in isotopes]
+maxstderr_sorted[Ordering] = [maxstderr[Ordering][i] for i in isotopes]
+#---
+#  Graphical parameters
+#---
+w = 0.75
+dimw = w/(len(controlrods) + 1)
+# Proportionality factor for the cap sizes of the error bars
+nbar = (len(controlrods) + 2)*len(isotopes) - 1
+capsize = 125/nbar
+#---
+#  Create subplots with proper sizes
+#---
+# Filter the isotopes so that the skewness and kurtosis are not displayed when
+# the relative standard deviation is smaller than 0.1%.
+isotopes_maj = isotopes[0:np.count_nonzero(np.array(relstd) > 0.1)]
+nbar_maj = (len(controlrods) + 2)*len(isotopes_maj) - 1
+fig = plt.figure()
+gs = GridSpec(2, 2, figure = fig, wspace = 0.0, hspace = 0.0,
+              height_ratios = [nbar_maj, nbar - nbar_maj])
+#---
+#  Plot standard deviations
+#---
+ax1 = fig.add_subplot(gs[:, 0])
 y_pos = np.arange(len(isotopes))
-# Plot the data
-ax.barh(y_pos - 0.25, relstd, dimw, align='center',
-        label = text[Ordering], zorder = 3)
+ax1.barh(y_pos - 0.25, relstd, dimw,
+         xerr = maxstderr_sorted[Ordering],
+         align = 'center', label = text[Ordering], zorder = 3,
+         error_kw = dict(capsize = capsize, capthick = w*2/3, lw = w*2/3))
 i = 0
 for CR in controlrods:
     i = i + 1
-    ax.barh(y_pos + i * dimw - 0.25, maxstd_sorted[CR], dimw,
-            align='center', label = text[CR].capitalize(), zorder = 3)
+    ax1.barh(y_pos + i * dimw - 0.25, maxstd_sorted[CR], dimw,
+             xerr = maxstderr_sorted[CR],
+             align = 'center', label = text[CR].capitalize(), zorder = 3,
+             error_kw = dict(capsize = capsize, capthick = w*2/3, lw = w*2/3))
+# Reset controlrods list
+controlrods = [Ordering] + controlrods
 #---
 #  Graph glitter
 #---
-ax.set_yticks(y_pos)
-ax.set_yticklabels(isotopes)
-ax.invert_yaxis() # labels read top-to-bottom
-ax.set_ylim(len(isotopes) - 1 + w/2, -w/2)
-ax.set_xlabel(r'Relative standard deviation (1$\sigma$) of the most '
-              + 'uncertain assembly power')
-plt.legend(loc = 'lower right', framealpha = 1.0)
-ax.set_title('Ranking of nuclear data uncertainties with Drakkar on Tihange\n'
-             + 'first zero-power start-up, with three control rods insertions')
+ax1.set_yticks(y_pos)
+ax1.set_yticklabels(isotopes)
+ax1.invert_yaxis() # labels read top-to-bottom
+ax1.set_ylim(len(isotopes) - 1 + w/2, -w/2)
+ax1.set_xlabel(r'Relative standard deviation (1$\sigma$) of'
+               + '\nthe most uncertain assembly power')
+plt.legend(loc = 'lower center', framealpha = 1.0)
 # Add one minor tick between each major ticks
-ax.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
+ax1.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
 # Add percent sign after yticks
-labels = ax.get_xticks()
+labels = ax1.get_xticks()
 percentlabels = [0] + ['{:02.1f}'.format(i) + '%' for i in labels[1:]]
-ax.set_xticklabels(percentlabels)
+ax1.set_xticklabels(percentlabels)
 # Add a light x-axis grid in the background
-ax.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
+ax1.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
         linestyle = '--')
-ax.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
+ax1.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
         linestyle = '--', dashes=(20, 20))
-plt.tight_layout()
+#---
+#  Skewness and kurtosis
+#---
+# Add a common title below skewness and kurtosis (produced with a nested
+# gridspec), hiding a phantom figure
+axtitle = fig.add_subplot(gs[0, -1])
+axtitle.set_yticklabels([])
+axtitle.set_yticks([])
+axtitle.spines['top'].set_visible(False)
+axtitle.spines['bottom'].set_visible(False)
+axtitle.spines['left'].set_visible(False)
+axtitle.spines['right'].set_visible(False)
+axtitle.set_xticks([0])
+axtitle.set_xticklabels(['0'])
+axtitle.tick_params(axis = 'x', colors = 'white')
+axtitle.set_xlim([-1, 1])
+axtitle.set_xlabel('Higher moments of probability\n'
+                   + 'densities: minimum/maximum\n'
+                   + 'skewness (left) and excess\n'
+                   + 'kurtosis (right) of assembly power\n'
+                   + r'(displayed only if $\sigma > 0.1$%)')
+# For each isotope, compute standard errors of skewness and kurtosis
+SE_skwn = [SE_SK(nsamples[iso]) for iso in isotopes_maj]
+SE_kurt = [SE_KU(nsamples[iso]) for iso in isotopes_maj]
+# Duplicate the standard errors, in order to apply them to both the min and max
+SE_skwn = SE_skwn + SE_skwn
+SE_kurt = SE_kurt + SE_kurt
+# Prepare the subplots with a nested gridspec
+inner_grid = gs[0, -1].subgridspec(1, 2, wspace = 0, hspace = 0)
+ax2 = fig.add_subplot(inner_grid[0, -2])
+ax3 = fig.add_subplot(inner_grid[0, -1])
+for jCR, CR in enumerate(controlrods):
+    # Align the points horizontally with the standard deviation barplots
+    height = -(np.arange(0, len(isotopes_maj))*(len(controlrods) + 1)
+               + 1/2 + jCR)/nbar_maj
+    # Prepare the data to be plotted (min and max)
+    skwn = ([minSK[CR][iso] for iso in isotopes_maj]
+            + [maxSK[CR][iso] for iso in isotopes_maj])
+    kurt = ([minKU[CR][iso] for iso in isotopes_maj]
+            + [maxKU[CR][iso] for iso in isotopes_maj])
+    heights = list(height) + list(height)
+    # Filter out values equal to zero (unattributed) that can happen in 'all
+    # rods out' state with isotopes present only in control rods
+    nonzero = np.invert(np.isclose(skwn, 0))
+    heights = np.array(heights)[nonzero]
+    skwn = np.array(skwn)[nonzero]
+    kurt = np.array(kurt)[nonzero]
+    # Plot all of this data
+    ax2.errorbar(skwn, heights, fmt = 'x', xerr = np.array(SE_skwn)[nonzero],
+                 capsize = capsize, capthick = w*2/3, elinewidth = w*2/3,
+                 ms = 2)
+    ax3.errorbar(kurt, heights, fmt = 'x', xerr = np.array(SE_kurt)[nonzero],
+                 capsize = capsize, capthick = w*2/3, elinewidth = w*2/3,
+                 ms = 2)
+#---
+#  Graph glitter
+#---
+# Remove useless labels and ticks on height
+ax2.set_yticklabels([])
+ax2.set_yticks([])
+# Add isotopes labels, on the right
+height = -(np.arange(0, len(isotopes_maj))*(len(controlrods) + 1)
+           + 1/2 + int((len(controlrods)-1)/2))/nbar_maj
+ax3.yaxis.set_ticks_position('right')
+ax3.set_yticks(height)
+ax3.set_yticklabels(isotopes_maj)
+# Show proper y limits to see the points in the right positions
+ax2.set_ylim([-1, 0])
+ax3.set_ylim([-1, 0])
+# Set kurtosis major ticks every 2
+ax3.xaxis.set_major_locator(MultipleLocator(2))
+# Add one minor tick between each major ticks
+ax2.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
+ax3.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
+# And labels on minor ticks of kurtosis, with ticks of the same size
+ax3.tick_params(axis = 'x', which = 'minor',
+                length = plt.rcParams["xtick.major.size"])
+ax3.xaxis.set_minor_formatter(matplotlib.ticker.StrMethodFormatter('{x:.0f}'))
+# Add a light x-axis grid in the background
+ax2.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
+        linestyle = '--')
+ax2.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
+        linestyle = '--', dashes=(20, 20))
+ax3.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
+        linestyle = '--')
+ax3.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
+        linestyle = '--', dashes=(20, 20))
+#---
+#  Add a global title
+#---
+st = fig.suptitle('Ranking of nuclear data uncertainties with Drakkar on '
+                  + 'Tihange\nfirst zero-power start-up, with three control '
+                  + 'rods insertions\nAll error bars correspond to statistical'
+                  + r' standard errors (1$\sigma$)', y = 1.01)
 #---
 #  Save plot as pdf (vectorized)
 #---
-fig.savefig('output_TMC/Summary.pdf')
+fig.savefig('output_TMC/Summary.pdf', extra_artists = [st],
+            bbox_inches = 'tight')
 #---
 #  Clean-up
 #---
@@ -357,7 +519,7 @@ plt.close('all')
 print('Rough magnitude order of the maximum total uncertainty:')
 for CR in controlrods:
     ssum = np.sum(list(maxstd[CR].values()))
-    print(text[CR] + ', 3 sigma, normal sum = ' + str(3*ssum))
+    print(text[CR] + ', 3 sigma, arithmetic sum = ' + str(3*ssum))
     qsum = math.sqrt(np.sum(np.array(list(maxstd[CR].values()))**2))
     print(text[CR] + ', 2 sigma, quadratic sum = ' + str(2*qsum))
 print("Plotting completed")
