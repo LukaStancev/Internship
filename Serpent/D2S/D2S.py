@@ -448,6 +448,7 @@ def InfiniteLattice(filepath):
     #  Write general information
     #---
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
+    sss2.write('% Author : V. Salino (IRSN), 04/2021\n')
     sss2.write('set title ' + '"Tihange ' + filename + '"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc periodic\n')
@@ -472,6 +473,7 @@ def FullCore(filepath, Assemblies, CB):
     #---
     sss2 = open('TihangeFullCore' + str(CB) + 'ppm.sss2', 'w')
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
+    sss2.write('% Author : V. Salino (IRSN), 04/2021\n')
     sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc black\n')

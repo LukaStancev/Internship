@@ -1,4 +1,5 @@
 % Serpent 2 dataset produced automatically with D2S.
+% Author : V. Salino (IRSN), 04/2021
 set title "Tihange UOX310_Py12_1206ppm"
 set acelib "../../PyNjoy2016/output/Universal.xsdata"
 set bc periodic
