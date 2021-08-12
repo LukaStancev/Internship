@@ -1,15 +1,19 @@
+from BasicFunctions import *
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('pdf')
 import numpy as np
 import mpmath
 import math
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
 
 # Gaussian function
 def gaussian(x, mu, sigma):
     y = np.zeros_like(x)
     for i in range(0, len(x)):
-        y[i] = math.exp(-(((x[i] - mu)/sigma)**2)/2) / (sigma * math.sqrt(2*math.pi))
+        y[i] = ( math.exp(-(((x[i] - mu)/sigma)**2)/2) /
+                (sigma * math.sqrt(2*math.pi)) )
     return y
 # Hyperbolic secant distribution
 # https://fr.wikipedia.org/wiki/Loi_s%C3%A9cante_hyperbolique
@@ -34,31 +38,49 @@ x = np.linspace(1.9, 4, 1000)
 mu = 0
 sigma = 1
 var = sigma**2
+# Managing the language
+if lang == 'en':
+    labelWigner = r'Wigner semicircle distribution, excess kurtosis $=-1$'
+    labelNormal = r'Normal distribution, excess kurtosis $=0$'
+    labelHypSec = r'Hyperbolic secant distribution, excess kurtosis $=2$'
+    title = ('Right tails of various symmetric distributions\n'
+              + r'They all have the same standard deviation ($\sigma=1$)')
+elif lang == 'fr':
+    labelWigner = r'Loi du demi-cercle de Wigner, excès de kurtosis $=-1$'
+    labelNormal = r'Loi normale, excès de kurtosis $=0$'
+    labelHypSec = r'Loi sécante hyperbolique, excès de kurtosis $=2$'
+    title = ''
 # Create a new plot
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = set_size())
 # Plot all these distributions
-ax.plot(x, wigner(x, sigma),
-        label = r'Wigner semicircle distribution, excess kurtosi$s=-1$')
-ax.plot(x, gaussian(x, mu, sigma),
-        label = r'Normal distribution, excess kurtosis$=0$')
-ax.plot(x, sech(x),
-        label = r'Hyperbolic secant distribution, excess kurtosis$=2$')
+ax.plot(x, wigner(x, sigma), label = labelWigner)
+ax.plot(x, gaussian(x, mu, sigma), label = labelNormal)
+ax.plot(x, sech(x), label = labelHypSec)
 # Graph glitter
-ax.set(xlabel=r'$x$', ylabel=r'$f(x)$',
-       title=('Right tails of various symmetric distributions\n'
-              + r'They all have the same standard deviation ($\sigma=1$)'))
+ax.set(xlabel=r'$x$', ylabel=r'$f(x)$')
+if title:
+    ax.set(title = title)
 ax.grid()
 ax.set_ylim(bottom = 0)
 ax.set_xlim(left = min(x), right = max(x))
-plt.legend()
+plt.legend(framealpha = 1.0)
 fig.savefig("Kurtosis.pdf", bbox_inches='tight')
 # Clean-up for next plot
 plt.close('all')
 
 # Focus on ]0;2]
 x = np.linspace(0, 2, 1000)[1:]
+# Managing the language
+if lang == 'en':
+    label = 'Skewness'
+    title=('Log-normal distributions for various skewnesses (solid lines) '
+           + 'and\ntheir normal counterpart (dashed lines, same standard '
+           + 'deviation)\n'+ r'They all have the same median$= 1$')
+elif lang == 'fr':
+    label = 'Asymétrie'
+    title = ''
 # Create a new plot
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = set_size())
 # Find sigmas corresponding to our skewnesses (a cubic problem)
 skewnesses = np.array([0.5, 1.0, 1.5])
 a = 1
@@ -77,18 +99,17 @@ sigmas = np.sqrt(np.log(sol))
 for sigma, skewness in zip(sigmas, skewnesses):
     color = next(ax._get_lines.prop_cycler)['color']
     ax.plot(x, gaussian(np.log(x), mu, sigma)/x, color = color,
-            label = 'Skewness = ' + str(skewness))
+            label = label + ' = ' + str(skewness))
     ax.plot(x, gaussian(x, 1, sigma), color = color, linestyle = '--',
             linewidth = 1.0)
 # Graph glitter
-ax.set(xlabel=r'$x$', ylabel=r'$f(x)$',
-       title=('Log-normal distributions for various skewnesses (solid lines) '
-              + 'and\ntheir normal counterpart (dashed lines, same standard '
-              + 'deviation)\n'+ r'They all have the same median$= 1$'))
+ax.set(xlabel=r'$x$', ylabel=r'$f(x)$')
+if title:
+    ax.set(title = title)
 ax.grid()
 ax.set_ylim(bottom = 0)
 ax.set_xlim(left = min(x), right = max(x))
-plt.legend()
+plt.legend(framealpha = 1.0)
 fig.savefig("Lognormal.pdf", bbox_inches='tight')
 # Clean-up for next plot
 plt.close('all')

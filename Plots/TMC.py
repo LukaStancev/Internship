@@ -18,14 +18,22 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from matplotlib.gridspec import GridSpec
 from BasicFunctions import *
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
+
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
 # Declare control rod insertions and its full names
 controlrods = ['CD', 'D', 'ARO']
 text = {}
-text['ARO'] = 'all rods out'
-text['D'] = 'D rod bank inserted'
-text['CD'] = 'C and D rod banks inserted'
+if lang == 'en':
+    text['ARO'] = 'all rods out'
+    text['D'] = 'D rod bank inserted'
+    text['CD'] = 'C and D rod banks inserted'
+elif lang == 'fr':
+    text['ARO'] = 'toutes grappes extraites'
+    text['D'] = 'groupe D inséré'
+    text['CD'] = 'groupes C et D insérés'
 # Create a dictionary to store the standard deviation of the assembly with the
 # most uncertain power, among all those assemblies in the core.
 maxstd = {}
@@ -46,7 +54,7 @@ for controlrod in controlrods:
     minKU[controlrod] = {}
     maxKU[controlrod] = {}
     # Create links toward every available power distribution
-    os.system('ln -s ../Drakkar/Linux_TMC/_Power' + controlrod + '_*.ascii .')
+    os.system('ln -s ../Drakkar/Output_TMC/_Power' + controlrod + '_*.ascii .')
     # List isotopes we've been (potentially) randomly sampling
     firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
@@ -120,7 +128,8 @@ for controlrod in controlrods:
         minKU[controlrod][iso] = math.inf
         maxKU[controlrod][iso] = -math.inf
         # Initialize figure
-        fig, axs = plt.subplots(8, 8, sharex = 'all', figsize = (8, 8),
+        fig, axs = plt.subplots(8, 8, sharex = 'all',
+                                figsize = set_size('square'),
                                 gridspec_kw = {'hspace': 0, 'wspace': 0})
         #---
         #  Add the data
@@ -136,8 +145,8 @@ for controlrod in controlrods:
                     # Compute relative standard deviation for each assembly
                     mean = np.mean(Powers2D[iso][:, x, y])
                     relstd = np.std(Powers2D[iso][:, x, y], ddof = 1)/mean*100
-                    textstr = (r'$\mu$=%.2f' % mean + '\n'
-                               + r'$\sigma$=%.1f%%' % (relstd, ))
+                    textstr = (r'$\mu$=$%.2f$' % mean + '\n'
+                               + r'$\sigma$=$%.1f$' % (relstd, ) + '\%')
                     # Store its maximum for future purposes (summary plot)
                     if relstd > maxstd[controlrod][iso]:
                         maxstd[controlrod][iso] = relstd
@@ -148,7 +157,8 @@ for controlrod in controlrods:
                     if relstd > 0.1:
                         skwn = skew(Powers2D[iso][:, x, y])
                         kurt = kurtosis(Powers2D[iso][:, x, y])
-                        textstr += '\nS=%.1f' % skwn + '\nK=%.1f' % kurt
+                        textstr += '\n$S$=$%.1f$' % skwn
+                        textstr += '\n$K$=$%.1f$' % kurt
                         if skwn < minSK[controlrod][iso]:
                             minSK[controlrod][iso] = skwn
                         if skwn > maxSK[controlrod][iso]:
@@ -158,9 +168,9 @@ for controlrod in controlrods:
                         if kurt > maxKU[controlrod][iso]:
                             maxKU[controlrod][iso] = kurt
                     # Print statistics for each assembly
-                    axs[x, y].text(0.05, 0.95, textstr,
+                    axs[x, y].text(0.05, 0.95, textstr, fontsize = 10,
                                    transform=axs[x, y].transAxes,
-                                   verticalalignment='top')
+                                   verticalalignment = 'top')
                     # Remove Y-ticks (unnecessary for a probability density)
                     axs[x, y].set_yticks([])
         # If no skewness or kurtosis has been calculated (due to insufficient
@@ -189,38 +199,59 @@ for controlrod in controlrods:
         #---
         #  Add a legend
         #---
-        textstr = (r'$\mu$ : Mean of the power assembly' + '\n'
-                   + r'$\sigma$ : Relative standard deviation (in %)' + '\n'
-                   + r'S : Skewness (shown if $\sigma > 0.1$%)' + '\n'
-                   + r'K : Excess kurtosis (shown if $\sigma > 0.1$%)')
-        axs[0, 4].text(0.6, 0.95, textstr,
-                       transform = axs[0, 4].transAxes,
-                       verticalalignment = 'top')
+        if lang == 'en':
+            textstr = (r'$\mu$ : mean of the power assembly' + '\n'
+                       + r'$\sigma$ : relative standard deviation '
+                       + '(in \%)\n'
+                       + r'$S$ : skewness (shown if $\sigma > 0.1$'
+                       + '\%)\n'
+                       + r'$K$ : excess kurtosis (if $\sigma > 0.1$'
+                       + '\%)')
+        elif lang == 'fr':
+            textstr = (r'$\mu$ : puissance moyenne de ' + 'l\'assemblage\n'
+                       + r'$\sigma$ : écart-type relatif '
+                       + '(en \%)\n'
+                       + r'$S$ : asymétrie (affichée si $\sigma > 0.1$'
+                       + '\%)\n'
+                       + r'$K$ : excès de kurtosis (si $\sigma > 0.1$'
+                       + '\%)')
+        axs[0, 2].text(0.05, 1.04, textstr, verticalalignment = 'top',
+                       transform = axs[0, 2].transAxes, fontsize = 10)
         #---
         #  Add the axis labels on an fictious (gaussian) distribution example
         #---
-        axs[2, 7].set_axis_on()
-        axs[2, 7].hist(1.0225 + 0.015 * gaussian, bins = 20, density = True)
-        axs[2, 7].set_yticks([])
-        axs[2, 7].set_aspect(1./axs[2, 7].get_data_ratio())
-        axs[2, 7].set_xlabel('Normalized\nassembly\npower')
-        axs[2, 7].set_ylabel('Probability\ndensity')
-        axs[2, 7].tick_params(axis = 'x', labelbottom = True)
+        axs[1, 6].set_axis_on()
+        axs[1, 6].hist(1.0225 + 0.015 * gaussian, bins = 20, density = True)
+        axs[1, 6].set_yticks([])
+        axs[1, 6].set_aspect(1./axs[1, 6].get_data_ratio())
+        if lang == 'en':
+            axs[1, 6].set_xlabel('Normalized assembly\npower')
+            axs[1, 6].set_ylabel('Probability\ndensity')
+        elif lang == 'fr':
+            axs[1, 6].set_xlabel('Puissance normalisée\nde l\'assemblage')
+            axs[1, 6].set_ylabel('Densité\nde\nprobabilité')
+        axs[1, 6].tick_params(axis = 'x', labelbottom = True)
         #---
-        #  Add a title
+        #  Add a title and save plot as pdf (vectorized)
         #---
-        st = fig.suptitle('Probability density vs. normalized assembly power, '
-                          + 'with Drakkar and \n'
-                          + 'JEFF-3.3 best estimate except for ' + iso + ' ('
-                          + str(len(Powers2D[iso][:, 0, 0]))
-                          + ' random samples) on\nTihange first zero-power '
-                          + 'start-up, ' + text[controlrod])
-        #---
-        #  Save plot as pdf (vectorized)
-        #---
+        if lang == 'en':
+            title = ('Probability density vs. normalized assembly power, with '
+                     + 'Drakkar and\n'
+                     + 'JEFF-3.3 best estimate except for '
+                     + iso.replace('_', '\_') + ' ('
+                     + str(len(Powers2D[iso][:, 0, 0]))
+                     + ' random samples) on\nTihange first zero-power'
+                     + ' start-up, ' + text[controlrod])
+        elif lang == 'fr':
+            title = ''
         os.system('mkdir -p output_TMC')
-        fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
-                    bbox_extra_artists=[st], bbox_inches='tight')
+        if title:
+            st = fig.suptitle(title)
+            fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
+                        bbox_extra_artists=[st], bbox_inches='tight')
+        else:
+            fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
+                        bbox_inches='tight')
         #---
         #  Clean-up for next plot
         #---
@@ -249,7 +280,7 @@ for controlrod in controlrods:
         for stat in ['SD', 'SK', 'KU']:
             # Initialize figure
             fig, axs = plt.subplots(8, 8, sharex = 'all', sharey = 'all',
-                                    figsize = (8, 8),
+                                    figsize = set_size('square'),
                                     gridspec_kw = {'hspace': 0, 'wspace': 0})
             for x in range(0, len(CoreLayout[0, :])):
                 for y in range(0, len(CoreLayout[:, 0])):
@@ -267,7 +298,7 @@ for controlrod in controlrods:
                             axs[x, y].set_ylim(0, 1.7)
                             # Add percent sign after yticks
                             labels = axs[x, y].get_yticks()
-                            percentlabels = [0] + ['{:01.0f}'.format(i) + '%'
+                            percentlabels = [0] + ['{:01.0f}'.format(i) + '\%'
                                                    for i in labels[1:]]
                             axs[x, y].set_yticklabels(percentlabels)
                         elif stat == 'SK':
@@ -302,24 +333,31 @@ for controlrod in controlrods:
                     if x < 0:
                         axs[x, y].set_yticks([])
             #---
-            #  Add a title
+            #  Add a title and save plot as pdf (vectorized)
             #---
-            if stat == 'SD':
-                intitle = 'Relative standard deviation'
-            elif stat == 'SK':
-                intitle = 'Skewness'
-            elif stat == 'KU':
-                intitle = 'Excess kurtosis'
-            st = fig.suptitle(intitle + ' of the assembly power as a function '
-                              + 'of\nthe number of ' + iso + ' random samples '
-                              + '(maximum ' + str(len(Powers2D[iso][:, 0, 0]))
-                              + '), with Drakkar on\nTihange first '
-                              + 'zero-power start-up, ' + text[controlrod])
-            #---
-            #  Save plot as pdf (vectorized)
-            #---
-            fig.savefig('output_TMC/' + stat + '_' + controlrod + '_' + iso
-                        + '.pdf', bbox_extra_artists=[st], bbox_inches='tight')
+            if lang == 'en':
+                if stat == 'SD':
+                    intitle = 'Relative standard deviation'
+                elif stat == 'SK':
+                    intitle = 'Skewness'
+                elif stat == 'KU':
+                    intitle = 'Excess kurtosis'
+                title = (intitle + ' of the assembly power as a function '
+                         + 'of\nthe number of ' + iso.replace('_', '\_')
+                         + ' random samples (maximum '
+                         + str(len(Powers2D[iso][:, 0, 0]))
+                         + '), with Drakkar on\nTihange first '
+                         + 'zero-power start-up, ' + text[controlrod])
+            elif lang == 'fr':
+                title = ''
+            if title:
+                st = fig.suptitle(title)
+                fig.savefig('output_TMC/' + stat + '_' + controlrod + '_'
+                            + iso + '.pdf', bbox_inches='tight',
+                            bbox_extra_artists=[st])
+            else:
+                fig.savefig('output_TMC/' + stat + '_' + controlrod + '_'
+                            + iso + '.pdf', bbox_inches='tight')
             #---
             #  Clean-up for next plot
             #---
@@ -372,7 +410,7 @@ capsize = 125/nbar
 # the relative standard deviation is smaller than 0.1%.
 isotopes_maj = isotopes[0:np.count_nonzero(np.array(relstd) > 0.1)]
 nbar_maj = (len(controlrods) + 2)*len(isotopes_maj) - 1
-fig = plt.figure()
+fig = plt.figure(figsize = set_size())
 gs = GridSpec(2, 2, figure = fig, wspace = 0.0, hspace = 0.0,
               height_ratios = [nbar_maj, nbar - nbar_maj])
 #---
@@ -380,16 +418,18 @@ gs = GridSpec(2, 2, figure = fig, wspace = 0.0, hspace = 0.0,
 #---
 ax1 = fig.add_subplot(gs[:, 0])
 y_pos = np.arange(len(isotopes))
+label = text[Ordering][0].capitalize() + text[Ordering][1:]
 ax1.barh(y_pos - 0.25, relstd, dimw,
          xerr = maxstderr_sorted[Ordering],
-         align = 'center', label = text[Ordering], zorder = 3,
+         align = 'center', label = label, zorder = 3,
          error_kw = dict(capsize = capsize, capthick = w*2/3, lw = w*2/3))
 i = 0
 for CR in controlrods:
     i = i + 1
+    label = text[CR][0].capitalize() + text[CR][1:]
     ax1.barh(y_pos + i * dimw - 0.25, maxstd_sorted[CR], dimw,
              xerr = maxstderr_sorted[CR],
-             align = 'center', label = text[CR].capitalize(), zorder = 3,
+             align = 'center', label = label, zorder = 3,
              error_kw = dict(capsize = capsize, capthick = w*2/3, lw = w*2/3))
 # Reset controlrods list
 controlrods = [Ordering] + controlrods
@@ -397,17 +437,21 @@ controlrods = [Ordering] + controlrods
 #  Graph glitter
 #---
 ax1.set_yticks(y_pos)
-ax1.set_yticklabels(isotopes)
+ax1.set_yticklabels([iso.replace('_', '\_') for iso in isotopes])
 ax1.invert_yaxis() # labels read top-to-bottom
 ax1.set_ylim(len(isotopes) - 1 + w/2, -w/2)
-ax1.set_xlabel(r'Relative standard deviation (1$\sigma$) of'
-               + '\nthe most uncertain assembly power')
+if lang == 'en':
+    ax1.set_xlabel(r'Relative standard deviation (1$\sigma$) of'
+                   + '\nthe most uncertain assembly power')
+elif lang == 'fr':
+    ax1.set_xlabel(r'Écart-type relatif (1$\sigma$) de la puissance'
+                   + '\nd\'assemblage la plus incertaine')
 plt.legend(loc = 'lower center', framealpha = 1.0)
 # Add one minor tick between each major ticks
 ax1.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
 # Add percent sign after yticks
 labels = ax1.get_xticks()
-percentlabels = [0] + ['{:02.1f}'.format(i) + '%' for i in labels[1:]]
+percentlabels = [0] + ['{:02.1f}'.format(i) + '\%' for i in labels[1:]]
 ax1.set_xticklabels(percentlabels)
 # Add a light x-axis grid in the background
 ax1.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
@@ -430,11 +474,21 @@ axtitle.set_xticks([0])
 axtitle.set_xticklabels(['0'])
 axtitle.tick_params(axis = 'x', colors = 'white')
 axtitle.set_xlim([-1, 1])
-axtitle.set_xlabel('Higher moments of probability\n'
-                   + 'densities: minimum/maximum\n'
-                   + 'skewness (left) and excess\n'
-                   + 'kurtosis (right) of assembly power\n'
-                   + r'(displayed only if $\sigma > 0.1$%)')
+if lang == 'en':
+    axtitle.set_xlabel('Higher moments of\n'
+                       + 'probability distributions:\n'
+                       + 'minimum/maximum\n'
+                       + 'skewness (left) and excess\n'
+                       + 'kurtosis (right) of assembly power\n'
+                       + r'(displayed only if $\sigma > 0.1$' + '\%)')
+elif lang == 'fr':
+    axtitle.set_xlabel('Moments supérieurs des\n'
+                       + 'distributions de probabilité :\n'
+                       + 'minimum/maximum de\n'
+                       + 'l\'asymétrie (à gauche) et de\n'
+                       + 'l\'excès de kurtosis (à droite)\n'
+                       + 'de la puissance par assemblage\n'
+                       + r'(affichés si $\sigma > 0.1$' + '\%)')
 # For each isotope, compute standard errors of skewness and kurtosis
 SE_skwn = [SE_SK(nsamples[iso]) for iso in isotopes_maj]
 SE_kurt = [SE_KU(nsamples[iso]) for iso in isotopes_maj]
@@ -479,7 +533,7 @@ height = -(np.arange(0, len(isotopes_maj))*(len(controlrods) + 1)
            + 1/2 + int((len(controlrods)-1)/2))/nbar_maj
 ax3.yaxis.set_ticks_position('right')
 ax3.set_yticks(height)
-ax3.set_yticklabels(isotopes_maj)
+ax3.set_yticklabels([iso.replace('_', '\_') for iso in isotopes_maj])
 # Show proper y limits to see the points in the right positions
 ax2.set_ylim([-1, 0])
 ax3.set_ylim([-1, 0])
@@ -502,17 +556,21 @@ ax3.grid(which = 'major', axis = 'x', linewidth = 1.2, zorder = 0,
 ax3.grid(which = 'minor', axis = 'x', linewidth = 0.5, zorder = 0,
         linestyle = '--', dashes=(20, 20))
 #---
-#  Add a global title
+#  Add a global title and save plot as pdf (vectorized)
 #---
-st = fig.suptitle('Ranking of nuclear data uncertainties with Drakkar on '
-                  + 'Tihange\nfirst zero-power start-up, with three control '
-                  + 'rods insertions\nAll error bars correspond to statistical'
-                  + r' standard errors (1$\sigma$)', y = 1.01)
-#---
-#  Save plot as pdf (vectorized)
-#---
-fig.savefig('output_TMC/Summary.pdf', extra_artists = [st],
-            bbox_inches = 'tight')
+if lang == 'en':
+    title = ('Ranking of nuclear data uncertainties with Drakkar on Tihange\n'
+             + 'first zero-power start-up, with three control rods insertion\n'
+             + 'All error bars correspond to statistical standard errors '
+             + r'(1$\sigma$)')
+elif lang == 'fr':
+    title = ''
+if title :
+    st = fig.suptitle(title, y = 1.01)
+    fig.savefig('output_TMC/Summary.pdf', bbox_inches = 'tight',
+                extra_artists = [st])
+else:
+    fig.savefig('output_TMC/Summary.pdf', bbox_inches = 'tight')
 #---
 #  Clean-up
 #---

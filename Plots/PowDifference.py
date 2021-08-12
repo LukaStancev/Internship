@@ -13,14 +13,26 @@ import subprocess
 import glob
 import re
 import csv
+import string
 import itertools
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from BasicFunctions import *
 import serpentTools
 from serpentTools.settings import rc
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
+
+#---
+#  This function is intended to operate with FuncFormatter, to add a permil
+#  character at the end of each tick label
+#---
+def permil(x, pos):
+    return str('{:.1f}'.format(x)) + r'\textperthousand'
+
 #---
 #  Initialize the container of all combinations of power distributions
 #---
@@ -29,6 +41,7 @@ CRtext = {}
 CRtext['ARO'] = 'all rods out'
 CRtext['D'] = 'D rod bank inserted'
 CRtext['CD'] = 'C and D rod banks inserted'
+#sources = ['Drakkar', 'Framatome', 'EDF']
 sources = ['Drakkar', 'Serpent', 'Framatome', 'EDF']
 powers = {}
 for controlrod in controlrods:
@@ -100,14 +113,14 @@ for controlrod in controlrods:
     # Mean over independant runs
     mean = np.mean(indact, axis = 0)
     powers[controlrod]['Serpent'] = mean
-    # Relative standard error of the mean (%)
+    # Relative standard error of the mean (‰)
     std = np.std(indact, axis = 0, ddof = 1)
-    relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*100
+    relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*1000
 #---
 #  Drakkar power distributions
 #---
 for controlrod in controlrods:
-    os.system('ln -s ../Drakkar/Linux_x86_64/_Power' + controlrod
+    os.system('ln -s ../Drakkar/Output_BestEstimate/_Power' + controlrod
               + '_*.ascii .')
     for file in list(glob.glob('_Power' + controlrod + '_*.ascii')):
         # Loading data while removing beginning-of-filename underscore
@@ -119,26 +132,35 @@ for controlrod in controlrods:
         power = power/mean
         powers[controlrod]['Drakkar'] = power
 #---
-#  Plot all the power distributions
+#  Plot all the power distributions and also Serpent standard errors
 #---
 os.system('mkdir -p output_PowDifference')
 pmin = math.inf
 pmax = -math.inf
+relstdmin = math.inf
+relstdmax = -math.inf
 for controlrod in controlrods:
     for source in sources:
         pmin = min(pmin, np.min(powers[controlrod][source]))
         pmax = max(pmax, np.max(powers[controlrod][source]))
+    relstdmin = min(relstdmin, np.min(relstd[controlrod]))
+    relstdmax = max(relstdmax, np.max(relstd[controlrod]))
 for controlrod in controlrods:
-    for source in sources:
+    for source in sources + ['Serpent_SE']:
         # Show only a quarter of the core
-        powerplot = fold(Deploy2D(powers[controlrod][source], FullCoreLayout))
-        if source == 'Serpent':
-            relstdplot = fold(Deploy2D(relstd[controlrod], FullCoreLayout))
+        if source == 'Serpent_SE':
+            plot = fold(Deploy2D(relstd[controlrod], FullCoreLayout))
+            minplot = relstdmin
+            maxplot = relstdmax
+        else:
+            plot = fold(Deploy2D(powers[controlrod][source], FullCoreLayout))
+            minplot = pmin
+            maxplot = pmax
         # Replace every zeroes with NaNs, in order to easily get them colored
         # in white (with set_bad)
-        powerplot = np.where(np.isclose(powerplot, 0), float('nan'), powerplot)
+        plot = np.where(np.isclose(plot, 0), float('nan'), plot)
         # Produce the plot
-        fig, ax = plt.subplots(1, figsize=[6, 6])
+        fig, ax = plt.subplots(1, figsize = set_size('halfsquare'))
         axins = inset_axes(ax,
                            width = "3%",
                            height = "100%",
@@ -147,54 +169,54 @@ for controlrod in controlrods:
                            bbox_transform = ax.transAxes,
                            borderpad = 0,
                            )
-        im = ax.imshow(powerplot, interpolation = 'nearest', cmap = 'coolwarm',
-                       vmin = pmin, vmax = pmax)
+        im = ax.imshow(plot, interpolation = 'nearest', cmap = 'coolwarm',
+                       vmin = minplot, vmax = maxplot)
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
-        current_cmap = im.get_cmap()
-        current_cmap.set_bad(color = 'white')
-        cbar.ax.tick_params(labelsize = 15)
-        # Add power in each assembly
-        fontsize_ = 10
-        for i in range(len(powerplot)):
-            for j in range(len(powerplot)):
-                if not np.isnan(powerplot[i, j]):
-                    text = str('{:.2f}'.format(round(powerplot[i, j], 2)))
-                    ax.text(j, i, text, fontsize = fontsize_, color = 'black',
+        if controlrod == 'CD':
+            current_cmap = im.get_cmap()
+            current_cmap.set_bad(color = 'white')
+            cbar.ax.tick_params(labelsize = 12)
+            if source == 'Serpent_SE':
+                cbar.ax.yaxis.set_major_formatter(FuncFormatter(permil))
+        else:
+            cbar.remove()
+        # In each assembly, add the power or its Serpent standard error
+        for i in range(len(plot)):
+            for j in range(len(plot)):
+                if not np.isnan(plot[i, j]):
+                    text = str('{:.2f}'.format(round(plot[i, j], 2)))
+                    ax.text(j, i, text, fontsize = 10, color = 'black',
                             ha = 'center', va = 'center')
-                    # If Serpent is being plotted, add its 1-sigma relative
-                    # deviation
-                    if source == 'Serpent':
-                        text = '{:.2f}'.format(round(relstdplot[i, j], 2))
-                        text = (r'$\pm$' + str(text) + '%')
-                        ax.text(j, i + 0.33, text, fontsize = fontsize_ - 2,
-                                color = 'black', ha = 'center', va = 'center')
-        # Add Battleship-style coordinates as ticks
+        # Add Battleship-style coordinates
         ax.xaxis.tick_bottom()
-        xlabels = ['H', 'G', 'F', 'E', 'D', 'C', 'B', 'A']
+        xlabels = list(string.ascii_uppercase)[:8]
+        xlabels.reverse()
         ylabels = list(np.arange(1, 9))
         plt.setp(ax, xticks = np.arange(8), xticklabels = xlabels,
                  yticks = np.arange(8), yticklabels = ylabels)
+        ax.tick_params(axis = 'both', which = 'both', length = 0)
         #---
-        #  Add a title
+        #  Add a title and save plot as pdf (vectorized)
         #---
-        if source == 'EDF' or source == 'Framatome':
-            txt = source + ' pseudo-measured'
-        else:
-            txt = source + ' JEFF-3.3'
-        txt = (txt + ' power distribution on Tihange\nfirst zero-power '
-                     + 'start-up, ' + CRtext[controlrod])
-        if source == 'Serpent':
-            nbruns = np.shape(indruns[controlrod])[0]
-            txt += ('\n' + r'Relative standard error of the mean '
-                    + '($1\sigma$) from ' + str(nbruns) + '\n'
-                    + 'independant simulations with different random seeds')
-            plt.subplots_adjust(top = 0.85)
-        st = fig.suptitle(txt)
-        #---
-        #  Save plot as pdf (vectorized)
-        #---
-        fig.savefig('output_PowDifference/' + source + '_' + controlrod
-                    + '.pdf', extra_artists=[st], bbox_inches='tight')
+        if lang == 'en':
+            if source == 'EDF' or source == 'Framatome':
+                txt = source + ' pseudo-measured'
+            else:
+                txt = source + ' JEFF-3.3'
+            txt = (txt + ' power distribution on Tihange\nfirst zero-power '
+                         + 'start-up, ' + CRtext[controlrod])
+            if source == 'Serpent':
+                nbruns = np.shape(indruns[controlrod])[0]
+                txt += ('\n' + r'Relative standard error of the mean '
+                        + '($1\sigma$) from ' + str(nbruns) + '\n'
+                        + 'independant simulations with different random seeds')
+                plt.subplots_adjust(top = 0.85)
+            st = fig.suptitle(txt)
+            fig.savefig('output_PowDifference/' + source + '_' + controlrod
+                        + '.pdf', bbox_inches='tight', extra_artists=[st])
+        elif lang == 'fr':
+            fig.savefig('output_PowDifference/' + source + '_' + controlrod
+                        + '.pdf', bbox_inches='tight')
         #---
         #  Clean-up for next plot
         #---
@@ -217,7 +239,7 @@ for controlrod in controlrods:
         # in white (with set_bad)
         discrp = np.where(np.isclose(discrp, 0), float('nan'), discrp)
         # Produce the plot
-        fig, ax = plt.subplots(1, figsize=[6, 6])
+        fig, ax = plt.subplots(1, figsize = set_size('halfsquare'))
         axins = inset_axes(ax,
                            width = "3%",
                            height = "100%",
@@ -229,23 +251,25 @@ for controlrod in controlrods:
         im = ax.imshow(discrp, interpolation = 'nearest', cmap = 'coolwarm',
                        vmin = -15, vmax = 15)
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
-        current_cmap = im.get_cmap()
-        current_cmap.set_bad(color = 'white')
-        cbar.ax.tick_params(labelsize = 12)
-        ylabels = [str(i) + '%' for i in list(np.arange(-3, 4)*5)]
-        cbar.ax.set_yticklabels(ylabels)
+        if controlrod == 'CD':
+            current_cmap = im.get_cmap()
+            current_cmap.set_bad(color = 'white')
+            cbar.ax.tick_params(labelsize = 12)
+            ylabels = [str(i) + '\%' for i in list(np.arange(-3, 4)*5)]
+            cbar.ax.set_yticklabels(ylabels)
+        else:
+            cbar.remove()
         # Add percent deviation inside each box
-        fontsize_ = 10
         for i in range(len(discrp)):
             for j in range(len(discrp)):
                 if not np.isnan(discrp[i, j]):
-                    text = str('{:.2f}'.format(round(discrp[i, j], 2)))
-                    ax.text(j, i, text, fontsize = fontsize_, color = 'black',
+                    text = str('{:.1f}'.format(round(discrp[i, j], 2)))
+                    ax.text(j, i, text, fontsize = 10, color = 'black',
                             ha = 'center', va = 'center')
         # Add formula
         text = (r'$\frac{\mathrm{' + a + '}-\mathrm{' + b + '}}'
                 + '{\mathrm{' + b + '}} (\%)$')
-        ax.text(5.5, 0, text, fontsize = fontsize_ + 6, color = 'black',
+        ax.text(5.3, 0.1, text, fontsize = 12, color = 'black',
                 ha = 'center', va = 'center')
         # Add Battleship-style coordinates as ticks
         ax.xaxis.tick_bottom()
@@ -253,12 +277,14 @@ for controlrod in controlrods:
         ylabels = list(np.arange(1, 9))
         plt.setp(ax, xticks = np.arange(8), xticklabels = xlabels,
                  yticks = np.arange(8), yticklabels = ylabels)
+        ax.tick_params(axis = 'both', which = 'both', length = 0)
         #---
         #  Add a title
         #---
-        fig.suptitle('Relative difference in power distribution between\n'
-                     + a + ' and ' + b + ' on Tihange\nfirst zero-power '
-                     'start-up, ' + CRtext[controlrod])
+        if lang == 'en':
+            fig.suptitle('Relative difference in power distribution between\n'
+                         + a + ' and ' + b + ' on Tihange\nfirst zero-power '
+                         'start-up, ' + CRtext[controlrod])
         #---
         #  Save plot as pdf (vectorized)
         #---

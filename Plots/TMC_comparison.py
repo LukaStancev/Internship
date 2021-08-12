@@ -19,6 +19,9 @@ matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from BasicFunctions import *
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
+
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
 # Declare control rod insertions and its full names
@@ -142,7 +145,8 @@ for controlrod in controlrods:
     for iso in sssisotopes:
         print(iso)
         # Initialize figure
-        fig, axs = plt.subplots(8, 8, sharex = 'all', figsize = (8, 8),
+        fig, axs = plt.subplots(8, 8, sharex = 'all',
+                                figsize = set_size('square'),
                                 gridspec_kw = {'hspace': 0, 'wspace': 0})
         #---
         #  Add the data
@@ -159,7 +163,7 @@ for controlrod in controlrods:
                     # assembly
                     mean = np.mean(Powers2D[iso][:, x, y])
                     relstd = np.std(Powers2D[iso][:, x, y], ddof = 1)/mean*100
-                    textstr = r'$\sigma_D$=%.1f%%' % (relstd, )
+                    textstr = r'$\sigma_D$=$%.1f$' % (relstd, ) + '\%'
                     # Plot an histogram with the Serpent assembly power
                     axs[x, y].hist(powers_sss[iso][:, x, y], bins = 20,
                                    density = True)
@@ -167,7 +171,7 @@ for controlrod in controlrods:
                     # assembly
                     mean = np.mean(powers_sss[iso][:, x, y])
                     relstd = np.std(powers_sss[iso][:, x, y], ddof = 1)/mean*100
-                    textstr += '\n' + r'$\sigma_S$=%.1f%%' % (relstd, )
+                    textstr += '\n' + r'$\sigma_S$=$%.1f$' % (relstd, ) + '\%'
                     # Compute the Kolmogorov-Smirnov statistic and its p-value
                     # on Serpent and Drakkar samples. We know that Serpent mean
                     # is different than Drakkar mean. We rather want to compare
@@ -178,10 +182,10 @@ for controlrod in controlrods:
                                      np.mean(powers_sss[iso][:, x, y]),
                                      Powers2D[iso][:, x, y] -
                                      np.mean(Powers2D[iso][:, x, y]))
-                    textstr += '\nD=%.2f' % (D)
-                    textstr += '\np=%.2f' % (p)
+                    textstr += '\n$D$=$%.2f$' % (D)
+                    textstr += '\n$p$=$%.2f$' % (p)
                     # Print statistics for each assembly
-                    axs[x, y].text(0.05, 0.95, textstr,
+                    axs[x, y].text(0.05, 0.92, textstr, fontsize = 10,
                                    transform=axs[x, y].transAxes,
                                    verticalalignment='top')
                     # Remove Y-ticks (unnecessary for a probability density)
@@ -204,26 +208,40 @@ for controlrod in controlrods:
         #---
         #  Add a legend
         #---
-        textstr = (r'$\sigma_D$ : Drakkar relative standard deviation (in %)'
-                   + '\n'
-                   + r'$\sigma_S$ : Serpent relative standard deviation (in %)'
-                   + '\n'
-                   + 'D : Kolmogorov-Smirnov statistic' + '\n'
-                   + 'p : Kolmogorov-Smirnov p-value' + '\n')
-        axs[0, 4].text(-0.05, 0.95, textstr,
-        #axs[0, 4].text(0.6, 0.95, textstr,
-                       transform = axs[0, 4].transAxes,
-                       verticalalignment = 'top')
+        if lang == 'en':
+            textstr = (r'$\sigma_D$ : Drakkar relative standard deviation'
+                       + ' (in \%)\n'
+                       + r'$\sigma_S$ : Serpent relative standard deviation'
+                       + ' (in \%)\n'
+                       + '$D$ : Kolmogorov-Smirnov statistic' + '\n'
+                       + '$p$ : Kolmogorov-Smirnov p-value')
+            axs[0, 4].text(-0.3, 0.95, textstr,
+                           transform = axs[0, 4].transAxes,
+                           verticalalignment = 'top', fontsize = 10)
+        elif lang == 'fr':
+            textstr = (r'$\sigma_D$ : écart-type relatif de Drakkar'
+                       + ' (en \%)\n'
+                       + r'$\sigma_S$ : écart-type relatif de Serpent'
+                       + ' (en \%)\n'
+                       + '$D$ : statistique de Kolmogorov-Smirnov' + '\n'
+                       + '$p$ : valeur-p de Kolmogorov-Smirnov')
+            axs[0, 2].text(0.05, 1.04, textstr,
+                           transform = axs[0, 2].transAxes,
+                           verticalalignment = 'top', fontsize = 10)
         #---
         #  Add the axis labels on an fictious (gaussian) distribution example
         #---
-        axs[2, 7].set_axis_on()
-        axs[2, 7].hist(1.0225 + 0.015 * gaussian, bins = 20, density = True)
-        axs[2, 7].set_yticks([])
-        axs[2, 7].set_aspect(1./axs[2, 7].get_data_ratio())
-        axs[2, 7].set_xlabel('Normalized\nassembly\npower')
-        axs[2, 7].set_ylabel('Probability\ndensity')
-        axs[2, 7].tick_params(axis = 'x', labelbottom = True)
+        axs[1, 6].set_axis_on()
+        axs[1, 6].hist(1.0225 + 0.015 * gaussian, bins = 20, density = True)
+        axs[1, 6].set_yticks([])
+        axs[1, 6].set_aspect(1./axs[1, 6].get_data_ratio())
+        if lang == 'en':
+            axs[1, 6].set_xlabel('Normalized assembly\npower')
+            axs[1, 6].set_ylabel('Probability\ndensity')
+        elif lang == 'fr':
+            axs[1, 6].set_xlabel('Puissance normalisée\nde l\'assemblage')
+            axs[1, 6].set_ylabel('Densité\nde\nprobabilité')
+        axs[1, 6].tick_params(axis = 'x', labelbottom = True)
         #---
         #  Add a legend
         #---
@@ -231,22 +249,25 @@ for controlrod in controlrods:
                                          label = 'Drakkar')
         label2 = matplotlib.lines.Line2D([], [], color = '#ff7f0e',
                                          label = 'Serpent')
-        axs[1, 7].legend(handles=[label1, label2])
+        axs[0, 7].legend(handles=[label1, label2])
         #---
-        #  Add a title
-        #---
-        st = fig.suptitle('Probability density vs. normalized assembly power, '
-                          + 'with Drakkar, Serpent\nand '
-                          + 'JEFF-3.3 best estimate except for ' + iso + ' ('
-                          + str(len(Powers2D[iso][:, 0, 0]))
-                          + ' random samples)\non Tihange first zero-power '
-                          + 'start-up, ' + text[controlrod])
-        #---
-        #  Save plot as pdf (vectorized)
+        #  Add a title and save plot as pdf (vectorized)
         #---
         os.system('mkdir -p output_TMC_comparison')
-        fig.savefig('output_TMC_comparison/' + controlrod + '_' + iso + '.pdf',
-                    bbox_extra_artists=[st], bbox_inches='tight')
+        if lang == 'en':
+            title = ('Probability density vs. normalized assembly power, '
+                     + 'with Drakkar, Serpent\nand '
+                     + 'JEFF-3.3 best estimate except for '
+                     + iso.replace('_', '\_') + ' ('
+                     + str(len(Powers2D[iso][:, 0, 0]))
+                     + ' random samples)\non Tihange first zero-power '
+                     + 'start-up, ' + text[controlrod])
+            st = fig.suptitle(title)
+            fig.savefig('output_TMC_comparison/' + controlrod + '_' + iso
+                        + '.pdf', bbox_inches='tight', bbox_extra_artists=[st])
+        elif lang == 'fr':
+            fig.savefig('output_TMC_comparison/' + controlrod + '_' + iso
+                        + '.pdf', bbox_inches='tight')
         #---
         #  Clean-up for next plot
         #---

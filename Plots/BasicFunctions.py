@@ -7,6 +7,7 @@
 # Imports
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 from scipy.stats import moment
 import serpentTools
 from serpentTools.settings import rc
@@ -221,3 +222,38 @@ def SE_SK(n):
 def SE_KU(n):
     return 2*SE_SK(n)*np.sqrt( (n**2 - 1) / ((n - 3)*(n + 5)) )
 
+#---
+#  Functions for proper formatting of Matpotlib figures in LaTeX
+#  See: https://jwalton.info/Embed-Publication-Matplotlib-Latex/
+#---
+def set_size(aspect = 'default'):
+    # Output of \showthe\textwidth in LaTeX
+    width = 472.03111 # in points
+    width = width / 72.27 # into inches
+    if aspect == 'halfsquare':
+        width = width/2
+    if aspect == 'default':
+        # Retrieve default figsize
+        default = plt.rcParams["figure.figsize"]
+        ratio = default[1] / default[0]
+    elif aspect == 'square' or aspect == 'halfsquare':
+        ratio = 1
+    else:
+        raise Exception('"' + aspect + '" aspect has not been defined.')
+    # Keep the default proportionality
+    height = width * ratio
+    return (width, height)
+def tex_fonts():
+    tex_fonts = {
+        # Use LaTeX to write all text
+        "text.usetex": True,
+        "font.family": "serif",
+        # Use 12pt font in plots, to match 12pt font in document
+        "axes.labelsize": 12,
+        "font.size": 12,
+        # Make the legend/label fonts a little smaller
+        "legend.fontsize": 10,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10
+    }
+    return tex_fonts

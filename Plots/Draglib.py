@@ -15,6 +15,9 @@ import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from BasicFunctions import *
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
 
 # We may plot quantiles or energy-correlated random samples
 graphtype = 'quantiles'
@@ -28,7 +31,7 @@ for draglibpath in directories:
     #---
     #  Initialize plot
     #---
-    fig, axs = plt.subplots(nrows = 2, sharex='all',
+    fig, axs = plt.subplots(nrows = 2, sharex = 'all', figsize = set_size(),
                             gridspec_kw={'hspace': 0})
     #---
     #  Create link toward Draglib file and load data (most time spent here)
@@ -221,22 +224,34 @@ for draglibpath in directories:
     #  Graph glitter
     #---
     # Set a title and axis labels
-    if source == 'TENDL-2019':
-        sourcetxt = nrand + ' TENDL-2019 random samples'
-    elif source == 'SANDY':
-        sourcetxt = nrand + ' random samples in JEFF-3.3 covariances'
-    else:
-        raise Exception(source + ' unknown.')
-    axs[0].set_title('Statistics on ' + iso + ' cross sections versus energy,'
-                     + '\ngiven by ' + sourcetxt + ',\nat ' + Temperature
-                     + ' K, extracted from Draglib.', wrap = True)
-    axs[1].set_xlabel('Incident neutron energy [eV]')
-    if graphtype == 'samples':
-        axs[0].set_ylabel('Cross section [b]')
-    elif graphtype == 'quantiles':
-        axs[0].set_ylabel('Cross section [b]\n(5%, 25%, 50%, 75%,\n '
-                          + '95% quantiles)')
-    axs[1].set_ylabel('Relative standard deviation')
+    if lang == 'en':
+        if source == 'TENDL-2019':
+            sourcetxt = nrand + ' TENDL-2019 random samples'
+        elif source == 'SANDY':
+            sourcetxt = nrand + ' random samples in JEFF-3.3 covariances'
+        else:
+            raise Exception(source + ' unknown.')
+        axs[0].set_title('Statistics on ' + iso.replace('_', '\_')
+                         + ' cross sections versus energy,'
+                         + '\ngiven by ' + sourcetxt + ',\nat ' + Temperature
+                         + ' K, extracted from Draglib.', wrap = True)
+        axs[1].set_xlabel('Incident neutron energy [eV]')
+        if graphtype == 'samples':
+            axs[0].set_ylabel('Cross section [b]')
+        elif graphtype == 'quantiles':
+            axs[0].set_ylabel('Cross section [b]\n'
+                              + '(5\%, 25\%, 50\%, 75\%,\n '
+                              + '95\% quantiles)')
+        axs[1].set_ylabel('Relative standard deviation')
+    elif lang == 'fr':
+        axs[1].set_xlabel('Énergie du neutron incident [eV]')
+        if graphtype == 'samples':
+            axs[0].set_ylabel('Section efficace [b]')
+        elif graphtype == 'quantiles':
+            axs[0].set_ylabel('Section efficace [b]\n'
+                              + '(quantiles à 5\%, 25\%,\n'
+                              + '50\%, 75\% et 95\%)')
+        axs[1].set_ylabel('Écart-type relatif')
     # Add legends
     leg = axs[0].legend(loc = loclegend, ncol = ncol)
     # Set the linewidth of each legend object
@@ -300,9 +315,9 @@ for draglibpath in directories:
     ytickspercent = ['0', '0']
     for i in np.arange(1, 19):
         if ylimstd < 4:
-            yticktext = '{:02.1f}'.format(i*tickstd_maj) + '%'
+            yticktext = '{:02.1f}'.format(i*tickstd_maj) + '\%'
         else:
-            yticktext = str(i*int(tickstd_maj)) + '%'
+            yticktext = str(i*int(tickstd_maj)) + '\%'
         ytickspercent.append(yticktext)
     axs[1].set_yticklabels(ytickspercent)
     #---

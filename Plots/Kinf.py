@@ -8,6 +8,7 @@
 # faulthandler for segmentation faults. Left here due to a heisenbug in lcm
 import faulthandler; faulthandler.enable()
 import lcm
+from BasicFunctions import *
 import serpentTools
 from serpentTools.settings import rc
 import numpy as np
@@ -19,6 +20,9 @@ import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
+
 #---
 #  Retrieve Serpent k-inf
 #---
@@ -61,7 +65,7 @@ for Type in Serpent:
 #---
 # Dictionary intended to receive Dragon data
 Dragon = {}
-for Multicompofile in glob.glob('../Drakkar/Linux_x86_64/_UOX*.ascii'):
+for Multicompofile in glob.glob('../Drakkar/Output_BestEstimate/_UOX*.ascii'):
     Type = Multicompofile.split('/')[-1][4:].split('.')[0]
     os.system('ln -s ' + Multicompofile + ' _Multicompo.ascii')
     Multicompo = lcm.new('LCM_INP', 'Multicompo.ascii')
@@ -160,7 +164,7 @@ for Type in Serpent:
 nbBor = len(list(Discrepancies.values())[0])
 w = 0.75
 dimw = w/nbBor
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = set_size())
 x = np.arange(len(Discrepancies))
 for i in range(nbBor):
     y = []
@@ -169,46 +173,72 @@ for i in range(nbBor):
     Types = []
     xlabels = []
     SortedDiscr = sorted(Discrepancies.items(), key=lambda x: x[1][1])
+    # Final tweaking : force permutation between 255_Py12 and 310_Py12
+    a = [elem[0] for elem in SortedDiscr].index('255_Py12')
+    b = [elem[0] for elem in SortedDiscr].index('310_Py12')
+    SortedDiscr[b], SortedDiscr[a] = SortedDiscr[a], SortedDiscr[b]
     for Type, Discrepancy in SortedDiscr:
         # Get mean discrepancy
         y.append(Discrepancy[i])
         # Construct legend from 'Type'. For example: '195_None', '255_Py8', ...
         Enrichment, Rods = Type.split('_')
-        Enrichment = Enrichment[0] + '.' + Enrichment[1:] + '%'
+        Enrichment = Enrichment[0] + '.' + Enrichment[1:] + '\%'
         if Rods == 'None':
-            Rods = ''
-        elif Rods == 'AIC':
-            Rods = '20 AIC rods'
-        elif Rods.startswith('Py'):
-            Rods = Rods[2:] + ' Pyrex\nrods'
-        xlabels.append(Enrichment + '\n' + Rods)
+            xlabels.append(Enrichment)
+        else:
+            if Rods == 'AIC':
+                if lang == 'en':
+                    Rods = '20 AIC rods'
+                elif lang == 'fr':
+                    Rods = '20 crayons\nen AIC'
+            elif Rods.startswith('Py'):
+                Rods = Rods[2:]
+                if lang == 'en':
+                    Rods = Rods + ' Pyrex\nrods'
+                elif lang == 'fr':
+                    Rods = Rods + ' crayons\nen Pyrex'
+            xlabels.append(Enrichment + '\n' + Rods)
         # Get discrepancy for +/- 1 sigma
         ypstd.append(Discrepanciespstd[Type][i])
         ymstd.append(Discrepanciesmstd[Type][i])
+    if lang == 'en':
+        label = ' ppm of boron'
+    elif lang == 'fr':
+        label = ' ppm de bore'
     ax.bar(x + i * dimw - 0.25, y, dimw,
            yerr = (np.array(y) - np.array(ymstd),
                    np.array(ypstd) - np.array(y)),
            error_kw=dict(capsize = w*10, capthick = w*2/3, lw=w*2/3),
-           label = str(int(Serpent[Type][i,0])) + ' ppm of boron')
+           label = str(int(Serpent[Type][i,0])) + label)
 #---
 #  Graph glitter
 #---
 plt.xticks(x, xlabels)
-ax.set_xlabel('Assembly ' + r'$^{235}\mathrm{U}$'
-              + ' enrichment and its eventual absorbing rods')
-ax.set_ylabel(r'$\mathrm{ln}\left(\frac{'
-              r'k^{\mathrm{Serpent}}_{\mathrm{infinite}}}{'
-              r'k^{\mathrm{Dragon}}_{\mathrm{infinite}}}'
-              r'\right)\times10^5$', fontsize = 14)
-ax.set_title('Discrepancies of infinite multiplication factors\n'
-             + 'between Serpent and Dragon, in pcm,\n'
-             + 'for the assemblies in Tihange at the first startup.\n'
-             + 'Error bars correspond to the Monte-Carlo $1\sigma$ '
-             + 'uncertainty.')
+if lang == 'en':
+    ax.set_xlabel(r'Assembly $^{235}\mathrm{U}$ enrichment'
+                  + ' and its eventual absorbing rods')
+    ax.set_ylabel(r'$\mathrm{ln}\left(\frac{'
+                  r'k^{\mathrm{Serpent}}_{\infty}}{'
+                  r'k^{\mathrm{Dragon}}_{\infty}}'
+                  r'\right)\times10^5$', fontsize = 14)
+elif lang == 'fr':
+    ax.set_xlabel(r'Enrichissement en $^{235}\mathrm{U}$' + ' de l\'assemblage'
+                  + ' et ses éventuels crayons absorbants')
+    ax.set_ylabel(r'$\mathrm{ln}\left(\frac{'
+                  r'k^{\mathrm{Serpent}}_{\infty}}{'
+                  r'k^{\mathrm{Dragon}}_{\infty}}'
+                  r'\right)\times10^5$', fontsize = 14)
+if lang == 'en':
+    ax.set_title('Discrepancies of infinite multiplication factors\n'
+                 + 'between Serpent and Dragon, in pcm,\n'
+                 + 'for the assemblies in Tihange at the first startup.\n'
+                 + 'Error bars correspond to the Monte-Carlo $1\sigma$ '
+                 + 'uncertainty.')
 plt.legend()
 # Add minor ticks
 ax.yaxis.set_minor_locator(ticker.MultipleLocator(100))
-# Tight layout prevents a label from exceeding the figure frame
-fig.tight_layout()
-fig.savefig('Kinf.pdf')
+#---
+#  Save plot as pdf (vectorized)
+#---
+fig.savefig('Kinf.pdf', bbox_inches = 'tight')
 print("Plotting completed")

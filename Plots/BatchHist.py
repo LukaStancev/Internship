@@ -17,6 +17,8 @@ from BasicFunctions import *
 import re
 import serpentTools
 from serpentTools.settings import rc
+plt.rcParams.update(tex_fonts())
+lang = 'fr' # fr/en
 #
 nbatchplot = 198
 #
@@ -93,8 +95,8 @@ tmp = []
 for controlrod in controlrods:
     # Convert this list of n-D NumPy array into a (n+1)-D NumPy array
     indruns[controlrod] = np.array(indruns[controlrod])
-    # Update 'controlrods' list so that only those states isotopes that were
-    # indeed used can be the subject of loops to come
+    # Update 'controlrods' list so that only those states that were indeed used
+    # can be the subject of loops to come
     if np.size(indruns[controlrod]) != 0:
         tmp.append(controlrod)
 controlrods = tmp
@@ -107,21 +109,27 @@ for controlrod in controlrods:
     #  Plotting
     #---
     # Initialize figure
-    fig, axs = plt.subplots(8, 8, sharex='all', figsize=(8, 8),
-                            gridspec_kw={'hspace': 0, 'wspace': 0})
+    fig, axs = plt.subplots(8, 8, sharex = 'all',
+                            figsize = set_size('square'),
+                            gridspec_kw = {'hspace': 0, 'wspace': 0})
     xaxis = np.arange(nbatchplot - 1)
     for x in range(0, len(CoreLayout[0, :])):
         for y in range(0, len(CoreLayout[:, 0])):
-            if CoreLayout[x, y] == 0:
-                fig.delaxes(axs[x][y])
+            if CoreLayout[x, y] == 0 and [x, y] != [1, 7]:
+                axs[x, y].set_axis_off()
             else:
                 # Add a black vertical line on zero
                 axs[x, y].axhline(y = 0, linestyle = '--', linewidth = 0.5,
                                   color = 'k')
-                # Compute relative discrepancy with regard to mean over active
-                # generations
-                reldiscr = ((indmean[1:nbatchplot, x, y]/indmeanact[x, y] - 1)
-                            *100)
+                if [x, y] != [1, 7]:
+                    # Compute relative discrepancy with regard to mean over
+                    # active generations
+                    reldiscr = ((indmean[1:nbatchplot, x, y]/indmeanact[x, y]
+                                 - 1)*100)
+                else:
+                    # Add an outside-of-core example for axis labels
+                    reldiscr = ((indmean[1:nbatchplot, 2, 2]/indmeanact[2, 2]
+                                 - 1)*100)
                 axs[x, y].plot(xaxis, reldiscr)
                 # Rotate labels
                 axs[x, y].tick_params(axis = 'x', labelrotation = 90)
@@ -133,11 +141,18 @@ for controlrod in controlrods:
             # Adjust y-axis ticks
             axs[x, y].set_ylim(-6.5, +6.5)
             if y == 0:
-                # Add percent sign after yticks
                 labels = axs[x, y].get_yticks()
-                percentlabels = [str(i) + '%' for i in labels]
-                percentlabels[int(len(percentlabels)/2 - 0.5)] = '0'
-                axs[x, y].set_yticklabels(percentlabels)
+                # Add percent sign after yticks
+                labels = [str(i) + '\%' for i in labels]
+                # Prefix with a plus sign for labels not starting with a minus
+                # sign
+                labels = ['+' + i if i[0] != '-' else i for i in labels]
+                # Add dollar signs, so that math TeX typography is used for
+                # plus and minus signs
+                labels = ['$' + i + '$' for i in labels]
+                # For central value, keep it simple : 0 (no sign, no percent)
+                labels[int(len(labels)/2 - 0.5)] = '0'
+                axs[x, y].set_yticklabels(labels)
             else:
                 axs[x, y].set_yticks([])
             # Remove some of the axes, in order to avoid doubled axes
@@ -152,22 +167,42 @@ for controlrod in controlrods:
                 if CoreLayout[x + 1, y] == 1:
                     axs[x, y].spines['bottom'].set_visible(False)
     #---
-    #  Add a title
+    #  Add the axis labels on an outside-of-core example
     #---
-    st = fig.suptitle('Relative error on assembly power during 200 inactive '
-                      + 'generations (uniformly\n'
-                      + 'initialized) with respect to 1000 active generations,'
-                      + r' $10^5$' + ' neutrons/generation,\n'
-                      + 'averaged over 50 independant simulations with '
-                      + 'different random seeds\n'
-                      + 'Tihange first zero-power start-up, '
-                      + text[controlrod] + ' ; Serpent 2.1.32')
+    axs[1, 7].tick_params(axis = 'x', labelbottom = True)
+    if lang == 'en':
+        labelx = 'Inactive\ngeneration\nindex'
+        labely = ('Relative error on assembly\n'
+                  + 'power with respect to\n'
+                  + '1000 active generations')
+    elif lang == 'fr':
+        labelx = 'Indice de\ngénération\ninactive'
+        labely = ('Erreur relative sur la\n'
+                  + 'puissance de l\'assemblage,\n'
+                  + 'par rapport aux 1000\n'
+                  + 'générations actives')
+    axs[1, 7].set_xlabel(labelx)
+    axs[1, 7].set_ylabel(labely)
     #---
-    #  Save plot as pdf (vectorized)
+    #  Add a title and save plot as pdf (vectorized)
     #---
+    if lang == 'en':
+        title = ('Convergence of assembly power during 200 inactive '
+                 + 'generations,'
+                 + '\nuniformly initialized, ' + r'$10^5$ neutrons/generation,'
+                 + ' averaged over\n'
+                 + '50 independant simulations with different random seeds\n'
+                 + 'on Tihange first zero-power start-up, ' + text[controlrod])
+    elif lang == 'fr':
+        title = ''
     os.system('mkdir -p output_BatchHist')
-    fig.savefig('output_BatchHist/' + controlrod + '.pdf', extra_artists=[st],
-                bbox_inches='tight')
+    if title:
+        st = fig.suptitle(title, y = 1.01)
+        fig.savefig('output_BatchHist/' + controlrod + '.pdf',
+                    extra_artists = [st], bbox_inches = 'tight')
+    else:
+        fig.savefig('output_BatchHist/' + controlrod + '.pdf',
+                    bbox_inches = 'tight')
     #---
     #  Clean-up for next plot
     #---
