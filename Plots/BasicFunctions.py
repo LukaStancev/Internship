@@ -40,12 +40,11 @@ def GetSerpentLayout(FullCoreLayout, outside):
     return SerpentLayout
 
 # Retrieve a Serpent power distribution
-def ReadPdistrSerpent(file, FullCoreLayout, msg):
+def ReadPdistrSerpent(file, FullCoreLayout, msg = '', reaction = '-80'):
     # Retrieve Serpent detector output
     det = serpentTools.read(file)
-    # Total energy deposition, see
+    # Default (-80) is total energy deposition, see
     # http://serpent.vtt.fi/mediawiki/index.php/ENDF_reaction_MT%27s_and_macroscopic_reaction_numbers
-    reaction = '-80'
     power = det.detectors[reaction].tallies
     if reaction == '-80':
         power = power[0]
@@ -79,19 +78,20 @@ def ReadPdistrSerpent(file, FullCoreLayout, msg):
     return symcorepower[np.nonzero(symcorepower)]
 
 # Retrieve a per-batch Serpent power distribution
-def ReadPdistrHistSerpent(file, FullCoreLayout):
+def ReadPdistrHistSerpent(file, FullCoreLayout, reaction = '-80'):
     SerpentLayout = GetSerpentLayout(FullCoreLayout, 2)
     # Read that Serpent history file
     hist = serpentTools.read(file)
-    # For a detector (here -80), the results are grouped in three columns that
-    # provide (1) the cycle-wise value,
-    #         (2) the cumulative mean and
-    #         (3) the corresponding relative statistical error.
+    # For a detector (here -80, by default), the results are grouped in three
+    # columns that provide (1) the cycle-wise value,
+    #                      (2) the cumulative mean and
+    #                      (3) the corresponding relative statistical error.
     # Cf. http://serpent.vtt.fi/mediawiki/index.php/Description_of_output_files#History_output
     # Only the first is kept here.
-    cycle = hist['det-80'][:, 0::3]
-    # Among that, only the total deposited energy is kept
-    cycle = cycle[:, 0::3]
+    cycle = hist['det' + reaction][:, 0::3]
+    if reaction == '-80':
+        # Among that, only the total deposited energy is kept
+        cycle = cycle[:, 0::3]
     # Among that, only the central layer (the active core) is kept ; top and
     # bottom layers are splitted out
     cycle = np.split(cycle, 3, axis = 1)[1]

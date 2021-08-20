@@ -41,8 +41,7 @@ CRtext = {}
 CRtext['ARO'] = 'all rods out'
 CRtext['D'] = 'D rod bank inserted'
 CRtext['CD'] = 'C and D rod banks inserted'
-#sources = ['Drakkar', 'Framatome', 'EDF']
-sources = ['Drakkar', 'Serpent', 'Framatome', 'EDF']
+sources = ['Drakkar', 'Serpent', 'Serpent (fission)', 'Framatome', 'EDF']
 powers = {}
 for controlrod in controlrods:
     powers[controlrod] = {}
@@ -87,35 +86,41 @@ CoreLayout, FullCoreLayout = GetCoreLayout(len(powers['ARO']['EDF']))
 #---
 #  Serpent power distributions
 #---
+serpentfiles = glob.glob('../Serpent/BatchHist/Tihange*ppm_*.sss2_his0.m')
 relstd = {}
-# Storage for independant runs' results
-indruns = {}
-for controlrod in controlrods:
-    indruns[controlrod] = []
-for file in list(glob.glob('../Serpent/BatchHist/Tihange*ppm_*.sss2_his0.m')):
-    cbor = file.split('/')[-1].split('_')[0]
-    cbor = int(re.findall(r'\d+', cbor)[0])
-    if cbor == 1206:
-        controlrod = 'ARO'
-    elif cbor == 1084:
-        controlrod = 'D'
-    elif cbor == 960:
-        controlrod = 'CD'
-    else:
-        raise Exception(cbor + ' unknown.')
-    # Read that Serpent history file
-    indruns[controlrod].append(ReadPdistrHistSerpent(file, FullCoreLayout))
-for controlrod in controlrods:
-    # Convert this list of n-D NumPy array into a (n+1)-D NumPy array
-    indruns[controlrod] = np.array(indruns[controlrod])
-    # Mean indruns[runs, generations, iassembly] over active generations
-    indact = np.mean(indruns[controlrod][:, 198: ,:], axis = 1)
-    # Mean over independant runs
-    mean = np.mean(indact, axis = 0)
-    powers[controlrod]['Serpent'] = mean
-    # Relative standard error of the mean (‰)
-    std = np.std(indact, axis = 0, ddof = 1)
-    relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*1000
+for reaction in ['-8', '-80']:
+    # Storage for independant runs' results
+    indruns = {}
+    for controlrod in controlrods:
+        indruns[controlrod] = []
+    for file in list(serpentfiles):
+        cbor = file.split('/')[-1].split('_')[0]
+        cbor = int(re.findall(r'\d+', cbor)[0])
+        if cbor == 1206:
+            controlrod = 'ARO'
+        elif cbor == 1084:
+            controlrod = 'D'
+        elif cbor == 960:
+            controlrod = 'CD'
+        else:
+            raise Exception(cbor + ' unknown.')
+        # Read that Serpent history file
+        indruns[controlrod].append(ReadPdistrHistSerpent(file, FullCoreLayout,
+                                                         reaction = reaction))
+    for controlrod in controlrods:
+        # Convert this list of n-D NumPy array into a (n+1)-D NumPy array
+        indruns[controlrod] = np.array(indruns[controlrod])
+        # Mean indruns[runs, generations, iassembly] over active generations
+        indact = np.mean(indruns[controlrod][:, 198: ,:], axis = 1)
+        # Mean over independant runs
+        mean = np.mean(indact, axis = 0)
+        if reaction == '-80':
+            powers[controlrod]['Serpent'] = mean
+            # Relative standard error of the mean (‰)
+            std = np.std(indact, axis = 0, ddof = 1)
+            relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*1000
+        elif reaction == '-8':
+            powers[controlrod]['Serpent (fission)'] = mean
 #---
 #  Drakkar power distributions
 #---
@@ -269,7 +274,7 @@ for controlrod in controlrods:
         # Add formula
         text = (r'$\frac{\mathrm{' + a + '}-\mathrm{' + b + '}}'
                 + '{\mathrm{' + b + '}} (\%)$')
-        ax.text(5.3, 0.1, text, fontsize = 12, color = 'black',
+        ax.text(4.7, 0.1, text, fontsize = 12, color = 'black',
                 ha = 'center', va = 'center')
         # Add Battleship-style coordinates as ticks
         ax.xaxis.tick_bottom()
