@@ -41,7 +41,7 @@ CRtext = {}
 CRtext['ARO'] = 'all rods out'
 CRtext['D'] = 'D rod bank inserted'
 CRtext['CD'] = 'C and D rod banks inserted'
-sources = ['Drakkar', 'Serpent', 'Serpent (fission)', 'Framatome', 'EDF']
+sources = ['Drakkar', 'Serpent (fission)', 'Serpent', 'EDF', 'Framatome']
 powers = {}
 for controlrod in controlrods:
     powers[controlrod] = {}
