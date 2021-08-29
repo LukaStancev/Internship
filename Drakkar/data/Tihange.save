@@ -16,18 +16,26 @@ else
    MACH=`uname -sm | sed 's/[ ]/_/'`
 fi
 ls -ltr
-for file in *Power*
-do
-    md5sum=$(md5sum "$file" | cut -d" " -f1)
-    prefix=$(echo "$file" | cut -d"." -f1)
-    mv "$file" "$1"/"$MACH"/"$prefix"_"$md5sum".ascii
-done
 
 # Keep only a few result files, in case of random sampling.
 if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
 then
+   outdir="$1"/Output_TMC
+   mkdir -p "$outdir"
    tail -45 *.result
    rm -f *.result
+else
+   outdir="$1"/Output_BestEstimate
+   mkdir -p "$outdir"
+   mv *.result "$outdir"/.
 fi
+
+for file in *Power*
+do
+    md5sum=$(md5sum "$file" | cut -d" " -f1)
+    prefix=$(echo "$file" | cut -d"." -f1)
+    mv "$file" "$outdir"/"$prefix"_"$md5sum".ascii
+done
+
 
 echo -e $savename".save script terminated\n"

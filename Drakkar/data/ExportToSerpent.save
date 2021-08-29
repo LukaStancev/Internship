@@ -17,9 +17,7 @@ else
 fi
 ls -ltr
 export_folder="$1/../Serpent/geo_compo"
-if [ ! -d "$export_folder" ]; then
-  mkdir "$export_folder"
-fi
+mkdir -p "$export_folder"
 mv *.geo "$export_folder"/.
 mv *.compo "$export_folder"/.
 

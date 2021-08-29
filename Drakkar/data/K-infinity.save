@@ -16,6 +16,9 @@ else
    MACH=`uname -sm | sed 's/[ ]/_/'`
 fi
 ls -ltr
-mv *.ascii "$1"/"$MACH"/.
+outdir="$1"/Output_BestEstimate
+mkdir -p "$outdir"
+mv *.ascii "$outdir"/.
+mv *.result "$outdir"/.
 
 echo -e $savename".save script terminated\n"
