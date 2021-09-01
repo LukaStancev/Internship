@@ -226,18 +226,34 @@ def SE_KU(n):
 #  Functions for proper formatting of Matpotlib figures in LaTeX
 #  See: https://jwalton.info/Embed-Publication-Matplotlib-Latex/
 #---
-def set_size(aspect = 'default'):
+def set_size(aspect = 'default', bonus = False):
     # Output of \showthe\textwidth in LaTeX
     width = 472.03111 # in points
     width = width / 72.27 # into inches
     if aspect == 'halfsquare':
         width = width/2
     if aspect == 'default':
-        # Retrieve default figsize
+        # Retrieve default figsize in order to keep default proportionnality
         default = plt.rcParams["figure.figsize"]
         ratio = default[1] / default[0]
     elif aspect == 'square' or aspect == 'halfsquare':
         ratio = 1
+        # An incompatibility between savefig's bbox_inches='tight' and
+        # subplots' figsize forces us to use dirty fixed ratios.
+        # See :
+        # https://github.com/matplotlib/matplotlib/issues/11681
+        # https://stackoverflow.com/questions/16118291/matplotlib-make-final-figure-dimensions-match-figsize-with-savefig-and-bbox-e
+        # https://stackoverflow.com/questions/16032389/pad-inches-0-and-bbox-inches-tight-makes-the-plot-smaller-than-declared-figsiz
+        if aspect == 'square':
+            if bonus:
+                #width = width*16.59/14.06*58.7/59.1*39.35/39.95
+                width = width*1.1543556
+            else:
+                #width = width*16.59/13.48
+                width = width*1.2307121
+        elif aspect == 'halfsquare':
+            #width = width*29.3/26.45*1.015
+            width = width*1.1243667
     else:
         raise Exception('"' + aspect + '" aspect has not been defined.')
     # Keep the default proportionality

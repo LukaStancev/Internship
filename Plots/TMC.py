@@ -168,7 +168,7 @@ for controlrod in controlrods:
                         if kurt > maxKU[controlrod][iso]:
                             maxKU[controlrod][iso] = kurt
                     # Print statistics for each assembly
-                    axs[x, y].text(0.05, 0.95, textstr, fontsize = 10,
+                    axs[x, y].text(0.05, 0.95, textstr,
                                    transform=axs[x, y].transAxes,
                                    verticalalignment = 'top')
                     # Remove Y-ticks (unnecessary for a probability density)
@@ -216,7 +216,7 @@ for controlrod in controlrods:
                        + r'$K$ : excès de kurtosis (si $\sigma > 0.1$'
                        + '\%)')
         axs[0, 2].text(0.05, 1.04, textstr, verticalalignment = 'top',
-                       transform = axs[0, 2].transAxes, fontsize = 10)
+                       transform = axs[0, 2].transAxes)
         #---
         #  Add the axis labels on an fictious (gaussian) distribution example
         #---
@@ -280,7 +280,7 @@ for controlrod in controlrods:
         for stat in ['SD', 'SK', 'KU']:
             # Initialize figure
             fig, axs = plt.subplots(8, 8, sharex = 'all', sharey = 'all',
-                                    figsize = set_size('square'),
+                                    figsize = set_size('square', bonus = True),
                                     gridspec_kw = {'hspace': 0, 'wspace': 0})
             for x in range(0, len(CoreLayout[0, :])):
                 for y in range(0, len(CoreLayout[:, 0])):

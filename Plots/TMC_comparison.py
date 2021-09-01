@@ -185,7 +185,7 @@ for controlrod in controlrods:
                     textstr += '\n$D$=$%.2f$' % (D)
                     textstr += '\n$p$=$%.2f$' % (p)
                     # Print statistics for each assembly
-                    axs[x, y].text(0.05, 0.92, textstr, fontsize = 10,
+                    axs[x, y].text(0.05, 0.92, textstr,
                                    transform=axs[x, y].transAxes,
                                    verticalalignment='top')
                     # Remove Y-ticks (unnecessary for a probability density)
@@ -217,7 +217,7 @@ for controlrod in controlrods:
                        + '$p$ : Kolmogorov-Smirnov p-value')
             axs[0, 4].text(-0.3, 0.95, textstr,
                            transform = axs[0, 4].transAxes,
-                           verticalalignment = 'top', fontsize = 10)
+                           verticalalignment = 'top')
         elif lang == 'fr':
             textstr = (r'$\sigma_D$ : écart-type relatif de Drakkar'
                        + ' (en \%)\n'
@@ -227,7 +227,7 @@ for controlrod in controlrods:
                        + '$p$ : valeur-p de Kolmogorov-Smirnov')
             axs[0, 2].text(0.05, 1.04, textstr,
                            transform = axs[0, 2].transAxes,
-                           verticalalignment = 'top', fontsize = 10)
+                           verticalalignment = 'top')
         #---
         #  Add the axis labels on an fictious (gaussian) distribution example
         #---

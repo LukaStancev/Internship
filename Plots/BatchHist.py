@@ -110,7 +110,7 @@ for controlrod in controlrods:
     #---
     # Initialize figure
     fig, axs = plt.subplots(8, 8, sharex = 'all',
-                            figsize = set_size('square'),
+                            figsize = set_size('square', bonus = True),
                             gridspec_kw = {'hspace': 0, 'wspace': 0})
     xaxis = np.arange(nbatchplot - 1)
     for x in range(0, len(CoreLayout[0, :])):

@@ -148,10 +148,14 @@ for controlrod in controlrods:
     for source in sources:
         pmin = min(pmin, np.min(powers[controlrod][source]))
         pmax = max(pmax, np.max(powers[controlrod][source]))
-    relstdmin = min(relstdmin, np.min(relstd[controlrod]))
-    relstdmax = max(relstdmax, np.max(relstd[controlrod]))
+    if 'Serpent' in sources:
+        relstdmin = min(relstdmin, np.min(relstd[controlrod]))
+        relstdmax = max(relstdmax, np.max(relstd[controlrod]))
+        sourcesinnextloop = sources + ['Serpent_SE']
+    else:
+        sourcesinnextloop = sources
 for controlrod in controlrods:
-    for source in sources + ['Serpent_SE']:
+    for source in sourcesinnextloop:
         # Show only a quarter of the core
         if source == 'Serpent_SE':
             plot = fold(Deploy2D(relstd[controlrod], FullCoreLayout))
@@ -190,7 +194,7 @@ for controlrod in controlrods:
             for j in range(len(plot)):
                 if not np.isnan(plot[i, j]):
                     text = str('{:.2f}'.format(round(plot[i, j], 2)))
-                    ax.text(j, i, text, fontsize = 10, color = 'black',
+                    ax.text(j, i, text, color = 'black',
                             ha = 'center', va = 'center')
         # Add Battleship-style coordinates
         ax.xaxis.tick_bottom()
@@ -254,13 +258,13 @@ for controlrod in controlrods:
                            borderpad = 0,
                            )
         im = ax.imshow(discrp, interpolation = 'nearest', cmap = 'coolwarm',
-                       vmin = -15, vmax = 15)
+                       vmin = -10, vmax = 10)
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
         if controlrod == 'CD':
             current_cmap = im.get_cmap()
             current_cmap.set_bad(color = 'white')
             cbar.ax.tick_params(labelsize = 12)
-            ylabels = [str(i) + '\%' for i in list(np.arange(-3, 4)*5)]
+            ylabels = [str(i) + '\%' for i in list(np.arange(-4, 5)*2.5)]
             cbar.ax.set_yticklabels(ylabels)
         else:
             cbar.remove()
@@ -269,7 +273,7 @@ for controlrod in controlrods:
             for j in range(len(discrp)):
                 if not np.isnan(discrp[i, j]):
                     text = str('{:.1f}'.format(round(discrp[i, j], 2)))
-                    ax.text(j, i, text, fontsize = 10, color = 'black',
+                    ax.text(j, i, text, color = 'black',
                             ha = 'center', va = 'center')
         # Add formula
         text = (r'$\frac{\mathrm{' + a + '}-\mathrm{' + b + '}}'
