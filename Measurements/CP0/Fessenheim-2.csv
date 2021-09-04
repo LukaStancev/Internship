@@ -1,0 +1,29 @@
+# Axially-integrated 2D activity measurements.
+# Fessenheim-2 first start-up, in hot zero power state.
+# The gaps are due to the fact that only 50 of the 157 assemblies are
+# instrumented.
+# Source :
+#   "Contribution à l'élaboration et à la qualification d'un schéma de
+#   calcul pour la gestion des réacteurs PWR, à l'aide du système
+#   Neptune - Suivi du réacteur Fessenheim 2", E. Kamha, Ph.D. Thesis,
+#   Université Paris-Sud Centre d'Orsay, 1981.
+#   https://inis.iaea.org/collection/NCLCollectionStore/_Public/18/076/18076909.pdf
+#   Page 63 of that PDF or page 61 as written at the top of the page
+# Author : V. Salino (IRSN), 09/2021
+
+#  R       P       N       M       L       K       J       H       G       F       E       D       C       B       A
+	   ,       ,       ,       ,       ,       ,       ,0.75480,       ,       ,       ,       ,       ,       ,        #  1
+       ,       ,       ,       ,       ,       ,       ,       ,       ,0.84697,       ,       ,       ,       ,        #  2
+       ,       ,       ,0.57038,       ,       ,1.26390,1.07350,       ,       ,       ,0.57436,       ,       ,        #  3
+       ,       ,       ,       ,0.88111,       ,       ,1.34160,       ,1.29450,       ,       ,       ,       ,        #  4
+       ,       ,0.75463,       ,1.22150,       ,1.31990,       ,       ,       ,1.26400,0.90672,       ,0.54676,        #  5
+       ,       ,       ,       ,0.99007,       ,       ,1.30870,       ,1.25110,       ,       ,       ,       ,        #  6
+       ,       ,1.30620,       ,       ,       ,1.23440,       ,1.27230,       ,       ,1.01020,       ,0.86319,        #  7
+0.71033,       ,1.06830,       ,0.96851,       ,       ,       ,       ,1.26520,       ,       ,1.05560,1.25320,        #  8
+       ,       ,       ,       ,1.30570,       ,       ,       ,1.28100,0.97199,       ,       ,       ,       ,0.57321 #  9
+       ,       ,0.93534,       ,       ,       ,0.99463,       ,       ,       ,       ,1.19910,       ,0.81683,        # 10
+       ,       ,       ,       ,1.26360,       ,       ,0.93877,       ,1.00300,1.25960,       ,       ,       ,        # 11
+       ,       ,0.55967,       ,       ,       ,1.04850,       ,       ,       ,       ,1.00170,0.55988,       ,        # 12
+       ,       ,       ,       ,       ,       ,       ,1.08530,       ,0.96902,       ,       ,       ,       ,        # 13
+       ,       ,       ,       ,0.55756,       ,       ,       ,0.89420,       ,       ,       ,       ,       ,        # 14
+       ,       ,       ,       ,       ,       ,0.61180,       ,       ,       ,       ,       ,       ,       ,        # 15

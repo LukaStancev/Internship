@@ -1,0 +1,29 @@
+# Axially-integrated 2D activity measurements.
+# Fessenheim-1 first start-up, in hot zero power state.
+# The gaps are due to the fact that only 50 of the 157 assemblies are
+# instrumented.
+# Source :
+#   "Contribution à l'élaboration et à la qualification d'un schéma de
+#   calcul pour la gestion des réacteurs PWR, à l'aide du système
+#   Neptune - Suivi du réacteur Fessenheim 2", E. Kamha, Ph.D. Thesis,
+#   Université Paris-Sud Centre d'Orsay, 1981.
+#   https://inis.iaea.org/collection/NCLCollectionStore/_Public/18/076/18076909.pdf
+#   Page 98 of that PDF or page 96 as written at the top of the page
+# Author : V. Salino (IRSN), 09/2021
+
+# R     P     N     M     L     K     J     H     G     F     E     D     C     B     A
+     ,     ,     ,     ,     ,     ,     ,0.757,     ,     ,     ,     ,     ,     ,      #  1
+     ,     ,     ,     ,     ,     ,     ,     ,     ,0.833,     ,     ,     ,     ,      #  2
+     ,     ,     ,0.543,     ,     ,1.325,1.078,     ,     ,     ,0.566,     ,     ,      #  3
+     ,     ,     ,     ,0.864,     ,     ,1.363,     ,1.248,     ,     ,     ,     ,      #  4
+     ,     ,0.740,     ,1.247,     ,1.311,     ,     ,     ,1.244,0.875,     ,0.547,      #  5
+     ,     ,     ,     ,0.970,     ,     ,1.252,     ,1.331,     ,     ,     ,     ,      #  6
+     ,     ,1.337,     ,     ,     ,1.233,     ,1.246,     ,     ,1.030,     ,0.858,      #  7
+0.752,     ,1.059,     ,0.950,     ,     ,     ,     ,1.267,     ,     ,1.065,1.311,      #  8
+     ,     ,     ,     ,1.335,     ,     ,     ,1.232,0.979,     ,     ,     ,     ,0.593 #  9
+     ,     ,0.926,     ,     ,     ,0.990,     ,     ,     ,     ,1.270,     ,0.828,      # 10
+     ,     ,     ,     ,1.228,     ,     ,0.965,     ,0.990,1.243,     ,     ,     ,      # 11
+     ,     ,0.555,     ,     ,     ,1.009,     ,     ,     ,     ,1.019,0.564,     ,      # 12
+     ,     ,     ,     ,     ,     ,     ,1.100,     ,0.961,     ,     ,     ,     ,      # 13
+     ,     ,     ,     ,0.538,     ,     ,     ,0.879,     ,     ,     ,     ,     ,      # 14
+     ,     ,     ,     ,     ,     ,0.596,     ,     ,     ,     ,     ,     ,     ,      # 15
