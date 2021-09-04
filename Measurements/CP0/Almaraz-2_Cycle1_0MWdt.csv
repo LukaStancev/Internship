@@ -1,0 +1,19 @@
+# Polytechnical University of Madrid reconstruction of
+# axially-integrated 2D power distribution during
+# Almaraz-2 first start-up, in hot zero power state.
+# Only the south-southeast eighth is represented. The first value
+# therefore corresponds to the central assembly.
+# Source :
+#   "In-core fuel management code package validation for PWRs",
+#   IAEA-TECDOC-815, 1995.
+#   https://inis.iaea.org/collection/NCLCollectionStore/_Public/26/077/26077395.pdf
+#   Page 24 of that PDF or page 23 as written at the bottom of the page
+# Author : V. Salino (IRSN), 09/2021
+1.138
+1.061,1.157
+1.176,1.142,1.200
+1.078,1.178,1.127,1.120
+1.192,1.126,1.123,0.977,0.855
+1.189,1.143,0.989,0.913,0.630
+1.082,1.022,0.911,0.593
+0.843,0.633
