@@ -16,7 +16,7 @@
 PARAMETER ExpLibrary Burnup ConcMode Info Random ::
    ::: LINKED_LIST Random ; ;
 PROCEDURE   CreaStepList GetMolarMass MetalMix CreaMix
-            Geo15x15 Autop ;
+            Geo15x15 Geo17x17 Autop ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU:
             EVO: UTL: GREP: ABORT: DELETE: END: ;
 LINKED_LIST Library LibraryAu StepList CP Calc
@@ -147,7 +147,7 @@ EVALUATE evobeg evoend := 0. 0. ;
 *             - Retrieve molar masses (GetMolarMasses)
 *             - Create Metal Mixes (MetalMix)
 *             - Using all of the above, create a Library with LIB: (CreaMix)
-*             - Generate tracking objects (Geo15x15)
+*             - Generate tracking objects (Geo15x15, Geo17x17)
 *---- 1) Burnup & parameter lists ----------------------
 StepList := CreaStepList ::
   <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
@@ -175,7 +175,7 @@ Random ::
 ECHO "#PowMWT" PowMWT ;
 *---- 5) Geometry & Tracking ---------------------------
 EVALUATE BarType := barr R_TO_I ;
-!IF Gestion "TIH" = THEN
+IF Gestion "TIH" = THEN
   Assmb
   AssmbAu
   Discr
@@ -183,15 +183,15 @@ EVALUATE BarType := barr R_TO_I ;
   := Geo15x15 ::
     <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
     <<BarType>> <<tfuel>> <<tmod>> ;
-!ELSE
-!  Assmb
-!  AssmbAu
-!  Discr
-!  DiscrAu
-!  := Geo17x17 ::
-!    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-!    <<BarType>> <<tfuel>> <<tmod>> ;
-!ENDIF ;
+ELSE
+  Assmb
+  AssmbAu
+  Discr
+  DiscrAu
+  := Geo17x17 ::
+    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+    <<BarType>> <<tfuel>> <<tmod>> ;
+ENDIF ;
 
 *---- Summary ---------------------------
 ECHO "#PARA DM=" dmod "CB=" cbor "BA=" BarType "TC=" tfuel ;

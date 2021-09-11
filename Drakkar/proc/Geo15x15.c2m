@@ -13,7 +13,7 @@ PARAMETER   Assmb AssmbAu
               Discr DiscrAu ; ;
 MODULE      GEO: SYBILT: DELETE: ABORT: END: GREP: ;
 PROCEDURE   ThermaExpans GetTechData ;
-LINKED_LIST Cellules Huitieme
+LINKED_LIST Cells Eighth
             UOX UOX_SS UOX_PY UOX_PY_SS
             UOX_BLACK UOX_BLACK_SS ;
 
@@ -209,52 +209,58 @@ EVALUATE rRodAICn2 := rRodAICn .80 SQRT * ;
 EVALUATE rRodAICn3 := rRodAICn .95 SQRT * ;
 EVALUATE rRodAICn4 := rRodAICn ;
 *------------------------------------------------------
-* Materiaux de base:      1 ->    9
-* Moderateurs:           10 ->   19
-* Structures:   Tubes    20
-*               Barres   21 ->   29
-*               Gaines   30 ->   39
-* Combustibles: UOX     100 -> Nmix
+* Basic materials:                   1 ->  9
+* Moderators:                       10 -> 19
+* Structures:   Guide thimble tubes 20
+*               Control rods        21 -> 29
+*               Cladding            30 -> 39
+* Fuel:         UOX                100 -> Nmix
 *------------------------------------------------------
-* Materiaux de base
+* Basic materials
 *    1 - SS304
 *    2 - Inconel
 *    3 - Zircalloy-4
-*    4 - Grilles precalculees
-*    5 - Eau boree
-*    6 - Eau boree tube instrumentation
-* Moderateurs
-*   10 - MODE   [moderateur cellule centrale]
-*   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
-*   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
-*   13 - MODETE [moderateur cellule tube (exterieur du tube)]
+*    4 - Precalculated grids
+*    5 - Borated water
+*    6 - Borated water within central detector thimble
+* Moderators
+*   10 - fuel central cell moderator
+*   11 - fuel peripheric cell (with half-water gap) moderator
+*   12 - fuel corner cell (with half-water gaps on each axis) moderator
+*   13 - guide thimble tube cell (outside of the tube) moderator
 * Structures: Tubes
-*   20 - TUBE
-* Structures: Gaines
-*   30 - GAINC  [Gaine combustible UOX/MOX/UGd]
-*   34 - GAINE BP INT ACIER SS304
-*   35 - GAINE BP EXT ACIER SS304
-*   37 - GAINA  [Gaine Barres AICn]
+*   20 - Thimble guide tube
+* Structures: claddings
+*   30 - fuel cladding
+*   34 - inner burnable poison cladding
+*   35 - outer burnable poison cladding
+*   37 - control rod cladding
 * Structures: Control rods
 *   40 - AIC    [1st ring]
 *   41 - AIC    [2nd ring]
-*   42 - AIC    [3nd ring]
+*   42 - AIC    [3rd ring]
 *   43 - AIC    [4th ring]
-* Poison consommable (Pyrex)
+* Burnable poison (Pyrex)
 *   59 - Air
 *   65 - PYREX
 * Combustibles UOX
-*  100 - COMB   [UOX 1ere couronne (centre a Rcomb*0.5^1/2) <=> 0 a r1]
-*  101 - COMB   [UOX 2e couronne]
-*  102 - COMB   [UOX 3e couronne]
-*  103 - COMB   [UOX 4e couronne (r3 a Rcomb)]
+*  100 - COMB   [UOX 1st ring (central)]
+*  101 - COMB   [UOX 2nd ring]
+*  102 - COMB   [UOX 3rd ring]
+*  103 - COMB   [UOX 4th ring (outer)]
 *------------------------------------------------------
-Cellules := GEO: ::
+Cells := GEO: ::
 ::: T  := GEO: CARCEL 2
   MESHX  0. <<pPin>>
   MESHY  0. <<pPin>>
   RADIUS 0. <<rTubeIn>> <<rTubeEx>>
   MIX    5  20  13 ;
+
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<pPin>>
+  MESHY  0. <<pPin>>
+  RADIUS 0. <<rTubeIn>> <<rTubeEx>>
+  MIX    6  20  13 ;
 
 ::: C1 := GEO: CARCEL 5
   MESHX  0. <<pPin>>
@@ -280,20 +286,21 @@ Cellules := GEO: ::
   MIX  40 41 42 43  37  5  20  13 ;
 ;
 
-Huitieme := GEO: Cellules :: CAR2D 8 8
+Eighth := GEO: Cells :: CAR2D 8 8
 X- DIAG X+ REFL
 Y- SYME Y+ DIAG ;
 
 *------------------------------------------------------
-*  T  : TUBE_GUIDE
-*  C1 : CELLULE_COMBUSTIBLE_CENTRALE
-*  C2 : CELLULE_COMBUSTIBLE_LATERALE
-*  C3 : CELLULE_COMBUSTIBLE_COIN
+*  T  : guide thimble
+*  C1 : central fuel cell
+*  C2 : peripheric fuel cell
+*  C3 : corner fuel cell
 *  Py : Pyrex rod
-*  R  : CELLULE_ABSORBANT_AIC
+*  R  : AIC control rod
+*  FC : fission chamber detector
 *------------------------------------------------------
-UOX := GEO: Huitieme ::
-CELL T  C1 C1 C1 T  C1 C1 C2
+UOX := GEO: Eighth ::
+CELL FC C1 C1 C1 T  C1 C1 C2
         C1 C1 C1 C1 C1 C1 C2
            C1 C1 C1 T  C1 C2
               T  C1 C1 C1 C2
@@ -306,7 +313,7 @@ CELL T  C1 C1 C1 T  C1 C1 C2
 *  15 X 15 UOX 900MWe Tihange PWR assembly without Rods
 *------------------------------------------------------
 UOX_SS := GEO: UOX ::
-MERGE 1  2  2  2  1  2  2  4
+MERGE 5  2  2  2  1  2  2  4
          2  2  2  2  2  2  4
             2  2  2  1  2  4
                1  2  2  2  4
@@ -319,8 +326,8 @@ IF ConfigPyrex "Py8" = THEN
 * UOX Assembly
 *  15 X 15 UOX 900MWe Tihange PWR assembly with 8 Pyrex rods
 *------------------------------------------------------
-  UOX_PY := GEO: Huitieme ::
-  CELL T  C1 C1 C1 Py C1 C1 C2
+  UOX_PY := GEO: Eighth ::
+  CELL FC C1 C1 C1 Py C1 C1 C2
           C1 C1 C1 C1 C1 C1 C2
              C1 C1 C1 T  C1 C2
                 Py C1 C1 C1 C2
@@ -330,7 +337,7 @@ IF ConfigPyrex "Py8" = THEN
                             C3 ;
   UOX_PY_SS := GEO: UOX_PY ::
   * Merging region #5 = Pyrex
-  MERGE 1  2  2  2  5  2  2  4
+  MERGE 6  2  2  2  5  2  2  4
            2  2  2  2  2  2  4
               2  2  2  1  2  4
                  5  2  2  2  4
@@ -343,8 +350,8 @@ ELSEIF ConfigPyrex "Py12" = THEN
 * UOX Assembly
 *  15 X 15 UOX 900MWe Tihange PWR assembly with 12 Pyrex rods
 *------------------------------------------------------
-  UOX_PY := GEO: Huitieme ::
-  CELL T  C1 C1 C1 Py C1 C1 C2
+  UOX_PY := GEO: Eighth ::
+  CELL FC C1 C1 C1 Py C1 C1 C2
           C1 C1 C1 C1 C1 C1 C2
              C1 C1 C1 T  C1 C2
                 Py C1 C1 C1 C2
@@ -354,7 +361,7 @@ ELSEIF ConfigPyrex "Py12" = THEN
                             C3 ;
   UOX_PY_SS := GEO: UOX_PY ::
   * Merging region #5 = Pyrex
-  MERGE 1  2  2  2  5  2  2  4
+  MERGE 6  2  2  2  5  2  2  4
            2  2  2  2  2  2  4
               2  2  2  1  2  4
                  5  2  2  2  4
@@ -368,7 +375,7 @@ ENDIF ;
 *  15 X 15 UOX 900MWe Tihange PWR assembly with AIC Control Rods
 *------------------------------------------------------
 UOX_BLACK := GEO: UOX ::
-CELL T  C1 C1 C1 R  C1 C1 C2
+CELL FC C1 C1 C1 R  C1 C1 C2
         C1 C1 C1 C1 C1 C1 C2
            C1 C1 C1 R  C1 C2
               R  C1 C1 C1 C2
@@ -378,7 +385,7 @@ CELL T  C1 C1 C1 R  C1 C1 C2
                           C3 ;
 UOX_BLACK_SS := GEO: UOX_BLACK ::
 * Merging region #5 = AIC
-MERGE 1  2  2  2  5  2  2  4
+MERGE 6  2  2  2  5  2  2  4
          2  2  2  2  2  2  4
             2  2  2  5  2  4
                5  2  2  2  4
@@ -390,7 +397,7 @@ MERGE 1  2  2  2  5  2  2  4
 ! /////////////////////////////////////////////////////////////////////
 ! /// BARR TYPE SELECTOR ///
 ! /////////////////////////////////////////////////////////////////////
-IF BarType 1 = THEN ! 1 = Pas de BARR [nominal]
+IF BarType 1 = THEN ! 1 = Without BARR [nominal]
   Assmb    := UOX    ;
   AssmbAu  := UOX_SS ;
 ELSEIF BarType 2 = THEN ! 2 = AICN

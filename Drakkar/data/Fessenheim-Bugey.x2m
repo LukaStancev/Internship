@@ -1,0 +1,97 @@
+* Author : Vivian Salino (IRSN), 02/2021
+MODULE GREP: MSTR: UTL: DELETE: END: ;
+PROCEDURE EvoNominale MakeBib1BU Reflector CP0 DefRandomIso ;
+LINKED_LIST ReflSpecs Random ;
+XSM_FILE Library Burnup ConcMode Info REFL UOX210
+  UOX310 UOX260_Py12 UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16
+  PowerARO Temp ;
+SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
+*---
+*  Define random sampling for each isotope
+*  Default: use JEFF-3.3 for all isotopes (= -33)
+*---
+Random := MSTR:        :: PUT 1 O16    -33 ;
+Random := MSTR: Random :: PUT 1 H1_H2O -33 ;
+Random := MSTR: Random :: PUT 1 B10    -33 ;
+Random := MSTR: Random :: PUT 1 B11    -33 ;
+Random := MSTR: Random :: PUT 1 U235   -33 ;
+Random := MSTR: Random :: PUT 1 U238   -33 ;
+Random := MSTR: Random :: PUT 1 Zr90   -33 ;
+Random := MSTR: Random :: PUT 1 Zr91   -33 ;
+Random := MSTR: Random :: PUT 1 Zr92   -33 ;
+Random := MSTR: Random :: PUT 1 Zr94   -33 ;
+Random := MSTR: Random :: PUT 1 Zr96   -33 ;
+Random := MSTR: Random :: PUT 1 Ni58   -33 ;
+Random := MSTR: Random :: PUT 1 Fe54   -33 ;
+Random := MSTR: Random :: PUT 1 Fe56   -33 ;
+Random := MSTR: Random :: PUT 1 Cr52   -33 ;
+Random := MSTR: Random :: PUT 1 In115  -33 ;
+Random := MSTR: Random :: PUT 1 Ag107  -33 ;
+Random := MSTR: Random :: PUT 1 Ag109  -33 ;
+Random := MSTR: Random :: PUT 1 Cd106  -33 ;
+Random := MSTR: Random :: PUT 1 Cd108  -33 ;
+Random := MSTR: Random :: PUT 1 Cd110  -33 ;
+Random := MSTR: Random :: PUT 1 Cd111  -33 ;
+Random := MSTR: Random :: PUT 1 Cd112  -33 ;
+Random := MSTR: Random :: PUT 1 Cd113  -33 ;
+Random := MSTR: Random :: PUT 1 Cd114  -33 ;
+Random := MSTR: Random :: PUT 1 Cd116  -33 ;
+Random := DefRandomIso Random ;
+*---
+ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
+                     CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
+REFL := Reflector ReflSpecs Random ;
+*---
+* To this day, nothing differentiates Fessenheim and Bugey in our
+* models.
+STRING Gestion := 'FSH' ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 210 None 1 ;
+UOX210 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 310 None 1 ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 260 Py12a 1 ;
+UOX260_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 260 Py16a 1 ;
+UOX260_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 260 Py20a 1 ;
+UOX260_Py20 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 310 Py12a 1 ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 310 Py16a 1 ;
+UOX310_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+PowerARO := CP0 REFL UOX210 UOX310 UOX260_Py12
+  UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16 :: <<Gestion>>
+  1325.0 (* ppm *) ;
+*--- Export the bare minimum to ASCII, i.e. radial power distributions
+*    and k-effectives
+INTEGER Length ;
+GREP: PowerARO :: LENGTH POWER-CHAN >>Length<< ;
+Temp := Random ;
+Temp := MSTR: Temp PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
+                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+PowerARO_asc := Temp ;
+Temp := DELETE: Temp ;
+END: ;
+QUIT "LIST" .

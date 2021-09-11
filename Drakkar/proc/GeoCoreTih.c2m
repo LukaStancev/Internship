@@ -4,7 +4,7 @@ PARAMETER     GeoCoeur GeoRes Matex Fmap :: :::
 MODULE GEO: USPLIT: RESINI: END: ;
 
 *----
-*  Description de la géométrie
+*  Geometry description
 *----
 
 REAL rPavX := 15.0 ;
@@ -14,7 +14,7 @@ REAL dx := rPavX LPitch * 2.0 Lame * + ; ! cm
 :: <<dx>> ;
 INTEGER Splitx Splitz := 2 2 ;
 INTEGER MaxR := iPavX iPavX * 33 * Splitx * Splitx * Splitz * ;
-REAL dzsg := 7.887 ; ! dz sans grappe, en bas du coeur (p.165)
+REAL dzsg := 7.887 ; ! dz w/o control rods, at the core bottom (p.165)
 REAL dz := 365.8 dzsg - 24.0 / ;
 
 REAL  x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
@@ -42,7 +42,7 @@ GeoCoeur := GEO: :: CAR3D 17 17 27
   Z+ <<CondLimite>>  Z- <<CondLimite>>
   MIX
 
-PLANE 1 ! Reflecteur inferieur
+PLANE 1 ! Bottom reflector
   0   0   0   0   0   0   2   2   2   2   2   0   0   0   0   0   0
   0   0   0   0   2   2   2   2   2   2   2   2   2   0   0   0   0
   0   0   0   2   2   2   2   2   2   2   2   2   2   2   0   0   0
@@ -121,7 +121,7 @@ PLANE 23 SAME 3
 PLANE 24 SAME 3
 PLANE 25 SAME 3
 PLANE 26 SAME 3
-PLANE 27 ! Reflecteur superieur
+PLANE 27 ! Top reflector
   0   0   0   0   0   0   3   3   3   3   3   0   0   0   0   0   0
   0   0   0   0   3   3   3   3   3   3   3   3   3   0   0   0   0
   0   0   0   3   3   3   3   3   3   3   3   3   3   3   0   0   0
@@ -176,7 +176,7 @@ GeoRes Matex := USPLIT: GeoCoeur :: NGRP 2 MAXR 1000000
 ;
 
 *--
-*  Definition de la map de combustible et zones de combustion
+*  Define fuel map and fuel zones
 *--
 Fmap Matex := RESINI: Matex ::
       ::: GEO: CAR3D 17 17 27

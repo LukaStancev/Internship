@@ -596,6 +596,154 @@ ELSEIF Gestion "TIH" = THEN
    ABORT: ;
   ENDIF ;
 *---------------------------------------------------------------------------
+
+! /////////////////////////////////////////////////////////////////////
+! /// FESSENHEIM, BUGEY, ALMARAZ ///
+! /////////////////////////////////////////////////////////////////////
+ELSEIF Gestion "FSH" = Gestion "BUG" = + Gestion "ALM" = + THEN
+* Most of the information is taken from the two following documents :
+* [IAEA] : "In-core fuel management code package validation for PWRs",
+*          IAEA-TECDOC-815, 1995.
+*          Link : https://inis.iaea.org/
+*              collection/NCLCollectionStore/_Public/26/077/26077395.pdf
+* [KAH]  : "Contribution à l'élaboration et à la qualification d'un
+*          schéma de calcul pour la gestion des réacteurs PWR, à l'aide
+*          du système Neptune - Suivi du réacteur Fessenheim 2",
+*          E. Kamha, Ph.D. Thesis, Université Paris-Sud Centre d'Orsay,
+*          1981.
+*          Link : https://inis.iaea.org/
+*              collection/NCLCollectionStore/_Public/18/076/18076909.pdf
+* Some of the information (where indicated) is taken from other, more
+* precise sources.
+! ---------------------------------------------------------------------
+! --- GENERAL INFORMATION ---
+! ---------------------------------------------------------------------
+  EVALUATE NbAss        := 157.       ; ! [900MWe]
+  EVALUATE NbFuelPin    := 204.       ;
+  IF Gestion "FSH" = Gestion "BUG" = + THEN
+    EVALUATE PowMWth      := 2686.      ; ! [MW] [KAH]
+  ELSEIF Gestion "ALM" = THEN
+    EVALUATE PowMWth      := 2652.      ; ! [MW] [IAEA]
+  ENDIF ;
+  EVALUATE NbPinAssXY   := 17.        ;
+  EVALUATE CoreFlowRate := 1.38E+4 3600.0 * ; ! [kg/h] [IAEA]
+  EVALUATE CoreFlowByp  := 0.05       ;
+* NIST Special Publication 811 – Guide for the Use of the International
+* System of Units (SI). National Institute of Standards and Technology.
+* 2008. p. 66. https://nvlpubs.nist.gov/nistpubs/Legacy/SP/
+* nistspecialpublication811e2008.pdf
+  EVALUATE OpePressure  := 2250. (* psi *) 6.894757E+3 (* Pa/psi *) * ;
+  EVALUATE CoreHML      := DUMMY_R1   ;
+  EVALUATE AssStruct    := "CP0_ASS"  ;
+! ---------------------------------------------------------------------
+! --- DEPLETION PARAMETERS AVG ---
+! ---------------------------------------------------------------------
+IF Gestion "FSH" = Gestion "BUG" = + THEN
+* Fessenheim start up tests are carried out at 547F. The following
+* temperatures are fixed at 547F, because in the current state, they are
+* used for thermal expansion of MakeBib dimensions and densities (there
+* is no dynamic recalculation of thermal expansion in MakeBib yet). This
+* temperature of 547F is more precise than the 286C temperature
+* mentioned in [KAH].
+* Ref. : 'Westinghouse Technology Advanced Manual', Chapter 4, p.104
+* Link : https://www.nrc.gov/docs/ML0230/ML023030318.pdf
+    EVALUATE tmod  := 547.0 32.0 - 1.8 / ; ! [degC]
+  ELSEIF Gestion "ALM" = THEN
+    EVALUATE tmod  := 291.4 ; ! [degC] [IAEA]
+  ENDIF ;
+  EVALUATE tfuel := tmod ;
+  EVALUATE cbor  := 600.    ; ! [ppm]
+  INFO: :: TMP: <<tmod>> C PRES: <<OpePressure>> Pa PUR: 0.0 WGT%
+    CALC DENS PWATER >>dmod<< ; ! [g.cm-3]
+! ---------------------------------------------------------------------
+! --- ROD LIST ---
+! ---------------------------------------------------------------------
+  IF ConfigPyrex "None" = ConfigPyrex "NONE" = + THEN
+    RodListTmp := UTL: RodListTmp :: CREA 'Rods' 2 =
+                  1. 2. ;
+  ELSE
+    RodListTmp := UTL: RodListTmp :: CREA 'Rods' 1 =
+                  4. ;
+  ENDIF ;
+! ---------------------------------------------------------------------
+! --- DISTANCES ---
+! ---------------------------------------------------------------------
+  EVALUATE pPin      := 0.496 2.54 *              ; ! [cm] [KAH]
+  EVALUATE pAss      := 8.466 2.54 *              ; ! [cm] [IAEA]
+  EVALUATE hActiv    := 144.0 2.54 *              ; ! [cm] [IAEA]
+! ***radius pin content***
+  EVALUATE rFuel     := 0.4096                    ; ! [cm] [IAEA]
+  EVALUATE rRodSSIn  := DUMMY_R1                  ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodSSEx  := DUMMY_R2                  ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICg  := DUMMY_R1                  ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICn  := 0.43307                   ; ! [cm] [IAEA]
+  EVALUATE rRodB4C   := DUMMY_R1                  ; ! [cm] [VF]
+  EVALUATE rRodBPIn  := 0.0950 2.54 *             ; ! [cm] [KAH]
+  EVALUATE rRodBPEx  := 0.1630 2.54 *             ; ! [cm] [KAH]
+  EVALUATE rRodHf    := DUMMY_R1                  ; ! [cm] [VF] [DUMMY]
+! ***radius clad***
+  EVALUATE rCladFuel := 0.4750                    ; ! [cm] [IAEA]
+  EVALUATE rCladRod  := 0.48387                   ; ! [cm] [IAEA]
+  EVALUATE rCladBPIn := 0.0935 2.54 *             ; ! [cm] [KAH]
+  EVALUATE rCladBPEx := 0.1905 2.54 *             ; ! [cm] [KAH]
+! ***thickness clad
+  EVALUATE eCladFuel := rCladFuel 0.4179 -        ; ! [cm] [IAEA]
+  EVALUATE eCladRod  := 0.04699                   ; ! [cm] [IAEA]
+  EVALUATE eCladBPIn := rCladBPIn 0.0870 2.54 * - ; ! [cm] [KAH]
+  EVALUATE eCladBPEx := rCladBPEx 0.1720 2.54 * - ; ! [cm] [KAH]
+! ---------------------------------------------------------------------
+! --- DENSITIES ---
+! ---------------------------------------------------------------------
+! *** fuel ***
+! ************
+  EVALUATE CoefPoro  := 0.95                        ; ! [SU] [IAEA]
+  EVALUATE CoefVoid  := 0.9883                      ; ! [SU] [KAH]
+! ************
+  EVALUATE dUO2      := 10.96 CoefPoro * CoefVoid * ; ! [g/cm3] [VF]
+  EVALUATE dUGd      := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+  EVALUATE dMOX      := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+! *** material ***
+  EVALUATE dInc      := 8.18                        ; ! [g/cm3] [VF]
+  EVALUATE dZr4      := 6.55                        ; ! [g/cm3] [IAEA]
+  EVALUATE dSS       := 7.90                        ; ! [g/cm3] [VF]
+! *** rods ***
+  EVALUATE dRodSS    := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dRodAIC   := 10.1564                     ; ! [g/cm3] [IAEA]
+  EVALUATE dRodB4C   := 1.79                        ; ! [g/cm3] [VF]
+  EVALUATE dRodBP    := 2.27                        ; ! [g/cm3] [VF]
+  EVALUATE dRodHf    := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+! *** clads ***
+  EVALUATE dCladFuel := dZr4                        ; ! [g/cm3] [VF]
+  EVALUATE dCladAIC  := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladSS   := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladBPIn := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladBPEx := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladB4C  := dSS                         ; ! [g/cm3] [VF]
+! *** structure ***
+  EVALUATE dTube     := dZr4                        ; ! [g/cm3] [VF]
+  EVALUATE dGrid     := 6.69                        ; ! [g/cm3] [VF]
+! ---------------------------------------------------------------------
+! --- ENRICHISSEMENT/TENEURS/CONCENTRATIONS ---
+! ---------------------------------------------------------------------
+  !COMB UOX -----------------------------------------------------------
+  IF AssType "UOX" = THEN
+    EVALUATE U4enri  := 1.E-15 ;
+    EVALUATE U5enri  := Main_enri 100. / ; ! X.XX % => 0.0XXX
+    EVALUATE U6enri  := 1.E-15 ;
+    EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
+    EVALUATE Pu8enri := 1.E-15 ;
+    EVALUATE Pu9enri := 1.E-15 ;
+    EVALUATE Pu0enri := 1.E-15 ;
+    EVALUATE Pu1enri := 1.E-15 ;
+    EVALUATE Pu2enri := 1.E-15 ;
+    EVALUATE Am1enri := 1.E-15 ;
+  ! SI AUCUN des types d'assemblage --------------------------------------------------------
+  ELSE
+   ECHO "Error --- AssType:" AssType "not recognized." ;
+   ABORT: ;
+  ENDIF ;
+*---------------------------------------------------------------------------
+
 ELSE
    ECHO "Error --- Gestion:" Gestion "not recognized." ;
    ABORT: ;
@@ -604,8 +752,9 @@ ENDIF ;
 ! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ! $$$ STRUCTURES SPECIFICITIES $$$
 ! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-! TIHASS : Assembly structure for Tihange
-! BEAVASS : Assembly structure for BEAVRS
+! TIH_ASS : Assembly structure for Tihange
+! BEAV_ASS : Assembly structure for BEAVRS
+! BEAV_CP0 : Assembly structure for Fessenheim, Bugey and Almaraz
 ! /////////////////////////////////////////////////////////////////////
 ! /// ASSEMBLY BEAVRS ///
 ! /////////////////////////////////////////////////////////////////////
@@ -663,19 +812,19 @@ ELSEIF AssStruct "TIH_ASS" = THEN
   EVALUATE hGridInt := 5.715 ; ! DUMMY VALUE
   EVALUATE hGridExt := 3.358 ; ! DUMMY VALUE
 
-  EVALUATE wZrGr_In_Sl  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wZrGr_In_Cr  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wIncGr_In_Sl := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wIncGr_In_Cr := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wSSGr_In_Sl  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wSSGr_In_Cr  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wZrGr_In_Sl  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wZrGr_In_Cr  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wIncGr_In_Sl := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wIncGr_In_Cr := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wSSGr_In_Sl  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wSSGr_In_Cr  := 1.E-20 ; ! DUMMY VALUE
 
-  EVALUATE wZrGr_Ex_Sl  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wZrGr_Ex_Cr  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wIncGr_Ex_Sl := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wIncGr_Ex_Cr := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wSSGr_Ex_Sl  := 1.E-20 ;! DUMMY VALUE
-  EVALUATE wSSGr_Ex_Cr  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wZrGr_Ex_Sl  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wZrGr_Ex_Cr  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wIncGr_Ex_Sl := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wIncGr_Ex_Cr := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wSSGr_Ex_Sl  := 1.E-20 ; ! DUMMY VALUE
+  EVALUATE wSSGr_Ex_Cr  := 1.E-20 ; ! DUMMY VALUE
 
   ! GRID PREC -------
   EVALUATE InGridfPre := .131668 ; ! DUMMY VALUE
@@ -690,6 +839,48 @@ ELSEIF AssStruct "TIH_ASS" = THEN
   ! TUBE DATA --------------------------------------------------------
   EVALUATE rTubeIn := 0.65024 ;
   EVALUATE rTubeEx := 0.69342 ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// CP0 = FESSENHEIM, BUGEY, ALMARAZ ///
+! /////////////////////////////////////////////////////////////////////
+ELSEIF AssStruct "CP0_ASS" = THEN
+*---------------------------------------------------------------------------
+  ! GRID DILUTION --------------------------------------------------------
+
+  ! GRID NOTE ------------
+  EVALUATE NbGridInt := 7.          ; ! [IAEA]
+  EVALUATE NbGridExt := 0.          ; ! [IAEA]
+
+  EVALUATE hGridInt := 1.322 2.54 * ; ! [IAEA]
+  EVALUATE hGridExt := 3.358 ; ! DUMMY VALUE
+
+  EVALUATE wZrGr_In_Sl  := 1.E-20 ; ! [IAEA]
+  EVALUATE wZrGr_In_Cr  := 1.E-20 ; ! [IAEA]
+  EVALUATE wIncGr_In_Sl := 1.E-20 ; ! [IAEA]
+  EVALUATE wIncGr_In_Cr := 611.4  ; ! [g] [IAEA]
+  EVALUATE wSSGr_In_Sl  := 1.E-20 ; ! [IAEA]
+  EVALUATE wSSGr_In_Cr  := 1.E-20 ; ! [IAEA]
+
+  EVALUATE wZrGr_Ex_Sl  := 1.E-20 ; ! [IAEA]
+  EVALUATE wZrGr_Ex_Cr  := 1.E-20 ; ! [IAEA]
+  EVALUATE wIncGr_Ex_Sl := 1.E-20 ; ! [IAEA]
+  EVALUATE wIncGr_Ex_Cr := 1.E-20 ; ! [IAEA]
+  EVALUATE wSSGr_Ex_Sl  := 1.E-20 ; ! [IAEA]
+  EVALUATE wSSGr_Ex_Cr  := 1.E-20 ; ! [IAEA]
+
+  ! GRID PREC -------
+  EVALUATE InGridfPre := .131668 ; ! DUMMY VALUE
+  EVALUATE Z4GridfPre := .868332 ; ! DUMMY VALUE
+  EVALUATE SSGridfPre := 0.0     ; ! DUMMY VALUE
+
+  EVALUATE H2OTubePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCntrPre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OSidePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCornPre :=  1.E-20  ; ! DUMMY VALUE
+
+  ! TUBE DATA --------------------------------------------------------
+  EVALUATE rTubeIn := 0.2250 2.54 * ; ! [cm] [KAH]
+  EVALUATE rTubeEx := 0.2410 2.54 * ; ! [cm] [KAH]
 
 ELSE
   ECHO "AssStruct : " AssStruct ;

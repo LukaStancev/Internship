@@ -21,7 +21,7 @@
 PARAMETER   Bib_1BU ImpLibrary Burnup ConcMode Info Random ::
   ::: XSM_FILE      ImpLibrary Burnup ConcMode Info ;
   ::: LINKED_LIST                                   Random ; ;
-PROCEDURE   CreaStepList Geo15x15 CreaGeoHom ModDet35
+PROCEDURE   CreaStepList Geo15x15 Geo17x17 CreaGeoHom ModDet35
             Autop GetRandomIso ;
 MODULE      LIB: GEO: SYBILT: USS: ASM: FLU: EDI: SAP: SPH:
             TRIVAT: COMPO: EVO: UTL: GREP: ABORT: DELETE: END: ;
@@ -118,7 +118,7 @@ STRING NamIso draglib RandIsoName ;
 REAL   Norm_MWT    ;
 STRING AssType ;     ! MOX, UOX ou UGd
 STRING ConfigPyrex ; ! None, Py8 ou Py12
-STRING Gestion     ; ! TIH, BEAV
+STRING Gestion     ; ! TIH, BEAV, FSH, BUG or ALM
 STRING Teneur      ; ! U5 [%m] pour UOX, UPu [%m] pour MOX, sans '.'
 STRING InfoGado    ; ! Infos sur le gado [12Gd, etc...]
 
@@ -306,21 +306,21 @@ WHILE m dm <= DO
   !-------------------------------------------------
   ! Geo17x17 et Geo15x15 : Geometrie
   !-------------------------------------------------
-!  IF Gestion "TIH" = THEN
+  IF Gestion "TIH" = THEN
      Assmb
      AssmbAu
      Discr
      DiscrAu := Geo15x15 ::
       <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
       <<BarType>> <<tfuel_nom>> <<tmod_nom>> ;
-!  ELSE
-!    Assmb
-!    AssmbAu
-!    Discr
-!    DiscrAu := Geo17x17 ::
-!      <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
-!      <<BarType>> <<tfuel_nom>> <<tmod_nom>> ;
-!  ENDIF ;
+  ELSE
+    Assmb
+    AssmbAu
+    Discr
+    DiscrAu := Geo17x17 ::
+      <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+      <<BarType>> <<tfuel_nom>> <<tmod_nom>> ;
+  ENDIF ;
   IF BiblXS "MULTICOMPO" = THEN
     GeoAssTriv GeoAssHom GeoCPCPlie GeoCPCDeplie := CreaGeoHom
     :: <<Gestion>> <<tmod_nom>> ;

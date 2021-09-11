@@ -1514,13 +1514,6 @@ EVALUATE MNa2O := na23 Na23Nq * o16 O16Nq * + ;
 
 *------------------------------------------------------
 *  BP : Burnable Poison Borosilicate Glass
-*  Tihange Specifications CEA-N-2092
-*  Massic Composition : B2O3  .181
-*                       SiO2  .648
-*                       Al2O3 .076
-*                       K2O   .032
-*                       Na2O  .031
-* The sum of massic composition %m is equal to 0.968 !!
 *------------------------------------------------------
 *               Massic Fraction : %m
 *------------------------------------------------------
@@ -1541,14 +1534,27 @@ IF Gestion "BEAV" = THEN
   EVALUATE Al2O3BPf  := .065 ; ! .024
   EVALUATE K2OBPf    := .0 ; ! .022
   EVALUATE Na2OBPf   := .0 ; ! .021
-ELSE
+ELSEIF Gestion "TIH" = THEN
+*  Tihange Specifications CEA-N-2092
+*  Massic Composition : B2O3  .181
+*                       SiO2  .648
+*                       Al2O3 .076
+*                       K2O   .032
+*                       Na2O  .031
+* The sum of massic composition %m is equal to 0.968 !!
   EVALUATE B2O3BPf   := .181 ;
   EVALUATE SiO2BPf   := .648 ;
   EVALUATE Al2O3BPf  := .076 ;
   EVALUATE K2OBPf    := .032 ;
   EVALUATE Na2OBPf   := .031 ;
+ELSE ! Gestion "FSH" = Gestion "BUG" = + Gestion "ALM" = + THEN
+  EVALUATE B2O3BPf   := .125 ; ! [Kamha PhD]
+  EVALUATE SiO2BPf   := .648 ;
+  EVALUATE Al2O3BPf  := .076 ;
+  EVALUATE K2OBPf    := .032 ;
+  EVALUATE Na2OBPf   := .031 ;
 ENDIF ;
-EVALUATE SumFr     := B2O3BPf SiO2BPf Al2O3BPf K2OBPf Na2OBPf + + + + ;
+EVALUATE SumFr := B2O3BPf SiO2BPf Al2O3BPf K2OBPf Na2OBPf + + + + ;
 
 *
 *-----------------------------------------------------

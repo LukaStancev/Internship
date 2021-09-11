@@ -20,12 +20,12 @@ ls -ltr
 # Keep only a few result files, in case of random sampling.
 if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
 then
-   outdir="$1"/Output_TIH_TMC
+   outdir="$1"/Output_FSH-BUG_TMC
    mkdir -p "$outdir"
    tail -45 *.result
    rm -f *.result
 else
-   outdir="$1"/Output_TIH_BestEstimate
+   outdir="$1"/Output_FSH-BUG_BestEstimate
    mkdir -p "$outdir"
    mv *.result "$outdir"/.
 fi
