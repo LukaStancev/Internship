@@ -9,7 +9,7 @@ PARAMETER PowerCD PowerD PowerARO
 LINKED_LIST GeoRes Track System Flux Matex MacroTot Fmap MicroFuel
             GeoCoeur Thermo List ;
 MODULE TRIVAT: TRIVAA: FLUD: GREP:  DELETE: END: FLPOW: RESINI: THM: ;
-PROCEDURE   InterpTih GetTechData GeoCoreTih ;
+PROCEDURE   InterpTih GetTechData GeoCoreTih ThermaExpans ;
 
 *----
 *  Choice of reflector modelling :
