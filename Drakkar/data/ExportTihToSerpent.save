@@ -16,7 +16,7 @@ else
    MACH=`uname -sm | sed 's/[ ]/_/'`
 fi
 ls -ltr
-export_folder="$1/../Serpent/geo_compo"
+export_folder="$1/../Serpent/geo_compo/Tihange"
 mkdir -p "$export_folder"
 mv *.geo "$export_folder"/.
 mv *.compo "$export_folder"/.

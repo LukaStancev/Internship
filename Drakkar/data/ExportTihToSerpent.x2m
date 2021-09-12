@@ -1,7 +1,7 @@
 * V. Salino (IRSN), 02/2021
 MODULE UTL: GREP: MSTR: DELETE: END: ;
 PROCEDURE Geo15x15 CreaStepList GetMolarMass MetalMix CreaMix
-  ReflGeoCompo DefRandomIso GeoCore ;
+  ReflGeoCompo DefRandomIso GeoCoreTih ;
 LINKED_LIST Assmb AssmbAu Discr DiscrAu StepList MolarMasses Library
   ConcMode FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
   CdNat SNat HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP
@@ -183,7 +183,7 @@ ENDWHILE ;
 *  Export core loading
 *---
 REAL dx ;
-GeoCoeur GeoRes Matex Fmap := GeoCore :: >>dx<< ;
+GeoCoeur GeoRes Matex Fmap := GeoCoreTih :: >>dx<< ;
 SEQ_ASCII GeoCoeur.txt  :: FILE "FullCore.geo" ;
 GeoCoeur.txt := GeoCoeur ;
 END: ;

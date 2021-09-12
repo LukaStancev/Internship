@@ -449,7 +449,8 @@ def InfiniteLattice(filepath):
     #---
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
     sss2.write('% Author : V. Salino (IRSN), 04/2021\n')
-    sss2.write('set title ' + '"Tihange ' + filename + '"\n')
+    sss2.write('set title "' + filepath.split('/')[-2] + ' ' + filename
+               + '"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc periodic\n')
     sss2.write('set pop 100000 1000 20\n')
@@ -471,10 +472,13 @@ def FullCore(filepath, Assemblies, CB):
     #---
     #  Write general information
     #---
-    sss2 = open('TihangeFullCore' + str(CB) + 'ppm.sss2', 'w')
+    sss2 = open(filepath.split('/')[-2] + 'FullCore' + str(CB) + 'ppm.sss2',
+                'w')
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
     sss2.write('% Author : V. Salino (IRSN), 04/2021\n')
-    sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
+    #sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
+    sss2.write('set title "' + filepath.split('/')[-2] + ' full core, '
+               + str(CB) + ' ppm"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
     sss2.write('set bc black\n')
     sss2.write('set pop 200000 2000 200 1.0\n')
@@ -591,7 +595,8 @@ def FullCore(filepath, Assemblies, CB):
     #  Radial reflector geometry
     #---
     sss2.write('% Radial reflector\n')
-    radial_geo = loadlcm('../geo_compo/ReflRadial_' + str(CB) + 'ppm.geo')
+    radial_geo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                         + '/ReflRadial_' + str(CB) + 'ppm.geo')
     mix, meshx = trimRefl(radial_geo['MIX'], radial_geo['MESHX'])
     # Steel baffle from the lower right quarter of the core
     gcross = []
@@ -628,7 +633,8 @@ def FullCore(filepath, Assemblies, CB):
     mix_in_geom = sorted(list(set(mix)))
     # Retrieve the compositions
     compos = [] # List of compo objects
-    radial_compo = loadlcm('../geo_compo/ReflRadial_' + str(CB) + 'ppm.compo')
+    radial_compo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                           + '/ReflRadial_' + str(CB) + 'ppm.compo')
     mix =  radial_compo['ISOTOPESMIX']
     dens = radial_compo['ISOTOPESDENS']
     temp = radial_compo['ISOTOPESTEMP']
@@ -647,7 +653,8 @@ def FullCore(filepath, Assemblies, CB):
     #  Bottom reflector geometry
     #---
     sss2.write('% Bottom reflector\n')
-    bottom_geo = loadlcm('../geo_compo/ReflBottom_' + str(CB) + 'ppm.geo')
+    bottom_geo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                         + '/ReflBottom_' + str(CB) + 'ppm.geo')
     mix, meshb = trimRefl(bottom_geo['MIX'], bottom_geo['MESHX'])
     for i in range(0, len(meshb)):
         sss2.write('\nsurf ' + str(1400 + i) + ' pz ' + str(-meshb[i]))
@@ -664,7 +671,8 @@ def FullCore(filepath, Assemblies, CB):
     mix_in_geom = sorted(list(set(mix)))
     # Retrieve the compositions
     compos = [] # List of compo objects
-    bottom_compo = loadlcm('../geo_compo/ReflBottom_' + str(CB) + 'ppm.compo')
+    bottom_compo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                           + '/ReflBottom_' + str(CB) + 'ppm.compo')
     mix =  bottom_compo['ISOTOPESMIX']
     dens = bottom_compo['ISOTOPESDENS']
     temp = bottom_compo['ISOTOPESTEMP']
@@ -683,7 +691,8 @@ def FullCore(filepath, Assemblies, CB):
     #  Top reflector geometry
     #---
     sss2.write('% Top reflector\n')
-    top_geo = loadlcm('../geo_compo/ReflTop_' + str(CB) + 'ppm.geo')
+    top_geo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                      + '/ReflTop_' + str(CB) + 'ppm.geo')
     mix, mesht = trimRefl(top_geo['MIX'], top_geo['MESHX'])
     for i in range(0, len(mesht)):
         sss2.write('\nsurf ' + str(1600 + i)
@@ -701,7 +710,8 @@ def FullCore(filepath, Assemblies, CB):
     mix_in_geom = sorted(list(set(mix)))
     # Retrieve the compositions
     compos = [] # List of compo objects
-    top_compo = loadlcm('../geo_compo/ReflTop_' + str(CB) + 'ppm.compo')
+    top_compo = loadlcm('/'.join(filepath.split('/')[0:-1])
+                        + '/ReflTop_' + str(CB) + 'ppm.compo')
     mix =  top_compo['ISOTOPESMIX']
     dens = top_compo['ISOTOPESDENS']
     temp = top_compo['ISOTOPESTEMP']

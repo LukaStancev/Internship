@@ -5,7 +5,7 @@ import glob
 import os
 from D2S import InfiniteLattice
 
-for geofilepath in glob.glob('../geo_compo/UOX*.geo'):
+for geofilepath in glob.glob('../geo_compo/Tihange/UOX*.geo'):
     filepath = geofilepath[:-4]
     print(filepath)
     InfiniteLattice(filepath)

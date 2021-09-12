@@ -1,4 +1,4 @@
-#  Execute D2S on every full core geometries
+#  Execute D2S on every full core geometries of Tihange-1
 #  Usage   : python3 Full_core.py
 #  Date    : 1/2021
 import glob
@@ -6,7 +6,7 @@ import os
 from D2S import FullCore
 
 # Full core geometry, suited for every possibility of control rod insertions
-filepath = '../geo_compo/FullCore.geo'
+filepath = '../geo_compo/Tihange/FullCore.geo'
 
 # All rods out
 Assemblies = {}
