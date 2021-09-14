@@ -20,4 +20,4 @@ jobs:
             cd Drakkar/data
             ../runVersion5.sh Tihange.x2m
             ../Reference/Diff.sh # Between obtained and reference results
-          no_output_timeout: 35m # Prevent kills due to timeout limit
+          no_output_timeout: 50m # Prevent kills due to timeout limit
