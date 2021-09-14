@@ -9,7 +9,7 @@
 *Copyright:
 * Copyright (C) 2013 Ecole Polytechnique de Montreal.
 *
-*Author(s): 
+*Author(s):
 * A. Hebert, P. Gallet and V. Salino
 *
 *Parameters: input
@@ -30,17 +30,17 @@
 * The THM: module specification is:
 * THERMO MAPFL := THM: [ THERMO ] MAPFL :: (descthm) ;
 * where
-*   THERMO : name of the \emph{thermo) object that will be created or updated 
-*     by the THM: module. Object \emph{thermo} contains thermal-hydraulics 
-*     information set or computed by THM: in transient or in permanent 
-*     conditions such as the distribution of the enthalpy, the pressure, the 
-*     velocity, the density and the temperatures of the coolant for all the 
-*     channels in the geometry. It also contains all the values of the fuel 
-*     temperatures in transient or in permanent conditions according to the 
+*   THERMO : name of the \emph{thermo) object that will be created or updated
+*     by the THM: module. Object \emph{thermo} contains thermal-hydraulics
+*     information set or computed by THM: in transient or in permanent
+*     conditions such as the distribution of the enthalpy, the pressure, the
+*     velocity, the density and the temperatures of the coolant for all the
+*     channels in the geometry. It also contains all the values of the fuel
+*     temperatures in transient or in permanent conditions according to the
 *     discretisation chosen for the fuel rods.
-*   MAPFL : name of the \emph{map} object containing fuel regions description 
+*   MAPFL : name of the \emph{map} object containing fuel regions description
 *     and local parameter informations.
-*   (descthm) : structure describing the input data to the THM: module. 
+*   (descthm) : structure describing the input data to the THM: module.
 *
 *-----------------------------------------------------------------------
 *
@@ -585,7 +585,7 @@
 *  ISTATE(1): 7 = XYZ, 9 = HEXZ
 *  In 3d hexagonal, NY=0, but THM: expects a 3D geometry, so we set
 *  NY=1 and  continue.
-*---- 
+*----
       JPMAP=LCMGID(IPMAP,'GEOMAP')
       CALL LCMGET(JPMAP,'STATE-VECTOR',ISTATE)
       NX=ISTATE(3)
@@ -777,7 +777,7 @@
       ENDIF
   220 CONTINUE
       DEALLOCATE(IREFSC)
-*---- 
+*----
 *  TEST TO COMPUTE STEADY-STATE OR TRANSIENT CALCULATION
 *----
       IF(ITIME.EQ.0) THEN
@@ -907,8 +907,10 @@
 *----
 *  PRINT AVERAGED THERMALHYDRAULICS PROPERTIES OVER THE CORE MAP
 *----
-      CALL THMAVG(IPMAP,IMPX,NX,NY,NZ,NCH,TCOMB,TSURF,DCOOL,TCOOL,
-     > PCOOL,HCOOL,POW,NSIMS)
+      IF(IMPX.GT.1) THEN
+        CALL THMAVG(IPMAP,IMPX,NX,NY,NZ,NCH,TCOMB,TSURF,DCOOL,TCOOL,
+     >  PCOOL,HCOOL,POW,NSIMS)
+      ENDIF
       DEALLOCATE(RAD,HCOOL,PCOOL)
       GO TO 400
 *----
@@ -1275,8 +1277,8 @@
          CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
          IF((ITYP.NE.3).OR.(TEXT12.NE.';')) THEN
            CALL XABORT('THM: ; CHARACTER EXPECTED.')
-         ENDIF      
-      ENDIF      
+         ENDIF
+      ENDIF
       RETURN
 *
   470 FORMAT(/11H THM: SAVE ,A,9H AT TIME=,1P,E12.4,3H S.)

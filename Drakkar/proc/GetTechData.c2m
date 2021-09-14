@@ -619,7 +619,7 @@ ELSEIF Gestion "FSH" = Gestion "BUG" = + Gestion "ALM" = + THEN
 ! --- GENERAL INFORMATION ---
 ! ---------------------------------------------------------------------
   EVALUATE NbAss        := 157.       ; ! [900MWe]
-  EVALUATE NbFuelPin    := 204.       ;
+  EVALUATE NbFuelPin    := 264.       ;
   IF Gestion "FSH" = Gestion "BUG" = + THEN
     EVALUATE PowMWth      := 2686.      ; ! [MW] [KAH]
   ELSEIF Gestion "ALM" = THEN

@@ -1,29 +1,21 @@
 #!/bin/bash
 iexit=0
 
-if diff -q ../Reference/JEFF33_Pdist.txt  <(grep --color=none "RELATIVE POWER" -A 16 ../Output_TIH_BestEstimate/Tihange.result | grep --color=none "  1 " -A 14) > /dev/null
-then
-   echo "The obtained power distributions and the reference ones are identical."
-else
-   echo "The obtained power distributions and the reference ones are different."
-   echo "The reference power distributions are:"
-   cat ../Reference/JEFF33_Pdist.txt
-   echo "The obtained power distributions are:"
-   grep --color=none "RELATIVE POWER" -A 16 ../Output_TIH_BestEstimate/Tihange.result | grep --color=none "  1 " -A 14
-   iexit=1
-fi
-
-if diff -q ../Reference/JEFF33_keff.txt  <(grep --color=none "EFFECTIVE M" ../Output_TIH_BestEstimate/Tihange.result | cut -d"=" -f2) > /dev/null
-then
-   echo "The obtained k-effectives and the reference ones are identical."
-else
-   echo "The obtained k-effectives and the reference ones are different."
-   echo "The reference k-effectives are:"
-   cat ../Reference/JEFF33_keff.txt
-   echo "The obtained k-effectives are:"
-   grep --color=none "EFFECTIVE M" ../Output_TIH_BestEstimate/Tihange.result | cut -d"=" -f2
-   iexit=1
-fi
+for state in ARO D CD
+do
+    if diff -q ../Reference/Power${state}_TIH_JEFF33.ascii ../Output_TIH_BestEstimate/_Power${state}*.ascii
+    then
+        echo "The power distribution and k-effective, in state ${state}, are identical between the reference and the obtained values."
+    else
+        echo "The obtained and reference power distribution and/or k-effective are different. The references values are:"
+        cat ../Reference/Power${state}_TIH_JEFF33.ascii
+        echo "The obtained values are:"
+        cat ../Output_TIH_BestEstimate/_Power${state}*.ascii
+        echo "The difference(s) is/are:"
+        diff ../Reference/Power${state}_TIH_JEFF33.ascii ../Output_TIH_BestEstimate/_Power${state}*.ascii
+        iexit=1
+    fi
+done
 
 if [ "$iexit" -eq 1 ]
 then

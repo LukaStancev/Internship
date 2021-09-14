@@ -43,7 +43,6 @@ GeoCoeur GeoRes Matex Fmap := GeoCoreTih :: >>dx<< ;
 *----
 *  Variables for thermalhydraulics
 *----
-
 REAL FlowRate := 21800. (* m3/h *) 3.0 * ;
 REAL Tinlet OpePressure dmod tfuel tclad ;
 REAL Prel Ptot Pnom ; (* MWth *)
@@ -87,10 +86,10 @@ ThermaExpans :: <<rFuel>> "UO2" <<tfuel>> "Distance" 'TIH'
                 >>rFuel<< ;
 
 * The unit of GetTechData is centimeters, while THM expects meters.
-EVALUATE rTubeEx := rTubeEx 100.0 / ;
-EVALUATE rCladFuel := rCladFuel 100.0 / ;
+EVALUATE rTubeEx     := rTubeEx     100.0 / ;
+EVALUATE rCladFuel   := rCladFuel   100.0 / ;
 EVALUATE rCladFuelIn := rCladFuelIn 100.0 / ;
-EVALUATE rFuel := rFuel 100.0 / ;
+EVALUATE rFuel       := rFuel       100.0 / ;
 
 REAL NbTube   := NbPinAssXY 2.0 ** NbFuelPin - ;
 REAL Tot_tub  := rTubeEx 2.0 ** $Pi_R * NbTube    * ;   ! m2
@@ -99,9 +98,16 @@ REAL sass     := dx 100.0 / 2.0 ** ;                    ! m2
 REAL asssect  := sass Tot_tub - Tot_pin - ;             ! m2
 REAL coresect := NbAss asssect * ;                      ! m2
 
-* Convert fuel temperature into Kelvin, for proper cross section
-* interpolation
-EVALUATE tfuel := tfuel 273.15 + ;
+* The 2x2 meshing implies dividing the number of rods by the same
+* amount, in order to correctly calculate the area available for the
+* hydraulic flow.
+EVALUATE NbFuelPin := NbFuelPin 4.0 / ;
+EVALUATE NbTube    := NbTube    4.0 / ;
+
+* Convert temperatures into Kelvin, for proper THM usage and proper
+* cross section interpolation
+EVALUATE Tinlet := Tinlet  273.15 + ;
+EVALUATE tfuel  := tfuel   273.15 + ;
 
 *----
 *  Variables used for hot zero power physics testing
@@ -162,7 +168,7 @@ WHILE iGrappe 3 <= DO
   ENDIF ;
 
   Thermo Fmap := THM: Fmap ::
-    EDIT 3
+    EDIT 0
     ASSMB  <<NbFuelPin>> <<NbTube>>
     CWSECT <<coresect>> <<FlowRate>>
     INLET  <<OpePressure>> <<Tinlet>>

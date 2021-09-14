@@ -17,13 +17,18 @@ else
 fi
 ls -ltr
 
-# Keep only a few result files, in case of random sampling.
-if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
+if [ ! -z "$(ls | grep -P "_[0-9]+\.result")" ]
 then
    outdir="$1"/Output_TIH_TMC
    mkdir -p "$outdir"
-   tail -45 *.result
-   rm -f *.result
+    # Keep only a few result files, in case of random sampling.
+   if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
+   then
+      tail -45 *.result
+      rm -f *.result
+   else
+      mv *.result "$outdir"/.
+   fi
 else
    outdir="$1"/Output_TIH_BestEstimate
    mkdir -p "$outdir"

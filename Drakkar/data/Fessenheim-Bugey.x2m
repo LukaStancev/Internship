@@ -4,7 +4,7 @@ PROCEDURE EvoNominale MakeBib1BU Reflector CP0 DefRandomIso ;
 LINKED_LIST ReflSpecs Random ;
 XSM_FILE Library Burnup ConcMode Info REFL UOX210
   UOX310 UOX260_Py12 UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16
-  PowerARO Temp ;
+  PowerARO ActivARO Temp ;
 SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
 *---
 *  Define random sampling for each isotope
@@ -43,7 +43,7 @@ ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
 REFL := Reflector ReflSpecs Random ;
 *---
 * To this day, nothing differentiates Fessenheim and Bugey in our
-* models.
+* models, so the first should be representative of the two.
 STRING Gestion := 'FSH' ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
@@ -81,16 +81,18 @@ Library Burnup ConcMode Info := EvoNominale Random ::
 UOX310_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-PowerARO := CP0 REFL UOX210 UOX310 UOX260_Py12
+PowerARO ActivARO := CP0 REFL UOX210 UOX310 UOX260_Py12
   UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16 :: <<Gestion>>
   1325.0 (* ppm *) ;
-*--- Export the bare minimum to ASCII, i.e. radial power distributions
-*    and k-effectives
+*--- Export the bare minimum to ASCII, i.e. radial power distributions,
+*    k-effectives and detector responses (activities)
 INTEGER Length ;
-GREP: PowerARO :: LENGTH POWER-CHAN >>Length<< ;
 Temp := Random ;
+GREP: PowerARO :: LENGTH POWER-CHAN >>Length<< ;
 Temp := MSTR: Temp PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
                                CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+GREP: ActivARO :: LENGTH RESPON >>Length<< ;
+Temp := MSTR: Temp ActivARO :: CP <<Length>> 2:RESPON 1:RESPON ;
 PowerARO_asc := Temp ;
 Temp := DELETE: Temp ;
 END: ;

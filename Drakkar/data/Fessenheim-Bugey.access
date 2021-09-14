@@ -9,6 +9,13 @@ echo -e "\nExecute ${accessname}.access script\n"
 
 cp "$1"/proc/* .
 
+# Fold lines longer than 72 characters in geometry descriptions
+for proc in GeoCore*.c2m
+do
+    fold -w 72 -s $proc > "$proc"_folded.c2m
+    mv "$proc"_folded.c2m $proc
+done
+
 #--- main nuclear data file: JEFF-3.3
 rm -f D295JEFF33 # Deleting a Draglib file that could already exist in some setups
 if [ -f "$1/draglib/drglibJEFF-3.3_295" ] ; then
