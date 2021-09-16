@@ -5,8 +5,11 @@
 #
 
 # Imports
+import lcm
+import os
 import numpy as np
 import math
+import itertools
 import matplotlib.pyplot as plt
 from scipy.stats import moment
 import serpentTools
@@ -195,8 +198,16 @@ def Deploy2D(OneD, FullCoreLayout):
                 i = i + 1
     return TwoD
 
+# Sum over submatrices of size n x n.
+def matrixaverage(matrix, n):
+    # https://moonbooks.org/Articles/How-to-downsampling-a-matrix-by-averaging-elements-nn-with-numpy-in-python-/Edit/
+    b = matrix.shape[0]//n
+    return matrix.reshape(-1, n, b, n).sum((-1, -3))/n
+
+#---
 # Read CSV file with comments
 # Source : https://stackoverflow.com/questions/14158868/python-skip-comment-lines-marked-with-in-csv-dictreader
+#---
 def decomment(csvfile):
     for row in csvfile:
         raw = row.split('#')[0].strip()
@@ -273,3 +284,93 @@ def tex_fonts():
         "ytick.labelsize": 10
     }
     return tex_fonts
+
+#---
+#  Plotting functions
+#---
+def FullCoreGlitter(ax, FullCoreLayout):
+    # Remove spines
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    # Add squares around each assembly
+    DrawSquares(FullCoreLayout, ax)
+    # Add Battleship-style coordinates as ticks
+    ax.xaxis.tick_top()
+    ax.yaxis.tick_right()
+    xlabels = ['R', 'P', 'N', 'M', 'L', 'K', 'J', 'H', 'G', 'F', 'E', 'D', 'C',
+               'B', 'A']
+    ylabels = list(np.arange(1, 16))
+    plt.setp(ax, xticks = np.arange(15), xticklabels = xlabels,
+             yticks = np.arange(15), yticklabels = ylabels)
+    ax.tick_params(axis = 'both', which = 'both', length = 5, color = 'w')
+# Add lines around each square
+def DrawSquares(FullCoreLayout, ax):
+    i = 0
+    for line in FullCoreLayout:
+        xmin, xmax = LayoutProportions(FullCoreLayout, i)
+        if i > 0:
+            xmin_above, xmax_above = LayoutProportions(FullCoreLayout, i - 1)
+            xmin = min(xmin, xmin_above)
+            xmax = max(xmax, xmax_above)
+        ax.axhline(y = -0.5 + i, xmin = xmin, xmax = xmax, color = 'black',
+                   linewidth = 1.0)
+        ax.axvline(x = -0.5 + i, ymin = xmin, ymax = xmax, color = 'black',
+                   linewidth = 1.0)
+        i = i + 1
+    # Add the last bottom line
+    xmin, xmax = LayoutProportions(FullCoreLayout, i - 1)
+    ax.axhline(y = -0.5 + i, xmin = xmin, xmax = xmax, color = 'black',
+               linewidth = 1.0)
+    ax.axvline(x = -0.5 + i, ymin = xmin, ymax = xmax, color = 'black',
+               linewidth = 1.0)
+def LayoutProportions(FullCoreLayout, i):
+    line = FullCoreLayout[i]
+    # Count the number of zeroes on each side
+    zeroes = [sum(g) for j, g in itertools.groupby(line+1) if j==1]
+    if zeroes == []:
+        zeroes = [0, 0]
+    # Count the ones in the center
+    ones = sum(line)
+    total = sum(zeroes, ones)
+    if total != len(FullCoreLayout):
+        raise Exception('Review the line number ' + str(i) +' of core layout. '
+                        + 'It is not as regular as expected : ' + str(line))
+    xmin = zeroes[0]/total
+    xmax = (zeroes[0] + ones)/total
+    return (xmin, xmax)
+# Add visual aids, such as median and diagonal crosses
+def VisualAids(ax):
+    # Common plotting options
+    lwidth = 1.0
+    col = "black"
+    alpha = 0.3
+    # Medians
+    ax.plot([0.5, 0.5], [0, 1], transform=ax.transAxes,
+            linewidth = lwidth, color = col, alpha = alpha)
+    ax.plot([0, 1], [0.5, 0.5], transform=ax.transAxes,
+            linewidth = lwidth, color = col, alpha = alpha)
+    # Diagonals
+    ax.plot([0, 1], [0, 1], transform=ax.transAxes,
+            linewidth = lwidth, color = col, alpha = alpha)
+    ax.plot([1, 0], [0, 1], transform=ax.transAxes,
+            linewidth = lwidth, color = col, alpha = alpha)
+#---
+#  lcm loading function, dealing with PyGan's peculiarities
+#---
+def loadlcm(filepath):
+    if '/' in filepath:
+        # PyGan can only read files in the local directory. When the file to be
+        # read is located elsewhere, it is necessary to make a link.
+        filename = filepath.split('/')[-1]
+        os.system('ln -s ' + filepath + ' _' + filename)
+        # PyGan's lcm method requires that filenames begin with an underscore,
+        # but at the same time requires that it is passed without this
+        # underscore
+        loadedfile = lcm.new('LCM_INP', filename)
+        # Once loaded, we can delete the created link
+        os.system('rm _' + filename)
+    else:
+        loadedfile = lcm.new('LCM_INP', filepath)
+    return loadedfile
