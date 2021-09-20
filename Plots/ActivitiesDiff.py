@@ -30,13 +30,15 @@ lang = 'fr' # fr/en
 #---
 #  Initialize the container of all combinations of detector activities
 #---
-sources = ['Drakkar', 'Drakkar_corrected', 'Fessenheim-1', 'Fessenheim-2',
+sources = ['DrakC5', 'SerpC5', 'Drakkar', 'Drakkar_corrected', 'Fessenheim-1', 'Fessenheim-2',
            'Bugey-2', 'ExpMean']
 labels = {'Fessenheim-1'      : 'FSH1',
           'Fessenheim-2'      : 'FSH2',
           'Bugey-2'           : 'BUG2',
           'ExpMean'           : 'MoyenneExp',
           'Drakkar'           : 'Drakkar',
+          'DrakC5'            : 'DrakC5',
+          'SerpC5'            : 'SerpC5',
           'Drakkar_corrected' : r'Drakkar_{corrig\acute{e}}'}
 activities = {}
 # Layout of the assemblies in the core
@@ -151,6 +153,24 @@ for link in links:
     indruns.append(ReadPdistrSerpent(link, FullCoreLayout))
 powerSerpent = Deploy2D(np.mean(indruns, axis = 0), FullCoreLayout)
 activities['Drakkar_corrected'] = (activities['Drakkar']*powerSerpent
+                                                        /powerDrakkar)
+#---
+#  CASMO-5
+#---
+DetToPow = np.array(pd.read_csv('CASMO5_DetectorToPowerRatio.csv', sep = ";",
+                    header=None))
+DetToPow = UnfoldQuarter(np.rot90(DetToPow))
+# Apply these factors to Drakkar and Serpent
+for [source, power] in [['DrakC5', powerDrakkar], ['SerpC5', powerSerpent]]:
+    activ = power*DetToPow
+    # Filter out unmeasured activities with NaNs, in order to have a
+    # normalization identical to the measurements, i.e.
+    # sum(50 measured positions)=50.
+    activ_filtered = np.where(np.isnan(activities['Fessenheim-2']), np.nan, activ)
+    normfactor = np.nanmean(activ_filtered)
+    # Filter out the reflectors (=0 in FullCoreLayout) with NaNs and apply that
+    # normalization
+    activities[source] = activ/normfactor
 #---
 #  Plot all the activities
 #---
