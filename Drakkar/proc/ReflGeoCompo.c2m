@@ -130,8 +130,16 @@ ELSEIF Palier 'BEAVRS' = THEN
            2.2225  5.715  0.5          5.715 ;
   EVALUATE RefZnR := 3.5 ;
 ELSEIF Palier 'CASMO5_MxN_2' = THEN
-  EVALUATE dBaffle   dBarrl dBarrlShield dShield :=
-           2.529882  5.1    6.0          6.8 ;
+  EVALUATE dCenterBarrl := 133.0 7.0 8.0 / + 2.54 *   ! 133+7/8 in (ID)
+                                              2.0 / ; ! from diameter to radius
+  EVALUATE dBaffle := 2.51968 ; ! Two CASMO5 pins
+  EVALUATE dBarrl  :=        2.0             2.54 * ; ! 2 in
+  EVALUATE dBarrlShield :=
+    142.0 5.0 8.0 / + ! ID Shield = 142+5/8 in
+    133.0 7.0 8.0 / + ! ID Barrel = 133+7/8 in
+    2.0 2.0 * + !... to OD Barrel = 137+7/8 in
+    - 2.0 / (* from diameter to radius *) 2.54 * ;
+  EVALUATE dShield := 2.0 11.0 16.0 / + 2.54 * ; ! 2+11/16 in
   EVALUATE RefZnR := 3.5 ;
 ELSEIF Palier 'CASMO5_MxN_3' = THEN
   EVALUATE dBaffle   dBarrl dBarrlShield dShield :=

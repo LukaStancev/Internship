@@ -1,0 +1,66 @@
+TTL  * Single UOX assembly with 16 Pyrex rods, Fessenheim-2 first zero-power start-up
+OMP 12 * Use 12 threads, resulting in an execution time of a few minutes
+* Recover the 19-groups detectors cross sections
+GRP , , , , 19
+RRX 92235 / / / 2
+BOR 1325.0 * ppm
+TFU 559.261 * K
+TMO 559.261 * K
+THE 0 * Do not use thermal expansion
+XEN 0 * Remove any xenon
+OFF 'DOP' 'RUP' * Turn off Effective Doppler Temperature model and resonance upscatter model
+DET 92235 'CE' 2 * Add a detector made out of uranium 235 in the central (CE) tube guide
+DEP -0.0 * Do not burn
+******************************
+PWR 17 1.259840 21.50364,,,,,1
+MI1 /
+  5010=1.4207E21
+  5011=5.6830E21
+  8016=4.4378E22
+  14028=1.3612E22
+  14029=6.9078E20
+  14030=4.5610E20
+  13027=2.0365E21
+  19039=8.6551E20
+  19040=1.0830E17
+  19041=6.2459E19
+  11023=1.3665E21
+PIN 1  0.4096 0.4179 0.475  /
+       '1'     'HEL'   'CAN'
+PIN 2 0.5715 0.61214 / 'MOD' 'BOX'
+PIN 3 0.22098 0.23749 0.24130 0.41402 0.43688 0.48387 0.5715 0.61214 /
+     'HEL'  'CRS'   'HEL'   'MI1'   'HEL'   'CRS'   'MOD'  'BOX'
+* To recover the 19-groups flux from EDT, a micro-region must have a specific composition of its own
+HO1 'MOD'=1.0
+* To avoid an unwanted deviation, CASMO-5 default subdivision of water is reproduced
+* S = Pi*0.5715^2/3 for each ring
+* 1: sqrt(S/Pi)
+* 2: sqrt(S/Pi+r1^2)
+* 3: sqrt(S/Pi+r2^2) = R_tot
+PIN 4 0.329955678 0.466627796 0.5715 0.61214 / 'HO1' 'MOD' 'MOD' 'BOX'
+EDT 'ho1f'/ /'HO1'/'FLX' '2D' 'IND' / 'OUT'
+*****************************
+* fuel density = 10.96*0.95*0.9883 = 10.2901796
+FUE 1 10.2901796/2.60
+LPI
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 3 1 1 2 1 1 3 1 1 1 1 1
+1 1 1 3 1 1 1 1 1 1 1 1 1 3 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 3 1 1 2 1 1 3 1 1 2 1 1 3 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 2 1 1 3 1 1 2 1 1 3 1 1 2 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 3 1 1 2 1 1 3 1 1 2 1 1 3 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 3 1 1 1 1 1 1 1 1 1 3 1 1 1
+1 1 1 1 1 3 1 1 2 1 1 3 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+
+* TIF / /15.0
+STA
+END
