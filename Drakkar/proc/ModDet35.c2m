@@ -39,7 +39,7 @@
 * At the moment, in Geo15x15.x2m the instrumental tube is not conceived.
 *------------------------------------------------------
 * The mixture generally assigned to the Inner Rod of the Instrumenal Tube is:
-* # 15
+* # 6
 *======================================================
 PARAMETER Out LibraryAu Calc Discr CP ::
       ::: LINKED_LIST
@@ -84,7 +84,7 @@ IF OptDet35 "IRIT" = THEN
       MERG MIX
 !     NMIX = 103
 !     1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0
+      0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0
       0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
       0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
       0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
@@ -93,47 +93,20 @@ IF OptDet35 "IRIT" = THEN
       COND 0.625
       SAVE ON <<SaveDir35>> ;
 
-  ELSEIF AssType "MOX" = THEN
-
-    OutDetIT := EDI: LibraryAu Calc Discr CP ::
-      EDIT 0
-      MICR 1 <<NameDetIso>>
-      MERG MIX
-!     NMIX = 133
-!     1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0
-      COND 0.625
-      SAVE ON <<SaveDir35>> ;
-
-  ELSEIF AssType "UGd" = AssType "UGd8" = + THEN
-
-    OutDetIT := EDI: LibraryAu Calc Discr CP ::
-      EDIT 0
-      MICR 1 <<NameDetIso>>
-      MERG MIX
-!     NMIX = 145
-!     1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-      0  0  0  0  0
-      COND 0.625
-      SAVE ON <<SaveDir35>> ;
-
   ELSE ! Input Error
     ECHO "Error --- AssType:" AssType "not recognized." ;
     ABORT: ;
   ENDIF ;
+
+ELSEIF OptDet35 "NOSPH" = THEN
+
+  OutDetIT := EDI: LibraryAu Calc Discr CP ::
+    EDIT 0
+    MICR 1 <<NameDetIso>>
+    MERG COMP
+    COND 0.625
+    JOUT
+    SAVE ON <<SaveDir35>> ;
 
 ELSE ! Input Error
   ECHO "Error --- OptDet35:" OptDet35 "not recognized." ;

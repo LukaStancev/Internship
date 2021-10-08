@@ -54,11 +54,12 @@ STRING HF := "Non" ;     ! ??? CHECK IF TO PASS WITH INFO.XSM !!!!
 
 *---
 * Option detector XS (U235):
+*  NOSPH - Do not use SPH equivalence for the cross sections of the
+*          detector
 *   IRIT - Use Inner Rod IT weighting integrated flux
-*      * - Use Assembly weighting integrated flux
-* Par defaut, ce mot-cle est fixe a "COMP" (keyword EDI: module)
+*   NONE - Use Assembly weighting integrated flux
 *---
-STRING  OptDet35 := "NONE" ;
+STRING  OptDet35 := "NOSPH" ;
 
 *---
 * Select the matrix structure used to build the
@@ -852,7 +853,7 @@ WHILE m dm <= DO
               SAVE ON <<SaveDir>> ;
 
 !           Recompute Micro-XS of U-235 for detector calculation
-            IF OptDet35 "IRIT" = THEN
+            IF OptDet35 "NONE" = NOT THEN
               Out := ModDet35 Out LibraryAu Calc Discr CP ::
                 <<AssType>> <<SaveDir>> <<OptDet35>> ;
             ENDIF ;
@@ -867,7 +868,7 @@ WHILE m dm <= DO
               SAVE ON <<SaveDir>> ;
 
 !           Recompute Micro-XS of U-235 for detector calculation
-            IF OptDet35 "IRIT" = THEN
+            IF OptDet35 "NONE" = NOT THEN
               Out := ModDet35 Out LibraryAu Calc Discr CP ::
                 <<AssType>> <<SaveDir>> <<OptDet35>> ;
             ENDIF ;
@@ -898,13 +899,13 @@ WHILE m dm <= DO
               JOUT
               SAVE ON <<SaveDir>> ;
 
+            Out := SPH: Out :: EDIT 0 ALBS SELE_ALB PN ;
+
 !           Recompute Micro-XS of U-235 for detector calculation
-            IF OptDet35 "IRIT" = THEN
+            IF OptDet35 "NONE" = NOT THEN
               Out := ModDet35 Out LibraryAu Calc Discr CP ::
                 <<AssType>> <<SaveDir>> <<OptDet35>> ;
             ENDIF ;
-
-            Out := SPH: Out :: EDIT 0 ALBS SELE_ALB PN ;
 
           ELSEIF BiblXS "MULTICOMPO" = THEN
             Out := EDI: LibraryAu Calc Discr CP Assmb GeoAssHom ::
@@ -916,14 +917,14 @@ WHILE m dm <= DO
               MGEO GeoAssHom
               SAVE ON <<SaveDir>> ;
 
+           TrackAss := TRIVAT: GeoAssTriv      :: DUAL 3 3 EDIT 0 ;
+           Out   :=    SPH: Out TrackAss :: EDIT 0 SELE_ALB PN ;
+
 !           Recompute Micro-XS of U-235 for detector calculation
-            IF OptDet35 "IRIT" = THEN
+            IF OptDet35 "NONE" = NOT THEN
               Out := ModDet35 Out LibraryAu Calc Discr CP ::
                 <<AssType>> <<SaveDir>> <<OptDet35>> ;
             ENDIF ;
-
-           TrackAss := TRIVAT: GeoAssTriv      :: DUAL 3 3 EDIT 0 ;
-           Out   :=    SPH: Out TrackAss :: EDIT 0 SELE_ALB PN ;
 
            OutCPC := EDI: LibraryAu Calc Discr CP Assmb ::
              EDIT 0
