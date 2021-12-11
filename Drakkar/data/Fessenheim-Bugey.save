@@ -19,7 +19,16 @@ ls -ltr
 
 if [ ! -z "$(ls | grep -P "_[0-9]+\.result")" ]
 then
-   outdir="$1"/Output_FSH-BUG_TMC
+   # Search for the identifier of the uranium 235 and 238 samples in any Power file
+   pattern="_Power*"
+   files=( $pattern )
+   nmatch=$(awk '/^U235            / || /^U238            /{getline; print}' ${files[0]} | awk '/-33/{print}' | wc -l)
+   # If there is more than one equal to '-33' (i.e. two), it means that all isotopes were sampled at the same time
+   if [ $nmatch -eq 2]; then
+      outdir="$1"/Output_FSH-BUG_TMC_interactions
+   else
+      outdir="$1"/Output_FSH-BUG_TMC
+   fi
    mkdir -p "$outdir"
     # Keep only a few result files, in case of random sampling.
    if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
