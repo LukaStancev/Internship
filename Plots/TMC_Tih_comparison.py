@@ -1,6 +1,6 @@
 #
 #  Plotting power on 2D maps for TMC samples (both Drakkar and Serpent)
-#  Usage : python3 TMC_comparison.py
+#  Usage : python3 TMC_Tih_comparison.py
 #  Author ; V. Salino (IRSN), 06/2021
 #
 
@@ -42,7 +42,8 @@ for controlrod in controlrods:
     #  Drakkar power distributions
     #---
     # Create links toward every available Drakkar power distribution
-    os.system('ln -s ../Drakkar/Output_TMC/_Power' + controlrod + '_*.ascii .')
+    os.system('ln -s ../Drakkar/Output_TIH_TMC/_Power' + controlrod
+              + '_*.ascii .')
     # List isotopes we've been (potentially) randomly sampling in Drakkar
     firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
@@ -253,7 +254,7 @@ for controlrod in controlrods:
         #---
         #  Add a title and save plot as pdf (vectorized)
         #---
-        os.system('mkdir -p output_TMC_comparison')
+        os.system('mkdir -p output_TMC_Tih_comparison')
         if lang == 'en':
             title = ('Probability density vs. normalized assembly power, '
                      + 'with Drakkar, Serpent\nand '
@@ -263,10 +264,10 @@ for controlrod in controlrods:
                      + ' random samples)\non Tihange first zero-power '
                      + 'start-up, ' + text[controlrod])
             st = fig.suptitle(title)
-            fig.savefig('output_TMC_comparison/' + controlrod + '_' + iso
+            fig.savefig('output_TMC_Tih_comparison/' + controlrod + '_' + iso
                         + '.pdf', bbox_inches='tight', bbox_extra_artists=[st])
         elif lang == 'fr':
-            fig.savefig('output_TMC_comparison/' + controlrod + '_' + iso
+            fig.savefig('output_TMC_Tih_comparison/' + controlrod + '_' + iso
                         + '.pdf', bbox_inches='tight')
         #---
         #  Clean-up for next plot
@@ -276,5 +277,5 @@ for controlrod in controlrods:
     #  Merge pdf with ghostscript
     #---
     os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite '
-              + '-sOUTPUTFILE=output_TMC_comparison/' + controlrod + '.pdf '
-              + '-dBATCH output_TMC_comparison/' + controlrod + '_*.pdf')
+              + '-sOUTPUTFILE=output_TMC_Tih_comparison/' + controlrod + '.pdf '
+              + '-dBATCH output_TMC_Tih_comparison/' + controlrod + '_*.pdf')

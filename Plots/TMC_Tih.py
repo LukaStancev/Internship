@@ -1,6 +1,6 @@
 #
-#  Plotting power on 2D maps for TMC samples
-#  Usage : python3 TMC.py
+#  Plotting power on 2D maps for TMC samples, on Tihange
+#  Usage : python3 TMC_Tih.py
 #  Author ; V. Salino (IRSN), 02/2021
 #
 
@@ -54,7 +54,8 @@ for controlrod in controlrods:
     minKU[controlrod] = {}
     maxKU[controlrod] = {}
     # Create links toward every available power distribution
-    os.system('ln -s ../Drakkar/Output_TMC/_Power' + controlrod + '_*.ascii .')
+    os.system('ln -s ../Drakkar/Output_TIH_TMC/_Power' + controlrod
+              + '_*.ascii .')
     # List isotopes we've been (potentially) randomly sampling
     firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
@@ -244,13 +245,13 @@ for controlrod in controlrods:
                      + ' start-up, ' + text[controlrod])
         elif lang == 'fr':
             title = ''
-        os.system('mkdir -p output_TMC')
+        os.system('mkdir -p output_TMC_Tih')
         if title:
             st = fig.suptitle(title)
-            fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
+            fig.savefig('output_TMC_Tih/' + controlrod + '_' + iso + '.pdf',
                         bbox_extra_artists=[st], bbox_inches='tight')
         else:
-            fig.savefig('output_TMC/' + controlrod + '_' + iso + '.pdf',
+            fig.savefig('output_TMC_Tih/' + controlrod + '_' + iso + '.pdf',
                         bbox_inches='tight')
         #---
         #  Clean-up for next plot
@@ -352,11 +353,11 @@ for controlrod in controlrods:
                 title = ''
             if title:
                 st = fig.suptitle(title)
-                fig.savefig('output_TMC/' + stat + '_' + controlrod + '_'
+                fig.savefig('output_TMC_Tih/' + stat + '_' + controlrod + '_'
                             + iso + '.pdf', bbox_inches='tight',
                             bbox_extra_artists=[st])
             else:
-                fig.savefig('output_TMC/' + stat + '_' + controlrod + '_'
+                fig.savefig('output_TMC_Tih/' + stat + '_' + controlrod + '_'
                             + iso + '.pdf', bbox_inches='tight')
             #---
             #  Clean-up for next plot
@@ -365,8 +366,8 @@ for controlrod in controlrods:
     #---
     #  Merge pdf with ghostscript
     #---
-    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=output_TMC/'
-              + controlrod + '.pdf -dBATCH output_TMC/' + controlrod
+    os.system('gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=output_TMC_Tih/'
+              + controlrod + '.pdf -dBATCH output_TMC_Tih/' + controlrod
               + '_*.pdf')
 #---
 #  For each isotope and each control rod state, plot, as a summary:
@@ -567,10 +568,10 @@ elif lang == 'fr':
     title = ''
 if title :
     st = fig.suptitle(title, y = 1.01)
-    fig.savefig('output_TMC/Summary.pdf', bbox_inches = 'tight',
+    fig.savefig('output_TMC_Tih/Summary.pdf', bbox_inches = 'tight',
                 extra_artists = [st])
 else:
-    fig.savefig('output_TMC/Summary.pdf', bbox_inches = 'tight')
+    fig.savefig('output_TMC_Tih/Summary.pdf', bbox_inches = 'tight')
 #---
 #  Clean-up
 #---

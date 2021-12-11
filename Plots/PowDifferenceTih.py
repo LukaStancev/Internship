@@ -1,6 +1,6 @@
 #
-#  Plotting power relative difference on 2D maps
-#  Usage : python3 PowDifference.py
+#  Plotting power relative difference on 2D maps, for Tihange
+#  Usage : python3 PowDifferenceTih.py
 #  Author ; V. Salino (IRSN), 02/2021
 #
 
@@ -139,7 +139,7 @@ for controlrod in controlrods:
 #---
 #  Plot all the power distributions and also Serpent standard errors
 #---
-os.system('mkdir -p output_PowDifference')
+os.system('mkdir -p output_PowDifferenceTih')
 pmin = math.inf
 pmax = -math.inf
 relstdmin = math.inf
@@ -220,10 +220,10 @@ for controlrod in controlrods:
                         + 'independant simulations with different random seeds')
                 plt.subplots_adjust(top = 0.85)
             st = fig.suptitle(txt)
-            fig.savefig('output_PowDifference/' + source + '_' + controlrod
+            fig.savefig('output_PowDifferenceTih/' + source + '_' + controlrod
                         + '.pdf', bbox_inches='tight', extra_artists=[st])
         elif lang == 'fr':
-            fig.savefig('output_PowDifference/' + source + '_' + controlrod
+            fig.savefig('output_PowDifferenceTih/' + source + '_' + controlrod
                         + '.pdf', bbox_inches='tight')
         #---
         #  Clean-up for next plot
@@ -295,8 +295,8 @@ for controlrod in controlrods:
         #---
         #  Save plot as pdf (vectorized)
         #---
-        fig.savefig('output_PowDifference/' + controlrod + '_' + a + '_vs_' + b
-                    + '.pdf', bbox_inches='tight')
+        fig.savefig('output_PowDifferenceTih/' + controlrod + '_' + a + '_vs_'
+                    + b + '.pdf', bbox_inches='tight')
         #---
         #  Clean-up for next plot
         #---
