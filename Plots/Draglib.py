@@ -102,8 +102,8 @@ for draglibpath in directories:
     reactions.sort()
     labels = {}
     labels['NTOT0'] = "(n,tot)"
-    labels['NUSIGF'] = r"$\nu\times$(n,f)"
-    labels['NINEL'] = "(n,n')"
+    labels['NUSIGF'] = r"$\overline{\nu}\times$(n,f)"
+    labels['NINEL'] = "(n,inl)"
     labels['N2N'] = "(n,2n)"
     labels['NA'] = r"(n,$\alpha$)"
     labels['NP'] = "(n,p)"
@@ -244,7 +244,7 @@ for draglibpath in directories:
                               + '95\% quantiles)')
         axs[1].set_ylabel('Relative standard deviation')
     elif lang == 'fr':
-        axs[1].set_xlabel('Énergie du neutron incident [eV]')
+        axs[1].set_xlabel('Énergie [eV]')
         if graphtype == 'samples':
             axs[0].set_ylabel('Section efficace [b]')
         elif graphtype == 'quantiles':

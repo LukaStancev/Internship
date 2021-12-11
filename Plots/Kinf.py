@@ -217,14 +217,14 @@ plt.xticks(x, xlabels)
 if lang == 'en':
     ax.set_xlabel(r'Assembly $^{235}\mathrm{U}$ enrichment'
                   + ' and its eventual absorbing rods')
-    ax.set_ylabel(r'$\mathrm{ln}\left(\frac{'
+    ax.set_ylabel(r'$\ln\left(\frac{'
                   r'k^{\mathrm{Serpent}}_{\infty}}{'
                   r'k^{\mathrm{Dragon}}_{\infty}}'
                   r'\right)\times10^5$', fontsize = 14)
 elif lang == 'fr':
     ax.set_xlabel(r'Enrichissement en $^{235}\mathrm{U}$' + ' de l\'assemblage'
                   + ' et ses éventuels crayons absorbants')
-    ax.set_ylabel(r'$\mathrm{ln}\left(\frac{'
+    ax.set_ylabel(r'$\ln\left(\frac{'
                   r'k^{\mathrm{Serpent}}_{\infty}}{'
                   r'k^{\mathrm{Dragon}}_{\infty}}'
                   r'\right)\times10^5$', fontsize = 14)

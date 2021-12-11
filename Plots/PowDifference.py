@@ -176,8 +176,7 @@ for controlrod in controlrods:
                            loc = 3,
                            bbox_to_anchor = (1.02, 0., 1, 1),
                            bbox_transform = ax.transAxes,
-                           borderpad = 0,
-                           )
+                           borderpad = 0)
         im = ax.imshow(plot, interpolation = 'nearest', cmap = 'coolwarm',
                        vmin = minplot, vmax = maxplot)
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
@@ -255,8 +254,7 @@ for controlrod in controlrods:
                            loc = 3,
                            bbox_to_anchor = (1.02, 0., 1, 1),
                            bbox_transform = ax.transAxes,
-                           borderpad = 0,
-                           )
+                           borderpad = 0)
         im = ax.imshow(discrp, interpolation = 'nearest', cmap = 'coolwarm',
                        vmin = -10, vmax = 10)
         cbar = plt.colorbar(im, cax = axins, orientation = 'vertical')
