@@ -1,7 +1,7 @@
 #!/bin/bash
 # Usage : FSH-BUG_TMC_with_interactions.sh
 
-nrand=2000
+nrand=5000
 
 # List of isotopes that are being randomly sampled
 isotopes="H1_H2O B10 B11 O16 U235 U238 Zr90 Zr91 Zr92 Zr94 Zr96 Ni58 Fe54 Fe56 Cr52"
@@ -18,7 +18,7 @@ case=Fessenheim-Bugey
 # * nrand    : the number of pseudorandom numbers to be produced.
 # Ref. : https://docs.python.org/fr/3.10/library/random.html
 rand(){
-    echo $(python -c "import random;random.seed($1);print([random.randrange($2) for i in range(0,$3)])")
+    echo $(python -c "import random;random.seed($1);print([random.randrange(1+$2) for i in range(0,$3)])")
 }
 
 # Prepare an empty directory
@@ -48,7 +48,7 @@ do
     # Writing Slurm instruction file, but not launching it
     echo "#!/bin/bash"                                                 > ${i}_${case}.sh
     echo "#SBATCH -c1  ## Number of cores to be reserved"             >> ${i}_${case}.sh
-    echo "#SBATCH -t 0-00:30:00"                                      >> ${i}_${case}.sh
+    echo "#SBATCH -t 0-03:00:00"                                      >> ${i}_${case}.sh
     echo "#SBATCH --mem-per-cpu=4G"                                   >> ${i}_${case}.sh
     echo "srun ../runVersion5.sh ${case}_${i}.x2m ${intg}" >> ${i}_${case}.sh
     chmod 755 ${i}_${case}.sh

@@ -234,6 +234,128 @@ def SE_KU(n):
     return 2*SE_SK(n)*np.sqrt( (n**2 - 1) / ((n - 3)*(n + 5)) )
 
 #---
+#  Equivalent to NumPy percentile (or quantile), but supports weights
+#  Ref. : https://stackoverflow.com/questions/21844024/weighted-percentile-using-numpy
+#---
+def weighted_quantile(values, quantiles, sample_weight=None,
+                      values_sorted=False, old_style=False):
+    """ Very close to numpy.percentile, but supports weights.
+    NOTE: quantiles should be in [0, 1]!
+    :param values: numpy.array with data
+    :param quantiles: array-like with many quantiles needed
+    :param sample_weight: array-like of the same length as `array`
+    :param values_sorted: bool, if True, then will avoid sorting of
+        initial array
+    :param old_style: if True, will correct output to be consistent
+        with numpy.percentile.
+    :return: numpy.array with computed quantiles.
+    """
+    values = np.array(values)
+    quantiles = np.array(quantiles)
+    if sample_weight is None:
+        sample_weight = np.ones(len(values))
+    sample_weight = np.array(sample_weight)
+    assert np.all(quantiles >= 0) and np.all(quantiles <= 1), \
+        'quantiles should be in [0, 1]'
+
+    if not values_sorted:
+        sorter = np.argsort(values)
+        values = values[sorter]
+        sample_weight = sample_weight[sorter]
+
+    weighted_quantiles = np.cumsum(sample_weight) - 0.5 * sample_weight
+    if old_style:
+        # To be convenient with numpy.percentile
+        weighted_quantiles -= weighted_quantiles[0]
+        weighted_quantiles /= weighted_quantiles[-1]
+    else:
+        weighted_quantiles /= np.sum(sample_weight)
+    return np.interp(quantiles, weighted_quantiles, values)
+#---
+#  Compute weighted skewness and excess kurtosis
+#  Ref. : https://stackoverflow.com/questions/61521371/calculate-weighted-statistical-moments-in-python
+#---
+def weighted_mean(var, wts):
+    """Calculates the weighted mean"""
+    return np.average(var, weights=wts)
+
+def weighted_variance(var, wts):
+    """Calculates the weighted variance"""
+    return np.average((var - weighted_mean(var, wts))**2, weights=wts)
+
+def weighted_std(var, wts):
+    """Calculates the weighted standard deviation"""
+    return np.sqrt(weighted_variance(var, wts))
+
+def weighted_relstd(var, wts):
+    """Calculates the weighted relative standard deviation"""
+    return weighted_std(var, wts)/weighted_mean(var, wts)*100
+
+def weighted_skew(var, wts):
+    """Calculates the weighted skewness"""
+    return (np.average((var - weighted_mean(var, wts))**3, weights=wts) /
+            weighted_variance(var, wts)**(1.5))
+
+def weighted_kurtosis(var, wts):
+    """Calculates the weighted skewness"""
+    return (np.average((var - weighted_mean(var, wts))**4, weights=wts) /
+            weighted_variance(var, wts)**(2) - 3)
+#---
+#  Compute weighted correlation matrix
+#  Ref. : https://stackoverflow.com/questions/38641691/weighted-correlation-coefficient-with-pandas
+#         https://numpy.org/doc/stable/reference/generated/numpy.cov.html
+#---
+def weighted_corrcoef(weights, x, y = None):
+    """Weighted Correlation"""
+    if x.ndim == 1:
+        # Only two samples (x and y)
+        corr = (np.cov(x, y, aweights = weights) /
+                np.sqrt(np.cov(x, x, aweights = weights) *
+                np.cov(y, y, aweights = weights)))
+    else:
+        # N samples, all stored in x
+        cov = np.cov(x, aweights = weights)
+        stddev = np.sqrt(np.diag(cov))
+        stddevproduct = np.outer(stddev, stddev)
+        corr = cov/stddevproduct
+    return corr
+
+#---
+#  Round a correlation matrix
+#---
+def roundcorr(correlation, Energies, delta):
+    ngrp = len(Energies) - 1
+    correlation = np.around(correlation/delta)*delta
+    # We may have some data without variation, such as
+    # * the light water TSLs,
+    # * the inelastic O16 and B10 cross sections, or
+    # * the threshold reactions.
+    # The correlation cannot be computed in such cases because their standard
+    # deviation (in the correlation's denominator) is zero. We replace these
+    # NaN with zeros.
+    correlation = np.nan_to_num(correlation, nan = 0)
+    # Sequentialize the correlations (flatten matrix into vector)
+    seqcor = np.ravel(correlation, order = 'C')
+    xlim = np.unique((np.where(seqcor[:-1] != seqcor[1:])[0] + 1) % ngrp)
+    # Now that this has been done on the columns, do the same thing on the rows
+    seqcor = np.ravel(correlation, order = 'F')
+    ylim = np.unique((np.where(seqcor[:-1] != seqcor[1:])[0] + 1) % ngrp)
+    # If the matrix is totally homogeneneous (a very exceptionnal yet possible
+    # case), add the zero index
+    if 0 not in xlim:
+        xlim = np.concatenate(([0], xlim))
+    if 0 not in ylim:
+        ylim = np.concatenate(([0], ylim))
+    # Now that we've found the homogeneous rectangles, we keep only one value
+    # (the first here, since they are all equal)
+    XX, YY = np.meshgrid(xlim, ylim)
+    correlation = correlation[YY, XX]
+    # For the energies, add the final point (energy mesh has G+1 points)
+    xEnergies = np.concatenate((Energies[xlim], [Energies[-1]]))
+    yEnergies = np.concatenate((Energies[ylim], [Energies[-1]]))
+    return correlation, xEnergies, yEnergies
+
+#---
 #  Functions for proper formatting of Matpotlib figures in LaTeX
 #  See: https://jwalton.info/Embed-Publication-Matplotlib-Latex/
 #---
@@ -265,6 +387,16 @@ def set_size(aspect = 'default', bonus = False):
         elif aspect == 'halfsquare':
             #width = width*29.3/26.45*1.015
             width = width*1.1243667
+    elif aspect == 'fullA4':
+        #width = width*23.3/18.1*24.15/28.025
+        width = width*1.1092996
+        default = plt.rcParams["figure.figsize"]
+        #ratio = default[1] / default[0] / 1.1092996 * (20-2)/8.4 * 18/22.2
+        ratio = default[1] / default[0] * 1.566260131
+    elif aspect == 'correlation':
+        #width = width*23.3/22.3*22.3/25.8
+        width = width*0.90310077
+        ratio = 1
     else:
         raise Exception('"' + aspect + '" aspect has not been defined.')
     # Keep the default proportionality
