@@ -177,6 +177,11 @@ def loadlcm(filepath):
 #---
 #  Math functions
 #---
+# Sum over submatrices of size n x n.
+def matrixaverage(matrix, n):
+    # https://moonbooks.org/Articles/How-to-downsampling-a-matrix-by-averaging-elements-nn-with-numpy-in-python-/Edit/
+    b = matrix.shape[0]//n
+    return matrix.reshape(-1, n, b, n).sum((-1, -3))/n
 # Perform a truncation, keeping only n significant digits
 def truncate(x, n):
     def fexp(number):
@@ -476,7 +481,6 @@ def FullCore(filepath, Assemblies, CB):
                 'w')
     sss2.write('% Serpent 2 dataset produced automatically with D2S.\n')
     sss2.write('% Author : V. Salino (IRSN), 04/2021\n')
-    #sss2.write('set title ' + '"Tihange full core, ' + str(CB) + ' ppm"\n')
     sss2.write('set title "' + filepath.split('/')[-2] + ' full core, '
                + str(CB) + ' ppm"\n')
     sss2.write('set acelib "' + xsdata + '"\n')
@@ -492,8 +496,8 @@ def FullCore(filepath, Assemblies, CB):
     #---
     #  Perform a few consistency checks
     #---
-    meshx = fullcore_geo['MESHX']
-    meshy = fullcore_geo['MESHY']
+    meshx = fullcore_geo['MESHX'][::2]
+    meshy = fullcore_geo['MESHY'][::2]
     if len(meshx) != len(meshy):
         raise Exception('Non-square cores are not supported.')
     sizex = meshx[1:] - meshx[:-1]
@@ -507,7 +511,16 @@ def FullCore(filepath, Assemblies, CB):
     sizez = meshz[1:] - meshz[:-1]
     mixs = fullcore_geo['MIX']
     # Get it into 3D numpy array
-    mixs = mixs.reshape(len(sizez), len(sizey), len(sizex))
+    mixs = mixs.reshape(len(sizez),
+                        len(sizey)*2,
+                        len(sizex)*2)
+    # In DONJON models, the assemblies are usually divided into 2x2, so these
+    # four meshes must be joined back together
+    mixsAve = []
+    for i in np.arange(0, len(sizez)):
+        mixsAve.append(matrixaverage(mixs[i], 2)/2)
+    mixsAve = np.array(mixsAve).astype(int)
+    mixs = mixsAve.reshape(len(sizez), len(sizey), len(sizex))
     # Remove reflectors (=1, 2 or 3)
     mixs[mixs <= 3] = 0
     # Replace duplicate assemblies with their siblings
@@ -731,7 +744,7 @@ def FullCore(filepath, Assemblies, CB):
     #  a grid larger than the core:
     #  - radially, with 2 more assemblies in each direction,
     #  - axially, with 3 bins : below the core, the active core itself, and
-    #    above the core. Each of these 3 axial bins has the same size as the
+    #    above the core. Each of these 3 axial bins has the same height as the
     #    active core.
     #---
     xyn=len(mixs[0,0,:]) + 2*2
