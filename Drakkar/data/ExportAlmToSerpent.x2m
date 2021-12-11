@@ -1,0 +1,185 @@
+* V. Salino (IRSN), 02/2021
+MODULE UTL: GREP: MSTR: DELETE: END: ;
+PROCEDURE Geo17x17 CreaStepList GetMolarMass MetalMix CreaMix
+  ReflGeoCompo DefRandomIso GeoCoreCP0 ;
+LINKED_LIST Assmb AssmbAu Discr DiscrAu StepList MolarMasses Library
+  ConcMode FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
+  CdNat SNat HfNat InNat Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP
+  Random GEOM GeoCoeur GeoRes Matex Fmap ;
+STRING FilenameBase FilenameGeo FilenameComp ;
+REAL null ;
+*---
+*  Initialize the variables and objects needed for the assemblies
+*---
+STRING ConfigPyrex Suffix ;
+STRING Gestion AssType TypeDil := 'ALM' 'UOX' 'TOT' ;
+INTEGER Teneur_I BarType icase ;
+INTEGER ThermaExpans := 1 ;
+REAL dmod tmod cbor tfuel PowMWT ;
+STRING CTRA := "APOL" ;
+* File containing multigroup nuclear data
+INTEGER NGroups := 295 ;
+STRING Evaluation := "JEFF33"  ;
+STRING FileNuclData := "D" NGroups I_TO_S + Evaluation + ;
+*---- 2) Molar Masses ----------------------------------
+MolarMasses := GetMolarMass :: <<FileNuclData>> <<Evaluation>> ;
+*---- 3) Metal Mixes -----------------------------------
+FeNat CrNat SnNat NiNat ZrNat TiNat SiNat KNat BNat AgNat
+CdNat SNat HfNat InNat
+Zirc4 Incon SS304 M5 AIC HfR GdNat Gd2O3 BP := MetalMix
+MolarMasses ::
+<<Evaluation>> <<Gestion>> ;
+*---
+*  Define random sampling for each isotope
+*  Default: use JEFF-3.3 for all isotopes (= -33)
+*---
+Random := MSTR:        :: PUT 1 O16    -33 ;
+Random := MSTR: Random :: PUT 1 H1_H2O -33 ;
+Random := MSTR: Random :: PUT 1 B10    -33 ;
+Random := MSTR: Random :: PUT 1 B11    -33 ;
+Random := MSTR: Random :: PUT 1 U235   -33 ;
+Random := MSTR: Random :: PUT 1 U238   -33 ;
+Random := MSTR: Random :: PUT 1 Zr90   -33 ;
+Random := MSTR: Random :: PUT 1 Zr91   -33 ;
+Random := MSTR: Random :: PUT 1 Zr92   -33 ;
+Random := MSTR: Random :: PUT 1 Zr94   -33 ;
+Random := MSTR: Random :: PUT 1 Zr96   -33 ;
+Random := MSTR: Random :: PUT 1 Ni58   -33 ;
+Random := MSTR: Random :: PUT 1 Fe54   -33 ;
+Random := MSTR: Random :: PUT 1 Fe56   -33 ;
+Random := MSTR: Random :: PUT 1 Cr52   -33 ;
+Random := MSTR: Random :: PUT 1 In115  -33 ;
+Random := MSTR: Random :: PUT 1 Ag107  -33 ;
+Random := MSTR: Random :: PUT 1 Ag109  -33 ;
+Random := MSTR: Random :: PUT 1 Cd106  -33 ;
+Random := MSTR: Random :: PUT 1 Cd108  -33 ;
+Random := MSTR: Random :: PUT 1 Cd110  -33 ;
+Random := MSTR: Random :: PUT 1 Cd111  -33 ;
+Random := MSTR: Random :: PUT 1 Cd112  -33 ;
+Random := MSTR: Random :: PUT 1 Cd113  -33 ;
+Random := MSTR: Random :: PUT 1 Cd114  -33 ;
+Random := MSTR: Random :: PUT 1 Cd116  -33 ;
+Random := DefRandomIso Random ;
+*---
+*  Initialize the variables needed for the reflectors
+*---
+STRING Palier := "CP0_900" ;
+REAL dBaffleBarrl := 14.4 ;
+INTEGER iLocation nbZones ;
+STRING Location ;
+EVALUATE cbor := 1280.0 ;
+*---
+*  Export assembly geometries and compositions
+*---
+EVALUATE icase := 1 ;
+WHILE icase 8 <= DO
+  * Select enrichment, number of Pyrex pins and control rods
+  IF icase 1 = THEN
+    EVALUATE Teneur_I := 210 ;
+    EVALUATE ConfigPyrex := 'None' ;
+    EVALUATE BarType := 1 ;
+  ELSEIF icase 2 = THEN
+    EVALUATE Teneur_I := 310 ;
+    EVALUATE ConfigPyrex := 'None' ;
+    EVALUATE BarType := 1 ;
+  ELSEIF icase 3 = THEN
+    EVALUATE Teneur_I := 260 ;
+    EVALUATE ConfigPyrex := 'Py12a' ;
+    EVALUATE BarType := 4 ;
+  ELSEIF icase 4 = THEN
+    EVALUATE Teneur_I := 260 ;
+    EVALUATE ConfigPyrex := 'Py16a' ;
+    EVALUATE BarType := 4 ;
+  ELSEIF icase 5 = THEN
+    EVALUATE Teneur_I := 260 ;
+    EVALUATE ConfigPyrex := 'Py20a' ;
+    EVALUATE BarType := 4 ;
+  ELSEIF icase 6 = THEN
+    EVALUATE Teneur_I := 310 ;
+    EVALUATE ConfigPyrex := 'Py12a' ;
+    EVALUATE BarType := 4 ;
+  ELSEIF icase 7 = THEN
+    EVALUATE Teneur_I := 310 ;
+    EVALUATE ConfigPyrex := 'Py16a' ;
+    EVALUATE BarType := 4 ;
+  ELSEIF icase 8 = THEN
+    EVALUATE Teneur_I := 210 ;
+    EVALUATE ConfigPyrex := 'None' ;
+    EVALUATE BarType := 2 ;
+  ENDIF ;
+  * Retrieve temperatures and moderator density
+  StepList := CreaStepList ::
+    <<Gestion>> <<AssType>> <<ConfigPyrex>> 'DUMMY' ;
+  GREP: StepList :: GETVAL 'DeplParam' 1 5
+    >>dmod<< >>null<< >>null<< >>tfuel<< >>tmod<< ;
+  * Retrieve geometry
+  Assmb AssmbAu Discr DiscrAu := Geo17x17 ::
+    <<Gestion>> <<AssType>> <<ConfigPyrex>> <<ThermaExpans>>
+    <<BarType>> <<tfuel>> <<tmod>> ;
+  * Retrieve compositions
+*---- 4) Library with all mixes ------------------------
+  Library ConcMode := CreaMix FeNat CrNat SnNat NiNat ZrNat TiNat
+    SiNat KNat BNat AgNat CdNat SNat HfNat InNat Zirc4 Incon SS304 M5
+    AIC HfR GdNat Gd2O3 BP MolarMasses Random ::
+    <<NGroups>> <<FileNuclData>> <<Evaluation>> <<Gestion>>
+    <<AssType>> <<Teneur_I>> <<ThermaExpans>> <<CTRA>>
+    <<dmod>> <<cbor>> <<tfuel>> <<tmod>> <<TypeDil>>
+    >>PowMWT<< ;
+  * Save in the corresponding files
+  IF BarType 2 = THEN
+    EVALUATE Suffix := 'AIC' ;
+  ELSE
+    EVALUATE Suffix := ConfigPyrex ;
+  ENDIF ;
+  EVALUATE FilenameBase := "./UOX" Teneur_I I_TO_S +
+                           "_" + Suffix +
+                           "_" + cbor R_TO_I I_TO_S + "ppm" + ;
+  EVALUATE FilenameGeo  := FilenameBase ".geo"   + ;
+  EVALUATE FilenameComp := FilenameBase ".compo" + ;
+  SEQ_ASCII Geom.txt  :: FILE <<FilenameGeo>> ;
+  SEQ_ASCII Compo.txt :: FILE <<FilenameComp>> ;
+  Geom.txt := Assmb ;
+  Compo.txt := Library ;
+  * Cleaning up for the next iteration
+  StepList Assmb AssmbAu Discr DiscrAu Library ConcMode := DELETE:
+  StepList Assmb AssmbAu Discr DiscrAu Library ConcMode ;
+  EVALUATE icase := icase 1 + ;
+ENDWHILE ;
+*---
+*  Export bottom, top and radial reflector geometries and compositions
+*  by looping over reflector locations
+*---
+EVALUATE iLocation := 1 ;
+WHILE iLocation 3 <= DO
+  IF iLocation 1 = THEN
+    EVALUATE Location := 'Radial' ;
+  ELSEIF iLocation 2 = THEN
+    EVALUATE Location := 'Bottom' ;
+  ELSEIF iLocation 3 = THEN
+    EVALUATE Location := 'Top' ;
+  ENDIF ;
+  GEOM Library := ReflGeoCompo MolarMasses BNat
+    Zirc4 Incon SS304 Random :: <<FileNuclData>> <<Evaluation>>
+    <<Palier>> <<Location>> <<cbor>> <<dBaffleBarrl>> >>nbZones<< ;
+  * Save in the corresponding files
+  EVALUATE FilenameBase := "./Refl" Location +
+                           "_" + cbor R_TO_I I_TO_S + "ppm" + ;
+  EVALUATE FilenameGeo  := FilenameBase ".geo"   + ;
+  EVALUATE FilenameComp := FilenameBase ".compo" + ;
+  SEQ_ASCII Geom.txt  :: FILE <<FilenameGeo>> ;
+  SEQ_ASCII Compo.txt :: FILE <<FilenameComp>> ;
+  Geom.txt := GEOM ;
+  Compo.txt := Library ;
+  * Cleaning up for the next iteration
+  GEOM Library := DELETE: GEOM Library ;
+  EVALUATE iLocation := iLocation 1 + ;
+ENDWHILE ;
+*---
+*  Export core loading
+*---
+REAL dx z1 z2 ;
+GeoCoeur GeoRes Matex Fmap := GeoCoreCP0 :: >>dx<< >>z1<< >>z2<< ;
+SEQ_ASCII GeoCoeur.txt  :: FILE "FullCore.geo" ;
+GeoCoeur.txt := GeoCoeur ;
+END: ;
+QUIT "LIST" .
