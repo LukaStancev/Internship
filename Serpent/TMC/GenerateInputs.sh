@@ -1,7 +1,19 @@
 #!/bin/bash
 
-iso='U238'
-nrand=299
+#iso='U238'
+#iso='H1'
+#iso='Fe56'
+#iso='O16'
+#iso='U235'
+#iso='Zr90'
+iso='Ag107'
+
+if [ "$iso" = "Ag107" ]
+then
+  nrand=99
+else
+  nrand=299
+fi
 nseed=4
 
 #---
@@ -24,7 +36,12 @@ do
             input=${input%.sss2}"_"$iseed"_"$isoid".sss2"
 			cp $original $input
 			# Replace an isotope with another TMC sample
-			sed -i "s/$iso/$isoid/" $input
+            if [ "$iso" = "H1" ]
+            then
+			    sed -i "s/H1lwtr/$isoid/" $input
+            else
+			    sed -i "s/$iso/$isoid/" $input
+            fi
             # Reduce to 100 inactive batches but use an already converged fission
             # source from a previous computation (unsampled, TMC-wise)
             sed -i "s/set pop.*/set pop 200000 2000 100 1.0/" $input
@@ -40,6 +57,8 @@ done
 
 #---
 #  Generate corresponding SLURM instructions
+#  They can be launched on Cobalt with
+#  ls *_s*.sh | xargs -I '{}' ccc_msub '{}'
 #---
 
 for kslurm in {1..75}
