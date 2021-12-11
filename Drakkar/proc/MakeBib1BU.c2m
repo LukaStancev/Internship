@@ -53,15 +53,6 @@ STRING SPH := "Toujours" ;
 STRING HF := "Non" ;     ! ??? CHECK IF TO PASS WITH INFO.XSM !!!!
 
 *---
-* Option detector XS (U235):
-*  NOSPH - Do not use SPH equivalence for the cross sections of the
-*          detector
-*   IRIT - Use Inner Rod IT weighting integrated flux
-*   NONE - Use Assembly weighting integrated flux
-*---
-STRING  OptDet35 := "NOSPH" ;
-
-*---
 * Select the matrix structure used to build the
 * multi-parameter library
 * The options available are defined in CreaStepList.c2m
@@ -151,6 +142,17 @@ STRING LEAKTYPE LEAKEQUATION CTRA ;
 :: >>LEAKTYPE<< ; ! K or B
 EVALUATE LEAKEQUATION CTRA := "B1"   "APOL" ;
 !EVALUATE LEAKEQUATION CTRA := "P0TR" "OLDW" ;
+
+*---
+* Option detector XS (U235):
+*  NOSPH - Do not use SPH equivalence for the cross sections of the
+*          detector
+*   IRIT - Use Inner Rod IT weighting integrated flux
+*   NONE - Use Assembly weighting integrated flux
+*---
+STRING OptDet35 ;
+:: >>OptDet35<< ;
+
 *--- Genre de bibliotheque (DRAGON)
 STRING  LibGenre := 'DRAGON' ;
 

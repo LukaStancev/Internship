@@ -1,12 +1,10 @@
 * Author : Vivian Salino (IRSN), 02/2021
 MODULE GREP: MSTR: UTL: DELETE: END: ;
-PROCEDURE EvoNominale MakeBib1BU Reflector Tihange DefRandomIso ;
+PROCEDURE EvoNominale MakeBib1BU Reflector CP0 DefRandomIso ;
 LINKED_LIST ReflSpecs Random ;
-XSM_FILE Library Burnup ConcMode Info
-  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12
-  PowerCD PowerD PowerARO Temp ;
-SEQ_ASCII PowerCD_asc  :: FILE './_PowerCD.ascii'  ;
-SEQ_ASCII PowerD_asc   :: FILE './_PowerD.ascii'   ;
+XSM_FILE Library Burnup ConcMode Info REFL UOX210
+  UOX310 UOX260_Py12 UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16
+  PowerARO ActivARO Temp ;
 SEQ_ASCII PowerARO_asc :: FILE './_PowerARO.ascii' ;
 *---
 *  Define random sampling for each isotope
@@ -44,55 +42,64 @@ ReflSpecs := UTL: :: CREA 'Paliers'      2 = 'CP0_' '900'
                      CREA 'dBaffleBarrl' 1 = 14.4 ; ! [cm]
 REFL := Reflector ReflSpecs Random ;
 *---
+* To this day, nothing differentiates Fessenheim and Bugey in our
+* models, so the first should be representative of the two.
+STRING Gestion := 'FSH' ;
+*---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 195 None 1 ;
-UOX195 := MakeBib1BU Library Burnup ConcMode Info Random :: B
-  'NOSPH' ;
+  B <<Gestion>> UOX 210 None 1 ;
+UOX210 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NONE' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 310 None 1 ;
+  B <<Gestion>> UOX 310 None 1 ;
 UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: B
-  'NOSPH' ;
+  'NONE' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 255 Py8 1 ;
-UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random :: B
-  'NOSPH' ;
+  B <<Gestion>> UOX 260 Py12a 1 ;
+UOX260_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NONE' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 255 Py12 1 ;
-UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B
-  'NOSPH' ;
+  B <<Gestion>> UOX 260 Py16a 1 ;
+UOX260_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NONE' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
-  B TIH UOX 310 Py12 1 ;
+  B <<Gestion>> UOX 260 Py20a 1 ;
+UOX260_Py20 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NONE' ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 310 Py12a 1 ;
 UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B
-  'NOSPH' ;
+  'NONE' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
-PowerCD PowerD PowerARO := Tihange
-  REFL UOX195 UOX310 UOX255_Py8 UOX255_Py12 UOX310_Py12 ;
-*--- Export the bare minimum to ASCII, i.e. radial power distributions
-*    and k-effectives
+Library Burnup ConcMode Info := EvoNominale Random ::
+  B <<Gestion>> UOX 310 Py16a 1 ;
+UOX310_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NONE' ;
+Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
+*---
+PowerARO ActivARO := CP0 REFL UOX210 UOX310 UOX260_Py12
+  UOX260_Py16 UOX260_Py20 UOX310_Py12 UOX310_Py16 :: <<Gestion>>
+  1325.0 (* ppm *) ;
+*--- Export the bare minimum to ASCII, i.e. radial power distributions,
+*    k-effectives and detector responses (activities)
 INTEGER Length ;
-GREP: PowerCD :: LENGTH POWER-CHAN >>Length<< ;
 Temp := Random ;
-Temp := MSTR: Temp PowerCD  :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
-                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
-PowerCD_asc := Temp ;
-Temp := DELETE: Temp ;
-Temp := Random ;
-Temp := MSTR: Temp PowerD   :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
-                               CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
-PowerD_asc := Temp ;
-Temp := DELETE: Temp ;
-Temp := Random ;
+GREP: PowerARO :: LENGTH POWER-CHAN >>Length<< ;
 Temp := MSTR: Temp PowerARO :: CP <<Length>> 2:POWER-CHAN 1:POWER-CHAN
                                CP 1 2:K-EFFECTIVE 1:K-EFFECTIVE ;
+GREP: ActivARO :: LENGTH RESPON >>Length<< ;
+Temp := MSTR: Temp ActivARO :: CP <<Length>> 2:RESPON 1:RESPON ;
 PowerARO_asc := Temp ;
 Temp := DELETE: Temp ;
 END: ;

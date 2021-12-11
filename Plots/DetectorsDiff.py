@@ -1,6 +1,6 @@
 #
 #  Plotting detector relative difference on 2D maps
-#  Usage : python3 ActivitiesDiff.py
+#  Usage : python3 DetectorsDiff.py
 #  Author ; V. Salino (IRSN), 09/2021
 #
 
@@ -28,23 +28,22 @@ plt.rcParams.update(tex_fonts())
 lang = 'fr' # fr/en
 
 #---
-#  Initialize the container of all combinations of detector activities
+#  Initialize the container of all combinations of detector responses
 #---
-sources = ['DrakC5', 'SerpC5', 'Drakkar', 'Drakkar_corrected', 'Fessenheim-1', 'Fessenheim-2',
-           'Bugey-2', 'ExpMean']
+sources = ['Drakkar_DetSPH', 'Drakkar', 'Drakkar_corrected', 'Fessenheim-1',
+           'Fessenheim-2', 'Bugey-2', 'ExpMean']
 labels = {'Fessenheim-1'      : 'FSH1',
           'Fessenheim-2'      : 'FSH2',
           'Bugey-2'           : 'BUG2',
           'ExpMean'           : 'MoyenneExp',
           'Drakkar'           : 'Drakkar',
-          'DrakC5'            : 'DrakC5',
-          'SerpC5'            : 'SerpC5',
+          'Drakkar_DetSPH'    : 'Drakkar_{DetSPH}',
           'Drakkar_corrected' : r'Drakkar_{corrig\acute{e}}'}
-activities = {}
+responses = {}
 # Layout of the assemblies in the core
 CoreLayout, FullCoreLayout = GetCoreLayout(157)
 #---
-#  Retrieve activities measured experimentally by 50 mobile fission chambers
+#  Retrieve responses measured experimentally by 50 mobile fission chambers
 #---
 for file in (set(glob.glob('../Measurements/CP0/*'))
 # Minus Almaraz, which contains only measurements-derived power distribution
@@ -56,27 +55,27 @@ for file in (set(glob.glob('../Measurements/CP0/*'))
         for line in reader:
             lines.append(line)
     # Replace spaces with NaNs
-    activ = pd.DataFrame(lines).replace(r'^\s*$', np.nan, regex=True)
+    respon = pd.DataFrame(lines).replace(r'^\s*$', np.nan, regex=True)
     # Transform values from strings to floats
-    activ = activ.astype('float')
+    respon = respon.astype('float')
     # Check that normalization is properly done, up to a criterion (0.05%)
-    nelem = np.sum(activ.count())
-    totsum = activ.sum().sum()
+    nelem = np.sum(respon.count())
+    totsum = respon.sum().sum()
     if np.abs(totsum/nelem - 1) > 0.05/100:
         raise Exception('The normalization of the file ' + file
-                        + ' is incorrect. The sum of the activities is '
-                        + str(totsum) + ' instead of ' + str(nelem)
-                        + '. Review its activities.')
+                        + ' is incorrect. The sum of the detector responses is'
+                        + ' ' + str(totsum) + ' instead of ' + str(nelem)
+                        + '. Review its detector responses.')
     # Renormalize to remove any possible small remaining residue
-    activ = activ*nelem/totsum
+    respon = respon*nelem/totsum
     # Identify the source
     reactor = re.split('[/.]', file)[-2]
-    activities[reactor] = np.array(activ)
+    responses[reactor] = np.array(respon)
 #---
 #  Plot relative standard deviation for each detector
 #---
-activ = np.array(list(activities.values()))
-relstd = np.nanstd(activ, axis=0, ddof=1)/np.nanmean(activ, axis=0)*100
+respon = np.array(list(responses.values()))
+relstd = np.nanstd(respon, axis=0, ddof=1)/np.nanmean(respon, axis=0)*100
 # Produce the plot
 fig, ax = plt.subplots(1, figsize = set_size('square'))
 im = ax.imshow(relstd, interpolation = 'nearest', cmap = 'coolwarm',
@@ -105,8 +104,8 @@ for i in range(len(nprelstd)):
                     ha = 'center', va = 'center')
 # Save plot as pdf (vectorized)
 FullCoreGlitter(ax, FullCoreLayout)
-os.system('mkdir -p output_ActivitiesDiff')
-fig.savefig('output_ActivitiesDiff/ExpRelStd.pdf', bbox_inches='tight')
+os.system('mkdir -p output_DetectorsDiff')
+fig.savefig('output_DetectorsDiff/ExpRelStd.pdf', bbox_inches='tight')
 # Clean-up for next plot
 plt.close('all')
 del fig
@@ -115,26 +114,42 @@ del ax
 #  Include the average of the experimental measurements
 #---
 totsum = 0
-for reactor in activities:
-    totsum = totsum + activities[reactor]
-activities['ExpMean'] = totsum/len(activities)
+for reactor in responses:
+    totsum = totsum + responses[reactor]
+responses['ExpMean'] = totsum/len(responses)
 #---
-#  Drakkar detector activities
+#  Drakkar detector responses
 #---
-# Retrieve and deploy in 2D the Drakkar activities
-link = glob.glob('../Drakkar/Output_FSH-BUG_BestEstimate/_PowerARO*')[0]
-activ = Deploy2D(loadlcm(link)['RESPON'], FullCoreLayout)
-# Filter out unmeasured activities with NaNs, in order to have a
+# Retrieve and deploy in 2D the Drakkar responses
+link = '../Drakkar/Output_FSH-BUG_BestEstimate/_PowerARO_*.ascii'
+respon = Deploy2D(loadlcm(link)['RESPON'], FullCoreLayout)
+# Filter out unmeasured responses with NaNs, in order to have a
 # normalization identical to the measurements, i.e.
 # sum(50 measured positions)=50.
-activ_filtered = np.where(np.isnan(activities['Fessenheim-2']), np.nan, activ)
-normfactor = np.nanmean(activ_filtered)
+respon_filtered = np.where(np.isnan(responses['Fessenheim-2']), np.nan, respon)
+normfactor = np.nanmean(respon_filtered)
 # Filter out the reflectors (=0 in FullCoreLayout) with NaNs and apply that
 # normalization
-activities['Drakkar'] = np.where(FullCoreLayout == 0, np.nan, activ)/normfactor
+responses['Drakkar'] = np.where(FullCoreLayout == 0, np.nan, respon)/normfactor
 #---
-#  Correct the deterministic bias of Drakkar's detector activities, based on
-#  the differences in power distribution between Drakkar and Serpent.
+#  Drakkar detector responses, computed from SPH-corrected detector cross
+#  sections (not recommended ; retrieved here for demonstration purposes)
+#---
+# Retrieve and deploy in 2D the Drakkar responses
+link = '../Drakkar/Output_FSH-BUG_BestEstimate_DetSPH/_PowerARO_*.ascii'
+respon = Deploy2D(loadlcm(link)['RESPON'], FullCoreLayout)
+# Filter out unmeasured responses with NaNs, in order to have a
+# normalization identical to the measurements, i.e.
+# sum(50 measured positions)=50.
+respon_filtered = np.where(np.isnan(responses['Fessenheim-2']), np.nan, respon)
+normfactor = np.nanmean(respon_filtered)
+# Filter out the reflectors (=0 in FullCoreLayout) with NaNs and apply that
+# normalization
+responses['Drakkar_DetSPH'] = (np.where(FullCoreLayout == 0, np.nan, respon)/
+                               normfactor)
+#---
+#  Correct the deterministic bias of Drakkar's detector responses, based on the
+#  differences in power distribution between Drakkar and Serpent.
 #---
 # Retrive Drakkar power distribution
 power = loadlcm(link)['POWER-CHAN']
@@ -152,59 +167,42 @@ indruns = []
 for link in links:
     indruns.append(ReadPdistrSerpent(link, FullCoreLayout))
 powerSerpent = Deploy2D(np.mean(indruns, axis = 0), FullCoreLayout)
-activities['Drakkar_corrected'] = (activities['Drakkar']*powerSerpent
-                                                        /powerDrakkar)
+responses['Drakkar_corrected'] = (responses['Drakkar']*powerSerpent
+                                                      /powerDrakkar)
 #---
-#  CASMO-5
+#  Plot all the responses
 #---
-DetToPow = np.array(pd.read_csv('CASMO5_DetectorToPowerRatio.csv', sep = ";",
-                    header=None))
-DetToPow = UnfoldQuarter(np.rot90(DetToPow))
-# Apply these factors to Drakkar and Serpent
-for [source, power] in [['DrakC5', powerDrakkar], ['SerpC5', powerSerpent]]:
-    activ = power*DetToPow
-    # Filter out unmeasured activities with NaNs, in order to have a
-    # normalization identical to the measurements, i.e.
-    # sum(50 measured positions)=50.
-    activ_filtered = np.where(np.isnan(activities['Fessenheim-2']), np.nan, activ)
-    normfactor = np.nanmean(activ_filtered)
-    # Filter out the reflectors (=0 in FullCoreLayout) with NaNs and apply that
-    # normalization
-    activities[source] = activ/normfactor
-#---
-#  Plot all the activities
-#---
-os.system('mkdir -p output_ActivitiesDiff')
+os.system('mkdir -p output_DetectorsDiff')
 amin = math.inf
 amax = -math.inf
 for source in sources:
-    amin = min(amin, np.nanmin(activities[source]))
-    amax = max(amax, np.nanmax(activities[source]))
+    amin = min(amin, np.nanmin(responses[source]))
+    amax = max(amax, np.nanmax(responses[source]))
 for source in sources:
-    activ = activities[source]
+    respon = responses[source]
     # Produce the plot
     fig, ax = plt.subplots(1, figsize = set_size('square'))
     axins = inset_axes(ax, width = "100%", height = "3%",
                        loc = 'lower center',
                        bbox_to_anchor = (0.05, -0.17, 0.95, 1.0),
                        bbox_transform = ax.transAxes, borderpad = 5)
-    im = ax.imshow(activ, interpolation = 'nearest', cmap = 'coolwarm',
+    im = ax.imshow(respon, interpolation = 'nearest', cmap = 'coolwarm',
                    vmin = amin, vmax = amax)
     cbar = plt.colorbar(im, cax = axins, orientation = 'horizontal')
     current_cmap = im.get_cmap()
     current_cmap.set_bad(color = 'white')
     cbar.ax.tick_params(labelsize = 12)
     VisualAids(ax)
-    # In each assembly, add the axially-integrated activity
-    for i in range(len(activ)):
-        for j in range(len(activ)):
-            if not np.isnan(activ[i, j]):
-                text = str('{:.3f}'.format(round(activ[i, j], 3)))
+    # In each assembly, add the axially-integrated reponses
+    for i in range(len(respon)):
+        for j in range(len(respon)):
+            if not np.isnan(respon[i, j]):
+                text = str('{:.3f}'.format(round(respon[i, j], 3)))
                 ax.text(j, i, text, color = 'black',
                         ha = 'center', va = 'center')
     # Save plot as pdf (vectorized)
     FullCoreGlitter(ax, FullCoreLayout)
-    fig.savefig('output_ActivitiesDiff/' + source + '.pdf',
+    fig.savefig('output_DetectorsDiff/' + source + '.pdf',
                 bbox_inches='tight')
     # Clean-up for next plot
     plt.close('all')
@@ -214,10 +212,10 @@ for source in sources:
 #  Compute relative differences between all sources and plot them
 #---
 for source in sources:
-    activities[source] = pd.DataFrame(activities[source])
+    responses[source] = pd.DataFrame(responses[source])
 # Get every two-by-two combinations between every sources
 for (a, b) in list(itertools.combinations(sources, 2)):
-    discrp = (activities[a]/activities[b] - 1)*100
+    discrp = (responses[a]/responses[b] - 1)*100
     print(discrp.min().min(), discrp.max().max())
     # Produce the plot
     fig, ax = plt.subplots(1, figsize = set_size('square'))
@@ -261,8 +259,8 @@ for (a, b) in list(itertools.combinations(sources, 2)):
                      'start-up')
     # Save plot as pdf (vectorized)
     FullCoreGlitter(ax, FullCoreLayout)
-    os.system('mkdir -p output_ActivitiesDiff')
-    fig.savefig('output_ActivitiesDiff/' + a + '_vs_' + b + '.pdf',
+    os.system('mkdir -p output_DetectorsDiff')
+    fig.savefig('output_DetectorsDiff/' + a + '_vs_' + b + '.pdf',
                 bbox_inches='tight')
     # Clean-up for next plot
     plt.close('all')

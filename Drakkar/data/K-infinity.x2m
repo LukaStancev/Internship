@@ -43,27 +43,32 @@ Random := DefRandomIso Random ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   K TIH UOX 195 None 1 ;
-UOX195 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
+UOX195 := MakeBib1BU Library Burnup ConcMode Info Random :: K
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   K TIH UOX 310 None 1 ;
-UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: K
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   K TIH UOX 255 Py8 1 ;
-UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
+UOX255_Py8 := MakeBib1BU Library Burnup ConcMode Info Random :: K
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   K TIH UOX 255 Py12 1 ;
-UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
+UOX255_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   K TIH UOX 310 Py12 1 ;
-UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: K
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *--- Export the Muticompos, containing the k-infinity
 UOX195a      := UOX195      ;

@@ -1,0 +1,55 @@
+#!/bin/bash
+savename=$(basename $0 | cut -d"." -f1)
+if [ $# = 0 ]
+   then
+   echo "usage: "$savename".save directory" 1>&2
+   exit 1
+fi
+echo -e "\nExecute ${savename}.save script\n"
+MACH=`uname -s`
+Sysx="`echo $MACH | cut -b -6`"
+if [ $Sysx = "CYGWIN" ]; then
+   MACH=`uname -o`
+elif [ $Sysx = "AIX" ]; then
+   MACH=`uname -s`
+else
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+fi
+ls -ltr
+
+if [ ! -z "$(ls | grep -P "_[0-9]+\.result")" ]
+then
+   # Search for the identifier of the uranium 235 and 238 samples in any Power file
+   pattern="_Power*"
+   files=( $pattern )
+   nmatch=$(awk '/^U235            / || /^U238            /{getline; print}' ${files[0]} | awk '/-33/{print}' | wc -l)
+   # If there is more than one equal to '-33' (i.e. two), it means that all isotopes were sampled at the same time
+   if [ $nmatch -eq 2]; then
+      outdir="$1"/Output_FSH-BUG_TMC_interactions
+   else
+      outdir="$1"/Output_FSH-BUG_TMC
+   fi
+   mkdir -p "$outdir"
+    # Keep only a few result files, in case of random sampling.
+   if [ ! -z "$(ls | grep -P "_[0-9][0-9]+\.result")" ]
+   then
+      tail -45 *.result
+      rm -f *.result
+   else
+      mv *.result "$outdir"/.
+   fi
+else
+   outdir="$1"/Output_FSH-BUG_BestEstimate_DetSPH
+   mkdir -p "$outdir"
+   mv *.result "$outdir"/.
+fi
+
+for file in *Power*
+do
+    md5sum=$(md5sum "$file" | cut -d" " -f1)
+    prefix=$(echo "$file" | cut -d"." -f1)
+    mv "$file" "$outdir"/"$prefix"_"$md5sum".ascii
+done
+
+
+echo -e $savename".save script terminated\n"

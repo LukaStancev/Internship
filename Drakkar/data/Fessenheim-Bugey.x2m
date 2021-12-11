@@ -48,37 +48,44 @@ STRING Gestion := 'FSH' ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 210 None 1 ;
-UOX210 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX210 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 310 None 1 ;
-UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX310 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 260 Py12a 1 ;
-UOX260_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX260_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 260 Py16a 1 ;
-UOX260_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX260_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 260 Py20a 1 ;
-UOX260_Py20 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX260_Py20 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 310 Py12a 1 ;
-UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX310_Py12 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 Library Burnup ConcMode Info := EvoNominale Random ::
   B <<Gestion>> UOX 310 Py16a 1 ;
-UOX310_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B ;
+UOX310_Py16 := MakeBib1BU Library Burnup ConcMode Info Random :: B
+  'NOSPH' ;
 Library Burnup ConcMode Info := DELETE: Library Burnup ConcMode Info ;
 *---
 PowerARO ActivARO := CP0 REFL UOX210 UOX310 UOX260_Py12
