@@ -1,6 +1,6 @@
 #
 #  Plotting detector relative difference on 2D maps
-#  Usage : python3 ActivitiesDiff.py
+#  Usage : python3 TMC_FSH-BUG_interactions.py
 #  Author ; V. Salino (IRSN), 09/2021
 #
 

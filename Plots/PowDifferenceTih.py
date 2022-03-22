@@ -125,7 +125,7 @@ for reaction in ['-8', '-80']:
 #  Drakkar power distributions
 #---
 for controlrod in controlrods:
-    os.system('ln -s ../Drakkar/Output_BestEstimate/_Power' + controlrod
+    os.system('ln -s ../Drakkar/Output_TIH_BestEstimate/_Power' + controlrod
               + '_*.ascii .')
     for file in list(glob.glob('_Power' + controlrod + '_*.ascii')):
         # Loading data while removing beginning-of-filename underscore

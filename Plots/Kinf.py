@@ -30,8 +30,10 @@ lang = 'fr' # fr/en
 Serpent = {}
 Serpentpstd = {}
 Serpentmstd = {}
-# Loop for all Serpent
-respaths = glob.glob('../Serpent/Assemblies_kinf/UOX*.sss2_res.m')
+# Loop on all Tihange Serpent results
+respaths = (  glob.glob('../Serpent/Assemblies_kinf/UOX*960ppm.sss2_res.m')
+            + glob.glob('../Serpent/Assemblies_kinf/UOX*1084ppm.sss2_res.m')
+            + glob.glob('../Serpent/Assemblies_kinf/UOX*1206ppm.sss2_res.m'))
 respaths.sort()
 for respath in respaths:
     # Retrieve Serpent k-inf absorption-based estimator and its standard
@@ -65,7 +67,9 @@ for Type in Serpent:
 #---
 # Dictionary intended to receive Dragon data
 Dragon = {}
-for Multicompofile in glob.glob('../Drakkar/Output_BestEstimate/_UOX*.ascii'):
+files = glob.glob('../Drakkar/Output_TIH_BestEstimate/_UOX*.ascii')
+print(files)
+for Multicompofile in files:
     Type = Multicompofile.split('/')[-1][4:].split('.')[0]
     os.system('ln -s ' + Multicompofile + ' _Multicompo.ascii')
     Multicompo = lcm.new('LCM_INP', 'Multicompo.ascii')
@@ -202,9 +206,9 @@ for i in range(nbBor):
         ypstd.append(Discrepanciespstd[Type][i])
         ymstd.append(Discrepanciesmstd[Type][i])
     if lang == 'en':
-        label = ' ppm of boron'
+        label = '\,ppm of boron'
     elif lang == 'fr':
-        label = ' ppm de bore'
+        label = '\,ppm de bore'
     ax.bar(x + i * dimw - 0.25, y, dimw,
            yerr = (np.array(y) - np.array(ymstd),
                    np.array(ypstd) - np.array(y)),
