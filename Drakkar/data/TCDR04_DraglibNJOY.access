@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: tdraglib.access directory" 1>&2
+   exit 1
+fi
+MACH=`uname -s`
+Sysx="`echo $MACH | cut -b -6`"
+if [ $Sysx = "CYGWIN" ]; then
+   MACH=`uname -o`
+elif [ $Sysx = "Darwin" ]; then
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+elif [ $Sysx = "SunOS" ]; then
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+fi
+ln -s "$1"/../NJOY99/draglibJeff3p1p1 DRGLIB
+ls -ltr
+echo "tdraglib access script terminated"
