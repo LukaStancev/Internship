@@ -83,6 +83,8 @@ for file in list(glob.glob('../Measurements/Tihange-1/*.csv')):
         raise Exception(basename[1] + ' unknown.')
 # Layout of the assemblies in the core
 CoreLayout, FullCoreLayout = GetCoreLayout(len(powers['ARO']['EDF']))
+FullCoreLayout4X = np.repeat(np.repeat(FullCoreLayout,
+                                       2, axis = 0), 2, axis = 1)
 #---
 #  Serpent power distributions
 #---
@@ -133,9 +135,9 @@ for controlrod in controlrods:
         os.system("rm " + file)
         power = ResultFile['POWER-CHAN']
         # Compute mean in order to normalize power to 1.0 per average assembly
-        mean = np.sum(power)/len(power)
-        power = power/mean
-        powers[controlrod]['Drakkar'] = power
+        power = power/np.mean(power)
+        power = matrixaverage(Deploy2D(power, FullCoreLayout4X), 2)/2
+        powers[controlrod]['Drakkar'] = power[np.nonzero(power)]
 #---
 #  Plot all the power distributions and also Serpent standard errors
 #---

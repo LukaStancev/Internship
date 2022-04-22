@@ -393,6 +393,10 @@ def set_size(aspect = 'default', bonus = False):
         default = plt.rcParams["figure.figsize"]
         #ratio = default[1] / default[0] / 1.1092996 * (20-2)/8.4 * 18/22.2
         ratio = default[1] / default[0] * 1.566260131
+    elif aspect == 'fullA4-Draglib':
+        width = width*1.0785539
+        default = plt.rcParams["figure.figsize"]
+        ratio = default[1] / default[0] * 1.649068277
     elif aspect == 'correlation':
         #width = width*23.3/22.3*22.3/25.8
         width = width*0.90310077

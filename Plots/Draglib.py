@@ -31,7 +31,9 @@ for draglibpath in directories:
     #---
     #  Initialize plot
     #---
-    fig, axs = plt.subplots(nrows = 2, sharex = 'all', figsize = set_size(),
+    aspect = 'fullA4-Draglib'
+    fig, axs = plt.subplots(nrows = 2, sharex = 'all',
+                            figsize = set_size(aspect = aspect),
                             gridspec_kw={'hspace': 0})
     #---
     #  Create link toward Draglib file and load data (most time spent here)
@@ -203,7 +205,7 @@ for draglibpath in directories:
         #  Add relative standard deviation plot
         #---
         axs[1].step(relstdEnergies, np.append(relstdXS, relstdXS[-1]),
-                    where='post', linewidth=0.1, color=color)
+                    where = 'post', linewidth = 0.2, color = color)
         print("max(relstdXS) = " + str(max(relstdXS)))
         #---
         #  Add median and a few other quantiles
@@ -213,11 +215,11 @@ for draglibpath in directories:
                 qXS = np.quantile(XSs, q, axis=0)
                 if q == 0.5:
                     axs[0].step(Energies, np.append(qXS, qXS[-1]),
-                                where = 'post', linewidth = 0.1, color = color,
+                                where = 'post', linewidth = 0.2, color = color,
                                 label = labels[reaction])
                 else:
                     axs[0].step(Energies, np.append(qXS, qXS[-1]),
-                                where = 'post', linewidth = 0.1, color = color,
+                                where = 'post', linewidth = 0.2, color = color,
                                 alpha = 1/(abs(q - 0.5)*3 + 1))
     del draglib
     #---
@@ -248,9 +250,14 @@ for draglibpath in directories:
         if graphtype == 'samples':
             axs[0].set_ylabel('Section efficace [b]')
         elif graphtype == 'quantiles':
-            axs[0].set_ylabel('Section efficace [b]\n'
-                              + '(quantiles à 5\%, 25\%,\n'
-                              + '50\%, 75\% et 95\%)')
+            if aspect == 'fullA4-Draglib':
+                axs[0].set_ylabel('Section efficace [b]\n'
+                                  + '(quantiles à 5\%, 25\%, '
+                                  + '50\%, 75\% et 95\%)')
+            else:
+                axs[0].set_ylabel('Section efficace [b]\n'
+                                  + '(quantiles à 5\%, 25\%,\n'
+                                  + '50\%, 75\% et 95\%)')
         axs[1].set_ylabel('Écart-type relatif')
     # Add legends
     leg = axs[0].legend(loc = loclegend, ncol = ncol)

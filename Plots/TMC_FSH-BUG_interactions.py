@@ -233,6 +233,7 @@ for nbins in [100, 150, 200, 250, 300, 350, 400]:
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     ax.text(0.65, 0.95, text, transform=ax.transAxes,
                     verticalalignment='top', bbox=props)
+    os.system('mkdir -p output_TMC_FSH-BUG_interactions')
     fig.savefig('output_TMC_FSH-BUG_interactions/Khi2' + '_' + str(nbins)
                 + 'bins.pdf', bbox_inches='tight')
     # Clean-up for next plot
@@ -421,7 +422,6 @@ for iso in isotopes:
     index = lcmfile[iso]
     # Perform an action only if that isotope has been sampled
     if index != -33:
-#        print(iso)
         EveryXSs[iso] = {}
         found = False
         for draglibpath in directories:
@@ -604,7 +604,7 @@ for iso in isotopes:
                 for q in quantiles:
                     qXS = (qn[:, i]/median - 1)*100
                     axs[ireac].step(Energies, np.append(qXS, qXS[-1]),
-                                    where = 'post', linewidth = 0.1,
+                                    where = 'post', linewidth = 0.4,
                                     color = 'r',
                                     alpha = 1/(abs(q - 0.5)*3 + 1))
                     i = i + 1
@@ -698,7 +698,7 @@ for iso in isotopes:
                 axs[ireac].xaxis.set_minor_locator(locmin)
                 axs[ireac].xaxis.set_minor_formatter(ticker.NullFormatter())
                 # Add a light grid
-                axs[ireac].grid(which='both', alpha=0.3, linewidth=0.1)
+                axs[ireac].grid(which='both', alpha=0.3, linewidth=0.2)
             # Set axis label on last subplot
             axs[ireac].set_xlabel('Énergie [eV]')
             # Set xaxis ticks on top instead of bottom
