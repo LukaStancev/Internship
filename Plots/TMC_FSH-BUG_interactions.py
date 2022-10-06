@@ -26,6 +26,7 @@ matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import ScalarFormatter
 from BasicFunctions import *
 import serpentTools
 from serpentTools.settings import rc
@@ -79,8 +80,6 @@ responses['ExpMean'] = totsum/len(responses)
 #---
 #  Retrieve best-estimate Serpent power distribution
 #---
-# Shorter execution:
-links = glob.glob('../Serpent/SuperBatch/Fessenheim-Bugey*4.sss2_det0.m')
 # Retrieve Serpent power distribution
 links = glob.glob('../Serpent/SuperBatch/Fessenheim-Bugey*.sss2_det0.m')
 # Storage for independant runs' results
@@ -125,8 +124,6 @@ print(pd.DataFrame(perassembly))
 #---
 #  Retrieve randomly sampled Drakkar powers and responses
 #---
-# Shorter execution:
-links = glob.glob("../Drakkar/Output_FSH-BUG_TMC_interactions/_PowerARO_1*")
 links = glob.glob("../Drakkar/Output_FSH-BUG_TMC_interactions/_PowerARO_*")
 responsesTMC = []
 responsesfTMC = []
@@ -203,7 +200,7 @@ khisqrs = np.empty(ncalc)
 i = 0
 # Compute khi-squares for each nuclear data sample
 for i in range(0, ncalc):
-    elm = ((responsesTMC[i] - responses['ExpMean'])/expuncertainty)**2
+    elm = ((responsesTMC[i]/responses['ExpMean'] - 1)/expuncertainty)**2
     khisqrs[i] = np.nansum(elm)
     errperassembly = errperassembly + elm
 print("Khi2 :")
@@ -220,15 +217,25 @@ for nbins in [100, 150, 200, 250, 300, 350, 400]:
     ax.set_ylabel('Nombre d\'échantillons par colonne')
     if lang == 'en':
         ax.set_title(str(nbins) + r'-bins histogram of detectors $\chi^2$')
+    # Disable scientific notation
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+    ax.xaxis.set_minor_formatter(ScalarFormatter())
     # Add various statistical informations
     stat = khisqrs
-    text = '\n'.join(('Minimum=' + '{:.2f}'.format(np.min(stat)),
-                      'Maximum=' + '{:.2f}'.format(np.max(stat)),
-                      'Moyenne=' + '{:.2f}'.format(np.mean(stat)),
-                      'Médiane=' + '{:.2f}'.format(np.quantile(stat, 0.5)),
-                      'Écart-type=' + '{:.2f}'.format(np.std(stat)),
-                      'Asymétrie=' + '{:.2f}'.format(skew(stat)),
-                      'Excès de kurtosis=' + '{:.2f}'.format(kurtosis(stat))))
+    text = '\n'.join(('Minimum' + r'$=$'
+                      + '{:.2f}'.format(np.min(stat)),
+                      'Maximum' + r'$=$'
+                      + '{:.2f}'.format(np.max(stat)),
+                      'Moyenne' + r'$=$'
+                      + '{:.2f}'.format(np.mean(stat)),
+                      'Médiane' + r'$=$'
+                      + '{:.2f}'.format(np.quantile(stat, 0.5)),
+                      'Écart-type' + r'$=$'
+                      + '{:.2f}'.format(np.std(stat)),
+                      'Asymétrie' + r'$=$'
+                      + '{:.2f}'.format(skew(stat)),
+                      'Excès de kurtosis' + r'$=$'
+                      + '{:.2f}'.format(kurtosis(stat))))
     # place a text box in upper left in axes coords
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     ax.text(0.65, 0.95, text, transform=ax.transAxes,
@@ -263,23 +270,31 @@ for method in ['Prior', 'BMC', 'BFMC']:
         logbins = np.logspace(np.log10(bins[0]),np.log10(bins[-1]),len(bins))
         ax.hist(weights, bins=logbins)
         plt.xscale('log')
-        ax.set_xlabel(r'Poids $\omega_i$')
+        ax.set_xlabel(r'Poids $w$')
         ax.set_ylabel('Nombre d\'échantillons par colonne')
         if lang == 'en':
             ax.set_title(str(nbins) + r'-bins histogram of ' + method
                          + ' weights')
         # Add various statistical informations
         stat = weights
-        text = '\n'.join(('Minimum=' + '{:.2e}'.format(np.min(stat)),
-                          'Maximum=' + '{:.2e}'.format(np.max(stat)),
-                          'Moyenne=' + '{:.2e}'.format(np.mean(stat)),
-                          'Médiane=' + '{:.2e}'.format(np.quantile(stat, 0.5)),
-                          'Écart-type=' + '{:.2e}'.format(np.std(stat)),
-                          'Asymétrie=' + '{:.2f}'.format(skew(stat)),
-                          'Excès de kurtosis=' + '{:.2f}'.format(kurtosis(stat)),
+        text = '\n'.join(('Minimum' + r'$=$'
+                          + '{:.2e}'.format(np.min(stat)),
+                          'Maximum' + r'$=$'
+                          + '{:.2e}'.format(np.max(stat)),
+                          'Moyenne' + r'$=$'
+                          + '{:.2e}'.format(np.mean(stat)),
+                          'Médiane' + r'$=$'
+                          + '{:.2e}'.format(np.quantile(stat, 0.5)),
+                          'Écart-type' + r'$=$'
+                          + '{:.2e}'.format(np.std(stat)),
+                          'Asymétrie' + r'$=$'
+                          + '{:.2f}'.format(skew(stat)),
+                          'Excès de kurtosis' + r'$=$'
+                          + '{:.2f}'.format(kurtosis(stat)),
                           # ESS = Equivalent Sample Size
-                          'ESS=' + '{:.2f}'.format(np.sum(weights)**2/
-                                                   np.sum(weights**2))))
+                          'ESS' + r'$=$'
+                          + '{:.2f}'.format(np.sum(weights)**2/
+                                            np.sum(weights**2))))
         # Some BMC weights can be very low, but that's not so interesting
         ax.set_xlim(10**(-10), 10**(-2))
         # place a text box in upper left in axes coords
@@ -812,7 +827,7 @@ for view in ['Global', 'Zoom']:
                     # limits and reaction/isotope labels
                     if (i == 0) and (j == 0) and (nreaciso < 10):
                         axs[i, j].set_xticks([Energies[0], Energies[-1]])
-                        axs[i, j].set_xticklabels(['2.5 meV', '19.6 MeV'])
+                        axs[i, j].set_xticklabels([r'2.5\,meV', r'19.6\,MeV'])
                         axs[i, j].xaxis.tick_top()
                         axs[i, j].set_xlabel('ln($E$)')
                         axs[i, j].xaxis.set_label_position('top')
