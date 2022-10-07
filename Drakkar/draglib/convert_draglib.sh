@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 rm -f DRGLIB draglib* # Remove any previous binary draglib that may persist
 cd ../data
 echo "Transforming ASCII-formatted draglib into binary-formatted draglib:"

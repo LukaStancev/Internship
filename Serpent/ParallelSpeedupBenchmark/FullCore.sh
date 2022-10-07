@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 sss2=/soft_snc/SERPENT2/2.1.32/sss2
 if ! command -v $sss2 &> /dev/null
