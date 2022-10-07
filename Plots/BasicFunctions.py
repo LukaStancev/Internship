@@ -397,6 +397,15 @@ def set_size(aspect = 'default', bonus = False):
         width = width*1.0785539
         default = plt.rcParams["figure.figsize"]
         ratio = default[1] / default[0] * 1.649068277
+    elif aspect == 'slide-Draglib':
+        width = width*1.0785539
+        default = plt.rcParams["figure.figsize"]
+        ratio = default[1] / default[0] * 0.959847297
+        #ratio = default[1] / default[0] * 1.649068277 *(14.5/17.5)/(24.2/17)
+    elif aspect == 'speedup':
+        #width = width*24.45/25.6
+        width = width*1.17542620488
+        ratio = 1
     elif aspect == 'correlation':
         #width = width*23.3/22.3*22.3/25.8
         width = width*0.90310077
@@ -492,6 +501,28 @@ def VisualAids(ax):
             linewidth = lwidth, color = col, alpha = alpha)
     ax.plot([1, 0], [0, 1], transform=ax.transAxes,
             linewidth = lwidth, color = col, alpha = alpha)
+# https://stackoverflow.com/questions/45441909/how-to-add-a-fixed-width-border-to-subplot
+def add_subplot_border(ax, width=1, color=None, zorder=1):
+
+    fig = ax.get_figure()
+
+    # Convert bottom-left and top-right to display coordinates
+    x0, y0 = ax.transAxes.transform((0, 0))
+    x1, y1 = ax.transAxes.transform((1, 1))
+
+    # Convert back to Axes coordinates
+    x0, y0 = ax.transAxes.inverted().transform((x0, y0))
+    x1, y1 = ax.transAxes.inverted().transform((x1, y1))
+
+    rect = plt.Rectangle(
+        (x0, y0), x1-x0, y1-y0,
+        color=color,
+        zorder=zorder,
+        transform=ax.transAxes,
+        lw=2*width+1,
+        fill=None,
+    )
+    fig.patches.append(rect)
 #---
 #  lcm loading function, dealing with PyGan's peculiarities
 #---

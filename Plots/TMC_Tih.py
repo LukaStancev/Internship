@@ -21,6 +21,7 @@ from BasicFunctions import *
 plt.rcParams.update(tex_fonts())
 lang = 'fr' # fr/en
 
+
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
 # Declare control rod insertions and its full names
@@ -232,6 +233,19 @@ for controlrod in controlrods:
             axs[1, 6].set_xlabel('Puissance normalisée\nde l\'assemblage')
             axs[1, 6].set_ylabel('Densité\nde\nprobabilité')
         axs[1, 6].tick_params(axis = 'x', labelbottom = True)
+        #---
+        # Add purple and green borders (edges) for respectively C and D control
+        # rods
+        #---
+        if 'C' in controlrod:
+            for ax in [axs[3,4], axs[5,0], axs[7,2]]:
+                add_subplot_border(ax, 1, "#9467bd") # purple
+        if 'D' in controlrod:
+            for ax in [axs[1,0], axs[5,2], axs[7,6]]:
+                add_subplot_border(ax, 1, "#2ca02c") # green
+        # Draw a white edge in order to have figures of the same size
+        if 'ARO' in controlrod:
+                add_subplot_border(axs[1,0], 1, "white", zorder=-1)
         #---
         #  Add a title and save plot as pdf (vectorized)
         #---
