@@ -36,9 +36,9 @@ labels = {'Fessenheim-1'      : 'FSH1',
           'Fessenheim-2'      : 'FSH2',
           'Bugey-2'           : 'BUG2',
           'ExpMean'           : 'MoyenneExp',
-          'Drakkar'           : 'Drakkar',
-          'Drakkar_DetSPH'    : 'Drakkar_{DetSPH}',
-          'Drakkar_corrected' : r'Drakkar_{corrig\acute{e}}'}
+          'Drakkar'           : r'\textsc{drakkar}',
+          'Drakkar_DetSPH'    : r'\textsc{drakkar}_{DetSPH}',
+          'Drakkar_corrected' : r'\textsc{drakkar}_{corrig\acute{e}}'}
 responses = {}
 # Layout of the assemblies in the core
 CoreLayout, FullCoreLayout = GetCoreLayout(157)
@@ -250,7 +250,7 @@ for (a, b) in list(itertools.combinations(sources, 2)):
     # Add formula
     text = (r'$\frac{\mathrm{' + labels[a] + '}-\mathrm{' + labels[b] + '}}'
             + '{\mathrm{' + labels[b] + '}} (\%)$')
-    ax.text(2.5, 14.2, text, fontsize = 12, color = 'black',
+    ax.text(2.8, 14.2, text, fontsize = 12, color = 'black',
             ha = 'center', va = 'center')
     # Add a title
     if lang == 'en':

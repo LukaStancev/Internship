@@ -210,19 +210,19 @@ for controlrod in controlrods:
         #  Add a legend
         #---
         if lang == 'en':
-            textstr = (r'$\sigma_D$ : Drakkar relative standard deviation'
-                       + ' (in \%)\n'
-                       + r'$\sigma_S$ : Serpent relative standard deviation'
-                       + ' (in \%)\n'
+            textstr = (r'$\sigma_D$ : \textsc{drakkar} relative standard '
+                       + 'deviation (in \%)\n'
+                       + r'$\sigma_S$ : \textsc{serpent} relative standard '
+                       + 'deviation (in \%)\n'
                        + '$D$ : Kolmogorov-Smirnov statistic' + '\n'
                        + '$p$ : Kolmogorov-Smirnov p-value')
             axs[0, 4].text(-0.3, 0.95, textstr,
                            transform = axs[0, 4].transAxes,
                            verticalalignment = 'top')
         elif lang == 'fr':
-            textstr = (r'$\sigma_D$ : écart-type relatif de Drakkar'
+            textstr = (r'$\sigma_D$ : écart-type relatif de \textsc{drakkar}'
                        + ' (en \%)\n'
-                       + r'$\sigma_S$ : écart-type relatif de Serpent'
+                       + r'$\sigma_S$ : écart-type relatif de \textsc{serpent}'
                        + ' (en \%)\n'
                        + '$D$ : statistique de Kolmogorov-Smirnov' + '\n'
                        + '$p$ : valeur-p de Kolmogorov-Smirnov')
@@ -247,9 +247,9 @@ for controlrod in controlrods:
         #  Add a legend
         #---
         label1 = matplotlib.lines.Line2D([], [], color = '#1f77b4',
-                                         label = 'Drakkar')
+                                         label = r'\textsc{drakkar}')
         label2 = matplotlib.lines.Line2D([], [], color = '#ff7f0e',
-                                         label = 'Serpent')
+                                         label = r'\textsc{serpent}')
         axs[0, 7].legend(handles=[label1, label2])
         #---
         #  Add a title and save plot as pdf (vectorized)
@@ -257,8 +257,8 @@ for controlrod in controlrods:
         os.system('mkdir -p output_TMC_Tih_comparison')
         if lang == 'en':
             title = ('Probability density vs. normalized assembly power, '
-                     + 'with Drakkar, Serpent\nand '
-                     + 'JEFF-3.3 best estimate except for '
+                     + r'with \textsc{drakkar}, \textsc{serpent}'
+                     + '\nand JEFF-3.3 best estimate except for '
                      + iso.replace('_', '\_') + ' ('
                      + str(len(Powers2D[iso][:, 0, 0]))
                      + ' random samples)\non Tihange first zero-power '

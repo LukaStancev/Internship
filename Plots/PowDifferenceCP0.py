@@ -214,9 +214,17 @@ for case in cases:
                     ax.text(j, i, text, color = 'black',
                             ha = 'center', va = 'center')
         # Add formula
-        text = (r'$\frac{\mathrm{' + a + '}-\mathrm{' + b + '}}'
-                + '{\mathrm{' + b + '}} (\%)$')
-        ax.text(4.7, 0.1, text, fontsize = 12, color = 'black',
+        if a == 'Serpent' or a == 'Drakkar':
+            atxt = r'\textsc{' + a.lower() + r'}'
+        else:
+            atxt = a
+        if b == 'Serpent' or b == 'Drakkar':
+            btxt = r'\textsc{' + b.lower() + r'}'
+        else:
+            btxt = b
+        text = (r'$\frac{\mathrm{' + atxt + '}-\mathrm{' + btxt + '}}'
+                + '{\mathrm{' + btxt + '}} (\%)$')
+        ax.text(4.55, 0.1, text, fontsize = 12, color = 'black',
                 ha = 'center', va = 'center')
         # Add Battleship-style coordinates as ticks
         ax.xaxis.tick_bottom()

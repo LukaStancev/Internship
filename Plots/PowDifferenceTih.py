@@ -19,6 +19,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from matplotlib.ticker import FuncFormatter
 from BasicFunctions import *
 import serpentTools
@@ -85,6 +86,7 @@ for file in list(glob.glob('../Measurements/Tihange-1/*.csv')):
 CoreLayout, FullCoreLayout = GetCoreLayout(len(powers['ARO']['EDF']))
 FullCoreLayout4X = np.repeat(np.repeat(FullCoreLayout,
                                        2, axis = 0), 2, axis = 1)
+print('Serpent')
 #---
 #  Serpent power distributions
 #---
@@ -96,6 +98,7 @@ for reaction in ['-8', '-80']:
     for controlrod in controlrods:
         indruns[controlrod] = []
     for file in list(serpentfiles):
+        print(file)
         cbor = file.split('/')[-1].split('_')[0]
         cbor = int(re.findall(r'\d+', cbor)[0])
         if cbor == 1206:
@@ -123,6 +126,7 @@ for reaction in ['-8', '-80']:
             relstd[controlrod] = std/np.sqrt(np.shape(indact)[0])/mean*1000
         elif reaction == '-8':
             powers[controlrod]['Serpent (fission)'] = mean
+print('Drakkar')
 #---
 #  Drakkar power distributions
 #---
@@ -130,6 +134,7 @@ for controlrod in controlrods:
     os.system('ln -s ../Drakkar/Output_TIH_BestEstimate/_Power' + controlrod
               + '_*.ascii .')
     for file in list(glob.glob('_Power' + controlrod + '_*.ascii')):
+        print(file)
         # Loading data while removing beginning-of-filename underscore
         ResultFile = lcm.new('LCM_INP', file[1:])
         os.system("rm " + file)
@@ -205,6 +210,20 @@ for controlrod in controlrods:
         plt.setp(ax, xticks = np.arange(8), xticklabels = xlabels,
                  yticks = np.arange(8), yticklabels = ylabels)
         ax.tick_params(axis = 'both', which = 'both', length = 0)
+        # Add purple and green borders (edges) for respectively C and D control
+        # rods
+        if 'C' in controlrod:
+            for pos in np.array([[4,3], [0,5], [2,7]]):
+                r = patches.Rectangle(pos-0.5, 1,1, facecolor="none",
+                                      linewidth=2,
+                                      edgecolor="#9467bd") # purple
+                ax.add_patch(r)
+        if 'D' in controlrod:
+            for pos in np.array([[0,1], [2,5], [6,7]]):
+                r = patches.Rectangle(pos-0.5, 1,1, facecolor="none",
+                                      linewidth=2,
+                                      edgecolor="#2ca02c") # green
+                ax.add_patch(r)
         #---
         #  Add a title and save plot as pdf (vectorized)
         #---
@@ -276,9 +295,21 @@ for controlrod in controlrods:
                     ax.text(j, i, text, color = 'black',
                             ha = 'center', va = 'center')
         # Add formula
-        text = (r'$\frac{\mathrm{' + a + '}-\mathrm{' + b + '}}'
-                + '{\mathrm{' + b + '}} (\%)$')
-        ax.text(4.7, 0.1, text, fontsize = 12, color = 'black',
+        if a == 'Serpent' or a == 'Drakkar':
+            atxt = r'\textsc{' + a.lower() + r'}'
+        elif a == 'Serpent (fission)':
+            atxt = r'\textsc{serpent} (fission)'
+        else:
+            atxt = a
+        if b == 'Serpent' or b == 'Drakkar':
+            btxt = r'\textsc{' + b.lower() + r'}'
+        elif b == 'Serpent (fission)':
+            btxt = r'\textsc{serpent} (fission)'
+        else:
+            btxt = b
+        text = (r'$\frac{\mathrm{' + atxt + '}-\mathrm{' + btxt + '}}'
+                + '{\mathrm{' + btxt + '}} (\%)$')
+        ax.text(4.55, 0.1, text, fontsize = 12, color = 'black',
                 ha = 'center', va = 'center')
         # Add Battleship-style coordinates as ticks
         ax.xaxis.tick_bottom()
@@ -287,6 +318,20 @@ for controlrod in controlrods:
         plt.setp(ax, xticks = np.arange(8), xticklabels = xlabels,
                  yticks = np.arange(8), yticklabels = ylabels)
         ax.tick_params(axis = 'both', which = 'both', length = 0)
+        # Add purple and green borders (edges) for respectively C and D control
+        # rods
+        if 'C' in controlrod:
+            for pos in np.array([[4,3], [0,5], [2,7]]):
+                r = patches.Rectangle(pos-0.5, 1,1, facecolor="none",
+                                      linewidth=2,
+                                      edgecolor="#9467bd") # purple
+                ax.add_patch(r)
+        if 'D' in controlrod:
+            for pos in np.array([[0,1], [2,5], [6,7]]):
+                r = patches.Rectangle(pos-0.5, 1,1, facecolor="none",
+                                      linewidth=2,
+                                      edgecolor="#2ca02c") # green
+                ax.add_patch(r)
         #---
         #  Add a title
         #---
