@@ -5,6 +5,7 @@
 #  Usage : python3 Pearson.py
 #  Author : V. Salino (IRSN), 02/2021
 #
+# -*- coding: utf-8 -*-
 
 # Imports
 import lcm
@@ -24,9 +25,12 @@ plt.rcParams.update(tex_fonts())
 lang = 'fr' # fr/en
 
 # Retrieve H1 cross sections, through (very basic) ENDF parsing
-from LoadH1H2O import *
+
+from GetXSE import *
 os.system('./ParseH1H2O.sh')
-energies, XSs = LoadH1H2O()
+GetISO()
+choice = input("Select the isotope: ")
+relstdEnergies, relstdXS, energies, XSs, reactions, iso, isotopes = GetXSE(choice)
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
 # Declare control rod insertions and its full names
@@ -48,6 +52,7 @@ for controlrod in controlrods:
     firstfile = glob.glob('_Power' + controlrod + '_*.ascii')[0]
     ResultFile = lcm.new('LCM_INP', firstfile[1:])
     isotopes = ResultFile['NamIso'].split()
+    
     del ResultFile
     # Initialize dictionnary (isotope-wise) of lists (sampling-wise) that will
     # contain the retrieved data
@@ -126,11 +131,15 @@ for controlrod in controlrods:
     #---
     PCC[controlrod] = {}
     pvalue[controlrod] = {}
+    np.savetxt('Energies.txt', energies)
+    np.savetxt('reaction.txt', reactions, fmt='%s')
+    reaction=reactions
+    print(reaction)
     for reaction in XSs:
-        print(reaction)
-        PCC[controlrod][reaction] = np.zeros_like(energies[reaction])
-        pvalue[controlrod][reaction] = np.zeros_like(energies[reaction])
-        for i in np.arange(0, len(energies[reaction])):
+        print("ova reakcija je............. ",reaction)
+        PCC[controlrod][reaction] = np.zeros_like(energies)
+        pvalue[controlrod][reaction] = np.zeros_like(energies)
+        for i in np.arange(0, len(energies)):
             # Focus on the central assembly
             PCC[controlrod][reaction][i], pvalue[controlrod][reaction][i] = pearsonr(XSs[reaction][i, :], Powers2D['H1_H2O'][:, 7, 0])
 #---
@@ -150,6 +159,7 @@ for controlrod in ['CD', 'D', 'ARO']:
     #---
      #  Graph glitter
     #---
+    # -*- coding: utf-8 -*-
     if lang == 'en':
       ax.set_title('Correlations between the uncertainty of the central '
                    + 'assembly\npower and the elastic and capture cross '
@@ -168,8 +178,8 @@ for controlrod in ['CD', 'D', 'ARO']:
     #---
     #  Save plot as pdf (vectorized)
     #---
-    os.system('mkdir -p output_Pearson')
-    fig.savefig('output_Pearson/' + controlrod + '.pdf', bbox_inches='tight')
+    os.system('mkdir -p output_Pearson_Draglib_Power')
+    fig.savefig('output_Pearson_Draglib_Power/' + controlrod + '.pdf', bbox_inches='tight')
     #---
     #  Clean-up
     #---
