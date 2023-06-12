@@ -30,7 +30,9 @@ from GetXSE import *
 os.system('./ParseH1H2O.sh')
 GetISO()
 choice = input("Select the isotope: ")
-relstdEnergies, relstdXS, energies, XSs, reactions, iso, isotopes = GetXSE(choice)
+Energies, XSs, reactions, iso, isotopes = GetXSE(choice)
+print('Energies', Energies)
+print('size Energies', np.shape(Energies))
 # Initialize a gaussian vector (used for legends)
 gaussian = np.random.randn(300)
 # Declare control rod insertions and its full names
@@ -43,6 +45,7 @@ text['CD'] = 'C and D rod banks inserted'
 # between the central assembly and the H1_H2O cross section
 PCC = {}
 pvalue = {}
+
 for controlrod in controlrods:
     print('controlrod = ' + controlrod)
     # Create links toward every available power distribution
@@ -131,31 +134,48 @@ for controlrod in controlrods:
     #---
     PCC[controlrod] = {}
     pvalue[controlrod] = {}
-    np.savetxt('Energies.txt', energies)
+    np.savetxt('Energies.txt', Energies)
     np.savetxt('reaction.txt', reactions, fmt='%s')
-    reaction=reactions
-    print(reaction)
+  
+    
+    
+    energies = Energies[:-1]
     for reaction in XSs:
-        print("ova reakcija je............. ",reaction)
-        PCC[controlrod][reaction] = np.zeros_like(energies)
-        pvalue[controlrod][reaction] = np.zeros_like(energies)
-        for i in np.arange(0, len(energies)):
-            # Focus on the central assembly
-            PCC[controlrod][reaction][i], pvalue[controlrod][reaction][i] = pearsonr(XSs[reaction][i, :], Powers2D['H1_H2O'][:, 7, 0])
+        #if reaction in selected_reactions:
+             print(reaction)
+             PCC[controlrod][reaction] = np.zeros_like(energies)
+             pvalue[controlrod][reaction] = np.zeros_like(energies)
+             for i in np.arange(0, len(energies)):
+                 # Focus on the central assembly
+                 PCC[controlrod][reaction][i], pvalue[controlrod][reaction][i] = pearsonr(XSs[reaction][:, i], Powers2D['H1_H2O'][:, 7, 0])
+        #elif reaction not in selected_reactions:
+              #continue   
 #---
 #  Correlations plots
 #---
+reaction = None
+
 for controlrod in ['CD', 'D', 'ARO']:
     fig, ax = plt.subplots()
     for reaction in XSs:
-        if reaction == 'nelastic':
-            txt = '(n,el)'
-        elif reaction == 'ngamma':
-            txt = r'(n,$\gamma$)'
+        #if reaction not in selected_reactions:
+           #continue                              
+        if reaction == 'NELAS':
+                   txt = '(n,el)'
+                   ax.step(energies, PCC[controlrod][reaction]**2, where='post', label=txt)
+        elif reaction == 'NG':
+                   txt = r'(n,$\gamma$)'
+                   ax.step(energies, PCC[controlrod][reaction]**2, where='post', label=txt)
+        elif reaction == 'NTOT0':
+                   txt = '(n,tot)'  
+                   ax.step(energies, PCC[controlrod][reaction]**2, where='post', label=txt)                   
         else:
-            txt = 'void'
-        ax.step(energies[reaction][:-1], PCC[controlrod][reaction][:-1]**2,
-                where = 'post', label = txt)
+                   txt = 'void'
+            
+        #ax.step(energies, PCC[controlrod][reaction]**2, where='post', label=txt)
+  
+  
+#---
     #---
      #  Graph glitter
     #---
@@ -171,9 +191,9 @@ for controlrod in ['CD', 'D', 'ARO']:
       ax.set_ylabel('Coefficient de corrélation de Pearson au carré')
     ax.set_xscale('log')
     ax.legend(loc = 'center right')
-    ax.set_xlim(left = min(energies[reaction]),
-                right = max(energies[reaction][:-1]))
-    ax.set_ylim(bottom = 0, top = 1)
+    ax.set_xlim(left = min(energies),
+                right = max(energies[:-1]))
+    ax.set_ylim(bottom = 0, top = 0.05)
     ax.grid(which='both', alpha=0.2, linewidth=0.1)
     #---
     #  Save plot as pdf (vectorized)

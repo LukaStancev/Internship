@@ -12,8 +12,8 @@ import math
 import itertools
 import matplotlib.pyplot as plt
 from scipy.stats import moment
-import serpentTools
-from serpentTools.settings import rc
+#import serpentTools
+#from serpentTools.settings import rc
 
 # Layout of the assemblies in the core:
 #   = 0, void (i.e. no assembly at this position)
