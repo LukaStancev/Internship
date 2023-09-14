@@ -11,16 +11,23 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from BasicFunctions import *
 from collections import OrderedDict
+import random
 
 # Function that lists all available isotope datas
 def GetISO():
     # graphtype = 'samples'
     path = '../PyNjoy2016/output/'
-    directories = glob.glob(path + 'SANDY/*')
+    directories_sandy = glob.glob(path + 'SANDY/*')
+    directories_tendl = glob.glob(path + 'TENDL-2019/*')
     minsig = 0.01
     # list initialization
     iso_list = []
-    for draglibpath in directories:
+    for draglibpath in directories_sandy:
+        # Retrieve isotope name as given in directories' names and its source
+        source, iso = draglibpath.rsplit('/', 2)[1:3]
+        # adding elements to the list
+        iso_list.append(iso)
+    for draglibpath in directories_tendl:
         # Retrieve isotope name as given in directories' names and its source
         source, iso = draglibpath.rsplit('/', 2)[1:3]
         # adding elements to the list
@@ -31,23 +38,37 @@ def GetISO():
 
 # Function that reads Draglib data for a certain chosen isotope
 def GetXSE(choice):
-    # graphtype = 'samples'
-    path = '../PyNjoy2016/output/'
-    directories = glob.glob(path + 'SANDY/*')
+    # Graphtype = 'samples'
+    path_sandy = '../PyNjoy2016/output/SANDY/*'
+    path_tendl = '../PyNjoy2016/output/TENDL-2019/*'
     minsig = 0.01
     # list initialization
     iso_list = []
-    for draglibpath in directories:
-        # Retrieve isotope name as given in directories' names and its source
+
+    # Pokušaj pronalaska u "SANDY" folderu
+    directories_sandy = glob.glob(path_sandy)
+    directories_tendl = glob.glob(path_tendl)
+    for draglibpath in directories_sandy:
+		# Retrieve isotope name as given in directories' names and its source
         source, iso = draglibpath.rsplit('/', 2)[1:3]
         # adding elements to the list
         iso_list.append(iso)
     if choice in iso_list:
-        iso = str(choice)
-        draglibpath = draglibpath.replace(iso_list[-1], iso)
-        print("You selected", iso)
-    else:
-        print("Not a good value")
+       iso = str(choice)
+       draglibpath = draglibpath.replace(iso_list[-1], iso)
+       print("You selected", iso)
+    else: 
+        for draglibpath in directories_tendl:
+            source, iso = draglibpath.rsplit('/', 2)[1:3]
+            iso_list.append(iso)
+        if choice in iso_list:
+            iso = str(choice)
+            draglibpath = draglibpath.replace(iso_list[-1], iso)
+            print("You selected", iso)
+        else:
+            print("Not a good value")
+		   
+
 
     #---
     #  Create a link toward Draglib file and load data (most time spent here)
@@ -87,7 +108,7 @@ def GetXSE(choice):
     for dirname in dirnames:
         isotopedir = draglib[dirname]
         SubTemp = isotopedir['SUBTMP000' + str(itemp)]
-        if dirname.startswith('H1'):
+        if dirname.startswith(choice):
             keys_to_find[dirname] = None
         if not reactions:
             reactions = set(SubTemp.keys())
@@ -100,12 +121,13 @@ def GetXSE(choice):
     #  that isotope. The notable reactions set aside are: NG, NELAS, NFTOT, dodaj ovde sve reakcije
     #  N3N, N4N, NNP, N2A
     #---
-    wished_reactions = {'NTOT0', 'NUSIGF', 'NINEL', 'N2N', 'NA', 'NP', 'ND', 'NG', 'NELAS', 'NFTOT', 'N3N', 'N4N', 'NNP', 'N2A', 'NE', 'BIN-NTOT0',  }
+    #wished_reactions = {'NTOT0', 'NUSIGF', 'NINEL', 'N2N', 'NA', 'NP', 'ND', 'NG', 'NELAS', 'NFTOT', 'N3N', 'N4N', 'NNP', 'N2A', 'NE', 'BIN-NTOT0', 'NT','BIN-SIGS00', 'NJJS00','NJJS00', 'BIN-NUSIGF'  }
+    wished_reactions = {'NELAS','NTOT0','NINEL','N2N', 'N3N', 'NNP', 'N4N', 'NG', 'NP', 'NA','NFTOT', 'NUSIGF', 'BIN-NTOT0', 'BIN-NUSIGF', 'CHI'}
 
-    if iso.startswith('U23'):
-        wished_reactions = wished_reactions.difference({'NA', 'NP', 'ND'})
-    elif iso.startswith('Zr9'):
-        wished_reactions = wished_reactions.difference({'NA'})
+    #if iso.startswith('U23'):
+        #wished_reactions = wished_reactions.difference({'NA', 'NP', 'ND'})
+    #elif iso.startswith('Zr9'):
+        #wished_reactions = wished_reactions.difference({'NA'})
     reactions = list(reactions.intersection(wished_reactions))
     reactions.sort()
     labels = {}
